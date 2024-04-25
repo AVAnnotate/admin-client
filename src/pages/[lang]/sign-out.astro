@@ -1,0 +1,9 @@
+---
+import { getLangFromUrl } from '@i18n';
+
+const lang = getLangFromUrl(Astro.url);
+
+Astro.cookies.delete('access-token', { path: '/' });
+
+return Astro.redirect('/');
+---

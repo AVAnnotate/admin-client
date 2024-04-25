@@ -1,15 +1,11 @@
 ---
 import '@themes/default/index.css';
-import { TopBar } from '@components/TopBar';
-import { getTranslations } from '@i18n';
-import type { MyProfile } from 'src/Types';
 
 interface Props {
   title: string;
-  profile: MyProfile;
 }
 
-const { profile, title } = Astro.props;
+const { title } = Astro.props;
 ---
 
 <!doctype html>
@@ -23,12 +19,6 @@ const { profile, title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <TopBar
-      i18n={getTranslations(Astro.request, 'landing-page')}
-      onError={() => {}}
-      me={profile}
-      client:load
-    />
     <div class='slot'>
       <slot />
     </div>

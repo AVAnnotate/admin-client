@@ -1,0 +1,70 @@
+.account-actions-trigger.unstyled {
+  border-radius: 50%;
+  margin-left: 0;
+  border: none !important;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  cursor: pointer;
+}
+
+.account-actions-trigger.unstyled .avatar {
+  height: 30px;
+  width: 30px;
+}
+
+.dropdown-content .account-actions-meta {
+  border-bottom: 1px solid var(--gray-100);
+  margin-bottom: 5px;
+  padding: 3px 10px 8px 10px;
+}
+
+.dropdown-content .account-actions-meta h1,
+.dropdown-content .account-actions-meta h2 {
+  margin: 0;
+  line-height: 160%;
+}
+
+.dropdown-content .account-actions-meta .role-badge {
+  background-color: var(--orange-500);
+  border-radius: var(--border-radius);
+  display: block;
+  font-size: 0.675em;
+  line-height: 200%;
+  margin-top: 0.3em;
+  text-align: center;
+}
+
+.dropdown-content .account-actions-meta h1 {
+  font-size: var(--font-small);
+  font-weight: 500;
+}
+
+.dropdown-content .account-actions-meta h2 {
+  color: var(--font-light);
+  font-size: 0.675em;
+  font-weight: 400;
+}
+
+.divider {
+  margin-top: 10px;
+  border-top: 1px solid black;
+  padding-top: 10px;
+}
+
+.site-text {
+  display: flex;
+  justify-content: space-around;
+  font-size: small;
+}
+
+.github-nickname {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+}
+
+.profile-name {
+  padding-left: 10px;
+  color: var(--black);
+}

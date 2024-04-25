@@ -1,0 +1,117 @@
+@import './danger.css';
+@import './link.css';
+@import './minimal.css';
+@import './primary.css';
+@import './success.css';
+@import './unstyled.css';
+
+button, a[href].button {
+  align-items: center;
+  background-color: var(--button-background-color);
+  border: 1px solid var(--button-border-color);
+  border-radius: var(--button-border-radius);
+  box-shadow:
+    inset 0 0 0 150px rgba(0, 0, 0, 0),
+    0 2px 3px -2px rgba(0, 0, 0, 0.12);
+  color: var(--button-font-color);
+  cursor: pointer;
+  display: inline-flex;
+  flex-direction: row;
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  font-size: var(--font-small);
+  font-weight: 400;
+  justify-content: center;
+  line-height: 160%;
+  min-width: 80px;
+  outline: none;
+  padding: 10px 24px;
+  position: relative;
+  transition: 
+    background-color .25s ease-in-out, 
+    box-shadow .25s ease-in-out;
+}
+
+button.flat, a[href].button.flat {
+  box-shadow: inset 0 0 0 150px rgba(0, 0, 0, 0);
+}
+
+a[href].button, a[href].button:hover {
+  text-decoration: none;
+}
+
+button:disabled {
+  background-color: var(--gray-200);
+  border-color: var(--gray-200);
+  box-shadow: none;
+  color: var(--gray-500);
+  cursor: auto;
+}
+
+button:disabled svg {
+  color: var(--gray-500);
+}
+
+button:hover:not(:disabled), a.button:hover {
+  box-shadow: inset 0 0 0 150px rgba(0, 0, 0, 0.06);
+}
+
+button:focus-visible {
+  box-shadow: 0 0 0 3px var(--button-focus-outline-color);
+}
+
+button > svg,
+a[href].button > svg {
+  color: var(--font-light);
+  margin: 0 0.8em 0.1em 0.5em;
+}
+
+button svg:first-child {
+  margin-left: 0;
+}
+
+button svg:last-child {
+  margin-right: 0;
+}
+
+:is(button, a.button) + :is(button, a.button) {
+  margin-left: 0.8em;
+}
+
+button.tiny,
+a[href].button.tiny {
+  font-size: 11.5px;
+  line-height: 120%;
+  padding: 6px 14px;
+}
+
+button.sm,
+a[href].button.sm {
+  font-size: var(--font-tiny);
+  line-height: 120%;
+  padding: 8px 16px;
+}
+
+button.lg,
+a[href].button.lg {
+  padding: 12px 28px;
+}
+
+button.lg > svg {
+  margin: 0 0.6em 0.1em 0.6em;
+}
+
+button.no-hover:hover {
+  box-shadow: none;
+}
+
+button.icon-only {
+  align-items: center;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+  min-width: auto;
+}
+
+button.icon-only svg {
+  display: block;
+}

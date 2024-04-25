@@ -1,0 +1,22 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { getLangFromUrl } from '@i18n';
+import { userInfo } from '@backend/userInfo';
+
+const lang = getLangFromUrl(Astro.url);
+
+const accessCookie = Astro.cookies.get('access-token');
+
+console.log('Access token: ', accessCookie?.value);
+
+const info = await userInfo(Astro.cookies);
+
+if (!info) {
+  console.log('Redirecting: ', lang);
+  return Astro.redirect(`/${lang}/sign-in`);
+}
+---
+
+<Layout title='Projects' profile={info.profile}>
+  <h1>Projects</h1>
+</Layout>
