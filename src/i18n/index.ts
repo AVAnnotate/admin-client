@@ -1,4 +1,4 @@
-import type { Translations } from 'src/Types';
+import type { Translations } from '@types/Types';
 
 import en from './en';
 

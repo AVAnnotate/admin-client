@@ -1,5 +1,5 @@
 import { AccountActions } from '@components/AccountActions';
-import type { MyProfile, Translations } from 'src/Types';
+import type { MyProfile, Translations } from '@types/Types';
 
 import './TopBar.css';
 

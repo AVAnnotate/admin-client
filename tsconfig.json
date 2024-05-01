@@ -12,7 +12,7 @@
       "@i18n": ["src/i18n/index.ts"],
       "@layouts/*": ["src/layouts/*"],
       "@themes/*": ["src/themes/*"],
-      "@types/*": ["src/types/*"]
+      "@ty/*": ["src/types/*"]
     },
     "plugins": [
       {

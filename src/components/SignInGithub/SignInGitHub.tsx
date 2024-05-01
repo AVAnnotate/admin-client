@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
 import './SignInGitHub.css';
-import type { Translations } from 'src/Types';
+import type { Translations } from '@ty/Types';
 
 interface SignInGitHubProps {
   i18n: Translations;

@@ -2,7 +2,7 @@ import { useState, type ReactNode } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { SignOut, GithubLogo, CaretDown, CaretUp } from '@phosphor-icons/react';
 import { Avatar } from '@components/Avatar';
-import type { MyProfile, Translations } from 'src/Types';
+import type { MyProfile, Translations } from '@ty/Types';
 
 import './AccountActions.css';
 
