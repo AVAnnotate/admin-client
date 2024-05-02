@@ -4,6 +4,8 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
+    "moduleResolution": "node16",
+    "module": "Node16",
     "paths": {
       "@apps/*": ["src/apps/*"],
       "@branding/*": ["src/branding/*"],

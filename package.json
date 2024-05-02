@@ -24,7 +24,9 @@
     "@types/react-dom": "^18.2.25",
     "accept-language-parser": "^1.5.0",
     "astro": "^4.6.3",
+    "globby": "^14.0.1",
     "isomorphic-git": "^1.25.7",
+    "path": "^0.12.7",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^5.4.5"

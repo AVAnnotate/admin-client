@@ -31,3 +31,7 @@ export type Project = {
   autoPopulateHomePage: boolean;
   users: string[];
 };
+
+export type Projects = {
+  projects: Project[];
+};

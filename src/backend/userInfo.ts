@@ -1,5 +1,5 @@
 import type { AstroCookies } from 'astro';
-import type { UserInfo } from '@ty/Types';
+import type { UserInfo } from '@ty/Types.ts';
 
 export const userInfo = async (
   cookies: AstroCookies

@@ -2,6 +2,8 @@
 import Layout from '@layouts/Layout.astro';
 import { getLangFromUrl } from '@i18n';
 import { userInfo } from '@backend/userInfo';
+import { useGit } from 'src/lib/git/useGit';
+import { initFs } from 'src/lib/lightning-fs';
 
 const lang = getLangFromUrl(Astro.url);
 
@@ -15,6 +17,23 @@ if (!info) {
   console.log('Redirecting: ', lang);
   return Astro.redirect(`/${lang}/sign-in`);
 }
+
+const fs = initFs('avannotate');
+
+const onError = (error: string) => console.error(error);
+const { readFile } = useGit({
+  fs,
+  workingDir: '/avannotate-admin',
+  repositoryURL: 'https://github.com/AVAnnotate/admin.git',
+  proxyUrl: import.meta.env.PROXY_URL || undefined,
+  userInfo: info,
+  token: info.token,
+  onError: onError,
+});
+
+const projects = await readFile('projects/projects.json');
+
+console.info('Projects: ', projects);
 ---
 
 <Layout title='Projects' profile={info.profile}>
