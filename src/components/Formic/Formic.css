@@ -1,0 +1,68 @@
+.formic-form-required {
+  color: red;
+}
+
+.formic-form-label {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  margin-bottom: 8px !important;
+}
+
+.formic-form-helper-text {
+  margin-top: 3px;
+  margin-bottom: 5px;
+}
+
+.formic-form-text {
+  width: 650px;
+  height: 30px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+  background-color: var(--white);
+}
+
+.formic-form-textarea {
+  width: 650px;
+  height: 130px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+}
+
+.formic-form-select {
+  width: 390px;
+  height: 40px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+}
+
+.formic-form-switch-container {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+
+.formic-form-switch-button {
+  width: 150px;
+  height: 36px;
+  background-color: transparent;
+  border: 1px solid var(--gray-500) !important;
+  margin-left: 0 !important;
+}
+
+.formic-form-switch-button-left {
+  border-top-left-radius: 4px !important;
+  border-bottom-left-radius: 4px !important;
+}
+
+.formic-form-switch-button-right {
+  border-top-right-radius: 4px !important;
+  border-bottom-right-radius: 4px !important;
+}
+
+.formic-form-switch-button-selected {
+  color: var(--white) !important;
+  background-color: var(--primary) !important;
+  border: none !important;
+}

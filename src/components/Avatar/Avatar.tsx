@@ -1,6 +1,6 @@
 import * as RadixAvatar from '@radix-ui/react-avatar';
-import { User } from '@phosphor-icons/react';
-import type { UserProfile } from '@ty/Types';
+import { User } from '@phosphor-icons/react/User';
+import type { UserProfile } from '@ty/Types.ts';
 
 interface AvatarProps {
   id: string;

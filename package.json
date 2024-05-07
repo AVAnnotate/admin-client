@@ -24,6 +24,7 @@
     "@types/react-dom": "^18.2.25",
     "accept-language-parser": "^1.5.0",
     "astro": "^4.6.3",
+    "formik": "^2.4.6",
     "globby": "^14.0.1",
     "isomorphic-git": "^1.25.7",
     "memfs": "^4.9.2",

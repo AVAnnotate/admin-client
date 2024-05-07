@@ -4,7 +4,7 @@ import { SignOut } from '@phosphor-icons/react/SignOut';
 import { GithubLogo } from '@phosphor-icons/react/GithubLogo';
 import { CaretDown } from '@phosphor-icons/react/CaretDown';
 import { CaretUp } from '@phosphor-icons/react/CaretUp';
-import { Avatar } from '@components/Avatar';
+import { Avatar } from '@components/Avatar/index.ts';
 import type { MyProfile, Translations } from '@ty/Types.ts';
 
 import './AccountActions.css';

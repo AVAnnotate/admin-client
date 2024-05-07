@@ -1,0 +1,15 @@
+.new-project-container {
+  margin-top: 32px;
+  margin-left: 42px;
+}
+
+.new-project-panes {
+  display: flex;
+  flex-direction: row;
+}
+
+.new-project-form-container {
+  height: calc(100vh - 150px);
+  padding-right: 32px;
+  overflow-y: auto;
+}

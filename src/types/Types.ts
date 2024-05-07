@@ -21,6 +21,21 @@ export type UserInfo = {
   token: string;
 };
 
+export type Tag = {
+  tagGroupValue: string;
+  value: string;
+};
+
+export type TagGroup = {
+  value: string;
+  color: string;
+};
+
+export type Tags = {
+  tagGroups: TagGroup[];
+  tags: Tag[];
+};
+
 export type Project = {
   title: string;
   description: string;
@@ -29,11 +44,20 @@ export type Project = {
   authors: string[];
   mediaPlayer: 'universal' | 'aviary';
   autoPopulateHomePage: boolean;
-  users: string[];
+  users: ProviderUser[];
+  tags: Tags;
   createdAt: string;
   updatedAt: string;
 };
 
+export type ProviderUser = {
+  loginName: string;
+  avatarURL: string;
+  admin: boolean;
+};
+
 export type Projects = {
   projects: Project[];
+
+  users: ProviderUser[];
 };

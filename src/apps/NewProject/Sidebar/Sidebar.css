@@ -1,0 +1,27 @@
+.sidebar-container {
+}
+
+.sidebar-selection {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  height: 32px;
+  width: 100px;
+  border-left: 1px solid var(--gray-200);
+  padding: 2px 32px;
+  cursor: pointer;
+}
+
+.sidebar-active {
+  border-left: 1px solid var(--gray-950);
+}
+
+.sidebar-container h3 {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+.sidebar-separator {
+  height: 14px;
+  border-left: 1px solid var(--gray-200);
+}

@@ -1,4 +1,4 @@
-import { AccountActions } from '@components/AccountActions';
+import { AccountActions } from '@components/AccountActions/index.ts';
 import type { MyProfile, Translations } from '@ty/Types.ts';
 
 import './TopBar.css';

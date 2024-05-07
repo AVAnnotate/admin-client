@@ -13,7 +13,7 @@ export interface ProjectsProps {
 }
 
 export const Projects = (props: ProjectsProps) => {
-  const { t } = props.i18n;
+  const { t, lang } = props.i18n;
 
   const [filter, setFilter] = useState(ProjectFilter.MINE);
 
@@ -29,7 +29,10 @@ export const Projects = (props: ProjectsProps) => {
     <div className='projects-container'>
       <div className='projects-header-bar'>
         <h1>{t['Projects']}</h1>
-        <Button className='primary'>
+        <Button
+          className='primary'
+          onClick={() => (window.location.pathname = `/${lang}/projects/new`)}
+        >
           <Plus />
           <div>{`${t['add']}`}</div>
         </Button>

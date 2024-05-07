@@ -1,0 +1,47 @@
+---
+import Layout from '@layouts/Layout.astro';
+import { getLangFromUrl } from '@i18n';
+import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
+import { Projects } from '@apps/Projects';
+
+import '@themes/default/index.css';
+import { providers } from 'src/lib/providers';
+import { NewProject } from '@apps/NewProject';
+
+const lang = getLangFromUrl(Astro.url);
+
+const i18n = getTranslations(Astro.request, 'new-project');
+const accessCookie = Astro.cookies.get('access-token');
+
+// console.log('Access token: ', accessCookie?.value);
+
+const info = await userInfo(Astro.cookies);
+
+if (!info) {
+  console.log('Redirecting: ', lang);
+  return Astro.redirect(`/${lang}/sign-in`);
+}
+
+const provider = providers();
+
+if (!provider) {
+  Astro.redirect('/500');
+}
+
+const users = await provider?.getUsers(
+  import.meta.env.GIT_ADMIN_REPO,
+  info.token
+);
+
+// console.table(users);
+---
+
+<Layout title='Projects' profile={info.profile}>
+  <NewProject
+    i18n={i18n}
+    onSave={() => {}}
+    allUsers={users}
+    client:only='react'
+  />
+</Layout>

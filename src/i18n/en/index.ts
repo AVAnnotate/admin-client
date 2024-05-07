@@ -5,6 +5,7 @@ import accountActions from './account-actions.json';
 import signOut from './sign-out.json';
 import signIn from './sign-in.json';
 import projects from './projects.json';
+import newProject from './new-project.json';
 
 const all = { ...common };
 export default {
@@ -14,4 +15,5 @@ export default {
   'sign-out': signOut,
   'sign-in': signIn,
   projects: { ...projects, ...buttons },
+  'new-project': { ...newProject, ...buttons, ...all },
 };

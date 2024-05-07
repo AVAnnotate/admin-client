@@ -19,6 +19,7 @@
   --mud-gray: #808073;
   --orange: #e9b44a;
 
+  --gray-950: #0a0a0a;
   --gray-900: #202125;
   --gray-700: #6f747c;
   --gray-600: #818992;
@@ -88,6 +89,7 @@ body {
   padding: 0;
   box-sizing: border-box;
   background-color: var(--gray-200);
+  overflow-y: hidden;
 }
 
 a[href] {
@@ -108,7 +110,7 @@ a:focus-visible {
 
 h1 {
   font-family: Inter;
-  font-size: 1.6em;
+  font-size: 24px;
   font-weight: 600;
   letter-spacing: 0.02ch;
   line-height: 140%;
@@ -118,10 +120,45 @@ h1 {
 
 h2 {
   font-family: Inter;
-  font-size: 1.25em;
+  font-size: 18px;
   font-weight: 600;
   margin: 1em 0;
   padding: 0;
+}
+
+h3 {
+  font-family: Inter;
+  font-size: 16px;
+  font-weight: 600;
+  margin: 1em 0;
+  padding: 0;
+}
+
+.av-label {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 1em 0;
+  padding: 0;
+  color: var(--gray-600);
+}
+
+.av-label-bold {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 600;
+  margin: 1em 0;
+  padding: 0;
+}
+
+.av-label-italic {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 400;
+  margin: 1em 0;
+  padding: 0;
+  color: var(--gray-600);
+  font-style: italic;
 }
 
 p {

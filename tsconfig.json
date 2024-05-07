@@ -4,8 +4,8 @@
     "jsx": "react-jsx",
     "jsxImportSource": "react",
     "baseUrl": ".",
-    "moduleResolution": "node16",
-    "module": "Node16",
+    "moduleResolution": "NodeNext",
+    "module": "NodeNext",
     "paths": {
       "@apps/*": ["src/apps/*"],
       "@branding/*": ["src/branding/*"],
@@ -14,7 +14,8 @@
       "@i18n": ["src/i18n/index.ts"],
       "@layouts/*": ["src/layouts/*"],
       "@themes/*": ["src/themes/*"],
-      "@ty/*": ["src/types/*"]
+      "@ty/*": ["src/types/*"],
+      "@lib/*": ["src/lib/*"]
     },
     "plugins": [
       {
