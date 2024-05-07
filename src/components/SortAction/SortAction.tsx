@@ -1,0 +1,67 @@
+import { Check } from '@phosphor-icons/react/Check';
+import { CaretDown } from '@phosphor-icons/react/CaretDown';
+import { SortAscending } from '@phosphor-icons/react/SortAscending';
+import { SortDescending } from '@phosphor-icons/react/SortDescending';
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { useState } from 'react';
+import type { Translations, Project } from '@ty/Types.ts';
+import type { SortFunction } from './SortFunction.ts';
+
+import './SortAction.css';
+
+interface SortActionProps {
+  i18n: Translations;
+
+  onChangeSort(sortFn: SortFunction): void;
+}
+
+const Sorters = {
+  Name: (a: Project, b: Project) => (a.title > b.title ? 1 : -1),
+
+  Newest: (a: Project, b: Project) => (a.createdAt < b.createdAt ? 1 : -1),
+
+  Oldest: (a: Project, b: Project) => (a.createdAt > b.createdAt ? 1 : -1),
+};
+
+const Icons = {
+  Name: <SortAscending />,
+  Newest: <SortDescending />,
+  Oldest: <SortAscending />,
+};
+
+export const SortAction = (props: SortActionProps) => {
+  const { t } = props.i18n;
+
+  const [sort, setSort] = useState<keyof typeof Sorters>('Name');
+
+  const changeSort = (key: keyof typeof Sorters) => () => {
+    setSort(key);
+    props.onChangeSort(Sorters[key]);
+  };
+
+  const item = (key: keyof typeof Sorters) => (
+    <Dropdown.Item className='dropdown-item' onSelect={changeSort(key)}>
+      {Icons[key]} {t[key]}
+    </Dropdown.Item>
+  );
+
+  return (
+    <Dropdown.Root>
+      <Dropdown.Trigger asChild>
+        <button>
+          <div className='sort-button'>
+            {Icons[sort]} {t[sort]} <CaretDown />
+          </div>
+        </button>
+      </Dropdown.Trigger>
+
+      <Dropdown.Portal>
+        <Dropdown.Content align='end' className='dropdown-content'>
+          {item('Name')}
+          {item('Newest')}
+          {item('Oldest')}
+        </Dropdown.Content>
+      </Dropdown.Portal>
+    </Dropdown.Root>
+  );
+};

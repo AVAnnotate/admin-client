@@ -1,8 +1,9 @@
 ---
 import '@themes/default/index.css';
+import { Theme } from '@radix-ui/themes';
 import { TopBar } from '@components/TopBar';
 import { getTranslations } from '@i18n';
-import type { MyProfile } from 'types/Typeses';
+import type { MyProfile } from '@ty/Types.ts';
 
 interface Props {
   title: string;
@@ -29,14 +30,18 @@ const { profile, title } = Astro.props;
       me={profile}
       client:load
     />
-    <div class='slot'>
-      <slot />
-    </div>
+    <Theme>
+      <div class='slot'>
+        <slot />
+      </div>
+    </Theme>
   </body>
 </html>
 
 <style>
   .slot {
-    margin-top: 80px;
+    padding-top: 60px;
+    min-height: calc(100vh - 60px) !important;
+    background-color: var(--gray-200);
   }
 </style>

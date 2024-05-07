@@ -30,6 +30,8 @@ export type Project = {
   mediaPlayer: 'universal' | 'aviary';
   autoPopulateHomePage: boolean;
   users: string[];
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type Projects = {

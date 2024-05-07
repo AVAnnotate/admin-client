@@ -1,0 +1,77 @@
+.projects-header {
+  width: 100%;
+  box-shadow: none;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.projects-header section {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.projects-header section.projects-header-top {
+}
+
+.projects-header h1 {
+  display: flex;
+  font-size: 1.4em;
+  margin: 0;
+  padding: 0;
+}
+
+.projects-header h1 svg {
+  color: var(--font-light);
+  padding-right: 10px;
+  vertical-align: text-bottom;
+}
+
+.projects-header
+  section.projects-header-bottom
+  .projects-header-bottom-actions {
+  align-items: center;
+  display: flex;
+}
+
+.projects-header-bottom ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.projects-header-bottom li {
+  display: inline-block;
+  margin-right: 18px;
+}
+
+.projects-header-bottom li button {
+  background: none;
+  border-color: transparent;
+  border-radius: 0;
+  border-style: solid;
+  border-width: 0 0 2px 0;
+  box-shadow: none;
+  font-size: var(--font-tiny);
+  padding: 8px 4px;
+}
+
+.projects-header-bottom .projects-header-tabs li:hover button {
+}
+
+.projects-header-bottom .projects-header-tabs li.active button {
+  border-color: var(--bright-blue);
+  font-weight: 600;
+}
+
+.projects-header-bottom li button:hover {
+  background: none;
+  box-shadow: none;
+}
+
+.project-header-actions {
+  display: flex;
+  flex-direction: row;
+}

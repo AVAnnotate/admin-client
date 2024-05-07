@@ -2,11 +2,16 @@
 import Layout from '@layouts/Layout.astro';
 import { getLangFromUrl } from '@i18n';
 import { userInfo } from '@backend/userInfo';
-import { useGit } from 'src/lib/git/useGit';
-import { initFs } from 'src/lib/lightning-fs';
+import { initFs } from 'src/lib/memfs';
+import { gitRepo } from '@backend/gitRepo';
+import { getTranslations } from '@i18n';
+import { Projects } from '@apps/Projects';
+
+import '@themes/default/index.css';
 
 const lang = getLangFromUrl(Astro.url);
 
+const i18n = getTranslations(Astro.request, 'projects');
 const accessCookie = Astro.cookies.get('access-token');
 
 console.log('Access token: ', accessCookie?.value);
@@ -20,22 +25,19 @@ if (!info) {
 
 const fs = initFs('avannotate');
 
-const onError = (error: string) => console.error(error);
-const { readFile } = useGit({
-  fs,
-  workingDir: '/avannotate-admin',
-  repositoryURL: 'https://github.com/AVAnnotate/admin.git',
-  proxyUrl: import.meta.env.PROXY_URL || undefined,
+const { readFile } = await gitRepo({
+  fs: fs,
+  workingDir: '/',
+  repositoryURL: import.meta.env.GIT_REPO_ADMIN,
+  proxyUrl: import.meta.env.PROXY_URL,
   userInfo: info,
-  token: info.token,
-  onError: onError,
 });
 
-const projects = await readFile('projects/projects.json');
-
-console.info('Projects: ', projects);
+// await fs.promises.readdir('/').then((res) => console.log('Read dir: ', res));
+const projs = await readFile(fs, '/', 'data/projects.json');
+const projects = JSON.parse(projs as string);
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <h1>Projects</h1>
+  <Projects projects={projects.projects} i18n={i18n} client:only='react' />
 </Layout>

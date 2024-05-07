@@ -1,1 +1,1 @@
-export * from './SignInGitHub';
+export * from './SignInGitHub.tsx';

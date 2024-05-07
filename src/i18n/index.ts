@@ -1,5 +1,6 @@
-import type { Translations } from '@types/Types';
+import type { Translations } from '@ty/Types.ts';
 
+// @ts-ignore
 import en from './en';
 
 export const languages = {

@@ -1,8 +1,11 @@
 import { useState, type ReactNode } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
-import { SignOut, GithubLogo, CaretDown, CaretUp } from '@phosphor-icons/react';
+import { SignOut } from '@phosphor-icons/react/SignOut';
+import { GithubLogo } from '@phosphor-icons/react/GithubLogo';
+import { CaretDown } from '@phosphor-icons/react/CaretDown';
+import { CaretUp } from '@phosphor-icons/react/CaretUp';
 import { Avatar } from '@components/Avatar';
-import type { MyProfile, Translations } from '@ty/Types';
+import type { MyProfile, Translations } from '@ty/Types.ts';
 
 import './AccountActions.css';
 

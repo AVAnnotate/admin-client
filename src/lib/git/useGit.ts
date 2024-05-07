@@ -1,12 +1,11 @@
-import type { WriteFileOptions } from '@isomorphic-git/lightning-fs';
-import type FS from '@isomorphic-git/lightning-fs';
 import git, { type PushResult } from 'isomorphic-git';
+import type { IFs } from 'memfs';
 import http from 'isomorphic-git/http/node';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import type { UserInfo } from '@ty/Types.ts';
 
 interface UseGitProps {
-  fs: FS.PromisifiedFS;
+  fs: IFs;
   workingDir: string;
   repositoryURL: string;
   branch?: string;
@@ -34,7 +33,7 @@ export const useGit = (props: UseGitProps) => {
   const writeFile = (
     relativePath: string,
     data: Uint8Array,
-    options?: WriteFileOptions
+    options?: any
   ): Promise<boolean> => {
     return props.fs
       .writeFile(`${props.workingDir}/${relativePath}`, data, options)
@@ -46,10 +45,8 @@ export const useGit = (props: UseGitProps) => {
     encoding?: 'utf8'
   ): Promise<Uint8Array | string> => {
     return props.fs
-      .readFile(`${props.workingDir}/${relativePath}`, {
-        encoding: encoding ? encoding : undefined,
-      })
-      .then((data) => data);
+      .readFileSync(`${props.workingDir}/${relativePath}`, encoding || 'utf8')
+      .then((data: string) => data);
   };
 
   const commitAndPush = (branch: string, message: string): Promise<boolean> => {
