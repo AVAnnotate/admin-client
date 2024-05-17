@@ -18,6 +18,7 @@ console.log('Access token: ', accessCookie?.value);
 
 const info = await userInfo(Astro.cookies);
 
+console.log('info: ', info);
 if (!info) {
   console.log('Redirecting: ', lang);
   return Astro.redirect(`/${lang}/sign-in`);
@@ -32,6 +33,8 @@ const { readFile } = await gitRepo({
   proxyUrl: import.meta.env.PROXY_URL,
   userInfo: info,
 });
+
+console.log('Repo accessed!');
 
 // await fs.promises.readdir('/').then((res) => console.log('Read dir: ', res));
 const projs = await readFile(fs, '/', 'data/projects.json');

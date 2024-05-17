@@ -1,0 +1,16 @@
+.bottom-bar-container footer {
+  background-color: var(--white);
+  box-sizing: border-box;
+  display: flex;
+  padding: 20px 40px;
+  width: 100vw;
+  z-index: 9999;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+}
+
+header {
+  box-shadow: rgba(0, 0, 0, 0.2) 0px 1px 2px 0px;
+}

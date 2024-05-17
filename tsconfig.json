@@ -15,7 +15,8 @@
       "@layouts/*": ["src/layouts/*"],
       "@themes/*": ["src/themes/*"],
       "@ty/*": ["src/types/*"],
-      "@lib/*": ["src/lib/*"]
+      "@lib/*": ["src/lib/*"],
+      "@providers/*": ["src/lib/providers/*"]
     },
     "plugins": [
       {

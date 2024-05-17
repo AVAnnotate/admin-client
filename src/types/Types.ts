@@ -36,16 +36,18 @@ export type Tags = {
   tags: Tag[];
 };
 
+export type MediaPlayer = 'universal' | 'aviary';
+
 export type Project = {
   title: string;
   description: string;
   language: string;
   slug: string;
-  authors: string[];
-  mediaPlayer: 'universal' | 'aviary';
+  authors: string;
+  mediaPlayer: MediaPlayer;
   autoPopulateHomePage: boolean;
-  users: ProviderUser[];
-  tags: Tags;
+  additionalUsers: ProviderUser[];
+  tags?: Tags;
   createdAt: string;
   updatedAt: string;
 };

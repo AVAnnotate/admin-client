@@ -14,28 +14,45 @@ interface GitRepoOptions {
 }
 
 export const gitRepo = async (options: GitRepoOptions) => {
-  await git.clone({
-    fs: options.fs,
-    http,
-    dir: options.workingDir,
-    url: options.repositoryURL,
-    corsProxy: options.proxyUrl,
-    singleBranch: options.branch ? true : false,
-    depth: 1,
-    ref: options.branch ? options.branch : undefined,
-    onAuth: () => ({
-      username: options.userInfo.token,
-    }),
-  });
+  try {
+    await git.clone({
+      fs: options.fs,
+      http,
+      dir: options.workingDir,
+      url: options.repositoryURL,
+      singleBranch: options.branch ? true : false,
+      depth: 1,
+      ref: options.branch ? options.branch : undefined,
+      onProgress: (event) => {
+        //console.log('Progress: ', event.loaded / event.total);
+      },
+      onAuth: () => {
+        //console.log('In Auth. token: ', options.userInfo.token);
+        return {
+          username: options.userInfo.token,
+        };
+      },
+      onAuthFailure: (url, auth) => {
+        console.log('Auth Failed!');
+        return { cancel: true };
+      },
+      onAuthSuccess: (url, auth) => console.log('Auth Success!'),
+    });
+  } catch (err) {
+    console.log(err);
+  }
+
+  console.log('Repo cloned!');
 
   const writeFile = async (
     fs: IFs,
     workingDir: string,
     relativePath: string,
-    data: Uint8Array,
+    data: string,
     options?: any
   ): Promise<boolean> => {
-    return fs.writeFile(`${workingDir}/${relativePath}`, data, options);
+    fs.writeFileSync(`${workingDir}/${relativePath}`, data, options);
+    return true;
   };
 
   const readFile = async (

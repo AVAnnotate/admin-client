@@ -7,6 +7,12 @@ import {
 } from 'formik';
 import { Button, Switch } from '@radix-ui/themes';
 import './Formic.css';
+import { Avatar } from '@components/Avatar/index.ts';
+import type { UserProfile } from '@ty/Types.ts';
+import { Trash } from '@phosphor-icons/react/Trash';
+import { useState } from 'react';
+import { Plus } from '@phosphor-icons/react/Plus';
+import { UploadSimple } from '@phosphor-icons/react/UploadSimple';
 
 const Required = () => {
   return <div className='formic-form-required'>*</div>;
@@ -180,5 +186,83 @@ export const ToggleInput = (props: ToggleInputProps) => {
         </div>
       )}
     </>
+  );
+};
+
+interface UserListProps {
+  label: string;
+  helperText?: string;
+  required?: boolean;
+  name: string;
+  addString: string;
+  nameString: string;
+}
+
+export const UserList = (props: UserListProps) => {
+  const [field, meta, helpers] = useField(props.name);
+  const [adding, setAdding] = useState(false);
+  const [newValue, setNewValue] = useState('');
+
+  const { value } = meta;
+  const { setValue } = helpers;
+
+  const handleAddUser = () => {
+    let val: UserProfile[] = [...value];
+    val.push({
+      name: '',
+      gitHubName: newValue,
+    });
+
+    setValue(val);
+    setNewValue('');
+    setAdding(false);
+  };
+
+  return (
+    <div>
+      <div className='av-label-bold formic-form-label'>
+        {props.label}
+        {props.required && <Required />}
+      </div>
+      {value.map((user: UserProfile) => (
+        <div className='formic-user-list-row' key={user.gitHubName}>
+          <div className='formnic-user-list-user-box'>
+            <Avatar name={user.gitHubName} avatar={user.avatarURL} />
+            <div className='formic-user-list-names'>
+              <div className='av-label-bold'>{user.name}</div>
+              <div className='av-label'>{user.gitHubName}</div>
+            </div>
+          </div>
+          <Trash />
+        </div>
+      ))}
+      <div className='formic-user-list-add'>
+        {adding ? (
+          <div className='formic-user-list-add'>
+            <div className='av-label-bold formic-form-label'>
+              {props.nameString}
+              <Required />
+            </div>
+            <input
+              value={newValue}
+              onChange={(ev) => setNewValue(ev.target.value)}
+              className='formic-form-text formic-add-user-input'
+            ></input>
+            <Button
+              className='primary formic-add-user-save-button'
+              onClick={handleAddUser}
+            >
+              <UploadSimple />
+              <div>{props.addString}</div>
+            </Button>
+          </div>
+        ) : (
+          <Button className='primary' onClick={() => setAdding(true)}>
+            <Plus />
+            <div>{props.addString}</div>
+          </Button>
+        )}
+      </div>
+    </div>
   );
 };

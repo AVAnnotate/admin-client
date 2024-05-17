@@ -2,6 +2,7 @@ import type { Project, ProviderUser, Translations } from '@ty/Types.ts';
 import { Sidebar, type SidebarSelection } from './Sidebar/index.ts';
 import { useState } from 'react';
 import { ProjectForm } from './ProjectForm/index.ts';
+import type { apiProjectsProjectNamePost } from '@ty/api.ts';
 
 import './NewProject.css';
 
@@ -20,6 +21,29 @@ export const NewProject = (props: NewProjectProps) => {
 
   const { t } = props.i18n;
 
+  const handleSaveProject = (project: Project) => {
+    const body: apiProjectsProjectNamePost = {
+      templateRepo: import.meta.env.PUBLIC_GIT_TEMPLATE_REPOSITORY,
+      description: project.description,
+      title: project.title,
+      slug: project.slug,
+      projectDescription: project.description,
+      projectAuthors: project.authors,
+      mediaPlayer: project.mediaPlayer,
+      additionalUsers: project.additionalUsers.map((u) => u.loginName),
+      language: project.language,
+      autoPopulateHomePage: project.autoPopulateHomePage,
+    };
+
+    fetch(`/api/projects/${project.slug}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }).then((result) => console.log('Result: ', result));
+  };
+
   return (
     <div className='new-project-container'>
       <h1>{t['Create New Project']}</h1>
@@ -33,7 +57,7 @@ export const NewProject = (props: NewProjectProps) => {
           <ProjectForm
             i18n={props.i18n}
             allUsers={props.allUsers}
-            onSave={() => {}}
+            onSave={handleSaveProject}
           />
         </div>
       </div>

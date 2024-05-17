@@ -3,8 +3,6 @@ import { User } from '@phosphor-icons/react/User';
 import type { UserProfile } from '@ty/Types.ts';
 
 interface AvatarProps {
-  id: string;
-
   name?: string;
 
   color?: string;
@@ -51,9 +49,7 @@ const getInitials = (name: string): string => {
 };
 
 export const Avatar = (props: AvatarProps) => {
-  const { id, name, color, avatar } = props;
-
-  const fallbackColor = `hsl(${stringToHash(id) % 360}, 35%, 48%)`;
+  const { name, color, avatar } = props;
 
   return (
     <RadixAvatar.Root className='avatar'>
@@ -72,7 +68,7 @@ export const Avatar = (props: AvatarProps) => {
         <RadixAvatar.Fallback
           className='avatar-fallback'
           title={`${name} avatar image`}
-          style={{ backgroundColor: fallbackColor }}
+          style={{ backgroundColor: 'gray' }}
         >
           {name ? getInitials(name) : <User size={16} />}
         </RadixAvatar.Fallback>

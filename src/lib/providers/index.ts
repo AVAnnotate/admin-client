@@ -9,6 +9,7 @@ export const providers = () => {
   if ((import.meta.env.PROVIDER = 'GITHUB')) {
     return {
       getUsers: GitHub.getCollaborators,
+      createRepositoryFromTemplate: GitHub.createRepositoryFromTemplate,
     };
   } else {
     return null;

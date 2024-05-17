@@ -66,3 +66,36 @@
   background-color: var(--primary) !important;
   border: none !important;
 }
+
+.formic-user-list-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 100%;
+  border-bottom: 1px solid var(--gray-300);
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.formnic-user-list-user-box {
+  display: flex;
+  flex-direction: row;
+}
+
+.formic-user-list-add {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.formic-add-user-input {
+  margin-left: 5px;
+}
+
+.formic-user-list-names {
+  margin-left: 8px;
+}
+
+.formic-add-user-save-button {
+  margin-left: 5px;
+}

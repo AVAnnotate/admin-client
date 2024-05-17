@@ -11,7 +11,6 @@ interface UseGitProps {
   branch?: string;
   proxyUrl?: string;
   userInfo: UserInfo;
-  token: string;
   onError(error: string): void;
 }
 export const useGit = (props: UseGitProps) => {
@@ -69,7 +68,7 @@ export const useGit = (props: UseGitProps) => {
             remote: 'origin',
             ref: branch,
             onAuth: () => ({
-              username: props.token,
+              username: props.userInfo.token,
             }),
           })
           .then((result: PushResult) => {

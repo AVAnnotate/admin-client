@@ -1,5 +1,10 @@
+.project-form {
+  width: 100%;
+}
+
 .project-form-container {
-  width: calc(100vw - 300px);
+  width: 780px;
+  padding-bottom: 75px;
 }
 
 .project-form-divider {
@@ -8,4 +13,8 @@
   border-top: 1px solid var(--gray-300);
   margin-top: 20px;
   margin-bottom: 20px;
+}
+
+.project-form-actions-container {
+  width: 100%;
 }
