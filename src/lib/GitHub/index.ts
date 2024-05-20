@@ -73,3 +73,33 @@ export const createRepositoryFromTemplate = async (
     }
   );
 };
+
+export const enablePages = async (
+  repo: string,
+  token: string
+): Promise<Response> => {
+  const body = {
+    source: {
+      branch: 'main',
+      path: '/',
+    },
+    build_type: 'workflow',
+    https_enforced: true,
+  };
+  console.log('API Body: ', body);
+  console.log('Repo: ', repo);
+  return await fetch(
+    `https://api.github.com/repos/${
+      import.meta.env.GIT_REPO_ORG
+    }/${repo}/pages`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify(body),
+    }
+  );
+};

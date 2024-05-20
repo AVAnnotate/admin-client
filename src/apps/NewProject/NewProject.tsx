@@ -23,7 +23,7 @@ export const NewProject = (props: NewProjectProps) => {
 
   const handleSaveProject = (project: Project) => {
     const body: apiProjectsProjectNamePost = {
-      templateRepo: import.meta.env.PUBLIC_GIT_TEMPLATE_REPOSITORY,
+      templateRepo: import.meta.env.PUBLIC_GIT_REPO_PROJECT_TEMPLATE,
       description: project.description,
       title: project.title,
       slug: project.slug,
@@ -33,6 +33,7 @@ export const NewProject = (props: NewProjectProps) => {
       additionalUsers: project.additionalUsers.map((u) => u.loginName),
       language: project.language,
       autoPopulateHomePage: project.autoPopulateHomePage,
+      visibility: 'public',
     };
 
     fetch(`/api/projects/${project.slug}`, {

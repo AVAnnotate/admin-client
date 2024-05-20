@@ -29,7 +29,7 @@ const fs = initFs('avannotate');
 const { readFile } = await gitRepo({
   fs: fs,
   workingDir: '/',
-  repositoryURL: import.meta.env.GIT_REPO_ADMIN,
+  repositoryURL: import.meta.env.GIT_REPO_ADMIN_DATA,
   proxyUrl: import.meta.env.PROXY_URL,
   userInfo: info,
 });

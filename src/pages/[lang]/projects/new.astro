@@ -34,14 +34,14 @@ const users = await provider?.getUsers(
   info.token
 );
 
-// console.table(users);
+const allUsers = await users?.json();
 ---
 
 <Layout title='Projects' profile={info.profile}>
   <NewProject
     i18n={i18n}
     onSave={() => {}}
-    allUsers={users}
+    allUsers={allUsers}
     client:only='react'
   />
 </Layout>
