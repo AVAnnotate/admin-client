@@ -2,11 +2,10 @@
 import Layout from '@layouts/Layout.astro';
 import { getLangFromUrl } from '@i18n';
 import { userInfo } from '@backend/userInfo';
-import { initFs } from 'src/lib/memfs';
-import { gitRepo } from '@backend/gitRepo';
 import { getTranslations } from '@i18n';
 import { Projects } from '@apps/Projects';
-
+import { getProjects } from '@backend/projectHelpers';
+import type { AllProjects } from '@ty/Types.ts';
 import '@themes/default/index.css';
 
 const lang = getLangFromUrl(Astro.url);
@@ -24,23 +23,11 @@ if (!info) {
   return Astro.redirect(`/${lang}/sign-in`);
 }
 
-const fs = initFs('avannotate');
+const allProjects: AllProjects = await getProjects(info);
 
-const { readFile } = await gitRepo({
-  fs: fs,
-  workingDir: '/',
-  repositoryURL: import.meta.env.GIT_REPO_ADMIN_DATA,
-  proxyUrl: import.meta.env.PROXY_URL,
-  userInfo: info,
-});
-
-console.log('Repo accessed!');
-
-// await fs.promises.readdir('/').then((res) => console.log('Read dir: ', res));
-const projs = await readFile(fs, '/', 'data/projects.json');
-const projects = JSON.parse(projs as string);
+console.log(allProjects);
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <Projects projects={projects.projects} i18n={i18n} client:only='react' />
+  <Projects projects={allProjects} i18n={i18n} client:only='react' />
 </Layout>

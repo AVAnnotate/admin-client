@@ -6,6 +6,7 @@ export type apiProjectsProjectNamePost = {
   visibility?: 'private' | 'public'; // Defaults to private
   title: string;
   slug: string;
+  gitHubOrg: string;
   projectDescription: string;
   projectAuthors: string;
   mediaPlayer: MediaPlayer;

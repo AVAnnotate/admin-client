@@ -43,6 +43,7 @@ export const TextInput = (props: TextInputProps) => {
         type='text'
         name={props.name}
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
+        as={props.isLarge ? 'textarea' : 'input'}
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>

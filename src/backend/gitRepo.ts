@@ -1,4 +1,4 @@
-import type { IFs } from 'memfs';
+import { type IFs } from 'memfs';
 import type { UserInfo } from '@ty/Types.ts';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
@@ -6,19 +6,18 @@ import type { PushResult } from 'isomorphic-git';
 
 interface GitRepoOptions {
   fs: IFs;
-  workingDir: string;
   repositoryURL: string;
   branch?: string;
-  proxyUrl?: string;
   userInfo: UserInfo;
 }
 
 export const gitRepo = async (options: GitRepoOptions) => {
+  const { fs } = options;
   try {
     await git.clone({
       fs: options.fs,
       http,
-      dir: options.workingDir,
+      dir: '/',
       url: options.repositoryURL,
       singleBranch: options.branch ? true : false,
       depth: 1,
@@ -38,57 +37,76 @@ export const gitRepo = async (options: GitRepoOptions) => {
       },
       onAuthSuccess: (url, auth) => console.log('Auth Success!'),
     });
+
+    console.log('Repo cloned!');
+    const dir = await fs.promises.readdir('/');
+    console.log('Dir: ', dir);
   } catch (err) {
     console.log(err);
   }
 
-  console.log('Repo cloned!');
-
   const writeFile = async (
-    fs: IFs,
-    workingDir: string,
-    relativePath: string,
+    absoluteFileName: string,
     data: string,
-    options?: any
+    writeOptions?: any
   ): Promise<boolean> => {
-    fs.writeFileSync(`${workingDir}/${relativePath}`, data, options);
+    fs.writeFileSync(absoluteFileName, data, writeOptions);
+    console.log('File written!');
+    await git.add({
+      fs,
+      dir: '/',
+      filepath: absoluteFileName.slice(1),
+    });
+
+    const status = await git.statusMatrix({
+      fs,
+      dir: '/',
+    });
+    console.log(status);
     return true;
   };
 
   const readFile = async (
-    fs: IFs,
-    workingDir: string,
-    relativePath: string,
+    absoluteFileName: string,
     encoding?: 'utf8'
   ): Promise<Uint8Array | string> => {
-    return fs.readFileSync(`${workingDir}${relativePath}`, encoding || 'utf8');
+    return fs.readFileSync(absoluteFileName, encoding || 'utf8');
   };
 
-  const commitAndPush = async (
-    fs: IFs,
-    workingDir: string,
-    userInfo: UserInfo,
-    branch: string,
-    message: string
-  ): Promise<PushResult> => {
+  const commitAndPush = async (message: string): Promise<PushResult> => {
+    await git.setConfig({
+      fs,
+      dir: '/',
+      path: 'user.name',
+      value: options.userInfo.profile.gitHubName,
+    });
+
     const sha = await git.commit({
       fs: fs,
-      dir: workingDir,
+      dir: '/',
       author: {
-        name: userInfo.profile.name,
-        email: userInfo.profile.email,
+        name: options.userInfo.profile.name,
+        email: options.userInfo.profile.email,
       },
       message,
     });
 
+    if (!sha) {
+      return { ok: false, error: 'Failed to commit changes', refs: {} };
+    }
+
+    const commits = await git.log({ fs, dir: '/', depth: 1 });
+    console.log('After commit log: ', commits[0]);
+
     return git.push({
       fs: fs,
       http,
-      dir: workingDir,
+      url: options.repositoryURL,
+      dir: '/',
       remote: 'origin',
-      ref: branch,
+      ref: options.branch,
       onAuth: () => ({
-        username: userInfo.token,
+        username: options.userInfo.token,
       }),
     });
   };

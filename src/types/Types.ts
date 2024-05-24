@@ -39,10 +39,12 @@ export type Tags = {
 export type MediaPlayer = 'universal' | 'aviary';
 
 export type Project = {
+  gitHubOrg: string;
   title: string;
   description: string;
   language: string;
   slug: string;
+  creator: string;
   authors: string;
   mediaPlayer: MediaPlayer;
   autoPopulateHomePage: boolean;
@@ -54,12 +56,31 @@ export type Project = {
 
 export type ProviderUser = {
   loginName: string;
-  avatarURL: string;
+  avatarURL?: string;
   admin: boolean;
 };
 
-export type Projects = {
-  projects: Project[];
+export type Publish = {
+  publishPagesApp: boolean;
+  publishSHA: string;
+  publishISODate: string;
+};
+
+export type ProjectData = {
+  project: Project;
 
   users: ProviderUser[];
+
+  publish: Publish;
+};
+
+export type AllProjects = {
+  myProjects: ProjectData[];
+  sharedProjects: ProjectData[];
+};
+
+export type GitHubOrganization = {
+  orgName: string;
+  url: string;
+  description: string;
 };

@@ -1,4 +1,4 @@
-import type { Project, Translations } from '@ty/Types.ts';
+import type { GitHubOrganization, Project, Translations } from '@ty/Types.ts';
 import { Formik, Form } from 'formik';
 import {
   TextInput,
@@ -19,6 +19,8 @@ export interface ProjectFormProps {
 
   allUsers: ProviderUser[];
 
+  orgs: GitHubOrganization[];
+
   i18n: Translations;
 
   onSave(project: Project): void;
@@ -28,10 +30,12 @@ export const ProjectForm = (props: ProjectFormProps) => {
   const { t } = props.i18n;
 
   const emptyProject: Project = {
+    gitHubOrg: '',
     title: '',
     description: '',
     language: 'en',
     slug: '',
+    creator: '',
     authors: '',
     mediaPlayer: 'universal',
     autoPopulateHomePage: true,
@@ -68,6 +72,16 @@ export const ProjectForm = (props: ProjectFormProps) => {
           {({ isSubmitting }) => (
             <Form>
               <h2>{t['General']}</h2>
+
+              <SelectInput
+                label={t['GitHub Organization']}
+                name='gitHubOrg'
+                options={props.orgs.map((o) => ({
+                  value: o.orgName,
+                  label: o.orgName,
+                }))}
+                required
+              />
 
               <TextInput
                 label={t['Title']}

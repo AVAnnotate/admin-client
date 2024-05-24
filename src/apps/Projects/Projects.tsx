@@ -1,4 +1,4 @@
-import type { Project, Translations } from '@ty/Types.ts';
+import type { AllProjects, Project, Translations } from '@ty/Types.ts';
 import { Plus } from '@phosphor-icons/react/Plus';
 import { Header } from './Header/Header.tsx';
 import './Projects.css';
@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
 
 export interface ProjectsProps {
-  projects: Project[];
+  projects: AllProjects;
 
   i18n: Translations;
 }

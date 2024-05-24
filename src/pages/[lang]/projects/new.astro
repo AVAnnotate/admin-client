@@ -8,6 +8,7 @@ import { Projects } from '@apps/Projects';
 import '@themes/default/index.css';
 import { providers } from 'src/lib/providers';
 import { NewProject } from '@apps/NewProject';
+import { getOrgs } from '@backend/projectHelpers';
 
 const lang = getLangFromUrl(Astro.url);
 
@@ -35,6 +36,10 @@ const users = await provider?.getUsers(
 );
 
 const allUsers = await users?.json();
+
+const orgs = await getOrgs(info);
+
+console.log(orgs);
 ---
 
 <Layout title='Projects' profile={info.profile}>
@@ -42,6 +47,7 @@ const allUsers = await users?.json();
     i18n={i18n}
     onSave={() => {}}
     allUsers={allUsers}
+    orgs={orgs}
     client:only='react'
   />
 </Layout>

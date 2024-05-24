@@ -1,9 +1,81 @@
-import type { ProviderUser } from '@ty/Types.ts';
-import type {
-  Collaborators,
-  FullRepository,
-  RepositoryInvitation,
-} from '@ty/github.ts';
+export const paginate = async (url: string, token: string) => {
+  let results: any[] = [];
+
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+
+  if (!response.ok) {
+    return results;
+  }
+
+  const data = await response.json();
+
+  results = [...results, ...data];
+
+  let link = response.headers.get('link');
+  console.log('Link: ', link);
+  if (!link) {
+    return results;
+  }
+
+  const parseLink = (linkStr: string) => {
+    let linkArr = linkStr.split(',');
+    let map: { [rel: string]: string } = {};
+    linkArr.forEach((l) => {
+      const vals = l.split(';');
+      const rel = vals[1].substring(
+        vals[1].indexOf('"') + 1,
+        vals[1].lastIndexOf('"')
+      );
+      const url = vals[0].substring(
+        vals[0].indexOf('<') + 1,
+        vals[0].indexOf('>')
+      );
+
+      map[rel] = url;
+    });
+
+    return map;
+  };
+
+  let linkMap = parseLink(link);
+
+  console.log('Link map: ', linkMap);
+
+  while (linkMap['next']) {
+    console.log('Next: ', linkMap['next']);
+    const response = await fetch(linkMap['next'], {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    });
+
+    const data = await response.json();
+
+    results = [...results, ...data];
+
+    if (linkMap['next'] === linkMap['last']) {
+      break;
+    }
+
+    let link = response.headers.get('link');
+    if (!link) {
+      break;
+    }
+    linkMap = parseLink(link);
+  }
+
+  return results;
+};
 
 export const getCollaborators = async (
   repoName: string,
@@ -44,6 +116,7 @@ export const addCollaborator = async (
 
 export const createRepositoryFromTemplate = async (
   templateRepo: string,
+  org: string,
   token: string,
   newRepoName: string,
   description: string,
@@ -59,9 +132,7 @@ export const createRepositoryFromTemplate = async (
   console.log('API Body: ', body);
   console.log('Org: ', import.meta.env.GIT_REPO_ORG);
   return await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${templateRepo}/generate`,
+    `https://api.github.com/repos/${org}/${templateRepo}/generate`,
     {
       method: 'POST',
       headers: {
@@ -75,6 +146,7 @@ export const createRepositoryFromTemplate = async (
 };
 
 export const enablePages = async (
+  org: string,
   repo: string,
   token: string
 ): Promise<Response> => {
@@ -88,18 +160,59 @@ export const enablePages = async (
   };
   console.log('API Body: ', body);
   console.log('Repo: ', repo);
-  return await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${repo}/pages`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      body: JSON.stringify(body),
-    }
+  return await fetch(`https://api.github.com/repos/${org}/${repo}/pages`, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify(body),
+  });
+};
+
+export const getUserOrgs = async (token: string): Promise<any[]> => {
+  return await paginate('https://api.github.com/user/orgs', token);
+};
+
+export const getUserMemberReposInOrg = async (
+  token: string,
+  org: string
+): Promise<any[]> => {
+  return await paginate(
+    `https://api.github.com/orgs/${org}/repos?type=member&per_page=100`,
+    token
   );
+};
+
+export const getRepoTopics = async (
+  org: string,
+  repo: string,
+  token: string
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/repos/${org}/${repo}/topics`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+};
+
+export const replaceRepoTopics = async (
+  org: string,
+  repo: string,
+  topics: string[],
+  token: string
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/repos/${org}/${repo}/topics`, {
+    method: 'PUT',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify({ names: topics }),
+  });
 };

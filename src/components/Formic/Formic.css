@@ -23,6 +23,7 @@
 }
 
 .formic-form-textarea {
+  padding-top: 3px;
   width: 650px;
   height: 130px;
   border: 1px solid var(--gray-200);
