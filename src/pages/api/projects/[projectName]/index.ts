@@ -131,7 +131,7 @@ export const POST: APIRoute = async ({
 
     project = {
       publish: {
-        publishPagesApp: false,
+        publishPagesApp: true,
         publishSHA: '',
         publishISODate: '',
       },

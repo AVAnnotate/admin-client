@@ -2,6 +2,7 @@
 @import './button/index.css';
 @import './dropdown/index.css';
 @import './popover/index.css';
+@import './popover/index.css';
 @import '@radix-ui/themes/styles.css';
 
 @font-face {
@@ -78,6 +79,8 @@
   --white: #ffffff;
 
   --secondary: #b5c8dc;
+
+  --color-background: var(--gray-200);
 }
 
 html,
@@ -88,7 +91,7 @@ body {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: var(--gray-200);
+  background-color: var(--gray-200) !important;
   overflow-y: hidden;
 }
 
@@ -159,6 +162,12 @@ h3 {
   padding: 0;
   color: var(--gray-600);
   font-style: italic;
+}
+
+.av-body-small {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 400;
 }
 
 p {

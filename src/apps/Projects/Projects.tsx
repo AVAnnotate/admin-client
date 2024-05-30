@@ -5,6 +5,7 @@ import './Projects.css';
 import { Button } from '@radix-ui/themes';
 import { useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
+import { ProjectCard } from '@components/ProjectCard/ProjectCard.tsx';
 
 export interface ProjectsProps {
   projects: AllProjects;
@@ -44,6 +45,11 @@ export const Projects = (props: ProjectsProps) => {
         onChangeSearch={handleChangeSearch}
         onChangeSort={handleChangeSort}
       />
+      <div className='projects-grid'>
+        {props.projects.myProjects.map((p) => (
+          <ProjectCard project={p} />
+        ))}
+      </div>
     </div>
   );
 };

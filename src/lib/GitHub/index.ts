@@ -19,7 +19,6 @@ export const paginate = async (url: string, token: string) => {
   results = [...results, ...data];
 
   let link = response.headers.get('link');
-  console.log('Link: ', link);
   if (!link) {
     return results;
   }
@@ -46,10 +45,7 @@ export const paginate = async (url: string, token: string) => {
 
   let linkMap = parseLink(link);
 
-  console.log('Link map: ', linkMap);
-
   while (linkMap['next']) {
-    console.log('Next: ', linkMap['next']);
     const response = await fetch(linkMap['next'], {
       method: 'GET',
       headers: {

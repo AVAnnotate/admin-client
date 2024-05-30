@@ -49,9 +49,17 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
       userInfo: userInfo,
     });
 
-    const project = await readFile('/data/project.json');
+    const proj = await readFile('/data/project.json');
 
-    projects.push(JSON.parse(project as string));
+    const project: ProjectData = JSON.parse(proj as string);
+
+    project.users.push({
+      loginName: userInfo.profile.gitHubName as string,
+      avatarURL: userInfo.profile.avatarURL,
+      admin: true,
+    });
+
+    projects.push(project);
   }
 
   return {
