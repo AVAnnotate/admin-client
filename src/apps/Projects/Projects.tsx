@@ -47,7 +47,7 @@ export const Projects = (props: ProjectsProps) => {
       />
       <div className='projects-grid'>
         {props.projects.myProjects.map((p) => (
-          <ProjectCard project={p} />
+          <ProjectCard project={p} key={p.project.slug} />
         ))}
       </div>
     </div>

@@ -171,6 +171,16 @@ export const getUserOrgs = async (token: string): Promise<any[]> => {
   return await paginate('https://api.github.com/user/orgs', token);
 };
 
+export const getUserMemberRepos = async (
+  token: string,
+  userName: string,
+): Promise<any[]> => {
+  return await paginate(
+    `https://api.github.com/users/${userName}/repos?per_page=100`,
+    token
+  );
+};
+
 export const getUserMemberReposInOrg = async (
   token: string,
   org: string
@@ -212,3 +222,19 @@ export const replaceRepoTopics = async (
     body: JSON.stringify({ names: topics }),
   });
 };
+
+export const searchUsers = async (
+  token: string,
+  search: string,
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/search/users?q=${search} in:name`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+};
+
+

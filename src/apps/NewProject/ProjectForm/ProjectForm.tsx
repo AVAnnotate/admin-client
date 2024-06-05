@@ -8,11 +8,12 @@ import {
   UserList,
 } from '@components/Formic/index.tsx';
 import countryOptions from '@lib/language-codes.js';
-
-import './ProjectForm.css';
 import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
+import { useState } from 'react';
+
+import './ProjectForm.css';
 
 export interface ProjectFormProps {
   project?: Project;
@@ -28,6 +29,8 @@ export interface ProjectFormProps {
 
 export const ProjectForm = (props: ProjectFormProps) => {
   const { t } = props.i18n;
+
+  const [searchOpen, setSearchOpen] = useState(false);
 
   const emptyProject: Project = {
     gitHubOrg: '',
@@ -163,6 +166,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
                 name='additionalUsers'
                 addString={t['add']}
                 nameString={t['User GitHub Name']}
+                i18n={props.i18n}
               />
 
               <BottomBar>

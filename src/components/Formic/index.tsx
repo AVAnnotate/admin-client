@@ -8,11 +8,12 @@ import {
 import { Button, Switch } from '@radix-ui/themes';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
-import type { UserProfile } from '@ty/Types.ts';
+import type { Translations, UserProfile } from '@ty/Types.ts';
 import { Trash } from '@phosphor-icons/react/Trash';
 import { useState } from 'react';
 import { Plus } from '@phosphor-icons/react/Plus';
 import { UploadSimple } from '@phosphor-icons/react/UploadSimple';
+import { MagnifyingGlass } from '@phosphor-icons/react/dist/icons/MagnifyingGlass';
 
 const Required = () => {
   return <div className='formic-form-required'>*</div>;
@@ -197,6 +198,7 @@ interface UserListProps {
   name: string;
   addString: string;
   nameString: string;
+  i18n: Translations;
 }
 
 export const UserList = (props: UserListProps) => {
@@ -207,6 +209,7 @@ export const UserList = (props: UserListProps) => {
   const { value } = meta;
   const { setValue } = helpers;
 
+  const handleChange = (change: string) => {};
   const handleAddUser = () => {
     let val: UserProfile[] = [...value];
     val.push({

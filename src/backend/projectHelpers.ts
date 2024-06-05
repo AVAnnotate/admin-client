@@ -1,4 +1,4 @@
-import { getUserOrgs, getUserMemberReposInOrg } from '@lib/GitHub/index.ts';
+import { getUserOrgs, getUserMemberReposInOrg, getUserMemberRepos } from '@lib/GitHub/index.ts';
 import { gitRepo } from './gitRepo.ts';
 import type {
   UserInfo,
@@ -13,6 +13,11 @@ export const getOrgs = async (
 ): Promise<GitHubOrganization[]> => {
   const orgs = await getUserOrgs(userInfo.token);
 
+  orgs.unshift({
+    login: userInfo.profile.gitHubName,
+    url: `https://https://github.com/{userInfo.profile.gitHubName}`,
+    description: ''
+  });
   return orgs.map((o) => ({
     orgName: o.login,
     url: o.url,
@@ -23,10 +28,18 @@ export const getOrgs = async (
 export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
   let repos: any[] = [];
 
+  // Get the user's repos
+  const myRepos = await getUserMemberRepos(userInfo.token, userInfo.profile.gitHubName as string);
+
+  repos = myRepos.filter((r) => r.topics.includes('avannotate-project'));
+
   // Get the users orgs
   const myOrgs = await getUserOrgs(userInfo.token);
 
-  // For each org, retrieve the repos and filter for the avannotate-project topic
+
+  myOrgs.unshift({orgName: userInfo.profile.gitHubName});
+
+  // For each org, retrieve the repos and filter for the avannotate-project topi
   for (let i = 0; i < myOrgs.length; i++) {
     const myRepos = await getUserMemberReposInOrg(
       userInfo.token,

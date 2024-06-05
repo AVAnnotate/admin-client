@@ -1,6 +1,7 @@
 .project-card-container {
   position: relative;
   margin-right: 20px;
+  margin-bottom: 20px;
 }
 
 .project-card-header {

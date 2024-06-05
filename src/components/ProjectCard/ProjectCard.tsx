@@ -19,13 +19,12 @@ export const ProjectCard = (props: ProjectCardProps) => {
         </div>
       </div>
       <div className='project-card-footer'>
-        {props.project.users.map((u) => {
-          return (
-            <Tooltip.Provider>
-              <Tooltip.Root>
+        <Tooltip.Provider delayDuration={0}>
+          {props.project.users.map((u) => {
+            return (
+              <Tooltip.Root key={u.loginName}>
                 <Tooltip.Trigger asChild>
                   <Avatar
-                    key={u.loginName}
                     name={u.loginName}
                     color={'--gray-300'}
                     avatar={u.avatarURL}
@@ -39,9 +38,9 @@ export const ProjectCard = (props: ProjectCardProps) => {
                   </Tooltip.Content>
                 </Tooltip.Portal>
               </Tooltip.Root>
-            </Tooltip.Provider>
-          );
-        })}
+            );
+          })}
+        </Tooltip.Provider>
       </div>
     </div>
   );
