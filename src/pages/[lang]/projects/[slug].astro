@@ -1,0 +1,18 @@
+---
+import Project from '@apps/Projects/Project';
+import { userInfo } from '@backend/userInfo';
+import Layout from '@layouts/Layout.astro';
+
+const { lang, slug } = Astro.params;
+
+const info = await userInfo(Astro.cookies);
+
+if (!info || !slug) {
+  console.log('Redirecting: ', lang);
+  return Astro.redirect(`/${lang}/sign-in`);
+}
+---
+
+<Layout title='Projects' profile={info.profile}>
+  <Project slug={slug} />
+</Layout>

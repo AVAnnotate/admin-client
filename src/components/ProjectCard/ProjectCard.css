@@ -4,6 +4,15 @@
   margin-bottom: 20px;
 }
 
+.project-card-container a {
+  color: black;
+}
+
+.project-card-container a:hover {
+  text-decoration: none;
+  filter: brightness(0.92);
+}
+
 .project-card-header {
   box-sizing: border-box;
   width: 432px;
