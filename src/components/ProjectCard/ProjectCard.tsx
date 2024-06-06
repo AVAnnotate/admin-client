@@ -14,7 +14,7 @@ export const ProjectCard = (props: ProjectCardProps) => {
     <div className='project-card-container'>
       <a
         className='project-card-link'
-        href={`/${props.lang}/projects/${props.project.project.slug}`}
+        href={`/${props.lang}/projects/${props.project.project.gitHubOrg}-${props.project.project.slug}`}
       >
         <div className='project-card-header'>
           <h3>{props.project.project.title}</h3>

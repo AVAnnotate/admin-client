@@ -15,9 +15,10 @@ export const getOrgs = async (
 
   orgs.unshift({
     login: userInfo.profile.gitHubName,
-    url: `https://https://github.com/{userInfo.profile.gitHubName}`,
+    url: `https://https://github.com/${userInfo.profile.gitHubName}`,
     description: ''
   });
+
   return orgs.map((o) => ({
     orgName: o.login,
     url: o.url,
@@ -25,7 +26,7 @@ export const getOrgs = async (
   }));
 };
 
-export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
+export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   let repos: any[] = [];
 
   // Get the user's repos
@@ -36,14 +37,13 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
   // Get the users orgs
   const myOrgs = await getUserOrgs(userInfo.token);
 
+  myOrgs.unshift({ orgName: userInfo.profile.gitHubName });
 
-  myOrgs.unshift({orgName: userInfo.profile.gitHubName});
-
-  // For each org, retrieve the repos and filter for the avannotate-project topi
-  for (let i = 0; i < myOrgs.length; i++) {
+  // For each org, retrieve the repos and filter for the avannotate-project topic
+  for await (const org of myOrgs) {
     const myRepos = await getUserMemberReposInOrg(
       userInfo.token,
-      myOrgs[i].login
+      org.login
     );
     repos = [
       ...repos,
@@ -51,28 +51,40 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
     ];
   }
 
+  return repos
+}
+
+export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
+  const fs = initFs();
+  const { readFile } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
+
+  const proj = await readFile('/data/project.json');
+
+  const project: ProjectData = JSON.parse(proj as string);
+
+  project.users.push({
+    loginName: userInfo.profile.gitHubName as string,
+    avatarURL: userInfo.profile.avatarURL,
+    admin: true,
+  });
+
+  return project
+}
+
+export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
+  const repos = await getRepos(userInfo)
+
   // For each project retrieve the project data
   const projects: ProjectData[] = [];
-  for (let i = 0; i < repos.length; i++) {
-    const fs = initFs();
-    const { readFile } = await gitRepo({
-      fs: fs,
-      repositoryURL: repos[i].html_url,
-      branch: 'main',
-      userInfo: userInfo,
-    });
+  for await (const repo of repos) {
+    const projectData = await getProject(userInfo, repo.html_url)
 
-    const proj = await readFile('/data/project.json');
-
-    const project: ProjectData = JSON.parse(proj as string);
-
-    project.users.push({
-      loginName: userInfo.profile.gitHubName as string,
-      avatarURL: userInfo.profile.avatarURL,
-      admin: true,
-    });
-
-    projects.push(project);
+    projects.push(projectData);
   }
 
   return {
