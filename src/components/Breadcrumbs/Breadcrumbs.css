@@ -1,0 +1,30 @@
+.breadcrumbs-container {
+  height: 60px;
+  background: #303f49;
+  text-decoration: none;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.breadcrumbs-container .breadcrumbs-list {
+  display: flex;
+  width: 100%;
+  max-width: 1200px;
+  height: 100%;
+  margin: 0 auto;
+  list-style-type: none;
+  align-items: center;
+  gap: 20px;
+}
+
+.breadcrumbs-container .breadcrumbs-list .current-item {
+  font-weight: 700;
+}
+
+.breadcrumbs-container .breadcrumbs-list a {
+  color: white;
+}
+
+.project-view-button {
+  background-color: var(--primary) !important;
+}

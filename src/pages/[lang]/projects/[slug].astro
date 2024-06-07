@@ -1,17 +1,24 @@
 ---
-import Project from '@apps/Projects/Project';
+import { Project } from '@apps/Project';
 import { getProject } from '@backend/projectHelpers';
 import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
 import Layout from '@layouts/Layout.astro';
 
 const { lang, slug } = Astro.params;
 
 const info = await userInfo(Astro.cookies);
 
+if (!lang) {
+  return Astro.redirect('/');
+}
+
 if (!info || !slug) {
   console.log('Redirecting: ', lang);
   return Astro.redirect(`/${lang}/sign-in`);
 }
+
+const i18n = getTranslations(Astro.request, 'projects');
 
 const split = slug.split(/-(.*)/s);
 const org = split[0];
@@ -24,5 +31,5 @@ const projectData = await getProject(info, repoUrl);
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <Project project={projectData} />
+  <Project i18n={i18n} project={projectData} />
 </Layout>
