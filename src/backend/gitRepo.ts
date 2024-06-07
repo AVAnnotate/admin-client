@@ -66,12 +66,29 @@ export const gitRepo = async (options: GitRepoOptions) => {
     return true;
   };
 
-  const readFile = async (
+  const readFile = (
     absoluteFileName: string,
     encoding?: 'utf8'
-  ): Promise<Uint8Array | string> => {
+  ): Uint8Array | string => {
     return fs.readFileSync(absoluteFileName, encoding || 'utf8');
   };
+
+  const readDir = (
+    absoluteDirectoryName: string
+  ) => {
+    return fs.readdirSync(absoluteDirectoryName)
+  }
+
+  const exists = (
+    absolutePath: string
+  ) => {
+    try {
+      fs.statSync(absolutePath)
+      return true
+    } catch {
+      return false
+    }
+  }
 
   const commitAndPush = async (message: string): Promise<PushResult> => {
     await git.setConfig({
@@ -111,5 +128,5 @@ export const gitRepo = async (options: GitRepoOptions) => {
     });
   };
 
-  return { writeFile, readFile, commitAndPush };
+  return { exists, writeFile, readDir, readFile, commitAndPush };
 };

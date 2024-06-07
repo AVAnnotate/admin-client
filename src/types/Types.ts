@@ -67,6 +67,8 @@ export type Publish = {
 };
 
 export type ProjectData = {
+  events: any[];
+
   project: Project;
 
   users: ProviderUser[];

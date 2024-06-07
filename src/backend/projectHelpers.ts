@@ -56,14 +56,14 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const fs = initFs();
-  const { readFile } = await gitRepo({
+  const { exists, readDir, readFile } = await gitRepo({
     fs: fs,
     repositoryURL: htmlUrl,
     branch: 'main',
     userInfo: userInfo,
   });
 
-  const proj = await readFile('/data/project.json');
+  const proj = readFile('/data/project.json');
 
   const project: ProjectData = JSON.parse(proj as string);
 
@@ -72,6 +72,10 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
     avatarURL: userInfo.profile.avatarURL,
     admin: true,
   });
+
+  project.events = exists('/data/events')
+    ? readDir('/data/events')
+    : [];
 
   return project
 }
