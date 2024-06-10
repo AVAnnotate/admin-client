@@ -1,6 +1,7 @@
 import { CaretRightIcon } from '@radix-ui/react-icons';
 
 import './Breadcrumbs.css';
+import React from 'react';
 
 interface BreadcrumbsProps {
   items: {
@@ -22,10 +23,9 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
     <div className='breadcrumbs-container'>
       <ul className='breadcrumbs-list'>
         {props.items.map((item, idx) => (
-          <>
+          <React.Fragment key={idx}>
             <li
               className={idx === props.items.length - 1 ? 'current-item' : ''}
-              key={item.label}
             >
               <a href={item.link}>{truncate(item.label)}</a>
             </li>
@@ -34,7 +34,7 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
             ) : (
               <></>
             )}
-          </>
+          </React.Fragment>
         ))}
       </ul>
     </div>

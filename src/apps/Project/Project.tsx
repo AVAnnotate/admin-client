@@ -5,6 +5,7 @@ import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
 import type React from 'react';
 
 import './Project.css';
+import { Tabs } from '@components/Tabs/Tabs.tsx';
 
 interface Props {
   i18n: Translations;
@@ -34,6 +35,19 @@ export const Project: React.FC<Props> = (props) => {
             </Button>
           </div>
         </div>
+        <p>{props.project.project.description}</p>
+        <Tabs
+          tabs={[
+            {
+              title: t['Events'],
+              component: <p>hello 1</p>,
+            },
+            {
+              title: t['Pages'],
+              component: <p>hello 2</p>,
+            },
+          ]}
+        />
         <p>I contain the following events:</p>
         <ul>
           {props.project.events.map((ev) => (

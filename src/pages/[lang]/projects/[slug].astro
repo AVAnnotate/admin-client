@@ -31,5 +31,5 @@ const projectData = await getProject(info, repoUrl);
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <Project i18n={i18n} project={projectData} />
+  <Project i18n={i18n} project={projectData} client:only='react' />
 </Layout>
