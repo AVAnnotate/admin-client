@@ -1,11 +1,18 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/Breadcrumbs.tsx';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { Event, ProjectData, Translations } from '@ty/Types.ts';
 import { Button } from '@radix-ui/themes';
-import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
+import {
+  DownloadIcon,
+  GearIcon,
+  OpenInNewWindowIcon,
+  PlusIcon
+} from '@radix-ui/react-icons';
 import type React from 'react';
+import { FileEarmarkArrowUp, Tag } from 'react-bootstrap-icons';
 
 import './Project.css';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
+import { Table } from '@components/Table/Table.tsx';
 
 interface Props {
   i18n: Translations;
@@ -27,9 +34,15 @@ export const Project: React.FC<Props> = (props) => {
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
           <div className='project-top-bar-buttons'>
-            <Button variant='outline'>{t['Settings']}</Button>
-            <Button variant='outline'>{t['Tags']}</Button>
-            <Button className='project-view-button'>
+            <Button variant='outline'>
+              <GearIcon />
+              {t['Settings']}
+            </Button>
+            <Button variant='outline'>
+              <Tag />
+              {t['Tags']}
+            </Button>
+            <Button>
               <span>{t['View']}</span>
               <OpenInNewWindowIcon color='white' />
             </Button>
@@ -40,20 +53,48 @@ export const Project: React.FC<Props> = (props) => {
           tabs={[
             {
               title: t['Events'],
-              component: <p>hello 1</p>,
+              component: (
+                <Table
+                  buttons={[
+                    {
+                      label: t['CSV'],
+                      icon: DownloadIcon,
+                      variant: 'outline'
+                    },
+                    {
+                      label: t['import'],
+                      icon: FileEarmarkArrowUp
+                    },
+                    {
+                      label: t['add'],
+                      icon: PlusIcon
+                    }
+                  ]}
+                  items={props.project.events}
+                  rows={[{
+                    title: t['Name'],
+                    property: 'label',
+                    sortable: true
+                  }, {
+                    title: t['Type'],
+                    property: 'item_type'
+                  }, {
+                    title: t['Added'],
+                    property: (item: Event) => `${t['Added']} ${new Date(item.created_at).toLocaleDateString()}`,
+                    sortable: true
+                  }]}
+                  searchAttribute='label'
+                  showHeaderRow={false}
+                  title={t['All Events']}
+                />
+              )
             },
             {
               title: t['Pages'],
-              component: <p>hello 2</p>,
+              component: <p>todo</p>,
             },
           ]}
         />
-        <p>I contain the following events:</p>
-        <ul>
-          {props.project.events.map((ev) => (
-            <li key={ev}>{ev}</li>
-          ))}
-        </ul>
       </div>
     </>
   );

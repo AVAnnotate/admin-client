@@ -1,0 +1,182 @@
+import { Button, Table as RadixTable } from '@radix-ui/themes';
+import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { SortAlphaDown, SortAlphaUp } from 'react-bootstrap-icons';
+
+import './Table.css'
+import React from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
+
+interface Row {
+  title: string,
+  property: string | ((...args: any) => string),
+  sortable?: boolean
+}
+
+interface Props {
+  title?: string;
+  showHeaderRow?: boolean;
+  items: { [key: string]: any }[],
+  rows: Row[]
+  searchAttribute?: string;
+  buttons?: {
+    label: string;
+    icon: React.FC<any>;
+    variant?: 'solid' | 'outline'
+  }[]
+}
+
+interface Sort {
+  direction: 'asc' | 'desc';
+  row: Row;
+}
+
+const getCellValue = (item: any, row: Row) => {
+  if (typeof row.property === 'string') {
+    return item[row.property as keyof typeof row]
+  }
+
+  return row.property(item)
+}
+
+export const Table: React.FC<Props> = ({
+  buttons,
+  title,
+  items,
+  rows,
+  searchAttribute,
+  showHeaderRow = true
+}) => {
+  const [currentSort, setCurrentSort] = useState<Sort>({ direction: 'asc', row: rows[0] });
+  const [searchQuery, setSearchQuery] = useState<null | string>(null);
+
+  const updateSearchQuery = useCallback((ev: React.ChangeEvent<HTMLInputElement>) => {
+    const value = ev.currentTarget.value
+
+    if (!value) {
+      setSearchQuery(null)
+    } else {
+      setSearchQuery(value)
+    }
+  }, [])
+
+  // Suppress the sort button if no rows are sortable
+  const sortableRows = useMemo(() => rows.filter(row => row.sortable), rows)
+
+  // Apply searching, sorting, and whatever other filtering is needed
+  const sortedItems = useMemo(() => {
+    let result = items
+
+    if (searchAttribute && searchQuery) {
+      result = items.filter(item => item[searchAttribute].includes(searchQuery))
+    }
+
+    result = result.sort((a: any, b: any) => {
+      const aValue = getCellValue(a, currentSort.row)
+      const bValue = getCellValue(b, currentSort.row)
+
+      if (aValue > bValue) {
+        return currentSort.direction === 'asc'
+          ? 1
+          : -1
+      } else if (aValue < bValue) {
+        return currentSort.direction === 'asc'
+          ? -1
+          : 1
+      }
+
+      return 0
+    })
+
+    return result
+  }, [items, currentSort, searchQuery])
+
+  return (
+    <div>
+      <div className='table-header'>
+        {title && <span className='table-title'>{title}</span>}
+        <div className='right-header'>
+          {sortableRows.length > 0 && (
+            <Dropdown.Root>
+              <Dropdown.Trigger className='sort-button'>
+                {currentSort.direction === 'asc'
+                  ? <SortAlphaUp />
+                  : <SortAlphaDown />}
+                <span>{currentSort.row.title}</span>
+              </Dropdown.Trigger>
+              <Dropdown.Content className='dropdown-content'>
+                {sortableRows.map(row => (
+                  <React.Fragment>
+                    <Dropdown.Item
+                      className='dropdown-item'
+                      onClick={() => setCurrentSort({
+                        row,
+                        direction: 'asc'
+                      })}
+                    >
+                      <SortAlphaUp />
+                      {row.title}
+                    </Dropdown.Item>
+                    <Dropdown.Item
+                      className='dropdown-item'
+                      onClick={() => setCurrentSort({
+                        row,
+                        direction: 'desc'
+                      })}
+                    >
+                      <SortAlphaDown />
+                      {row.title}
+                    </Dropdown.Item>
+                  </React.Fragment>
+                ))}
+              </Dropdown.Content>
+            </Dropdown.Root>
+          )}
+          {searchAttribute && (
+            <div className='table-search'>
+              <input
+                className='table-search-box'
+                onChange={updateSearchQuery}
+              />
+              <MagnifyingGlassIcon className='table-search-icon' />
+            </div>
+          )}
+          {buttons && (
+            buttons.map(but => (
+              <Button className={but.variant || 'solid'}>
+                <but.icon />
+                {but.label}
+              </Button>
+            ))
+          )}
+        </div>
+      </div>
+      <RadixTable.Root>
+        <RadixTable.Header>
+          {showHeaderRow && (
+            <RadixTable.Row>
+              {rows.map(row => (
+                <RadixTable.ColumnHeaderCell>
+                  {row.title}
+                </RadixTable.ColumnHeaderCell>
+              ))}
+            </RadixTable.Row>
+          )}
+        </RadixTable.Header>
+        {sortedItems.length > 0 && (
+          <RadixTable.Body>
+            {sortedItems.map(item => (
+              <RadixTable.Row>
+                {rows.map(row => (
+                  <RadixTable.Cell>
+                    {getCellValue(item, row)}
+                  </RadixTable.Cell>
+                ))}
+              </RadixTable.Row>
+            ))}
+          </RadixTable.Body>
+        )}
+      </RadixTable.Root>
+    </div>
+  )
+}

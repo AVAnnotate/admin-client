@@ -1,0 +1,48 @@
+.table-header {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 10px;
+}
+
+.table-header .right-header {
+  display: flex;
+  gap: 14px;
+}
+
+.table-header .table-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.table-header .table-search {
+  display: flex;
+  align-items: center;
+}
+
+.table-header .table-search .table-search-box {
+  width: 260px;
+  height: 30px;
+  background-color: white;
+  padding: 4px;
+}
+
+.table-header .table-search .table-search-icon {
+  position: relative;
+  left: -26px;
+}
+
+.table-header .sort-button {
+  gap: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 90px;
+  border-radius: 5px;
+}
+
+.table-header .sort-button:hover {
+  cursor: pointer;
+}

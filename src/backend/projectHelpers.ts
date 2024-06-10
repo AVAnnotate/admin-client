@@ -1,4 +1,8 @@
-import { getUserOrgs, getUserMemberReposInOrg, getUserMemberRepos } from '@lib/GitHub/index.ts';
+import {
+  getUserOrgs,
+  getUserMemberReposInOrg,
+  getUserMemberRepos,
+} from '@lib/GitHub/index.ts';
 import { gitRepo } from './gitRepo.ts';
 import type {
   UserInfo,
@@ -7,6 +11,7 @@ import type {
   ProjectData,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import type { IFs } from 'memfs';
 
 export const getOrgs = async (
   userInfo: UserInfo
@@ -16,7 +21,7 @@ export const getOrgs = async (
   orgs.unshift({
     login: userInfo.profile.gitHubName,
     url: `https://https://github.com/${userInfo.profile.gitHubName}`,
-    description: ''
+    description: '',
   });
 
   return orgs.map((o) => ({
@@ -30,7 +35,10 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   let repos: any[] = [];
 
   // Get the user's repos
-  const myRepos = await getUserMemberRepos(userInfo.token, userInfo.profile.gitHubName as string);
+  const myRepos = await getUserMemberRepos(
+    userInfo.token,
+    userInfo.profile.gitHubName as string
+  );
 
   repos = myRepos.filter((r) => r.topics.includes('avannotate-project'));
 
@@ -41,18 +49,30 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
 
   // For each org, retrieve the repos and filter for the avannotate-project topic
   for await (const org of myOrgs) {
-    const myRepos = await getUserMemberReposInOrg(
-      userInfo.token,
-      org.login
-    );
+    const myRepos = await getUserMemberReposInOrg(userInfo.token, org.login);
     repos = [
       ...repos,
       ...myRepos.filter((r) => r.topics.includes('avannotate-project')),
     ];
   }
 
-  return repos
-}
+  return repos;
+};
+
+const getEventData = (fs: IFs, filenames: string[]) => {
+  const events = [];
+
+  for (const filename of filenames) {
+    try {
+      const data = fs.readFileSync(`/data/events/${filename}`);
+      events.push(JSON.parse(data));
+    } catch (e: any) {
+      console.warn(`Error fetching data for event ${filename}: ${e.message}`);
+    }
+  }
+
+  return events;
+};
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const fs = initFs();
@@ -73,20 +93,20 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
     admin: true,
   });
 
-  project.events = exists('/data/events')
-    ? readDir('/data/events')
-    : [];
+  const eventFiles = exists('/data/events') ? readDir('/data/events') : [];
 
-  return project
-}
+  project.events = getEventData(fs, eventFiles);
+
+  return project;
+};
 
 export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
-  const repos = await getRepos(userInfo)
+  const repos = await getRepos(userInfo);
 
   // For each project retrieve the project data
   const projects: ProjectData[] = [];
   for await (const repo of repos) {
-    const projectData = await getProject(userInfo, repo.html_url)
+    const projectData = await getProject(userInfo, repo.html_url);
 
     projects.push(projectData);
   }
