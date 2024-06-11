@@ -182,7 +182,7 @@ export const Table: React.FC<Props> = ({
                   ))}
                   {rowButtons && (
                     <RadixTable.Cell>
-                      <MeatballMenu buttons={rowButtons} />
+                      <MeatballMenu buttons={rowButtons} row={item} />
                     </RadixTable.Cell>
                   )}
                 </RadixTable.Row>

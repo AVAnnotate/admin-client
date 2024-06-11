@@ -1,5 +1,6 @@
 import buttons from './buttons.json';
 import error from './error.json';
+import events from './events.json';
 import common from './common.json';
 import accountActions from './account-actions.json';
 import signOut from './sign-out.json';
@@ -16,4 +17,5 @@ export default {
   'sign-in': signIn,
   projects: { ...projects, ...buttons, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
+  events: { ...events, ...buttons, ...all },
 };

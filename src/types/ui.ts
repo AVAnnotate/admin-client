@@ -1,5 +1,5 @@
 export interface MeatballMenuItem {
   label: string;
-  onClick: (...args: any) => any;
+  onClick: (item: any) => any;
   icon?: React.FC<any>;
 }

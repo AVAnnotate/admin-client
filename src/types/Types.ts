@@ -81,6 +81,7 @@ export type Event = {
   label: string;
   updated_at: string;
   updated_by: string;
+  uuid: string;
 };
 
 export type ProjectData = {

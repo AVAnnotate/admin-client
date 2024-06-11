@@ -3,5 +3,9 @@
   "Name": "Name",
   "Type": "Type",
   "Added": "Added",
-  "CSV": "CSV"
+  "CSV": "CSV",
+  "Label": "Label",
+  "Audio": "Audio",
+  "Video": "Video",
+  "Other": "Other"
 }

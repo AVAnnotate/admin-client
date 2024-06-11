@@ -1,0 +1,24 @@
+---
+import { EventEdit } from '@apps/EventEdit';
+import { fetchEvent, parseSlug } from '@backend/projectHelpers';
+import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
+import Layout from '@layouts/Layout.astro';
+
+const { slug, eventUuid } = Astro.params;
+const info = await userInfo(Astro.cookies);
+
+if (!slug || !eventUuid || !info) {
+  return null;
+}
+
+const { org, repo } = parseSlug(slug);
+
+const i18n = getTranslations(Astro.request, 'events');
+
+const event = await fetchEvent(org, repo, eventUuid);
+---
+
+<Layout title='Projects' profile={info.profile}>
+  <EventEdit event={event} i18n={i18n} client:only='react' />
+</Layout>

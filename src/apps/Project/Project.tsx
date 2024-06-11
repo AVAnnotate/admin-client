@@ -94,7 +94,7 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['Edit'],
                       icon: Pencil2Icon,
-                      onClick: () => { }
+                      onClick: (item: Event) => window.location.href = `${window.location.href}/${item.uuid}`
                     },
                     {
                       label: t['Delete'],
