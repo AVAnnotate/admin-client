@@ -30,7 +30,7 @@ const { profile, title } = Astro.props;
       me={profile}
       client:load
     />
-    <Theme>
+    <Theme client:load>
       <div class='slot'>
         <slot />
       </div>
