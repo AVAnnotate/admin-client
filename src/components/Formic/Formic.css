@@ -68,6 +68,10 @@
   border: none !important;
 }
 
+.formic-user-list {
+  padding-top: 10px;
+}
+
 .formic-user-list-row {
   display: flex;
   flex-direction: row;
@@ -75,7 +79,8 @@
   width: 100%;
   border-bottom: 1px solid var(--gray-300);
   align-items: center;
-  margin-bottom: 10px;
+  padding-top: 7px;
+  padding-bottom: 7px;
 }
 
 .formnic-user-list-user-box {
@@ -99,4 +104,8 @@
 
 .formic-add-user-save-button {
   margin-left: 5px;
+}
+
+.formic-user-list-delete-button {
+  background-color: transparent !important;
 }
