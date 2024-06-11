@@ -1,3 +1,7 @@
 {
-  "done": "Done"
+  "done": "Done",
+  "Name": "Name",
+  "Type": "Type",
+  "Added": "Added",
+  "CSV": "CSV"
 }

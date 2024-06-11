@@ -14,6 +14,6 @@ export default {
   'account-actions': { ...all, ...accountActions },
   'sign-out': signOut,
   'sign-in': signIn,
-  projects: { ...projects, ...buttons },
+  projects: { ...projects, ...buttons, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
 };

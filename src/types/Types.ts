@@ -66,7 +66,26 @@ export type Publish = {
   publishISODate: string;
 };
 
+export type Event = {
+  audiovisual_files: {
+    label: string;
+    file_url: string;
+    duration: number;
+  }[];
+  auto_generate_web_page: boolean;
+  description: string;
+  citation?: string;
+  created_at: string;
+  created_by: string;
+  item_type: 'Audio';
+  label: string;
+  updated_at: string;
+  updated_by: string;
+};
+
 export type ProjectData = {
+  events: Event[];
+
   project: Project;
 
   users: ProviderUser[];

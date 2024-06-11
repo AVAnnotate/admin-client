@@ -1,0 +1,37 @@
+.tabs {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.tabs .tab-trigger {
+  all: unset;
+}
+
+.tabs .tab-list {
+  flex-shrink: 0;
+  display: flex;
+  border-bottom: 2px solid #e5e5e5;
+}
+
+.tabs .tab-trigger {
+  height: 40px;
+  width: 95px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.tabs .tab-trigger:hover {
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.tab-trigger[data-state='active'] {
+  box-shadow: 0 2px 0 0 var(--primary);
+}
+
+.tab-trigger[data-state='active']:hover {
+  box-shadow: 0 2px 0 0 var(--primary);
+}

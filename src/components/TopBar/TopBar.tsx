@@ -14,10 +14,12 @@ export const TopBar = (props: TopBarProps) => {
   return (
     <div className='top-bar-container'>
       <header>
-        <div className='top-bar-branding'>
-          <span className='top-bar-highlight'>AV</span>
-          <span className='top-bar-title'>Annotate</span>
-        </div>
+        <a href={`/${props.i18n.lang}/projects`}>
+          <div className='top-bar-branding'>
+            <span className='top-bar-highlight'>AV</span>
+            <span className='top-bar-title'>Annotate</span>
+          </div>
+        </a>
         <div className='top-bar-actions'>
           <AccountActions i18n={props.i18n} profile={props.me} />
         </div>

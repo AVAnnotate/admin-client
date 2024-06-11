@@ -102,6 +102,10 @@ button.lg > svg {
   margin: 0 0.6em 0.1em 0.6em;
 }
 
+button:hover {
+  cursor: pointer;
+}
+
 button.no-hover:hover {
   box-shadow: none;
 }
