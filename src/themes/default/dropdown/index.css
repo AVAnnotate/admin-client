@@ -83,7 +83,7 @@
 .dropdown-checkbox-item[data-highlighted],
 .dropdown-radio-item[data-highlighted],
 .dropdown-subtrigger[data-highlighted] {
-  background-color: rgba(0, 0, 0, 0.08);  
+  background-color: rgba(0, 0, 0, 0.08);
 }
 
 .dropdown-item[data-disabled],

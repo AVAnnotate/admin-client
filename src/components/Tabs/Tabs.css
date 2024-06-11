@@ -4,9 +4,7 @@
   width: 100%;
 }
 
-.tabs button,
-.tabs fieldset,
-.tabs input {
+.tabs .tab-trigger {
   all: unset;
 }
 

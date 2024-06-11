@@ -6,6 +6,8 @@ import './Table.css'
 import React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import type { MeatballMenuItem } from '@ty/ui.ts';
+import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 
 interface Row {
   title: string,
@@ -14,16 +16,18 @@ interface Row {
 }
 
 interface Props {
+  emptyText?: string;
   title?: string;
   showHeaderRow?: boolean;
   items: { [key: string]: any }[],
   rows: Row[]
   searchAttribute?: string;
-  buttons?: {
+  headerButtons?: {
     label: string;
     icon: React.FC<any>;
     variant?: 'solid' | 'outline'
-  }[]
+  }[],
+  rowButtons?: MeatballMenuItem[]
 }
 
 interface Sort {
@@ -40,11 +44,13 @@ const getCellValue = (item: any, row: Row) => {
 }
 
 export const Table: React.FC<Props> = ({
-  buttons,
+  headerButtons,
+  emptyText,
   title,
   items,
   rows,
   searchAttribute,
+  rowButtons,
   showHeaderRow = true
 }) => {
   const [currentSort, setCurrentSort] = useState<Sort>({ direction: 'asc', row: rows[0] });
@@ -68,7 +74,7 @@ export const Table: React.FC<Props> = ({
     let result = items
 
     if (searchAttribute && searchQuery) {
-      result = items.filter(item => item[searchAttribute].includes(searchQuery))
+      result = items.filter(item => item[searchAttribute].toLowerCase().includes(searchQuery.toLowerCase()))
     }
 
     result = result.sort((a: any, b: any) => {
@@ -100,8 +106,8 @@ export const Table: React.FC<Props> = ({
             <Dropdown.Root>
               <Dropdown.Trigger className='sort-button'>
                 {currentSort.direction === 'asc'
-                  ? <SortAlphaUp />
-                  : <SortAlphaDown />}
+                  ? <SortAlphaUp color='black' />
+                  : <SortAlphaDown color='black' />}
                 <span>{currentSort.row.title}</span>
               </Dropdown.Trigger>
               <Dropdown.Content className='dropdown-content'>
@@ -141,9 +147,9 @@ export const Table: React.FC<Props> = ({
               <MagnifyingGlassIcon className='table-search-icon' />
             </div>
           )}
-          {buttons && (
-            buttons.map(but => (
-              <Button className={but.variant || 'solid'}>
+          {headerButtons && (
+            headerButtons.map(but => (
+              <Button className={but.variant || 'primary'} variant={but.variant}>
                 <but.icon />
                 {but.label}
               </Button>
@@ -151,7 +157,7 @@ export const Table: React.FC<Props> = ({
           )}
         </div>
       </div>
-      <RadixTable.Root>
+      <RadixTable.Root variant='surface'>
         <RadixTable.Header>
           {showHeaderRow && (
             <RadixTable.Row>
@@ -163,19 +169,26 @@ export const Table: React.FC<Props> = ({
             </RadixTable.Row>
           )}
         </RadixTable.Header>
-        {sortedItems.length > 0 && (
-          <RadixTable.Body>
-            {sortedItems.map(item => (
-              <RadixTable.Row>
-                {rows.map(row => (
-                  <RadixTable.Cell>
-                    {getCellValue(item, row)}
-                  </RadixTable.Cell>
-                ))}
-              </RadixTable.Row>
-            ))}
-          </RadixTable.Body>
-        )}
+        {sortedItems.length > 0
+          ? (
+            <RadixTable.Body>
+              {sortedItems.map(item => (
+                <RadixTable.Row>
+                  {rows.map(row => (
+                    <RadixTable.Cell>
+                      {getCellValue(item, row)}
+                    </RadixTable.Cell>
+                  ))}
+                  {rowButtons && (
+                    <RadixTable.Cell>
+                      <MeatballMenu buttons={rowButtons} />
+                    </RadixTable.Cell>
+                  )}
+                </RadixTable.Row>
+              ))}
+            </RadixTable.Body>
+          )
+          : <p className='table-empty-text'>{emptyText}</p>}
       </RadixTable.Root>
     </div>
   )

@@ -59,7 +59,7 @@
   --button-focus-outline-color: rgb(22, 97, 202, 0.2);
   --button-font-color: var(--font-dark);
   --button-hover-shadow: inset 0 0 0 150px rgba(0, 0, 0, 0.1);
-  --button-primary-background: var(--bright-blue);
+  --button-primary-background: var(--primary);
 
   /** Inputs **/
   --input-border-color: var(--gray-300);

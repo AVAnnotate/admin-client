@@ -5,10 +5,11 @@ import {
   DownloadIcon,
   GearIcon,
   OpenInNewWindowIcon,
+  Pencil2Icon,
   PlusIcon
 } from '@radix-ui/react-icons';
 import type React from 'react';
-import { FileEarmarkArrowUp, Tag } from 'react-bootstrap-icons';
+import { BoxArrowUpRight, FileEarmarkArrowUp, Tag, Trash } from 'react-bootstrap-icons';
 
 import './Project.css';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
@@ -34,11 +35,11 @@ export const Project: React.FC<Props> = (props) => {
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
           <div className='project-top-bar-buttons'>
-            <Button variant='outline'>
+            <Button className='outline' variant='outline'>
               <GearIcon />
               {t['Settings']}
             </Button>
-            <Button variant='outline'>
+            <Button className='outline' variant='outline'>
               <Tag />
               {t['Tags']}
             </Button>
@@ -55,7 +56,8 @@ export const Project: React.FC<Props> = (props) => {
               title: t['Events'],
               component: (
                 <Table
-                  buttons={[
+                  emptyText={t['No events have been added']}
+                  headerButtons={[
                     {
                       label: t['CSV'],
                       icon: DownloadIcon,
@@ -83,6 +85,23 @@ export const Project: React.FC<Props> = (props) => {
                     property: (item: Event) => `${t['Added']} ${new Date(item.created_at).toLocaleDateString()}`,
                     sortable: true
                   }]}
+                  rowButtons={[
+                    {
+                      label: t['Open'],
+                      icon: BoxArrowUpRight,
+                      onClick: () => { }
+                    },
+                    {
+                      label: t['Edit'],
+                      icon: Pencil2Icon,
+                      onClick: () => { }
+                    },
+                    {
+                      label: t['Delete'],
+                      icon: Trash,
+                      onClick: () => { }
+                    }
+                  ]}
                   searchAttribute='label'
                   showHeaderRow={false}
                   title={t['All Events']}

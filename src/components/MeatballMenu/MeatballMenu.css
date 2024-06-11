@@ -1,0 +1,17 @@
+.meatball-menu-icon {
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.meatball-menu-icon:hover {
+  cursor: pointer;
+  background-color: var(--gray-200);
+}
+
+.meatball-menu-icon[data-state=open] {
+  background-color: var(--gray-200);
+}
+
+.meatball-dropdown-content {
+  min-width: 100px;
+}

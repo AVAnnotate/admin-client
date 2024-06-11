@@ -4,5 +4,8 @@
   "add": "Add",
   "choose file": "Choose File",
   "save": "Save",
-  "import": "Import"
+  "import": "Import",
+  "Open": "Open",
+  "Edit": "Edit",
+  "Delete": "Delete"
 }

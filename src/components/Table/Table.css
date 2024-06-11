@@ -22,6 +22,7 @@
 }
 
 .table-header .table-search .table-search-box {
+  all: unset;
   width: 260px;
   height: 30px;
   background-color: white;
@@ -45,4 +46,10 @@
 
 .table-header .sort-button:hover {
   cursor: pointer;
+}
+
+.table-empty-text {
+  font-size: 18px;
+  text-align: center;
+  padding: 40px 0;
 }
