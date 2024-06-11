@@ -265,19 +265,6 @@ export const UserList = (props: UserListProps) => {
   const { value } = meta;
   const { setValue } = helpers;
 
-  const handleChange = (change: string) => {};
-  const handleAddUser = () => {
-    let val: UserProfile[] = [...value];
-    val.push({
-      name: '',
-      gitHubName: newValue,
-    });
-
-    setValue(val);
-    setNewValue('');
-    setAdding(false);
-  };
-
   return (
     <div>
       <div className='av-label-bold formic-form-label'>
