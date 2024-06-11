@@ -1,5 +1,5 @@
 import { Button, Table as RadixTable } from '@radix-ui/themes';
-import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { ChevronDownIcon, MagnifyingGlassIcon } from '@radix-ui/react-icons';
 import { SortAlphaDown, SortAlphaUp } from 'react-bootstrap-icons';
 
 import './Table.css'
@@ -109,6 +109,7 @@ export const Table: React.FC<Props> = ({
                   ? <SortAlphaUp color='black' />
                   : <SortAlphaDown color='black' />}
                 <span>{currentSort.row.title}</span>
+                <ChevronDownIcon />
               </Dropdown.Trigger>
               <Dropdown.Content className='dropdown-content'>
                 {sortableRows.map(row => (

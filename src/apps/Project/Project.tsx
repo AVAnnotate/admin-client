@@ -43,7 +43,7 @@ export const Project: React.FC<Props> = (props) => {
               <Tag />
               {t['Tags']}
             </Button>
-            <Button>
+            <Button className='primary'>
               <span>{t['View']}</span>
               <OpenInNewWindowIcon color='white' />
             </Button>

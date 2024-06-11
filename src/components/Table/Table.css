@@ -35,13 +35,17 @@
 }
 
 .table-header .sort-button {
-  gap: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: center;
-  width: 90px;
+  justify-content: space-around;
   border-radius: 5px;
+  padding: 8px 12px 8px 16px;
+}
+
+.table-header .sort-button svg {
+  height: 14px;
+  width: 14px;
 }
 
 .table-header .sort-button:hover {
