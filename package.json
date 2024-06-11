@@ -10,6 +10,7 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@ariakit/react": "^0.4.7",
     "@astrojs/check": "^0.5.10",
     "@astrojs/netlify": "^5.2.0",
     "@astrojs/react": "^3.3.0",
@@ -35,7 +36,8 @@
     "react": "^18.2.0",
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.2.0",
-    "typescript": "^5.4.5"
+    "typescript": "^5.4.5",
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
   },
   "devDependencies": {
     "@types/accept-language-parser": "^1.5.6"

@@ -173,7 +173,7 @@ export const getUserOrgs = async (token: string): Promise<any[]> => {
 
 export const getUserMemberRepos = async (
   token: string,
-  userName: string,
+  userName: string
 ): Promise<any[]> => {
   return await paginate(
     `https://api.github.com/users/${userName}/repos?per_page=100`,
@@ -225,9 +225,15 @@ export const replaceRepoTopics = async (
 
 export const searchUsers = async (
   token: string,
-  search: string,
+  search: string
 ): Promise<Response> => {
-  return await fetch(`https://api.github.com/search/users?q=${search} in:name`, {
+  const encode = encodeURIComponent(
+    `${decodeURIComponent(search)} in:name in:login type:user&per_page=10`
+    // `lorin jameson in:name in:login type:user&per_page=10`
+  );
+  const url = `https://api.github.com/search/users?q=${encode}`;
+  //console.log(url);
+  return await fetch(url, {
     method: 'GET',
     headers: {
       Accept: 'application/vnd.github+json',
@@ -237,4 +243,16 @@ export const searchUsers = async (
   });
 };
 
-
+export const getUser = async (
+  token: string,
+  login: string
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/users/${login}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+};

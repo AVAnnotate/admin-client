@@ -58,6 +58,7 @@ export type ProviderUser = {
   loginName: string;
   avatarURL?: string;
   admin: boolean;
+  name?: string;
 };
 
 export type Publish = {
@@ -102,4 +103,17 @@ export type GitHubOrganization = {
   orgName: string;
   url: string;
   description: string;
+};
+
+export type ParseAnnotationResults = {
+  headers: string[];
+  data: any[];
+  rowCount: number;
+};
+
+export type AnnotationEntry = {
+  start_time: number;
+  end_time: number;
+  annotation: string;
+  tags: string[];
 };
