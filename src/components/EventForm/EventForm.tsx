@@ -43,16 +43,6 @@ export const FormContents: React.FC<Props> = ({ event, title, i18n }) => {
 
   const { setValues, values } = useFormikContext();
 
-  const addEvent = useCallback(() => {
-    setValues({
-      ...values as Event,
-      audiovisual_files: [
-        ...(values as Event).audiovisual_files,
-        initialAvFile
-      ]
-    })
-  }, [values])
-
   return (
     <Form className="event-form">
       <h1>{title}</h1>
