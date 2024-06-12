@@ -1,6 +1,6 @@
 ---
 import { EventEdit } from '@apps/EventEdit';
-import { fetchEvent, parseSlug } from '@backend/projectHelpers';
+import { getProject, parseSlug } from '@backend/projectHelpers';
 import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
 import Layout from '@layouts/Layout.astro';
@@ -16,9 +16,23 @@ const { org, repo } = parseSlug(slug);
 
 const i18n = getTranslations(Astro.request, 'events');
 
-const event = await fetchEvent(org, repo, eventUuid);
+const baseUrl = 'https://github.com';
+const repoUrl = `${baseUrl}/${org}/${repo}`;
+
+const projectData = await getProject(info, repoUrl);
+
+const event = projectData.events.find((ev) => ev.uuid === eventUuid);
+
+if (!event) {
+  return Astro.redirect('/404');
+}
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <EventEdit event={event} i18n={i18n} client:only='react' />
+  <EventEdit
+    event={event}
+    i18n={i18n}
+    project={projectData}
+    client:only='react'
+  />
 </Layout>

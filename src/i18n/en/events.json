@@ -2,5 +2,10 @@
   "Edit Event": "Edit Event",
   "New Event": "New Event",
   "Item Type": "Item Type",
-  "Description": "Description"
+  "Description (Optional)": "Description (Optional)",
+  "Audiovisual File(s)": "Audiovisual File(s)",
+  "Citation (Optional)": "Citation (Optional)",
+  "Event Information": "Event Information",
+  "File URL": "File URL",
+  "Duration": "Duration"
 }

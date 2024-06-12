@@ -17,5 +17,5 @@ export default {
   'sign-in': signIn,
   projects: { ...projects, ...buttons, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
-  events: { ...events, ...buttons, ...all },
+  events: { ...events, ...projects, ...buttons, ...all },
 };
