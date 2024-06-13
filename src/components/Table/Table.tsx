@@ -25,7 +25,8 @@ interface Props {
   headerButtons?: {
     label: string;
     icon: React.FC<any>;
-    variant?: 'solid' | 'outline'
+    variant?: 'solid' | 'outline';
+    onClick?: () => any;
   }[],
   rowButtons?: MeatballMenuItem[]
 }
@@ -153,6 +154,7 @@ export const Table: React.FC<Props> = ({
               <Button
                 className={but.variant || 'primary'}
                 key={but.label}
+                onClick={but.onClick}
                 variant={but.variant}
               >
                 <but.icon />

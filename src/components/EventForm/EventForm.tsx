@@ -9,7 +9,7 @@ import './EventForm.css'
 import { BottomBar } from "@components/BottomBar/BottomBar.tsx";
 
 interface Props {
-  event: Event;
+  event?: Event;
   title: string;
   i18n: Translations;
   onSubmit: (data: Event) => any;

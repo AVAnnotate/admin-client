@@ -69,7 +69,8 @@ export const Project: React.FC<Props> = (props) => {
                     },
                     {
                       label: t['add'],
-                      icon: PlusIcon
+                      icon: PlusIcon,
+                      onClick: () => window.location.pathname = `${window.location.pathname}/new`
                     }
                   ]}
                   items={props.project.events}
