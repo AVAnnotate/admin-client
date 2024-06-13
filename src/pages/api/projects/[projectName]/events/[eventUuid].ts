@@ -50,7 +50,13 @@ export const POST: APIRoute = async ({
 
   const successCommit = await commitAndPush(`Updated event ${uuid}`);
 
-  console.log(successCommit);
+  if (successCommit.error) {
+    console.error('Failed to write event data: ', successCommit.error);
+    return new Response(null, {
+      status: 500,
+      statusText: 'Failed to write event data: ' + successCommit.error,
+    });
+  }
 
   return new Response(null, { status: 200 });
 };
