@@ -186,3 +186,9 @@ textarea {
 .icon-button-text {
   padding-left: 2px;
 }
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 0 20px;
+}

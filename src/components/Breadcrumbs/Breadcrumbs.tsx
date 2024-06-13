@@ -21,7 +21,7 @@ const truncate = (str: string) => {
 export const Breadcrumbs = (props: BreadcrumbsProps) => {
   return (
     <div className='breadcrumbs-container'>
-      <ul className='breadcrumbs-list'>
+      <ul className='breadcrumbs-list container'>
         {props.items.map((item, idx) => (
           <React.Fragment key={idx}>
             <li
