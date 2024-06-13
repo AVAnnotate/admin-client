@@ -4,6 +4,7 @@ import type React from "react";
 
 import './EventEdit.css'
 import { Breadcrumbs } from "@components/Breadcrumbs/Breadcrumbs.tsx";
+import { useCallback, useMemo } from "react";
 
 interface Props {
   event: Event;
@@ -14,17 +15,33 @@ interface Props {
 export const EventEdit: React.FC<Props> = ({ event, i18n, project }) => {
   const { t, lang } = i18n;
 
+  const projectSlug = useMemo(() => `${project.project.gitHubOrg}+${project.project.slug}`, [project])
+
+  const onSubmit = useCallback(async (newEvent: Event) => {
+    const res = await fetch(`/api/projects/${projectSlug}/events/${event.uuid}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(newEvent),
+    })
+
+    console.log(res)
+
+    window.location.pathname = `/${lang}/projects/${projectSlug}`
+  }, [])
+
   return (
     <>
       <Breadcrumbs
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
-          { label: project.project.title, link: `/${lang}/projects/${project.project.gitHubOrg}+${project.project.slug}` },
+          { label: project.project.title, link: `/${lang}/projects/${projectSlug}` },
           { label: t['Edit Event'], link: '' }
         ]}
       />
       <div className="event-edit-form">
-        <EventForm event={event} title={t['Edit Event']} i18n={i18n} />
+        <EventForm event={event} title={t['Edit Event']} i18n={i18n} onSubmit={onSubmit} />
       </div>
     </>
   )

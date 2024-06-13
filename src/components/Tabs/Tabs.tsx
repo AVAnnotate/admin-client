@@ -19,6 +19,7 @@ export const Tabs: React.FC<Props> = (props) => {
         {props.tabs.map((tab, idx) => (
           <RadixTabs.Trigger
             className='tab-trigger'
+            key={idx}
             onClick={() => setActiveTab(`tab${idx}`)}
             value={`tab${idx}`}
           >
@@ -27,7 +28,10 @@ export const Tabs: React.FC<Props> = (props) => {
         ))}
       </RadixTabs.List>
       {props.tabs.map((tab, idx) => (
-        <RadixTabs.Content value={`tab${idx}`}>
+        <RadixTabs.Content
+          key={idx}
+          value={`tab${idx}`}
+        >
           {tab.component}
         </RadixTabs.Content>
       ))}

@@ -20,6 +20,7 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
         {buttons.map(but => (
           <Dropdown.Item
             className='dropdown-item'
+            key={but.label}
             onClick={() => but.onClick!(row)}
           >
             {but.icon && <but.icon />}

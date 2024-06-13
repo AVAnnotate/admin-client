@@ -9,9 +9,11 @@ import type {
   GitHubOrganization,
   AllProjects,
   ProjectData,
+  Event,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
+import { v4 as uuidv4 } from 'uuid';
 
 export const getOrgs = async (
   userInfo: UserInfo
@@ -81,6 +83,7 @@ const getEventData = (fs: IFs, filenames: string[]) => {
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const fs = initFs();
+
   const { exists, readDir, readFile } = await gitRepo({
     fs: fs,
     repositoryURL: htmlUrl,
