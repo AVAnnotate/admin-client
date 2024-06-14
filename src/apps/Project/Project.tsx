@@ -100,7 +100,13 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['Delete'],
                       icon: Trash,
-                      onClick: () => { }
+                      onClick: async (item: Event) => {
+                        await fetch(`/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${item.uuid}`, {
+                          method: 'DELETE'
+                        })
+
+                        window.location.reload()
+                      }
                     }
                   ]}
                   searchAttribute='label'

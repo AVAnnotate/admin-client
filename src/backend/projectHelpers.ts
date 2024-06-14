@@ -13,7 +13,6 @@ import type {
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
-import { v4 as uuidv4 } from 'uuid';
 
 export const getOrgs = async (
   userInfo: UserInfo
@@ -140,11 +139,7 @@ export const parseSlug = (slug: string) => {
   };
 };
 
-// todo
-export const fetchEvent = async (org: string, repo: string, uuid: string) => {
-  const url = `https://raw.githubusercontent.com/${org}/${repo}/main/data/events/${uuid}.json`;
-  const res = await fetch(url);
-  const body = await res.text();
-
-  return JSON.parse(body);
+export const getRepositoryUrl = (projectSlug: string) => {
+  const { org, repo } = parseSlug(projectSlug);
+  return `https://github.com/${org}/${repo}`;
 };

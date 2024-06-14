@@ -21,7 +21,7 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
           <Dropdown.Item
             className='dropdown-item'
             key={but.label}
-            onClick={() => but.onClick!(row)}
+            onClick={async () => await but.onClick!(row)}
           >
             {but.icon && <but.icon />}
             {but.label}

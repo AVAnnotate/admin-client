@@ -27,7 +27,8 @@ const initialAvFile = {
 const initialValues = {
   audiovisual_files: [
     initialAvFile
-  ]
+  ],
+  item_type: 'Audio'
 }
 
 export const EventForm: React.FC<Props> = (props) => (
