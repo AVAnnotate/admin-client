@@ -77,6 +77,7 @@ export const NewProject = (props: NewProjectProps) => {
             allUsers={props.allUsers}
             onSave={handleSaveProject}
             orgs={props.orgs}
+            selection={selection}
           />
         </div>
       </div>

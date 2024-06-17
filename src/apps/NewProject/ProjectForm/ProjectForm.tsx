@@ -11,7 +11,7 @@ import countryOptions from '@lib/language-codes.js';
 import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
-import { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import './ProjectForm.css';
 
@@ -24,6 +24,8 @@ export interface ProjectFormProps {
 
   i18n: Translations;
 
+  selection: 'general' | 'users' | 'tags';
+
   onSave(project: Project): void;
 }
 
@@ -31,6 +33,10 @@ export const ProjectForm = (props: ProjectFormProps) => {
   const { t } = props.i18n;
 
   const [searchOpen, setSearchOpen] = useState(false);
+
+  const generalRef = useRef(null);
+  const userRef = useRef(null);
+  const tagRef = useRef(null);
 
   const emptyProject: Project = {
     gitHubOrg: '',
@@ -50,6 +56,19 @@ export const ProjectForm = (props: ProjectFormProps) => {
     createdAt: new Date().toDateString(),
     updatedAt: '',
   };
+
+  useEffect(() => {
+    const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>
+      ref.current!.scrollIntoView();
+
+    if (props.selection === 'general') {
+      executeScroll(generalRef);
+    } else if (props.selection === 'users') {
+      executeScroll(userRef);
+    } else {
+      executeScroll(tagRef);
+    }
+  }, [props.selection]);
 
   return (
     <div className='project-form'>
@@ -75,7 +94,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
           {({ isSubmitting }) => (
             <Form>
               <h2>{t['General']}</h2>
-
+              <div ref={generalRef} />
               <SelectInput
                 label={t['GitHub Organization']}
                 name='gitHubOrg'
@@ -165,6 +184,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
               />
 
               <div className='project-form-divider' />
+              <div ref={userRef} />
               <UserList
                 label={t['Additional Users (optional)']}
                 name='additionalUsers'
@@ -173,6 +193,8 @@ export const ProjectForm = (props: ProjectFormProps) => {
                 i18n={props.i18n}
               />
 
+              <div className='project-form-divider' />
+              <div ref={tagRef} />
               <BottomBar>
                 <div className='project-form-actions-container'>
                   <Button type='submit'>{t['Create Project']}</Button>
