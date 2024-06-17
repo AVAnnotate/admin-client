@@ -103,7 +103,6 @@ export const gitRepo = async (options: GitRepoOptions) => {
       value: options.userInfo.profile.gitHubName,
     });
 
-    // todo: not working with deleted files
     const sha = await git.commit({
       fs,
       dir: '/',
