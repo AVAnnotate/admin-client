@@ -13,19 +13,13 @@ const lang = getLangFromUrl(Astro.url);
 const i18n = getTranslations(Astro.request, 'projects');
 const accessCookie = Astro.cookies.get('access-token');
 
-console.log('Access token: ', accessCookie?.value);
-
 const info = await userInfo(Astro.cookies);
 
-console.log('info: ', info);
 if (!info) {
-  console.log('Redirecting: ', lang);
   return Astro.redirect(`/${lang}/sign-in`);
 }
 
 const allProjects: AllProjects = await getProjects(info);
-
-console.log(allProjects);
 ---
 
 <Layout title='Projects' profile={info.profile}>

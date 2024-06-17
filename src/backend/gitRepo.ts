@@ -37,10 +37,6 @@ export const gitRepo = async (options: GitRepoOptions) => {
       },
       onAuthSuccess: (url, auth) => console.log('Auth Success!'),
     });
-
-    console.log('Repo cloned!');
-    const dir = await fs.promises.readdir('/');
-    console.log('Dir: ', dir);
   } catch (err) {
     console.log(err);
   }
@@ -73,22 +69,18 @@ export const gitRepo = async (options: GitRepoOptions) => {
     return fs.readFileSync(absoluteFileName, encoding || 'utf8');
   };
 
-  const readDir = (
-    absoluteDirectoryName: string
-  ) => {
-    return fs.readdirSync(absoluteDirectoryName)
-  }
+  const readDir = (absoluteDirectoryName: string) => {
+    return fs.readdirSync(absoluteDirectoryName);
+  };
 
-  const exists = (
-    absolutePath: string
-  ) => {
+  const exists = (absolutePath: string) => {
     try {
-      fs.statSync(absolutePath)
-      return true
+      fs.statSync(absolutePath);
+      return true;
     } catch {
-      return false
+      return false;
     }
-  }
+  };
 
   const commitAndPush = async (message: string): Promise<PushResult> => {
     await git.setConfig({

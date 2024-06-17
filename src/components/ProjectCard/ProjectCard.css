@@ -46,3 +46,11 @@
   -webkit-line-clamp: 2;
   display: -webkit-box;
 }
+
+.project-card-avatar-container {
+  margin-left: -16px;
+}
+
+.project-card-tooltip-content {
+  font-size: 12px;
+}

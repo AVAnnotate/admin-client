@@ -28,16 +28,21 @@ export const ProjectCard = (props: ProjectCardProps) => {
               return (
                 <Tooltip.Root key={u.loginName}>
                   <Tooltip.Trigger asChild>
-                    <Avatar
-                      name={u.loginName}
-                      color={'--gray-300'}
-                      avatar={u.avatarURL}
-                      showBorder={true}
-                    />
+                    <div className='project-card-avatar-container'>
+                      <Avatar
+                        name={u.loginName}
+                        color={'--gray-300'}
+                        avatar={u.avatarURL}
+                        showBorder={true}
+                      />
+                    </div>
                   </Tooltip.Trigger>
                   <Tooltip.Portal>
-                    <Tooltip.Content className='TooltipContent' sideOffset={5}>
-                      Add to library
+                    <Tooltip.Content
+                      className='project-card-tooltip-content'
+                      sideOffset={5}
+                    >
+                      {u.name || u.loginName}
                       <Tooltip.Arrow className='TooltipArrow' />
                     </Tooltip.Content>
                   </Tooltip.Portal>

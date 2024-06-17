@@ -1,0 +1,11 @@
+.projects-grid-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-content: space-between;
+  margin-top: 32px;
+  width: 100%;
+  height: calc(100vh - 200px);
+  overflow-y: auto;
+  align-content: flex-start;
+}

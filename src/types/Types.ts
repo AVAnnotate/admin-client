@@ -36,7 +36,7 @@ export type Tags = {
   tags: Tag[];
 };
 
-export type MediaPlayer = 'universal' | 'aviary';
+export type MediaPlayer = 'avannotate' | 'universal' | 'aviary';
 
 export type Project = {
   gitHubOrg: string;
