@@ -98,7 +98,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const filepath = `/data/events/${uuid}.json`;
 
-  deleteFile(filepath);
+  await deleteFile(filepath);
 
   const successCommit = await commitAndPush(`Deleted event ${uuid}`);
 

@@ -77,8 +77,12 @@ export const gitRepo = async (options: GitRepoOptions) => {
     return fs.readdirSync(absoluteDirectoryName);
   };
 
-  const deleteFile = (absoluteFileName: string) => {
-    console.log(absoluteFileName);
+  const deleteFile = async (absoluteFileName: string) => {
+    await git.remove({
+      fs,
+      dir: '/',
+      filepath: absoluteFileName.slice(1),
+    });
     return fs.rmSync(absoluteFileName);
   };
 
@@ -101,7 +105,7 @@ export const gitRepo = async (options: GitRepoOptions) => {
 
     // todo: not working with deleted files
     const sha = await git.commit({
-      fs: fs,
+      fs,
       dir: '/',
       author: {
         name: options.userInfo.profile.name,
@@ -130,5 +134,12 @@ export const gitRepo = async (options: GitRepoOptions) => {
     });
   };
 
-  return { deleteFile, exists, writeFile, readDir, readFile, commitAndPush };
+  return {
+    deleteFile,
+    exists,
+    writeFile,
+    readDir,
+    readFile,
+    commitAndPush,
+  };
 };
