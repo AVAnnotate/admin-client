@@ -37,10 +37,6 @@ export const gitRepo = async (options: GitRepoOptions) => {
       },
       onAuthSuccess: (url, auth) => console.log('Auth Success!'),
     });
-
-    console.log('Repo cloned!');
-    const dir = await fs.promises.readdir('/');
-    console.log('Dir: ', dir);
   } catch (err) {
     console.log(err);
   }

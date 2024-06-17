@@ -2,6 +2,7 @@ import {
   getUserOrgs,
   getUserMemberReposInOrg,
   getUserMemberRepos,
+  getCollaborators,
 } from '@lib/GitHub/index.ts';
 import { gitRepo } from './gitRepo.ts';
 import type {
@@ -102,7 +103,7 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
 
   const eventFiles = exists('/data/events') ? readDir('/data/events') : [];
 
-  project.events = getEventData(fs, eventFiles);
+  project.events = getEventData(fs, eventFiles as unknown as string[]);
 
   return project;
 };
@@ -114,6 +115,26 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
   const projects: ProjectData[] = [];
   for await (const repo of repos) {
     const projectData = await getProject(userInfo, repo.html_url);
+
+    const users = await getCollaborators(
+      repo.name,
+      repo.owner.login,
+      userInfo.token
+    );
+
+    if (users.ok) {
+      const userData: any[] = await users.json();
+      const collabs = userData.filter((u) =>
+        ['write', 'maintain', 'admin'].includes(u.role_name)
+      );
+      projectData.users = collabs.map((u: any) => {
+        return {
+          loginName: u.login,
+          avatarURL: u.avatar_url,
+          admin: u.site_admin,
+        };
+      });
+    }
 
     projects.push(projectData);
   }

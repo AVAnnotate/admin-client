@@ -1,7 +1,15 @@
-.sort-button {
+.sort-button-div {
   gap: 5px;
   display: flex;
   flex-direction: row;
   align-items: center;
   width: 90px;
+  color: var(--black) !important;
+  background-color: transparent !important;
+}
+
+.sort-button {
+  color: var(--black) !important;
+  background-color: transparent !important;
+  min-width: 160px;
 }

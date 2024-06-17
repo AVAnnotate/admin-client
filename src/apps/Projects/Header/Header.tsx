@@ -16,7 +16,7 @@ interface HeaderProps {
   filter: ProjectFilter;
 
   onChangeFilter(filter: ProjectFilter): void;
-  onChangeSort(sortFn: SortFunction): void;
+  onChangeSort(sortFn: string): void;
   onChangeSearch(value: string): void;
 }
 

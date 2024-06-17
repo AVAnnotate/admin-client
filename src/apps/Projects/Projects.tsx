@@ -5,7 +5,8 @@ import './Projects.css';
 import { Button } from '@radix-ui/themes';
 import { useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
-import { ProjectCard } from '@components/ProjectCard/ProjectCard.tsx';
+import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
+import { type SortFunction, Sorters } from '@components/SortAction/index.ts';
 
 export interface ProjectsProps {
   projects: AllProjects;
@@ -17,14 +18,20 @@ export const Projects = (props: ProjectsProps) => {
   const { t, lang } = props.i18n;
 
   const [filter, setFilter] = useState(ProjectFilter.MINE);
+  const [search, setSearch] = useState<string | undefined>();
+  const [sort, setSort] = useState<'Name' | 'Oldest' | 'Newest'>('Name');
 
   const handleChangeFilter = (filter: ProjectFilter) => {
     setFilter(filter);
   };
 
-  const handleChangeSearch = () => {};
+  const handleChangeSearch = (value: string) => {
+    setSearch(value);
+  };
 
-  const handleChangeSort = () => {};
+  const handleChangeSort = (sortFn: 'Name' | 'Oldest' | 'Newest') => {
+    setSort(sortFn);
+  };
 
   return (
     <div className='projects-container'>
@@ -45,11 +52,29 @@ export const Projects = (props: ProjectsProps) => {
         onChangeSearch={handleChangeSearch}
         onChangeSort={handleChangeSort}
       />
-      <div className='projects-grid'>
-        {props.projects.myProjects.map((p) => (
-          <ProjectCard project={p} lang={lang} key={p.project.slug} />
-        ))}
-      </div>
+      {props.projects && (
+        <ProjectsGrid
+          projects={
+            filter === ProjectFilter.MINE
+              ? props.projects.myProjects
+                  .filter((p) =>
+                    search
+                      ? p.project.title.includes(search) ||
+                        p.project.description.includes(search)
+                      : true
+                  )
+                  .sort(Sorters[sort])
+              : props.projects.sharedProjects.filter((p) =>
+                  search
+                    ? p.project.title.includes(search) ||
+                      p.project.description.includes(search)
+                    : true
+                )
+            // .sort(sort)
+          }
+          i18n={props.i18n}
+        />
+      )}
     </div>
   );
 };

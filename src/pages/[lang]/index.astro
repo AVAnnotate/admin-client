@@ -3,11 +3,8 @@ import { userInfo } from '@backend/userInfo';
 import { getLangFromUrl } from '@i18n';
 
 const lang = getLangFromUrl(Astro.url);
-
-console.log('Getting user info!');
 const user = await userInfo(Astro.cookies);
 
-console.log('Here! user: ', user);
 return user
   ? Astro.redirect(`/${lang}/projects`)
   : Astro.redirect(`/${lang}/sign-in`);

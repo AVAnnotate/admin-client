@@ -3,7 +3,7 @@ import { Formik, Form } from 'formik';
 import {
   TextInput,
   SelectInput,
-  SwitchInput,
+  TripleSwitchInput,
   ToggleInput,
   UserList,
 } from '@components/Formic/index.tsx';
@@ -40,7 +40,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
     slug: '',
     creator: '',
     authors: '',
-    mediaPlayer: 'universal',
+    mediaPlayer: 'avannotate',
     autoPopulateHomePage: true,
     additionalUsers: [],
     tags: {
@@ -138,7 +138,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
                 name='authors'
               />
 
-              <SwitchInput
+              <TripleSwitchInput
                 label={t['Media Player']}
                 helperText={
                   t[
@@ -147,6 +147,10 @@ export const ProjectForm = (props: ProjectFormProps) => {
                 }
                 name='mediaPlayer'
                 optionLeft={{
+                  value: 'avannotate',
+                  label: t['AV Annotate Viewer'],
+                }}
+                optionMiddle={{
                   value: 'universal',
                   label: t['Universal Viewer'],
                 }}
@@ -171,7 +175,12 @@ export const ProjectForm = (props: ProjectFormProps) => {
 
               <BottomBar>
                 <div className='project-form-actions-container'>
-                  <Button type='submit'>Save</Button>
+                  <Button type='submit'>{t['Create Project']}</Button>
+                  <a href={`/${props.i18n.lang}/projects`}>
+                    <Button type='submit' className='outline'>
+                      {t['cancel']}
+                    </Button>
+                  </a>
                 </div>
               </BottomBar>
             </Form>

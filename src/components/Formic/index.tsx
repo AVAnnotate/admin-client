@@ -154,23 +154,24 @@ export const SelectInput = (props: SelectInputProps) => {
   );
 };
 
-interface SwitchInputProps {
+interface TripleSwitchInputProps {
   label: string;
   helperText?: string;
   name: string;
   optionLeft: { label: string; value: string };
+  optionMiddle: { label: string; value: string };
   optionRight: { label: string; value: string };
   required?: boolean;
   bottomNote?: string;
 }
 
-export const SwitchInput = (props: SwitchInputProps) => {
+export const TripleSwitchInput = (props: TripleSwitchInputProps) => {
   const [field, meta, helpers] = useField(props.name);
 
   const { value } = meta;
   const { setValue } = helpers;
   return (
-    <>
+    <div>
       <div className='av-label-bold formic-form-label'>
         {props.label}
         {props.required && <Required />}
@@ -180,33 +181,48 @@ export const SwitchInput = (props: SwitchInputProps) => {
           {props.helperText}
         </div>
       )}
-      <Button
-        className={
-          value === props.optionLeft.value
-            ? 'unstyled formic-form-switch-button formic-form-switch-button-left formic-form-switch-button-selected'
-            : 'unstyled formic-form-switch-button formic-form-switch-button-left'
-        }
-        onClick={() => setValue(props.optionLeft.value)}
-      >
-        {props.optionLeft.label}
-      </Button>
-      <Button
-        className={
-          value === props.optionRight.value
-            ? 'unstyled formic-form-switch-button formic-form-switch-button-right formic-form-switch-button-selected'
-            : 'unstyled formic-form-switch-button formic-form-switch-button-right'
-        }
-        onClick={() => setValue(props.optionRight.value)}
-      >
-        {props.optionRight.label}
-      </Button>
+      <div className='formic-form-switch'>
+        <Button
+          type='button'
+          className={
+            value === props.optionLeft.value
+              ? 'unstyled formic-form-switch-button formic-form-switch-button-left formic-form-switch-button-selected'
+              : 'unstyled formic-form-switch-button formic-form-switch-button-left'
+          }
+          onClick={() => setValue(props.optionLeft.value)}
+        >
+          {props.optionLeft.label}
+        </Button>
+        <Button
+          type='button'
+          className={
+            value === props.optionMiddle.value
+              ? 'unstyled formic-form-switch-button formic-form-switch-button-middle formic-form-switch-button-selected'
+              : 'unstyled formic-form-switch-button formic-form-switch-button-middle'
+          }
+          onClick={() => setValue(props.optionMiddle.value)}
+        >
+          {props.optionMiddle.label}
+        </Button>
+        <Button
+          type='button'
+          className={
+            value === props.optionRight.value
+              ? 'unstyled formic-form-switch-button formic-form-switch-button-right formic-form-switch-button-selected'
+              : 'unstyled formic-form-switch-button formic-form-switch-button-right'
+          }
+          onClick={() => setValue(props.optionRight.value)}
+        >
+          {props.optionRight.label}
+        </Button>
+      </div>
       <ErrorMessage name={props.name} component='div' />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
           {props.bottomNote}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
@@ -238,6 +254,7 @@ export const ToggleInput = (props: ToggleInputProps) => {
         size='3'
         checked={value}
         onCheckedChange={(checked) => setValue(checked)}
+        className='formic-toggle-switch'
       />
       <ErrorMessage name={props.name} component='div' />
       {props.bottomNote && (
@@ -265,6 +282,9 @@ export const UserList = (props: UserListProps) => {
   const { value } = meta;
   const { setValue } = helpers;
 
+  const handleDeleteUser = (user: ProviderUser) => {
+    setValue(value.filter((v: ProviderUser) => v.loginName !== user.loginName));
+  };
   return (
     <div>
       <div className='av-label-bold formic-form-label'>
@@ -289,7 +309,7 @@ export const UserList = (props: UserListProps) => {
               </div>
             </div>
             <Button className='formic-user-list-delete-button'>
-              <Trash />
+              <Trash onClick={() => handleDeleteUser(user)} />
             </Button>
           </div>
         ))}

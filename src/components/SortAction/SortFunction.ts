@@ -1,3 +1,3 @@
-import type { Project } from '@ty/Types.ts';
+import type { ProjectData } from '@ty/Types.ts';
 
-export type SortFunction = (a: Project, b: Project) => number;
+export type SortFunction = (a: ProjectData, b: ProjectData) => number;

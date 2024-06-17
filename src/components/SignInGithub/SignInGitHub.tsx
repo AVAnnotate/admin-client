@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
 
 import './SignInGitHub.css';
 import type { Translations } from '@ty/Types.ts';
@@ -9,9 +9,25 @@ interface SignInGitHubProps {
 // href=
 
 export const SignInGitHub = (props: SignInGitHubProps) => {
+  useEffect(() => {
+    const fireEvent = document.getElementById('sign-in');
+
+    if (fireEvent) {
+      fireEvent.addEventListener('click', () => {
+        const elOverlay = document.getElementById('page-loader-overlay');
+        const elSpinner = document.getElementById('page-loader-spinner');
+
+        if (elOverlay && elSpinner) {
+          elOverlay.classList.add('loading-state');
+          elSpinner.classList.add('loading');
+        }
+      });
+    }
+  }, []);
   return (
     <div className='sign-in-container'>
       <a
+        id='sign-in'
         className='sign-in-anchor'
         href={`https://github.com/login/oauth/authorize?client_id=${
           import.meta.env.PUBLIC_GITHUB_CLIENT_ID
