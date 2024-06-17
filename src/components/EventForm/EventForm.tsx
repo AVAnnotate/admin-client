@@ -29,21 +29,21 @@ const initialValues = {
     initialAvFile
   ],
   item_type: 'Audio'
-}
+} as Event
 
 export const EventForm: React.FC<Props> = (props) => (
   <Formik
     initialValues={props.event || initialValues}
-    onSubmit={() => { }}
+    onSubmit={props.onSubmit}
   >
     <FormContents {...props} />
   </Formik>
 )
 
-export const FormContents: React.FC<Props> = ({ i18n, onSubmit, title }) => {
+export const FormContents: React.FC<Props> = ({ i18n, title }) => {
   const { t } = i18n;
 
-  const { setValues, values, isSubmitting } = useFormikContext();
+  const { setFieldValue, values, isSubmitting } = useFormikContext();
 
   return (
     <Form className="event-form">
@@ -90,11 +90,9 @@ export const FormContents: React.FC<Props> = ({ i18n, onSubmit, title }) => {
                   <TimeInput
                     className="av-duration-input"
                     label={idx === 0 ? t['Duration'] : undefined}
-                    onChange={(input: number) => {
-                      const newValues = structuredClone(values) as Event
-                      newValues.audiovisual_files[idx].duration = input
-                      setValues(newValues)
-                    }}
+                    onChange={(input: number) => (
+                      setFieldValue(`audiovisual_files.${idx}.duration`, input)
+                    )}
                     defaultValue={(values as Event).audiovisual_files[idx].duration}
                   />
                   {idx !== 0
@@ -146,8 +144,7 @@ export const FormContents: React.FC<Props> = ({ i18n, onSubmit, title }) => {
           <Button
             className="save-button primary"
             disabled={isSubmitting}
-            onClick={() => onSubmit(values as Event)}
-            type='button'
+            type='submit'
           >
             {t['save']}
           </Button>
