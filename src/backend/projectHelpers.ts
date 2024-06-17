@@ -71,7 +71,7 @@ const getEventData = (fs: IFs, filenames: string[]) => {
         // Add the UUID, which comes from the filename and
         // is otherwise not present in the data.
         uuid: filename.replace('.json', ''),
-        ...JSON.parse(data),
+        ...JSON.parse(data as unknown as string),
       });
     } catch (e: any) {
       console.warn(`Error fetching data for event ${filename}: ${e.message}`);
