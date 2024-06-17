@@ -1,0 +1,57 @@
+.event-form .form-body {
+  margin-bottom: 100px;
+}
+
+.event-form .add-av-button {
+  margin-top: 20px;
+}
+
+.event-form .av-files-fields {
+  display: flex;
+  gap: 30px;
+  max-width: 100%;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.event-form .av-files-fields .av-file-url-input {
+  flex-grow: 1;
+}
+
+.event-form .av-files-fields .formic-form-field input {
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.event-form .av-trash-button {
+  height: 32px;
+  align-self: flex-end;
+  margin-bottom: 14px;
+  width: 32px;
+}
+
+.event-form .av-trash-button svg {
+  height: 16px;
+  width: 16px;
+}
+
+.event-form .bottom-bar-flex {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.event-form .bottom-bar-flex button {
+  padding: 16px 18px 16px 18px;
+}
+
+.event-form .bottom-bar-flex .save-button {
+  width: 276px;
+}
+
+.event-form .bottom-bar-flex .cancel-button {
+  width: 176px;
+}

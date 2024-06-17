@@ -3,5 +3,11 @@
   "Name": "Name",
   "Type": "Type",
   "Added": "Added",
-  "CSV": "CSV"
+  "CSV": "CSV",
+  "Label": "Label",
+  "Audio": "Audio",
+  "Video": "Video",
+  "Other": "Other",
+  "Add": "Add",
+  "lorem": "Lorem ipsum dolor sit amet consectetur. Id scelerisque diam in pellentesque leo. Justo faucibus aliquet sit eu leo quis. Nam quis cras aliquam scelerisque sagittis quis est."
 }

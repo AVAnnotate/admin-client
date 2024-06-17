@@ -69,7 +69,8 @@ export const Project: React.FC<Props> = (props) => {
                     },
                     {
                       label: t['add'],
-                      icon: PlusIcon
+                      icon: PlusIcon,
+                      onClick: () => window.location.pathname = `${window.location.pathname}/new`
                     }
                   ]}
                   items={props.project.events}
@@ -94,12 +95,18 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['Edit'],
                       icon: Pencil2Icon,
-                      onClick: () => { }
+                      onClick: (item: Event) => window.location.href = `${window.location.href}/${item.uuid}`
                     },
                     {
                       label: t['Delete'],
                       icon: Trash,
-                      onClick: () => { }
+                      onClick: async (item: Event) => {
+                        await fetch(`/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${item.uuid}`, {
+                          method: 'DELETE'
+                        })
+
+                        window.location.reload()
+                      }
                     }
                   ]}
                   searchAttribute='label'

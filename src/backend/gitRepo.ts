@@ -73,22 +73,27 @@ export const gitRepo = async (options: GitRepoOptions) => {
     return fs.readFileSync(absoluteFileName, encoding || 'utf8');
   };
 
-  const readDir = (
-    absoluteDirectoryName: string
-  ) => {
-    return fs.readdirSync(absoluteDirectoryName)
-  }
+  const readDir = (absoluteDirectoryName: string) => {
+    return fs.readdirSync(absoluteDirectoryName);
+  };
 
-  const exists = (
-    absolutePath: string
-  ) => {
+  const deleteFile = async (absoluteFileName: string) => {
+    await git.remove({
+      fs,
+      dir: '/',
+      filepath: absoluteFileName.slice(1),
+    });
+    return fs.rmSync(absoluteFileName);
+  };
+
+  const exists = (absolutePath: string) => {
     try {
-      fs.statSync(absolutePath)
-      return true
+      fs.statSync(absolutePath);
+      return true;
     } catch {
-      return false
+      return false;
     }
-  }
+  };
 
   const commitAndPush = async (message: string): Promise<PushResult> => {
     await git.setConfig({
@@ -99,7 +104,7 @@ export const gitRepo = async (options: GitRepoOptions) => {
     });
 
     const sha = await git.commit({
-      fs: fs,
+      fs,
       dir: '/',
       author: {
         name: options.userInfo.profile.name,
@@ -128,5 +133,12 @@ export const gitRepo = async (options: GitRepoOptions) => {
     });
   };
 
-  return { exists, writeFile, readDir, readFile, commitAndPush };
+  return {
+    deleteFile,
+    exists,
+    writeFile,
+    readDir,
+    readFile,
+    commitAndPush,
+  };
 };

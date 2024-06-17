@@ -1,6 +1,3 @@
-import { AccountActions } from '@components/AccountActions/index.ts';
-import type { MyProfile, Translations } from '@ty/Types.ts';
-
 import './BottomBar.css';
 
 interface BottomBarProps {
@@ -10,7 +7,7 @@ interface BottomBarProps {
 export const BottomBar = (props: BottomBarProps) => {
   return (
     <div className='bottom-bar-container'>
-      <footer>{props.children}</footer>
+      <footer className='container bottom-bar'>{props.children}</footer>
     </div>
   );
 };

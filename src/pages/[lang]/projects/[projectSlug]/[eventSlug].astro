@@ -1,0 +1,45 @@
+---
+import { EventEdit } from '@apps/EventEdit';
+import { NewEvent } from '@apps/NewEvent';
+import { getProject, parseSlug } from '@backend/projectHelpers';
+import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
+import Layout from '@layouts/Layout.astro';
+
+const { projectSlug, eventSlug } = Astro.params;
+const info = await userInfo(Astro.cookies);
+
+if (!projectSlug || !eventSlug || !info) {
+  return null;
+}
+
+const { org, repo } = parseSlug(projectSlug);
+
+const i18n = getTranslations(Astro.request, 'events');
+
+const baseUrl = 'https://github.com';
+const repoUrl = `${baseUrl}/${org}/${repo}`;
+
+const projectData = await getProject(info, repoUrl);
+
+const event = projectData.events.find((ev) => ev.uuid === eventSlug);
+
+if (!event && eventSlug !== 'new') {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout title={event?.label || i18n.t['Add Event']} profile={info.profile}>
+  {
+    event ? (
+      <EventEdit
+        event={event}
+        i18n={i18n}
+        project={projectData}
+        client:only='react'
+      />
+    ) : (
+      <NewEvent i18n={i18n} project={projectData} client:only='react' />
+    )
+  }
+</Layout>

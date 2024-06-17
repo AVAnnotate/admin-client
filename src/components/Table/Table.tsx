@@ -25,7 +25,8 @@ interface Props {
   headerButtons?: {
     label: string;
     icon: React.FC<any>;
-    variant?: 'solid' | 'outline'
+    variant?: 'solid' | 'outline';
+    onClick?: () => any;
   }[],
   rowButtons?: MeatballMenuItem[]
 }
@@ -113,7 +114,7 @@ export const Table: React.FC<Props> = ({
               </Dropdown.Trigger>
               <Dropdown.Content className='dropdown-content'>
                 {sortableRows.map(row => (
-                  <React.Fragment>
+                  <React.Fragment key={row.title}>
                     <Dropdown.Item
                       className='dropdown-item'
                       onClick={() => setCurrentSort({
@@ -150,7 +151,12 @@ export const Table: React.FC<Props> = ({
           )}
           {headerButtons && (
             headerButtons.map(but => (
-              <Button className={but.variant || 'primary'} variant={but.variant}>
+              <Button
+                className={but.variant || 'primary'}
+                key={but.label}
+                onClick={but.onClick}
+                variant={but.variant}
+              >
                 <but.icon />
                 {but.label}
               </Button>
@@ -163,7 +169,7 @@ export const Table: React.FC<Props> = ({
           {showHeaderRow && (
             <RadixTable.Row>
               {rows.map(row => (
-                <RadixTable.ColumnHeaderCell>
+                <RadixTable.ColumnHeaderCell key={row.title}>
                   {row.title}
                 </RadixTable.ColumnHeaderCell>
               ))}
@@ -173,16 +179,16 @@ export const Table: React.FC<Props> = ({
         {sortedItems.length > 0
           ? (
             <RadixTable.Body>
-              {sortedItems.map(item => (
-                <RadixTable.Row>
-                  {rows.map(row => (
-                    <RadixTable.Cell>
+              {sortedItems.map((item, idx) => (
+                <RadixTable.Row key={idx}>
+                  {rows.map((row, rowIndex) => (
+                    <RadixTable.Cell key={rowIndex}>
                       {getCellValue(item, row)}
                     </RadixTable.Cell>
                   ))}
                   {rowButtons && (
                     <RadixTable.Cell>
-                      <MeatballMenu buttons={rowButtons} />
+                      <MeatballMenu buttons={rowButtons} row={item} />
                     </RadixTable.Cell>
                   )}
                 </RadixTable.Row>

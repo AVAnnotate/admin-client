@@ -9,6 +9,7 @@ import type {
   GitHubOrganization,
   AllProjects,
   ProjectData,
+  Event,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
@@ -65,7 +66,12 @@ const getEventData = (fs: IFs, filenames: string[]) => {
   for (const filename of filenames) {
     try {
       const data = fs.readFileSync(`/data/events/${filename}`);
-      events.push(JSON.parse(data));
+      events.push({
+        // Add the UUID, which comes from the filename and
+        // is otherwise not present in the data.
+        uuid: filename.replace('.json', ''),
+        ...JSON.parse(data),
+      });
     } catch (e: any) {
       console.warn(`Error fetching data for event ${filename}: ${e.message}`);
     }
@@ -76,6 +82,7 @@ const getEventData = (fs: IFs, filenames: string[]) => {
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const fs = initFs();
+
   const { exists, readDir, readFile } = await gitRepo({
     fs: fs,
     repositoryURL: htmlUrl,
@@ -119,4 +126,20 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
       (p) => p.project.creator !== userInfo.profile.gitHubName
     ),
   };
+};
+
+export const parseSlug = (slug: string) => {
+  const split = slug.split(/\+(.*)/s);
+  const org = split[0];
+  const repo = split[1];
+
+  return {
+    org,
+    repo,
+  };
+};
+
+export const getRepositoryUrl = (projectSlug: string) => {
+  const { org, repo } = parseSlug(projectSlug);
+  return `https://github.com/${org}/${repo}`;
 };

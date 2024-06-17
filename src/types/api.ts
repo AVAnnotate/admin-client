@@ -1,4 +1,4 @@
-import type { MediaPlayer, Tags } from '@ty/Types.ts';
+import type { Event, MediaPlayer, Tags } from '@ty/Types.ts';
 
 export type apiProjectsProjectNamePost = {
   templateRepo: string;
@@ -15,3 +15,5 @@ export type apiProjectsProjectNamePost = {
   autoPopulateHomePage: boolean;
   tags?: Tags;
 };
+
+export type apiEventsPost = Event;

@@ -1,0 +1,15 @@
+.manifest-toggle {
+  display: flex;
+}
+
+.manifest-toggle .create-manifest-button {
+  border-radius: 5px 0 0 5px;
+  margin: 0 !important;
+  width: 200px;
+}
+
+.manifest-toggle .import-manifest-button {
+  border-radius: 0 5px 5px 0;
+  margin: 0 !important;
+  width: 200px;
+}
