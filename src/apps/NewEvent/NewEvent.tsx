@@ -21,12 +21,12 @@ export const NewEvent: React.FC<Props> = ({ i18n, project }) => {
   const projectSlug = useMemo(() => `${project.project.gitHubOrg}+${project.project.slug}`, [project])
 
   const onSubmit = useCallback(async (newEvent: Event) => {
-    const res = await fetch(`/api/projects/${projectSlug}/events/new`, {
+    const res = await fetch(`/api/projects/${projectSlug}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newEvent),
+      body: JSON.stringify({ event: newEvent }),
     })
 
     window.location.pathname = `/${lang}/projects/${projectSlug}`
@@ -72,7 +72,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project }) => {
         </EventForm>
         <ImportForm
           i18n={i18n}
-          onSubmit={() => console.log('work in progress!')}
+          onSubmit={(data) => console.log(data)}
           styles={{ display: tab === 1 ? 'initial' : 'none' }}
         />
       </div>

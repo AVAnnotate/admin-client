@@ -8,7 +8,7 @@ import { BottomBar } from "@components/BottomBar/index.ts"
 
 interface Props {
   i18n: Translations;
-  styles: { [key: string]: any };
+  styles?: { [key: string]: any };
   onSubmit: (data: any) => any;
 }
 
@@ -48,7 +48,7 @@ const FormContents: React.FC<Props> = (props) => {
         />
         <ToggleInput
           helperText={t['lorem']}
-          label={t['Auto-generate web page for this event?']}
+          label={t['Auto-generate web page for these events?']}
           name='auto_generate_web_page'
         />
       </div>

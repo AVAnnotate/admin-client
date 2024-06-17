@@ -62,17 +62,14 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
 };
 
 const getEventData = (fs: IFs, filenames: string[]) => {
-  const events = [];
+  const events: { [key: string]: Event } = {};
 
   for (const filename of filenames) {
     try {
       const data = fs.readFileSync(`/data/events/${filename}`);
-      events.push({
-        // Add the UUID, which comes from the filename and
-        // is otherwise not present in the data.
-        uuid: filename.replace('.json', ''),
-        ...JSON.parse(data as unknown as string),
-      });
+      events[filename.replace('.json', '')] = JSON.parse(
+        data as unknown as string
+      );
     } catch (e: any) {
       console.warn(`Error fetching data for event ${filename}: ${e.message}`);
     }

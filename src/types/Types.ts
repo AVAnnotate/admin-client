@@ -76,17 +76,16 @@ export type Event = {
   auto_generate_web_page: boolean;
   description: string;
   citation?: string;
-  created_at: string;
-  created_by: string;
-  item_type: 'Audio';
+  created_at?: string;
+  created_by?: string;
+  item_type: 'Audio' | 'Video';
   label: string;
-  updated_at: string;
-  updated_by: string;
-  uuid: string;
+  updated_at?: string;
+  updated_by?: string;
 };
 
 export type ProjectData = {
-  events: Event[];
+  events: { [key: string]: Event };
 
   project: Project;
 
@@ -117,4 +116,10 @@ export type AnnotationEntry = {
   end_time: number;
   annotation: string;
   tags: string[];
+};
+
+export type DropdownOption = {
+  label: string;
+  required?: boolean;
+  value: string;
 };

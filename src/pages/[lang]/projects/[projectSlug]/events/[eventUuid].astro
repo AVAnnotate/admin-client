@@ -6,10 +6,10 @@ import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
 import Layout from '@layouts/Layout.astro';
 
-const { projectSlug, eventSlug } = Astro.params;
+const { projectSlug, eventUuid } = Astro.params;
 const info = await userInfo(Astro.cookies);
 
-if (!projectSlug || !eventSlug || !info) {
+if (!projectSlug || !eventUuid || !info) {
   return null;
 }
 
@@ -22,9 +22,9 @@ const repoUrl = `${baseUrl}/${org}/${repo}`;
 
 const projectData = await getProject(info, repoUrl);
 
-const event = projectData.events.find((ev) => ev.uuid === eventSlug);
+const event = projectData.events[eventUuid];
 
-if (!event && eventSlug !== 'new') {
+if (!event && eventUuid !== 'new') {
   return Astro.redirect('/404');
 }
 ---
@@ -36,6 +36,7 @@ if (!event && eventSlug !== 'new') {
         event={event}
         i18n={i18n}
         project={projectData}
+        uuid={eventUuid}
         client:only='react'
       />
     ) : (

@@ -16,4 +16,11 @@ export type apiProjectsProjectNamePost = {
   tags?: Tags;
 };
 
-export type apiEventsPost = Event;
+export type apiEventPut = {
+  event: Event;
+};
+
+export type apiEventsPost = {
+  event?: Event;
+  events?: Event[];
+};

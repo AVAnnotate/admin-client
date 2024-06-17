@@ -1,4 +1,4 @@
-import { mapAnnotationData, parseAnnotationData } from '@lib/parse/index.ts';
+import { mapAnnotationData, parseSpreadsheetData } from '@lib/parse/index.ts';
 import './UploadTestApp.css';
 import { useState } from 'react';
 import type { AnnotationEntry, ParseAnnotationResults } from '@ty/Types.ts';
@@ -16,7 +16,7 @@ export const UploadTestApp = (_props: any) => {
       const file = selected.files ? selected.files[0] : undefined;
 
       if (file) {
-        const results = await parseAnnotationData(file, true);
+        const results = await parseSpreadsheetData(file, true);
 
         setOutput(results);
       }
