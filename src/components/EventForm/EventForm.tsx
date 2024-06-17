@@ -7,6 +7,7 @@ import { Button } from "@radix-ui/themes";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import './EventForm.css'
 import { BottomBar } from "@components/BottomBar/BottomBar.tsx";
+import { RichTextInput } from "@components/Formic/index.tsx";
 
 interface Props {
   children: React.ReactNode;
@@ -129,11 +130,12 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
           decorative
         />
         <h2>{t['Other']}</h2>
-        <TextInput
+        <RichTextInput
           label={t['Description (Optional)']}
           helperText={t['A brief paragraph describing your event.']}
           name='description'
-          isLarge
+          initialValue={(values as Event).description}
+          onChange={data => setFieldValue('description', data)}
         />
         <TextInput
           label={t['Citation (Optional)']}
