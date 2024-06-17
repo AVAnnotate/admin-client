@@ -18,4 +18,12 @@
 
 .project-form-actions-container {
   width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 10px;
+}
+
+.project-form-actions-container > button {
+  min-width: 200px;
 }

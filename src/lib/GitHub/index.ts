@@ -75,12 +75,11 @@ export const paginate = async (url: string, token: string) => {
 
 export const getCollaborators = async (
   repoName: string,
+  owner: string,
   token: string
 ): Promise<Response> =>
   await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${repoName}/collaborators`,
+    `https://api.github.com/repos/${owner}/${repoName}/collaborators`,
     {
       method: 'GET',
       headers: {
@@ -93,13 +92,16 @@ export const getCollaborators = async (
 
 export const addCollaborator = async (
   repoName: string,
+  org: string,
   collaborator: string,
   token: string
-): Promise<Response> =>
-  await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${repoName}/collaborators/${collaborator}`,
+): Promise<Response> => {
+  const body = {
+    permission: 'write',
+  };
+
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repoName}/collaborators/${collaborator}`,
     {
       method: 'PUT',
       headers: {
@@ -107,8 +109,10 @@ export const addCollaborator = async (
         Authorization: `Bearer ${token}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
+      body: JSON.stringify(body),
     }
   );
+};
 
 export const createRepositoryFromTemplate = async (
   templateRepo: string,
@@ -119,16 +123,16 @@ export const createRepositoryFromTemplate = async (
   visibility?: 'private' | 'public' // Defaults to private
 ): Promise<Response> => {
   const body = {
-    owner: import.meta.env.GIT_REPO_ORG,
+    owner: org,
     name: newRepoName,
     description: description,
     private: visibility !== 'public',
   };
 
-  console.log('API Body: ', body);
-  console.log('Org: ', import.meta.env.GIT_REPO_ORG);
   return await fetch(
-    `https://api.github.com/repos/${org}/${templateRepo}/generate`,
+    `https://api.github.com/repos/${
+      import.meta.env.GIT_REPO_ORG
+    }/${templateRepo}/generate`,
     {
       method: 'POST',
       headers: {
@@ -173,7 +177,7 @@ export const getUserOrgs = async (token: string): Promise<any[]> => {
 
 export const getUserMemberRepos = async (
   token: string,
-  userName: string,
+  userName: string
 ): Promise<any[]> => {
   return await paginate(
     `https://api.github.com/users/${userName}/repos?per_page=100`,
@@ -186,7 +190,7 @@ export const getUserMemberReposInOrg = async (
   org: string
 ): Promise<any[]> => {
   return await paginate(
-    `https://api.github.com/orgs/${org}/repos?type=member&per_page=100`,
+    `https://api.github.com/orgs/${org}/repos?per_page=100`,
     token
   );
 };
@@ -225,9 +229,15 @@ export const replaceRepoTopics = async (
 
 export const searchUsers = async (
   token: string,
-  search: string,
+  search: string
 ): Promise<Response> => {
-  return await fetch(`https://api.github.com/search/users?q=${search} in:name`, {
+  const encode = encodeURIComponent(
+    `${decodeURIComponent(search)} in:name in:login type:user&per_page=10`
+    // `lorin jameson in:name in:login type:user&per_page=10`
+  );
+  const url = `https://api.github.com/search/users?q=${encode}`;
+  //console.log(url);
+  return await fetch(url, {
     method: 'GET',
     headers: {
       Accept: 'application/vnd.github+json',
@@ -237,4 +247,16 @@ export const searchUsers = async (
   });
 };
 
-
+export const getUser = async (
+  token: string,
+  login: string
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/users/${login}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+};

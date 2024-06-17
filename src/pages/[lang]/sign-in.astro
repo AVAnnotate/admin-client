@@ -13,26 +13,24 @@ const cook = Astro.cookies.get('access-token');
 
 const token = cook ? cook.value : undefined;
 
-console.log('Sign in!');
 if (token) {
-  console.log('Redirecting Sign In!', lang);
   Astro.redirect(`/${lang}/projects`);
 }
 ---
 
 <Base title='Welcome to AVAnnotate.'>
-  <body>
+  <>
     <div class='title'>{i18n.t['Welcome to AVAnnotate']}</div>
     <SignInGitHub i18n={i18n} client:only='react' />
-  </body>
+  </>
+  <style>
+    .title {
+      display: flex;
+      flex-direction: row;
+      width: 100%;
+      justify-content: space-around;
+      font-size: 24px;
+      padding-bottom: 32px;
+    }
+  </style>
 </Base>
-<style>
-  .title {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    justify-content: space-around;
-    font-size: 24px;
-    padding-bottom: 32px;
-  }
-</style>

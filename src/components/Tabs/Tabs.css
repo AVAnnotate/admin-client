@@ -21,6 +21,8 @@
   align-items: center;
   justify-content: center;
   line-height: 1;
+  background-color: transparent !important;
+  color: var(--black) !important;
 }
 
 .tabs .tab-trigger:hover {

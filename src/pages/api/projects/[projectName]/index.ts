@@ -3,6 +3,7 @@ import {
   createRepositoryFromTemplate,
   enablePages,
   replaceRepoTopics,
+  getUser,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -90,6 +91,7 @@ export const POST: APIRoute = async ({
     for (let i = 0; i < body.additionalUsers.length; i++) {
       const respCollabs: Response = await addCollaborator(
         projectName as string,
+        body.gitHubOrg,
         body.additionalUsers[i],
         token?.value as string
       );
@@ -102,13 +104,36 @@ export const POST: APIRoute = async ({
         });
       }
 
-      const data: RepositoryInvitation = await respCollabs.json();
+      if (respCollabs.status == 204) {
+        // Must be a team member
+        const userResp = await getUser(
+          token?.value as string,
+          body.additionalUsers[i]
+        );
 
-      collabs.push({
-        loginName: data.invitee!.login,
-        avatarURL: data.invitee!.avatar_url,
-        admin: data.permissions === 'admin',
-      });
+        if (!userResp.ok) {
+          console.error(
+            `Failed to find collaborator ${body.additionalUsers[i]}`
+          );
+        } else {
+          const data = await userResp.json();
+
+          collabs.push({
+            loginName: data.login,
+            avatarURL: data.avatar_url,
+            admin: false,
+          });
+        }
+      } else {
+        console.log('Reading Collabs resp', respCollabs);
+        const data: RepositoryInvitation = await respCollabs.json();
+
+        collabs.push({
+          loginName: data.invitee!.login,
+          avatarURL: data.invitee!.avatar_url,
+          admin: data.permissions === 'admin',
+        });
+      }
     }
     console.log('Collaborators created');
 
@@ -150,6 +175,7 @@ export const POST: APIRoute = async ({
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
       },
+      events: [],
     };
 
     const success = await writeFile(

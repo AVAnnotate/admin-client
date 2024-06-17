@@ -10,12 +10,3 @@
   justify-content: space-between;
   align-items: center;
 }
-
-.projects-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-content: space-between;
-  padding-top: 32px;
-  width: 100%;
-}
