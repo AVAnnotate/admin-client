@@ -1,23 +1,23 @@
 button.outline,
 a[href].button.outline {
-  border-color: var(--button-primary-background);
-  box-shadow:
-    inset 0 0 0 150px rgba(0, 0, 0, 0),
+  border: 1px solid var(--button-primary-background);
+  background: none;
+  box-shadow: inset 0 0 0 150px rgba(0, 0, 0, 0),
     0 3px 4px -2px rgba(0, 0, 0, 0.3);
-  color: #fff;
+  color: var(--gray-700);
 }
 
-button.outline:not(:disabled):hover, a[href].button.outline:hover {
-  box-shadow:
-    inset 0 0 0 150px rgba(0, 0, 0, 0.18),
-    0 0 3px 1px rgba(0, 0, 0, 0.12),
-    0 4px 12px -6px rgba(0, 0, 0, 0.25);
+button.outline:not(:disabled):hover,
+a[href].button.outline:hover {
+  box-shadow: inset 0 0 0 150px rgba(0, 0, 0, 0.18),
+    0 0 3px 1px rgba(0, 0, 0, 0.12), 0 4px 12px -6px rgba(0, 0, 0, 0.25);
 }
 
-button.outline:not(:disabled).flat:hover, a[href].button.outline.flat:hover {
+button.outline:not(:disabled).flat:hover,
+a[href].button.outline.flat:hover {
   box-shadow: inset 0 0 0 150px rgba(0, 0, 0, 0.18);
 }
 
 button.outline svg {
-  color: #fff;
+  color: #000;
 }

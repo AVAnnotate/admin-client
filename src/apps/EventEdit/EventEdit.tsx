@@ -39,7 +39,8 @@ export const EventEdit: React.FC<Props> = ({ event, i18n, project }) => {
         ]}
       />
       <div className="container">
-        <EventForm event={event} title={t['Edit Event']} i18n={i18n} onSubmit={onSubmit} />
+        <h1>{t['Edit Event']}</h1>
+        <EventForm event={event} i18n={i18n} onSubmit={onSubmit} />
       </div>
     </>
   )

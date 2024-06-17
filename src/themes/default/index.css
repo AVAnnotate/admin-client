@@ -192,3 +192,13 @@ textarea {
   margin: auto;
   padding: 0 20px;
 }
+
+.SeparatorRoot {
+  background-color: var(--gray-300);
+}
+
+.SeparatorRoot[data-orientation='horizontal'] {
+  height: 1px;
+  width: 100%;
+  margin: 20px 0;
+}

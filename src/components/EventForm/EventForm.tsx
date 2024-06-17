@@ -1,7 +1,7 @@
 import { SelectInput, TextInput, TimeInput } from "@components/Formic/index.tsx";
 import type { Event, Translations } from "@ty/Types.ts";
 import { FieldArray, Form, Formik, useFormikContext } from "formik";
-import { Separator } from "@radix-ui/react-separator";
+import * as Separator from "@radix-ui/react-separator";
 import type React from "react";
 import { Button } from "@radix-ui/themes";
 import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
@@ -9,10 +9,11 @@ import './EventForm.css'
 import { BottomBar } from "@components/BottomBar/BottomBar.tsx";
 
 interface Props {
+  children: React.ReactNode;
   event?: Event;
-  title: string;
   i18n: Translations;
   onSubmit: (data: Event) => any;
+  styles: { [key: string]: any }
 }
 
 const initialAvFile = {
@@ -28,7 +29,8 @@ const initialValues = {
   audiovisual_files: [
     initialAvFile
   ],
-  item_type: 'Audio'
+  item_type: 'Audio',
+  auto_generate_web_page: true
 } as Event
 
 export const EventForm: React.FC<Props> = (props) => (
@@ -40,15 +42,14 @@ export const EventForm: React.FC<Props> = (props) => (
   </Formik>
 )
 
-export const FormContents: React.FC<Props> = ({ i18n, title }) => {
+const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
   const { t } = i18n;
 
   const { setFieldValue, values, isSubmitting } = useFormikContext();
 
   return (
-    <Form className="event-form">
+    <Form className="event-form" style={styles}>
       <div className="form-body">
-        <h1>{title}</h1>
         <h2>{t['Event Information']}</h2>
         <TextInput
           label={t['Label']}
@@ -69,6 +70,10 @@ export const FormContents: React.FC<Props> = ({ i18n, title }) => {
             }
           ]}
           required
+        />
+        <Separator.Root
+          className="SeparatorRoot"
+          decorative
         />
         <h2>{t['Audiovisual File(s)']}</h2>
         <FieldArray
@@ -119,10 +124,14 @@ export const FormContents: React.FC<Props> = ({ i18n, title }) => {
             </div>
           )}
         />
-        <Separator />
+        <Separator.Root
+          className="SeparatorRoot"
+          decorative
+        />
         <h2>{t['Other']}</h2>
         <TextInput
           label={t['Description (Optional)']}
+          helperText={t['A brief paragraph describing your event.']}
           name='description'
           isLarge
         />
@@ -130,6 +139,7 @@ export const FormContents: React.FC<Props> = ({ i18n, title }) => {
           label={t['Citation (Optional)']}
           name='citation'
         />
+        {children}
       </div>
       <BottomBar>
         <div className="bottom-bar-flex">

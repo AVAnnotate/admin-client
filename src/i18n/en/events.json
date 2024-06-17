@@ -8,5 +8,11 @@
   "Citation (Optional)": "Citation (Optional)",
   "Event Information": "Event Information",
   "File URL": "File URL",
-  "Duration": "Duration"
+  "Duration": "Duration",
+  "Choose to create a new manifest or import an existing one.": "Choose to create a new manifest or import an existing one.",
+  "Auto-generate web page for this event?": "Auto-generate web page for this event?",
+  "A brief paragraph describing your event.": "A brief paragraph describing your event.",
+  "Create manifest": "Create manifest",
+  "Import manifest": "Import manifest",
+  "IIIF Manifest URL": "IIIF Manifest URL"
 }
