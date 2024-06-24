@@ -1,12 +1,4 @@
-import {
-  Field,
-  ErrorMessage,
-  type FieldInputProps,
-  type FieldMetaProps,
-  useField,
-  type FieldProps,
-  useFormikContext,
-} from 'formik';
+import { Field, ErrorMessage, useField } from 'formik';
 import { Button, Switch } from '@radix-ui/themes';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
@@ -17,6 +9,7 @@ import { Plus } from '@phosphor-icons/react/Plus';
 import { UploadSimple } from '@phosphor-icons/react/UploadSimple';
 import { MagnifyingGlass } from '@phosphor-icons/react/dist/icons/MagnifyingGlass';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
+import { SlateInput } from './SlateInput.tsx';
 
 const Required = () => {
   return <div className='formic-form-required'>*</div>;
@@ -52,6 +45,36 @@ export const TextInput = (props: TextInputProps) => {
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
         as={props.isLarge ? 'textarea' : 'input'}
       />
+      {props.bottomNote && (
+        <div className='av-label-italic formic-form-helper-text'>
+          {props.bottomNote}
+        </div>
+      )}
+      <ErrorMessage name={props.name} component='div' />
+    </div>
+  );
+};
+
+interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
+  initialValue?: any;
+  onChange: (data: any) => any;
+}
+
+export const RichTextInput = (props: RichTextInputProps) => {
+  return (
+    <div className={`formic-form-field ${props.className || ''}`}>
+      {props.label && (
+        <div className='av-label-bold formic-form-label'>
+          {props.label}
+          {props.required && <Required />}
+        </div>
+      )}
+      {props.helperText && (
+        <div className='av-label formic-form-helper-text'>
+          {props.helperText}
+        </div>
+      )}
+      <SlateInput onChange={props.onChange} initialValue={props.initialValue} />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
           {props.bottomNote}
