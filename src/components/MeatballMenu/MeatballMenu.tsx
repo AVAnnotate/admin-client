@@ -12,22 +12,24 @@ interface Props {
 
 export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
   return (
-    <Dropdown.Root>
+    <Dropdown.Root modal={false}>
       <Dropdown.Trigger asChild>
         <DotsHorizontalIcon className='meatball-menu-icon' />
       </Dropdown.Trigger>
-      <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
-        {buttons.map(but => (
-          <Dropdown.Item
-            className='dropdown-item'
-            key={but.label}
-            onClick={async () => await but.onClick!(row)}
-          >
-            {but.icon && <but.icon />}
-            {but.label}
-          </Dropdown.Item>
-        ))}
-      </Dropdown.Content>
+      <Dropdown.Portal>
+        <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
+          {buttons.map(but => (
+            <Dropdown.Item
+              className='dropdown-item'
+              key={but.label}
+              onClick={async () => await but.onClick!(row)}
+            >
+              {but.icon && <but.icon />}
+              {but.label}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Content>
+      </Dropdown.Portal>
     </Dropdown.Root>
   )
 }

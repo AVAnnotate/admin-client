@@ -42,13 +42,16 @@ export const EventImport: React.FC<Props> = (props) => {
 
     const events = mapEventData(data.events.data, data.headerMap, data.autogenerate_web_pages)
 
-    // todo when slate is installed
-    if (Object.keys(data.headerMap).includes('description')) {
-      events.forEach(ev => {
-        if (ev.description) {
-        }
-      })
-    }
+    events.forEach(ev => {
+      if (ev.description) {
+        ev.description = [
+          {
+            type: 'paragraph',
+            children: [{ text: ev.description as unknown as string }],
+          },
+        ]
+      }
+    })
 
     const res = await fetch(`/api/projects/${projectSlug}/events`, {
       method: 'POST',
@@ -121,7 +124,6 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
       value: 'label'
     },
     {
-      // todo: convert descriptions into Slate format on save
       label: t['Description'],
       value: 'description'
     },

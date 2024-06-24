@@ -1,4 +1,4 @@
-import type { Event, MediaPlayer, Tags } from '@ty/Types.ts';
+import type { Event, MediaPlayer, NewEvent, Tags } from '@ty/Types.ts';
 
 export type apiProjectsProjectNamePost = {
   templateRepo: string;
@@ -17,10 +17,10 @@ export type apiProjectsProjectNamePost = {
 };
 
 export type apiEventPut = {
-  event: Event;
+  event: Event | NewEvent;
 };
 
 export type apiEventsPost = {
-  event?: Event;
-  events?: Event[];
+  event?: NewEvent;
+  events?: NewEvent[];
 };

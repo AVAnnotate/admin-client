@@ -1,3 +1,5 @@
+import type { Node } from 'slate';
+
 export interface Translations {
   lang: string;
 
@@ -74,15 +76,26 @@ export type Event = {
     duration: number;
   }[];
   auto_generate_web_page: boolean;
-  description: string;
+  description: Node[];
   citation?: string;
-  created_at?: string;
-  created_by?: string;
+  created_at: string;
+  created_by: string;
   item_type: 'Audio' | 'Video';
   label: string;
+  updated_at: string;
+  updated_by: string;
+};
+
+export interface NewEvent
+  extends Omit<
+    Event,
+    'created_at' | 'created_by' | 'updated_at' | 'updated_by'
+  > {
+  created_at?: string;
+  created_by?: string;
   updated_at?: string;
   updated_by?: string;
-};
+}
 
 export type ProjectData = {
   events: { [key: string]: Event };

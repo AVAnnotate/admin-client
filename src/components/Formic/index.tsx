@@ -2,11 +2,7 @@ import { Button } from '@radix-ui/themes';
 import {
   Field,
   ErrorMessage,
-  type FieldInputProps,
-  type FieldMetaProps,
   useField,
-  type FieldProps,
-  useFormikContext,
 } from 'formik';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';

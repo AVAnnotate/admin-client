@@ -1,6 +1,7 @@
 import type {
   AnnotationEntry,
   Event,
+  NewEvent,
   ParseAnnotationResults,
   UserInfo,
 } from '@ty/Types.ts';
@@ -53,7 +54,7 @@ export const mapEventData = (
   data: any[],
   map: { [key: string]: number },
   autoGenerateWebpage: boolean
-): Event[] => {
+): NewEvent[] => {
   return data.map((item) => ({
     audiovisual_files: [
       {
@@ -66,6 +67,6 @@ export const mapEventData = (
     citation: item[map['citation']],
     item_type: item[map['item_type']],
     label: item[map['label']],
-    description: '',
+    description: item[map['description']],
   }));
 };

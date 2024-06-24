@@ -9,7 +9,7 @@ export const defaultEvent: Event = {
     },
   ],
   auto_generate_web_page: true,
-  description: '',
+  description: [],
   citation: '',
   created_at: '',
   created_by: '',
