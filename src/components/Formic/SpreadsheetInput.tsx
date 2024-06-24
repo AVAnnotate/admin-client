@@ -75,7 +75,7 @@ const TableRow: React.FC<TableRowProps> = (props) => {
           value={selectionValue}
         >
           <Select.Trigger className='select-trigger'>
-            <Select.Value placeholder={props.i18n.t['Select']} />
+            <Select.Value placeholder={props.i18n.t['Ignore this field']} />
             <Select.Icon>
               <ChevronDownIcon />
             </Select.Icon>
@@ -138,8 +138,6 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     useFormikContext();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  console.log(values);
 
   const parseData = useCallback(
     async (file: File, containsHeaders: boolean) => {
