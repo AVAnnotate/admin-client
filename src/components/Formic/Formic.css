@@ -241,6 +241,10 @@
   text-overflow: ellipsis;
 }
 
+.spreadsheet-input-table .import-as-cell .select-trigger {
+  width: 90%;
+}
+
 .select-trigger {
   display: flex;
   align-items: center;

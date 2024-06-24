@@ -7,10 +7,10 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { Required, ToggleInput } from './index.tsx';
 import * as Separator from '@radix-ui/react-separator';
 import './Formic.css';
-import { ArrowRightIcon, CheckIcon } from '@radix-ui/react-icons';
+import { ArrowRightIcon, CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
 import { parseSpreadsheetData } from '@lib/parse/index.ts';
-import { useFormikContext } from 'formik';
-import { ChevronDownIcon, Table } from '@radix-ui/themes';
+import { useFormikContext, type FormikContextType } from 'formik';
+import { Button, ChevronDownIcon, Table } from '@radix-ui/themes';
 import * as Select from '@radix-ui/react-select';
 
 interface BaseFormValues {
@@ -31,31 +31,31 @@ interface TableRowProps {
   index: number;
 }
 
-const TableRow: React.FC<TableRowProps> = (props) => {
-  const { values, setFieldValue } = useFormikContext();
+// We have to do some tricky stuff here to make sure we clear
+// any existing headers assigned to this index.
+const setSelectValue = (val: string | undefined, index: number, ctx: FormikContextType<unknown>) => {
+  const newValues = Object.fromEntries(Object.entries((ctx.values as any).headerMap)
+    .filter(ent => ent[1] !== index))
 
-  // We have to do some tricky stuff here to make sure we clear
-  // any existing headers assigned to this index.
-  const setSelectValue = (val: string, index: number) => {
-    const newValues = Object.fromEntries(Object.entries((values as any).headerMap)
-      .filter(ent => ent[1] !== index))
-
-    if (val && val !== 'ignore') {
-      newValues[val] = index
-    }
-
-    setFieldValue('headerMap', newValues)
+  if (val) {
+    newValues[val] = index
   }
 
+  ctx.setFieldValue('headerMap', newValues)
+}
+
+const TableRow: React.FC<TableRowProps> = (props) => {
+  const ctx = useFormikContext();
+
   const selectionValue = useMemo(() => {
-    const match = Object.entries((values as any).headerMap).find(ent => ent[1] === props.index)
+    const match = Object.entries((ctx.values as any).headerMap).find(ent => ent[1] === props.index)
 
     if (match) {
       return match[0]
     }
 
     return undefined
-  }, [(values as any).headerMap])
+  }, [(ctx.values as any).headerMap])
 
   return (
     <Table.Row>
@@ -66,12 +66,12 @@ const TableRow: React.FC<TableRowProps> = (props) => {
         </span>
         <ArrowRightIcon />
       </Table.Cell>
-      <Table.Cell>
+      <Table.Cell className='import-as-cell'>
         <Select.Root
           // Without this key prop, the Select won't re-render when
           // the value is set to undefined.
           key={selectionValue}
-          onValueChange={(val) => setSelectValue(val, props.index)}
+          onValueChange={(val) => setSelectValue(val, props.index, ctx)}
           value={selectionValue}
         >
           <Select.Trigger className='select-trigger'>
@@ -85,9 +85,9 @@ const TableRow: React.FC<TableRowProps> = (props) => {
               <Select.Viewport className="select-viewport">
                 {props.importAsOptions.map((item) => {
                   const disabled = useMemo(() => {
-                    return Object.keys((values as any).headerMap).includes(item.value)
-                      && (values as any).headerMap[item.value] !== props.index;
-                  }, [values, item.value])
+                    return Object.keys((ctx.values as any).headerMap).includes(item.value)
+                      && (ctx.values as any).headerMap[item.value] !== props.index;
+                  }, [ctx.values, item.value])
 
                   return (
                     <Select.Item
@@ -108,6 +108,16 @@ const TableRow: React.FC<TableRowProps> = (props) => {
             </Select.Content>
           </Select.Portal>
         </Select.Root>
+        {Object.values((ctx.values as any).headerMap).includes(props.index) && (
+          <Button
+            className='remove-value-button'
+            onClick={() => setSelectValue(undefined, props.index, ctx)}
+            type='button'
+            variant='ghost'
+          >
+            <Cross1Icon />
+          </Button>
+        )}
       </Table.Cell>
     </Table.Row>
   )
@@ -128,6 +138,8 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     useFormikContext();
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  console.log(values);
 
   const parseData = useCallback(
     async (file: File, containsHeaders: boolean) => {
@@ -155,14 +167,6 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     }
   }, [values.contains_headers]);
 
-  const importAsOptions = useMemo(() => ([
-    ...props.importAsOptions,
-    {
-      label: t['Ignore this field'],
-      value: 'ignore'
-    }
-  ]), [props.importAsOptions])
-
   const tableRows = useMemo(() => {
     const headers = (values[props.name] as ParseAnnotationResults)?.headers;
     const data = (values[props.name] as ParseAnnotationResults)?.data;
@@ -176,7 +180,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
           example={firstItem[idx]}
           i18n={props.i18n}
           index={idx}
-          importAsOptions={importAsOptions}
+          importAsOptions={props.importAsOptions}
           key={idx}
         />
       ));
@@ -187,7 +191,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
           example={value}
           i18n={props.i18n}
           index={idx}
-          importAsOptions={importAsOptions}
+          importAsOptions={props.importAsOptions}
           key={idx}
         />
       ));
