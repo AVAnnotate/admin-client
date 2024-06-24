@@ -194,7 +194,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
               />
 
               <div className='project-form-divider' />
-              <div ref={tagRef} />
+              {/* <div ref={tagRef} /> */}
               <BottomBar>
                 <div className='project-form-actions-container'>
                   <Button type='submit'>{t['Create Project']}</Button>

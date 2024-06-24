@@ -9,7 +9,7 @@
 }
 
 .new-project-form-container {
-  height: calc(100vh - 150px);
-  padding-right: 32px;
-  overflow-y: auto;
+  /* height: calc(100vh - 150px); */
+  /* padding-right: 32px; */
+  /* overflow-y: auto; */
 }

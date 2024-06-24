@@ -3,9 +3,9 @@
 }
 
 .project-form-container {
+  height: calc(100vh - 120px);
   width: 780px;
-  padding-bottom: 75px;
-  margin-bottom: 72px;
+  overflow-y: scroll;
 }
 
 .project-form-divider {
