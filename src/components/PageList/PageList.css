@@ -14,11 +14,15 @@
 .page-list .page-list-box-container .page-list-box {
   border: 1px solid var(--gray-300);
   display: grid;
-  grid-template-columns: 60px 4fr 1fr 60px;
+  grid-template-columns: 40px 4fr 1fr 40px;
   align-items: center;
-  padding: 0 14px;
+  padding: 0 20px;
 }
 
 .page-list .page-list-box-container .page-list-box:not(:first-child) {
   border-top-style: none;
+}
+
+.page-list .page-list-box-hovered {
+  border-bottom: 2px solid #62bdff !important;
 }

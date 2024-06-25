@@ -101,6 +101,7 @@ export type Page = {
   content: Node[];
   title: string;
   parent?: string;
+  order: number;
   created_at: string;
   created_by: string;
   updated_at: string;
