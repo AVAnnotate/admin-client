@@ -10,20 +10,21 @@ interface Props {
   event: Event;
   i18n: Translations;
   project: ProjectData;
+  uuid: string;
 }
 
-export const EventEdit: React.FC<Props> = ({ event, i18n, project }) => {
+export const EventEdit: React.FC<Props> = ({ event, uuid, i18n, project }) => {
   const { t, lang } = i18n;
 
   const projectSlug = useMemo(() => `${project.project.gitHubOrg}+${project.project.slug}`, [project])
 
   const onSubmit = useCallback(async (newEvent: Event) => {
-    const res = await fetch(`/api/projects/${projectSlug}/events/${event.uuid}`, {
-      method: 'POST',
+    const res = await fetch(`/api/projects/${projectSlug}/events/${uuid}`, {
+      method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(newEvent),
+      body: JSON.stringify({ event: newEvent }),
     })
 
     window.location.pathname = `/${lang}/projects/${projectSlug}`

@@ -1,3 +1,5 @@
+import type { Node } from 'slate';
+
 export interface Translations {
   lang: string;
 
@@ -74,19 +76,29 @@ export type Event = {
     duration: number;
   }[];
   auto_generate_web_page: boolean;
-  description: string;
+  description: Node[];
   citation?: string;
   created_at: string;
   created_by: string;
-  item_type: 'Audio';
+  item_type: 'Audio' | 'Video';
   label: string;
   updated_at: string;
   updated_by: string;
-  uuid: string;
 };
 
+export interface NewEvent
+  extends Omit<
+    Event,
+    'created_at' | 'created_by' | 'updated_at' | 'updated_by'
+  > {
+  created_at?: string;
+  created_by?: string;
+  updated_at?: string;
+  updated_by?: string;
+}
+
 export type ProjectData = {
-  events: Event[];
+  events: { [key: string]: Event };
 
   project: Project;
 
@@ -117,4 +129,10 @@ export type AnnotationEntry = {
   end_time: number;
   annotation: string;
   tags: string[];
+};
+
+export type DropdownOption = {
+  label: string;
+  required?: boolean;
+  value: string;
 };

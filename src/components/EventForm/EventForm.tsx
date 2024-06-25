@@ -8,13 +8,14 @@ import { PlusIcon, TrashIcon } from "@radix-ui/react-icons";
 import './EventForm.css'
 import { BottomBar } from "@components/BottomBar/BottomBar.tsx";
 import { RichTextInput } from "@components/Formic/index.tsx";
+import { defaultEvent } from "@lib/events/index.ts";
 
 interface Props {
-  children: React.ReactNode;
+  children?: React.ReactNode;
   event?: Event;
   i18n: Translations;
   onSubmit: (data: Event) => any;
-  styles: { [key: string]: any }
+  styles?: { [key: string]: any }
 }
 
 const initialAvFile = {
@@ -23,20 +24,9 @@ const initialAvFile = {
   duration: 0
 }
 
-// We don't need to init every field this way,
-// we just need to make sure there's an AV form
-// ready to go on first load.
-const initialValues = {
-  audiovisual_files: [
-    initialAvFile
-  ],
-  item_type: 'Audio',
-  auto_generate_web_page: true
-} as Event
-
 export const EventForm: React.FC<Props> = (props) => (
   <Formik
-    initialValues={props.event || initialValues}
+    initialValues={props.event || defaultEvent}
     onSubmit={props.onSubmit}
   >
     <FormContents {...props} />

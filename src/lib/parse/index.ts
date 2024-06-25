@@ -1,7 +1,13 @@
-import type { AnnotationEntry, ParseAnnotationResults } from '@ty/Types.ts';
+import type {
+  AnnotationEntry,
+  Event,
+  NewEvent,
+  ParseAnnotationResults,
+  UserInfo,
+} from '@ty/Types.ts';
 import { read, utils } from 'xlsx';
 
-export const parseAnnotationData = async (
+export const parseSpreadsheetData = async (
   data: File,
   hasColumnHeaders: boolean
 ): Promise<ParseAnnotationResults> => {
@@ -42,4 +48,25 @@ export const mapAnnotationData = (
   });
 
   return ret;
+};
+
+export const mapEventData = (
+  data: any[],
+  map: { [key: string]: number },
+  autoGenerateWebpage: boolean
+): NewEvent[] => {
+  return data.map((item) => ({
+    audiovisual_files: [
+      {
+        label: item[map['audiovisual_file_label']],
+        file_url: item[map['audiovisual_file_url']],
+        duration: item[map['audiovisual_file_duration']],
+      },
+    ],
+    auto_generate_web_page: autoGenerateWebpage,
+    citation: item[map['citation']],
+    item_type: item[map['item_type']],
+    label: item[map['label']],
+    description: item[map['description']],
+  }));
 };

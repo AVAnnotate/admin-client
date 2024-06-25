@@ -14,14 +14,26 @@ import { BoxArrowUpRight, FileEarmarkArrowUp, Tag, Trash } from 'react-bootstrap
 import './Project.css';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
+import { useMemo } from 'react';
 
 interface Props {
   i18n: Translations;
   project: ProjectData;
 }
 
+interface EventWithUuid extends Event {
+  uuid: string
+}
+
 export const Project: React.FC<Props> = (props) => {
   const { lang, t } = props.i18n;
+
+  // Add uuid fields to the event objects so we
+  // can still use the onClick row handlers below.
+  const eventsWithUuids = useMemo(() => Object.entries(props.project.events).map((entry) => ({
+    uuid: entry[0],
+    ...entry[1]
+  })), [props.project.events])
 
   return (
     <>
@@ -65,15 +77,16 @@ export const Project: React.FC<Props> = (props) => {
                     },
                     {
                       label: t['import'],
-                      icon: FileEarmarkArrowUp
+                      icon: FileEarmarkArrowUp,
+                      onClick: () => window.location.pathname = `${window.location.pathname}/events/import`
                     },
                     {
                       label: t['add'],
                       icon: PlusIcon,
-                      onClick: () => window.location.pathname = `${window.location.pathname}/new`
+                      onClick: () => window.location.pathname = `${window.location.pathname}/events/new`
                     }
                   ]}
-                  items={props.project.events}
+                  items={eventsWithUuids}
                   rows={[{
                     title: t['Name'],
                     property: 'label',
@@ -95,12 +108,12 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['Edit'],
                       icon: Pencil2Icon,
-                      onClick: (item: Event) => window.location.href = `${window.location.href}/${item.uuid}`
+                      onClick: (item: EventWithUuid) => window.location.href = `${window.location.href}/events/${item.uuid}`
                     },
                     {
                       label: t['Delete'],
                       icon: Trash,
-                      onClick: async (item: Event) => {
+                      onClick: async (item: EventWithUuid) => {
                         await fetch(`/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${item.uuid}`, {
                           method: 'DELETE'
                         })

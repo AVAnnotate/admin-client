@@ -1,0 +1,32 @@
+---
+import { EventEdit } from '@apps/EventEdit';
+import { EventImport } from '@apps/EventImport';
+import { NewEvent } from '@apps/NewEvent';
+import { getProject, parseSlug } from '@backend/projectHelpers';
+import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
+import Layout from '@layouts/Layout.astro';
+
+const { projectSlug } = Astro.params;
+const info = await userInfo(Astro.cookies);
+
+if (!projectSlug || !info) {
+  return null;
+}
+
+const i18n = getTranslations(Astro.request, 'events');
+
+const { org, repo } = parseSlug(projectSlug);
+
+const baseUrl = 'https://github.com';
+const repoUrl = `${baseUrl}/${org}/${repo}`;
+
+const projectData = await getProject(info, repoUrl);
+---
+
+<Layout
+  title={`${projectData.project.title} - ${i18n.t['Import events file']}`}
+  profile={info.profile}
+>
+  <EventImport i18n={i18n} project={projectData} client:only='react' />
+</Layout>

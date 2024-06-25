@@ -1,0 +1,23 @@
+.event-import-form {
+  margin-bottom: 120px;
+}
+
+.event-import-form .bottom-bar-flex {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.event-import-form .bottom-bar-flex button {
+  padding: 16px 18px 16px 18px;
+}
+
+.event-import-form .bottom-bar-flex .save-button {
+  width: 276px;
+}
+
+.event-import-form .bottom-bar-flex .cancel-button {
+  width: 176px;
+}
