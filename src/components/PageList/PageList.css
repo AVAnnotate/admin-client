@@ -1,0 +1,24 @@
+.page-list .page-list-top-bar {
+  height: 38px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+}
+
+.page-list .page-list-box {
+  background-color: #fff;
+}
+
+.page-list .page-list-box-container .page-list-box {
+  border: 1px solid var(--gray-300);
+  display: grid;
+  grid-template-columns: 60px 4fr 1fr 60px;
+  align-items: center;
+  padding: 0 14px;
+}
+
+.page-list .page-list-box-container .page-list-box:not(:first-child) {
+  border-top-style: none;
+}

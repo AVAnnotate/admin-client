@@ -61,21 +61,21 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   return repos;
 };
 
-const getEventData = (fs: IFs, filenames: string[]) => {
-  const events: { [key: string]: Event } = {};
+const getDirData = (fs: IFs, filenames: string[], dir: string) => {
+  const data: { [key: string]: any } = {};
 
   for (const filename of filenames) {
     try {
-      const data = fs.readFileSync(`/data/events/${filename}`);
-      events[filename.replace('.json', '')] = JSON.parse(
-        data as unknown as string
+      const contents = fs.readFileSync(`/data/${dir}/${filename}`);
+      data[filename.replace('.json', '')] = JSON.parse(
+        contents as unknown as string
       );
     } catch (e: any) {
       console.warn(`Error fetching data for event ${filename}: ${e.message}`);
     }
   }
 
-  return events;
+  return data;
 };
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
@@ -99,8 +99,10 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   });
 
   const eventFiles = exists('/data/events') ? readDir('/data/events') : [];
+  const pageFiles = exists('/data/pages') ? readDir('/data/pages') : [];
 
-  project.events = getEventData(fs, eventFiles as unknown as string[]);
+  project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
+  project.pages = getDirData(fs, pageFiles as unknown as string[], 'pages');
 
   return project;
 };

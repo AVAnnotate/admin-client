@@ -12,6 +12,7 @@ import type React from 'react';
 import { BoxArrowUpRight, FileEarmarkArrowUp, Tag, Trash } from 'react-bootstrap-icons';
 
 import './Project.css';
+import { PageList } from '@components/PageList/index.ts'
 import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
 import { useMemo } from 'react';
@@ -130,7 +131,12 @@ export const Project: React.FC<Props> = (props) => {
             },
             {
               title: t['Pages'],
-              component: <p>todo</p>,
+              component: (
+                <PageList
+                  i18n={props.i18n}
+                  project={props.project}
+                />
+              ),
             },
           ]}
         />

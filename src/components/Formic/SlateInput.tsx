@@ -9,12 +9,14 @@ import {
 } from 'slate'
 import { Button } from '@radix-ui/themes'
 import { FontBoldIcon, FontItalicIcon, QuoteIcon, UnderlineIcon } from '@radix-ui/react-icons'
-import { ListOl, ListUl, TypeH1, TypeH2 } from 'react-bootstrap-icons'
+import { ListOl, ListUl } from 'react-bootstrap-icons'
 import './SlateInput.css'
 import './Formic.css'
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
+
+// todo: use this? https://www.radix-ui.com/primitives/docs/components/toolbar
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list']
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify']

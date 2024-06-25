@@ -97,8 +97,20 @@ export interface NewEvent
   updated_by?: string;
 }
 
+export type Page = {
+  content: Node[];
+  title: string;
+  parent?: string;
+  created_at: string;
+  created_by: string;
+  updated_at: string;
+  updated_by: string;
+};
+
 export type ProjectData = {
   events: { [key: string]: Event };
+
+  pages: { [key: string]: Page };
 
   project: Project;
 
