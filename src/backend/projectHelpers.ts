@@ -11,6 +11,7 @@ import type {
   AllProjects,
   ProjectData,
   Event,
+  Page,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
@@ -67,15 +68,43 @@ const getDirData = (fs: IFs, filenames: string[], dir: string) => {
   for (const filename of filenames) {
     try {
       const contents = fs.readFileSync(`/data/${dir}/${filename}`);
-      data[filename.replace('.json', '')] = JSON.parse(
-        contents as unknown as string
-      );
+      data[filename.replace('.json', '')] = JSON.parse(contents as string);
     } catch (e: any) {
       console.warn(`Error fetching data for event ${filename}: ${e.message}`);
     }
   }
 
   return data;
+};
+
+const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
+  const parents: { [key: string]: Page } = {};
+  const children: { [key: string]: Page } = {};
+
+  // Fill two separate arrays depending on whether a
+  // page is a child or a parent.
+  for (const filename of topLevelNames) {
+    const contents: Page = JSON.parse(
+      fs.readFileSync(`/data/${dir}/${filename}`) as string
+    );
+
+    if (contents.parent) {
+      children[filename.replace('.json', '')] = contents;
+    } else {
+      parents[filename.replace('.json', '')] = {
+        ...contents,
+        children: {},
+      };
+    }
+  }
+
+  // Add children to their parent pages
+  for (const uuid of Object.keys(children)) {
+    const child = children[uuid];
+    parents[child.parent!].children[uuid] = child;
+  }
+
+  return parents;
 };
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {

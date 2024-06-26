@@ -99,11 +99,11 @@ export interface NewEvent
 
 export type Page = {
   content: Node[];
-  title: string;
-  parent?: string;
-  order: number;
   created_at: string;
   created_by: string;
+  title: string;
+  order: number;
+  parent?: string;
   updated_at: string;
   updated_by: string;
 };
