@@ -40,7 +40,7 @@ export const POST: APIRoute = async ({
     fs: initFs(),
     repositoryURL,
     branch: 'main',
-    userInfo: info as UserInfo,
+    userInfo: info,
   });
 
   let uuids: string[] = [];

@@ -5,7 +5,6 @@ import { Box, Button, Text } from '@radix-ui/themes';
 import { BoxArrowUpRight, GripVertical, Trash } from 'react-bootstrap-icons';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
-import { changeOrder, sortPages } from '@lib/pages/index.ts';
 
 interface Props {
   i18n: Translations;
@@ -23,10 +22,8 @@ export const PageList: React.FC<Props> = (props) => {
 
   const [pickedUp, setPickedUp] = useState<DraggedPage | null>(null);
 
-  const sortedPages = useMemo(() => sortPages(props.project.pages), [props.project.pages])
-
   const dateStrings = useMemo(() => {
-    return (Object.keys(props.project.pages)).map((uuid) => {
+    return props.project.pageOrder.map((uuid) => {
       const page = props.project.pages[uuid];
 
       if (page.updated_at) {
@@ -39,57 +36,58 @@ export const PageList: React.FC<Props> = (props) => {
     });
   }, [props.project.pages]);
 
-  const onDrop = (ev: any) => {
-    ev.preventDefault();
+  const onDrop = () => {
     if (pickedUp) {
-      let newSortedPages: string[] = [...sortedPages];
+      let newSortedPages: string[] = [...props.project.pageOrder];
 
-      newSortedPages.splice(pickedUp.originalIndex, 1)
-      newSortedPages.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid)
+      newSortedPages.splice(pickedUp.originalIndex, 1);
+      newSortedPages.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
 
-      const newPages = { ...props.project.pages }
+      const newPages = { ...props.project.pages };
 
       // track the order of top-level pages
-      let parentOrderCounter = 1
+      let parentOrderCounter = 1;
 
       // track the order of child pages within each parent
       // (this is reset to 1 when we get to the next parent page)
-      let childOrderCounter = 1
+      let childOrderCounter = 1;
 
       newSortedPages.forEach((uuid, idx) => {
-        const page = props.project.pages[uuid]
+        const page = props.project.pages[uuid];
 
         // If a page is a child page, we need to find the most recent page *before*
         // it in the array that's not a child. That page is its new parent.
         if (page.parent) {
-          const parent = newSortedPages.slice(0, idx).findLast(key => !props.project.pages[key].parent)
-          console.log(newSortedPages.slice(0, idx))
+          const parent = newSortedPages
+            .slice(0, idx)
+            .findLast((key) => !props.project.pages[key].parent);
 
           if (parent) {
             newPages[uuid] = {
               ...page,
               parent,
-              order: childOrderCounter
-            }
+              order: childOrderCounter,
+            };
 
             childOrderCounter += 1;
           } else {
-            console.log('No parent found for page. Something weird must have happened.')
+            console.log(
+              'No parent found for page. Something weird must have happened.'
+            );
           }
         } else {
           // reset the child counter because this is not a child page
           childOrderCounter = 1;
           newPages[uuid] = {
             ...page,
-            order: parentOrderCounter
-          }
-          parentOrderCounter += 1
+            order: parentOrderCounter,
+          };
+          parentOrderCounter += 1;
         }
-      })
+      });
+      console.log(newPages);
     }
-
-    setPickedUp(null)
-  }
+  };
 
   return (
     <div className='page-list'>
@@ -101,25 +99,25 @@ export const PageList: React.FC<Props> = (props) => {
         </Button>
       </div>
       <div className='page-list-box-container'>
-        {sortedPages.map((uuid, idx) => {
+        {props.project.pageOrder.map((uuid, idx) => {
           const page = props.project.pages[uuid];
 
           return (
             <Box
-              className={`page-list-box ${pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''}`}
+              className={`page-list-box ${
+                pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
+              }`}
               draggable
               key={uuid}
               onDragStart={(ev) => {
-                ev.preventDefault()
                 setPickedUp({
                   uuid: uuid,
                   originalIndex: idx,
                   hoverIndex: idx,
-                })
-              }
-              }
+                });
+              }}
               onDragOver={(ev) => {
-                ev.preventDefault()
+                ev.preventDefault();
                 if (pickedUp) {
                   setPickedUp({
                     ...pickedUp,
@@ -128,12 +126,15 @@ export const PageList: React.FC<Props> = (props) => {
                 }
               }}
               onDrop={onDrop}
+              onDragEnd={() => {
+                setPickedUp(null);
+              }}
               height='56px'
               width='100%'
             >
               <GripVertical />
               <Text weight='bold'>
-                {page.parent && '--'}
+                {page.parent && '-- '}
                 {page.title}
               </Text>
               <span>{dateStrings[idx]}</span>
@@ -142,7 +143,7 @@ export const PageList: React.FC<Props> = (props) => {
                   {
                     label: t['Open'],
                     icon: BoxArrowUpRight,
-                    onClick: () => { },
+                    onClick: () => {},
                   },
                   {
                     label: t['Edit'],

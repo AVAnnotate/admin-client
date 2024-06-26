@@ -4,33 +4,6 @@ export interface ListPage extends Page {
   listIndex: number;
 }
 
-export const sortPages = (pageData: { [key: string]: Page }) => {
-  const sortedUuids = Object.keys(pageData).sort((a, b) => {
-    const pageA = pageData[a];
-    const pageB = pageData[b];
-
-    // To account for nested pages, we create these sort values that
-    // take into account a page's parent's order, if applicable.
-    const pageASortVal = pageA.parent
-      ? `${pageData[pageA.parent].order}-${pageA.order}`
-      : pageA.order;
-
-    const pageBSortVal = pageB.parent
-      ? `${pageData[pageB.parent].order}-${pageB.order}`
-      : pageA.order;
-
-    if (pageBSortVal > pageASortVal) {
-      return 1;
-    } else if (pageBSortVal < pageASortVal) {
-      return -1;
-    } else {
-      return 0;
-    }
-  });
-
-  return sortedUuids;
-};
-
 const reorder = (
   pages: { [key: string]: Page },
   keys: string[],

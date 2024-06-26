@@ -24,3 +24,7 @@ export type apiEventsPost = {
   event?: NewEvent;
   events?: NewEvent[];
 };
+
+export type apiPageOrderPost = {
+  order: string[]
+}

@@ -112,6 +112,7 @@ export type ProjectData = {
   events: { [key: string]: Event };
 
   pages: { [key: string]: Page };
+  pageOrder: string[];
 
   project: Project;
 

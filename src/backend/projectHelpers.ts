@@ -78,33 +78,29 @@ const getDirData = (fs: IFs, filenames: string[], dir: string) => {
 };
 
 const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
-  const parents: { [key: string]: Page } = {};
-  const children: { [key: string]: Page } = {};
+  const pages: { [key: string]: Page } = {};
 
   // Fill two separate arrays depending on whether a
   // page is a child or a parent.
   for (const filename of topLevelNames) {
-    const contents: Page = JSON.parse(
-      fs.readFileSync(`/data/${dir}/${filename}`) as string
-    );
+    if (filename !== 'order.json') {
+      const contents: Page = JSON.parse(
+        fs.readFileSync(`/data/${dir}/${filename}`) as string
+      );
 
-    if (contents.parent) {
-      children[filename.replace('.json', '')] = contents;
-    } else {
-      parents[filename.replace('.json', '')] = {
-        ...contents,
-        children: {},
-      };
+      pages[filename.replace('.json', '')] = contents;
     }
   }
 
-  // Add children to their parent pages
-  for (const uuid of Object.keys(children)) {
-    const child = children[uuid];
-    parents[child.parent!].children[uuid] = child;
+  let order: string[] = []
+
+  const orderFile = fs.readFileSync(`/data/${dir}/order.json`)
+
+  if (orderFile) {
+    order = JSON.parse(orderFile as string)
   }
 
-  return parents;
+  return { pages, order }
 };
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
@@ -131,7 +127,11 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const pageFiles = exists('/data/pages') ? readDir('/data/pages') : [];
 
   project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
-  project.pages = getDirData(fs, pageFiles as unknown as string[], 'pages');
+
+  const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
+
+  project.pages = pageData.pages
+  project.pageOrder = pageData.order
 
   return project;
 };
