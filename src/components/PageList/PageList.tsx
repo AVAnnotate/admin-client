@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import './PageList.css';
-import type { Page, ProjectData, Translations } from '@ty/Types.ts';
+import type { ProjectData, Translations } from '@ty/Types.ts';
 import { Box, Button, Text } from '@radix-ui/themes';
 import { BoxArrowUpRight, GripVertical, Trash } from 'react-bootstrap-icons';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
@@ -30,7 +30,7 @@ export const PageList: React.FC<Props> = (props) => {
   const isChanged = useMemo(
     () => pageOrder !== props.project.pageOrder,
     [props.project.pageOrder, pageOrder]
-  )
+  );
 
   const dateStrings = useMemo(() => {
     return pageOrder.map((uuid) => {
@@ -53,60 +53,41 @@ export const PageList: React.FC<Props> = (props) => {
 
   const onDrop = async () => {
     if (pickedUp) {
-      const selectedPage = props.project.pages[pickedUp.uuid]
+      const selectedPage = props.project.pages[pickedUp.uuid];
 
-      let newArray = pageOrder.filter(k => k !== pickedUp.uuid)
-      let newPage: Page | null = null
+      let newArray = pageOrder.filter((k) => k !== pickedUp.uuid);
 
       if (selectedPage.parent) {
-        const newParent = pageOrder
-          .slice(0, pickedUp.hoverIndex + 1)
-          .findLast((key) => !props.project.pages[key].parent);
-
-        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid)
-
-        if (newParent) {
-          newPage = { ...selectedPage, parent: newParent }
-        } else {
-          `No new parent found for ${pickedUp.uuid}. Something went wrong :(`
-        }
+        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
       } else {
-        const children = pageOrder
-          .filter(key => props.project.pages[key].parent === pickedUp.uuid)
+        const children = pageOrder.filter(
+          (key) => props.project.pages[key].parent === pickedUp.uuid
+        );
 
-        newArray = newArray.filter(k => !children.includes(k))
+        newArray = newArray.filter((k) => !children.includes(k));
 
-        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid, ...children)
+        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid, ...children);
       }
 
-      setPageOrder(newArray)
+      setPageOrder(newArray);
     }
   };
 
-  const onSubmit = () => {
-    setSaving(true)
-    // if (props.project.pages[newArray[0]].parent) {
-    //   console.log('hi')
-    //   window.alert('oops')
-    // } else {
-    //   const res = await fetch(`/api/projects/${projectSlug}/pages/order`, {
-    //     method: 'PUT',
-    //     headers: {
-    //       'Content-Type': 'application/json',
-    //     },
-    //     body: JSON.stringify({ order: newArray }),
-    //   })
+  const onSubmit = async () => {
+    setSaving(true);
+    const res = await fetch(`/api/projects/${projectSlug}/pages/order`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ order: pageOrder }),
+    });
 
-    //   const data = await res.json()
+    const data = await res.json();
 
-    //   setPageOrder(data.order)
-
-    //   if (newPage) {
-    //     console.log('todo: update page')
-    //   }
-    // }
-    setSaving(false)
-  }
+    setPageOrder(data.order);
+    setSaving(false);
+  };
 
   return (
     <>
@@ -125,8 +106,9 @@ export const PageList: React.FC<Props> = (props) => {
 
             return (
               <Box
-                className={`page-list-box ${pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
-                  }`}
+                className={`page-list-box ${
+                  pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
+                }`}
                 draggable
                 key={uuid}
                 onDragStart={(ev) => {
@@ -163,7 +145,7 @@ export const PageList: React.FC<Props> = (props) => {
                     {
                       label: t['Open'],
                       icon: BoxArrowUpRight,
-                      onClick: () => { },
+                      onClick: () => {},
                     },
                     {
                       label: t['Edit'],

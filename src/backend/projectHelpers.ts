@@ -77,7 +77,7 @@ const getDirData = (fs: IFs, filenames: string[], dir: string) => {
   return data;
 };
 
-const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
+export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   const pages: { [key: string]: Page } = {};
 
   // Fill two separate arrays depending on whether a
