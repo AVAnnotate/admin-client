@@ -45,7 +45,7 @@ const { profile, title } = Astro.props;
         padding-top: 60px;
         /* height: calc(100vh - 60px) !important; */
         background-color: var(--gray-100);
-        overflow-y: auto;
+        overflow-y: hidden;
       }
       .loading-state {
         position: fixed;
@@ -58,7 +58,6 @@ const { profile, title } = Astro.props;
         display: flex;
         justify-content: center;
         align-items: center;
-        /* display: none; */
       }
       .loading {
         width: 100px;
