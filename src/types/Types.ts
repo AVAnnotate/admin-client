@@ -108,6 +108,17 @@ export type Page = {
   updated_by: string;
 };
 
+export interface NewPage
+  extends Omit<
+    Page,
+    'created_at' | 'created_by' | 'updated_at' | 'updated_by'
+  > {
+  created_at?: string;
+  created_by?: string;
+  updated_at?: string;
+  updated_by?: string;
+}
+
 export type ProjectData = {
   events: { [key: string]: Event };
 

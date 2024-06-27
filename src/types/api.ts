@@ -1,4 +1,11 @@
-import type { Event, MediaPlayer, NewEvent, Tags } from '@ty/Types.ts';
+import type {
+  Event,
+  MediaPlayer,
+  NewEvent,
+  NewPage,
+  Page,
+  Tags,
+} from '@ty/Types.ts';
 
 export type apiProjectsProjectNamePost = {
   templateRepo: string;
@@ -26,5 +33,14 @@ export type apiEventsPost = {
 };
 
 export type apiPageOrderPost = {
-  order: string[]
-}
+  order: string[];
+};
+
+export type apiPagePost = {
+  page?: NewPage;
+  pages?: NewPage[];
+};
+
+export type apiPagePut = {
+  page: Page;
+};

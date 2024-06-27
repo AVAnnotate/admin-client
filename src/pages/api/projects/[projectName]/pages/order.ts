@@ -1,17 +1,11 @@
-import { gitRepo } from "@backend/gitRepo.ts";
-import { getRepositoryUrl } from "@backend/projectHelpers.ts";
-import { userInfo } from "@backend/userInfo.ts";
-import { initFs } from "@lib/memfs/index.ts";
-import type { UserInfo } from "@ty/Types.ts";
-import type { apiPageOrderPost } from "@ty/api.ts";
-import type { APIRoute } from "astro";
+import { gitRepo } from '@backend/gitRepo.ts';
+import { getRepositoryUrl } from '@backend/projectHelpers.ts';
+import { userInfo } from '@backend/userInfo.ts';
+import { initFs } from '@lib/memfs/index.ts';
+import type { apiPageOrderPost } from '@ty/api.ts';
+import type { APIRoute } from 'astro';
 
-export const PUT: APIRoute = async ({
-  cookies,
-  params,
-  request,
-  redirect,
-}) => {
+export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   if (request.headers.get('Content-Type') !== 'application/json') {
     return new Response(null, { status: 400 });
   }
@@ -36,9 +30,7 @@ export const PUT: APIRoute = async ({
     userInfo: info,
   });
 
-  const filepath = '/data/pages/order.json'
-
-  writeFile(filepath, JSON.stringify(body.order))
+  writeFile('/data/pages/order.json', JSON.stringify(body.order));
 
   const successCommit = await commitAndPush('Updated page order');
 
@@ -51,4 +43,4 @@ export const PUT: APIRoute = async ({
   }
 
   return new Response(JSON.stringify(body), { status: 200 });
-}
+};
