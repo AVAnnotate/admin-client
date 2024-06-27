@@ -102,7 +102,6 @@ export type Page = {
   created_at: string;
   created_by: string;
   title: string;
-  order: number;
   parent?: string;
   updated_at: string;
   updated_by: string;
@@ -123,7 +122,7 @@ export type ProjectData = {
   events: { [key: string]: Event };
 
   pages: { [key: string]: Page };
-  pageOrder: string[];
+  pagesManifest: string[];
 
   project: Project;
 

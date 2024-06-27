@@ -2,7 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { apiPageOrderPost } from '@ty/api.ts';
+import type { apipagesManifestPost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 
 export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
@@ -19,7 +19,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     return redirect('/', 307);
   }
 
-  const body: apiPageOrderPost = await request.json();
+  const body: apipagesManifestPost = await request.json();
 
   const repositoryURL = getRepositoryUrl(projectName);
 
