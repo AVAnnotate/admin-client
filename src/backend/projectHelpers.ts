@@ -83,7 +83,7 @@ const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   // Fill two separate arrays depending on whether a
   // page is a child or a parent.
   for (const filename of topLevelNames) {
-    if (filename !== 'manifest.json') {
+    if (filename !== 'order.json') {
       const contents: Page = JSON.parse(
         fs.readFileSync(`/data/${dir}/${filename}`) as string
       );
@@ -92,14 +92,14 @@ const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
     }
   }
 
-  let manifest: string[] = [];
+  let order: string[] = [];
 
-  if (fs.existsSync(`/data/${dir}/manifest.json`)) {
-    const manifestFile = fs.readFileSync(`/data/${dir}/manifest.json`);
-    manifest = JSON.parse(manifestFile as string);
+  if (fs.existsSync(`/data/${dir}/order.json`)) {
+    const orderFile = fs.readFileSync(`/data/${dir}/order.json`);
+    order = JSON.parse(orderFile as string);
   }
 
-  return { pages, manifest };
+  return { pages, order };
 };
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
@@ -130,7 +130,7 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
 
   project.pages = pageData.pages;
-  project.pagesManifest = pageData.manifest;
+  project.pageOrder = pageData.order;
 
   return project;
 };

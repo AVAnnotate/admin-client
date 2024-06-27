@@ -23,7 +23,7 @@ export const PageList: React.FC<Props> = (props) => {
   const [pickedUp, setPickedUp] = useState<DraggedPage | null>(null);
 
   const dateStrings = useMemo(() => {
-    return props.project.pagesManifest.map((uuid) => {
+    return props.project.pageOrder.map((uuid) => {
       const page = props.project.pages[uuid];
 
       if (page.updated_at) {
@@ -38,7 +38,7 @@ export const PageList: React.FC<Props> = (props) => {
 
   const onDrop = () => {
     if (pickedUp) {
-      let newSortedPages: string[] = [...props.project.pagesManifest];
+      let newSortedPages: string[] = [...props.project.pageOrder];
 
       newSortedPages.splice(pickedUp.originalIndex, 1);
       newSortedPages.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
@@ -99,13 +99,14 @@ export const PageList: React.FC<Props> = (props) => {
         </Button>
       </div>
       <div className='page-list-box-container'>
-        {props.project.pagesManifest.map((uuid, idx) => {
+        {props.project.pageOrder.map((uuid, idx) => {
           const page = props.project.pages[uuid];
 
           return (
             <Box
-              className={`page-list-box ${pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
-                }`}
+              className={`page-list-box ${
+                pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
+              }`}
               draggable
               key={uuid}
               onDragStart={(ev) => {
@@ -142,7 +143,7 @@ export const PageList: React.FC<Props> = (props) => {
                   {
                     label: t['Open'],
                     icon: BoxArrowUpRight,
-                    onClick: () => { },
+                    onClick: () => {},
                   },
                   {
                     label: t['Edit'],

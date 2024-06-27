@@ -32,7 +32,7 @@ export type apiEventsPost = {
   events?: NewEvent[];
 };
 
-export type apipagesManifestPost = {
+export type apiPageOrderPost = {
   order: string[];
 };
 
