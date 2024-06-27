@@ -92,15 +92,14 @@ const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
     }
   }
 
-  let order: string[] = []
+  let order: string[] = [];
 
-  const orderFile = fs.readFileSync(`/data/${dir}/order.json`)
-
-  if (orderFile) {
-    order = JSON.parse(orderFile as string)
+  if (fs.existsSync(`/data/${dir}/order.json`)) {
+    const orderFile = fs.readFileSync(`/data/${dir}/order.json`);
+    order = JSON.parse(orderFile as string);
   }
 
-  return { pages, order }
+  return { pages, order };
 };
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
@@ -130,8 +129,8 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
 
   const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
 
-  project.pages = pageData.pages
-  project.pageOrder = pageData.order
+  project.pages = pageData.pages;
+  project.pageOrder = pageData.order;
 
   return project;
 };
