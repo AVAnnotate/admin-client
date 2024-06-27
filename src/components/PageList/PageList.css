@@ -38,3 +38,8 @@
 .page-list-bottom-bar button {
   width: 276px;
 }
+
+.page-list-child-box {
+  margin-left: 60px;
+  width: initial;
+}

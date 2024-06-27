@@ -51,8 +51,15 @@ export const PageList: React.FC<Props> = (props) => {
     [props.project]
   );
 
+  console.log(pickedUp);
+
   const onDrop = async () => {
     if (pickedUp) {
+      // ignore if we're dropping in the same spot it came from
+      if (pickedUp.hoverIndex === pickedUp.originalIndex) {
+        return setPickedUp(null);
+      }
+
       const selectedPage = props.project.pages[pickedUp.uuid];
 
       let newArray = pageOrder.filter((k) => k !== pickedUp.uuid);
@@ -128,9 +135,7 @@ export const PageList: React.FC<Props> = (props) => {
                   }
                 }}
                 onDrop={async () => await onDrop()}
-                onDragEnd={() => {
-                  setPickedUp(null);
-                }}
+                onDragEnd={() => setPickedUp(null)}
                 height='56px'
                 width='100%'
               >
