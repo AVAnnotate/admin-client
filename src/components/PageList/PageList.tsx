@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import './PageList.css';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { Page, ProjectData, Translations } from '@ty/Types.ts';
 import { Box, Button, Text } from '@radix-ui/themes';
 import { BoxArrowUpRight, GripVertical, Trash } from 'react-bootstrap-icons';
 import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
+import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
+import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 
 interface Props {
   i18n: Translations;
@@ -18,12 +20,20 @@ interface DraggedPage {
 }
 
 export const PageList: React.FC<Props> = (props) => {
+  const [saving, setSaving] = useState(false);
+  const [pageOrder, setPageOrder] = useState(props.project.pageOrder);
+
   const { t } = props.i18n;
 
   const [pickedUp, setPickedUp] = useState<DraggedPage | null>(null);
 
+  const isChanged = useMemo(
+    () => pageOrder !== props.project.pageOrder,
+    [props.project.pageOrder, pageOrder]
+  )
+
   const dateStrings = useMemo(() => {
-    return props.project.pageOrder.map((uuid) => {
+    return pageOrder.map((uuid) => {
       const page = props.project.pages[uuid];
 
       if (page.updated_at) {
@@ -34,144 +44,166 @@ export const PageList: React.FC<Props> = (props) => {
         return `${t['Added']} ${dateStr}`;
       }
     });
-  }, [props.project.pages]);
+  }, [props.project]);
 
-  const onDrop = () => {
+  const projectSlug = useMemo(
+    () => `${props.project.project.gitHubOrg}+${props.project.project.slug}`,
+    [props.project]
+  );
+
+  const onDrop = async () => {
     if (pickedUp) {
-      let newSortedPages: string[] = [...props.project.pageOrder];
+      const selectedPage = props.project.pages[pickedUp.uuid]
 
-      newSortedPages.splice(pickedUp.originalIndex, 1);
-      newSortedPages.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
+      let newArray = pageOrder.filter(k => k !== pickedUp.uuid)
+      let newPage: Page | null = null
 
-      const newPages = { ...props.project.pages };
+      if (selectedPage.parent) {
+        const newParent = pageOrder
+          .slice(0, pickedUp.hoverIndex + 1)
+          .findLast((key) => !props.project.pages[key].parent);
 
-      // track the order of top-level pages
-      let parentOrderCounter = 1;
+        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid)
 
-      // track the order of child pages within each parent
-      // (this is reset to 1 when we get to the next parent page)
-      let childOrderCounter = 1;
-
-      newSortedPages.forEach((uuid, idx) => {
-        const page = props.project.pages[uuid];
-
-        // If a page is a child page, we need to find the most recent page *before*
-        // it in the array that's not a child. That page is its new parent.
-        if (page.parent) {
-          const parent = newSortedPages
-            .slice(0, idx)
-            .findLast((key) => !props.project.pages[key].parent);
-
-          if (parent) {
-            newPages[uuid] = {
-              ...page,
-              parent,
-              order: childOrderCounter,
-            };
-
-            childOrderCounter += 1;
-          } else {
-            console.log(
-              'No parent found for page. Something weird must have happened.'
-            );
-          }
+        if (newParent) {
+          newPage = { ...selectedPage, parent: newParent }
         } else {
-          // reset the child counter because this is not a child page
-          childOrderCounter = 1;
-          newPages[uuid] = {
-            ...page,
-            order: parentOrderCounter,
-          };
-          parentOrderCounter += 1;
+          `No new parent found for ${pickedUp.uuid}. Something went wrong :(`
         }
-      });
-      console.log(newPages);
+      } else {
+        const children = pageOrder
+          .filter(key => props.project.pages[key].parent === pickedUp.uuid)
+
+        newArray = newArray.filter(k => !children.includes(k))
+
+        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid, ...children)
+      }
+
+      setPageOrder(newArray)
     }
   };
 
-  return (
-    <div className='page-list'>
-      <div className='page-list-top-bar'>
-        <span>{t['All Pages']}</span>
-        <Button className='primary'>
-          <PlusIcon />
-          {t['Add']}
-        </Button>
-      </div>
-      <div className='page-list-box-container'>
-        {props.project.pageOrder.map((uuid, idx) => {
-          const page = props.project.pages[uuid];
+  const onSubmit = () => {
+    setSaving(true)
+    // if (props.project.pages[newArray[0]].parent) {
+    //   console.log('hi')
+    //   window.alert('oops')
+    // } else {
+    //   const res = await fetch(`/api/projects/${projectSlug}/pages/order`, {
+    //     method: 'PUT',
+    //     headers: {
+    //       'Content-Type': 'application/json',
+    //     },
+    //     body: JSON.stringify({ order: newArray }),
+    //   })
 
-          return (
-            <Box
-              className={`page-list-box ${
-                pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
-              }`}
-              draggable
-              key={uuid}
-              onDragStart={(ev) => {
-                setPickedUp({
-                  uuid: uuid,
-                  originalIndex: idx,
-                  hoverIndex: idx,
-                });
-              }}
-              onDragOver={(ev) => {
-                ev.preventDefault();
-                if (pickedUp) {
+    //   const data = await res.json()
+
+    //   setPageOrder(data.order)
+
+    //   if (newPage) {
+    //     console.log('todo: update page')
+    //   }
+    // }
+    setSaving(false)
+  }
+
+  return (
+    <>
+      {saving && <LoadingOverlay />}
+      <div className='page-list'>
+        <div className='page-list-top-bar'>
+          <span>{t['All Pages']}</span>
+          <Button className='primary'>
+            <PlusIcon />
+            {t['Add']}
+          </Button>
+        </div>
+        <div className='page-list-box-container'>
+          {pageOrder.map((uuid, idx) => {
+            const page = props.project.pages[uuid];
+
+            return (
+              <Box
+                className={`page-list-box ${pickedUp?.hoverIndex === idx ? 'page-list-box-hovered' : ''
+                  }`}
+                draggable
+                key={uuid}
+                onDragStart={(ev) => {
                   setPickedUp({
-                    ...pickedUp,
+                    uuid: uuid,
+                    originalIndex: idx,
                     hoverIndex: idx,
                   });
-                }
-              }}
-              onDrop={onDrop}
-              onDragEnd={() => {
-                setPickedUp(null);
-              }}
-              height='56px'
-              width='100%'
-            >
-              <GripVertical />
-              <Text weight='bold'>
-                {page.parent && '-- '}
-                {page.title}
-              </Text>
-              <span>{dateStrings[idx]}</span>
-              <MeatballMenu
-                buttons={[
-                  {
-                    label: t['Open'],
-                    icon: BoxArrowUpRight,
-                    onClick: () => {},
-                  },
-                  {
-                    label: t['Edit'],
-                    icon: Pencil2Icon,
-                    onClick: () =>
-                      (window.location.href = `${window.location.href}/pages/${uuid}`),
-                  },
-                  {
-                    label: t['Delete'],
-                    icon: Trash,
-                    onClick: async () => {
-                      await fetch(
-                        `/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${uuid}`,
-                        {
-                          method: 'DELETE',
-                        }
-                      );
-
-                      window.location.reload();
+                }}
+                onDragOver={(ev) => {
+                  ev.preventDefault();
+                  if (pickedUp) {
+                    setPickedUp({
+                      ...pickedUp,
+                      hoverIndex: idx,
+                    });
+                  }
+                }}
+                onDrop={async () => await onDrop()}
+                onDragEnd={() => {
+                  setPickedUp(null);
+                }}
+                height='56px'
+                width='100%'
+              >
+                <GripVertical />
+                <Text weight='bold'>
+                  {page.parent && '-- '}
+                  {page.title}
+                </Text>
+                <span>{dateStrings[idx]}</span>
+                <MeatballMenu
+                  buttons={[
+                    {
+                      label: t['Open'],
+                      icon: BoxArrowUpRight,
+                      onClick: () => { },
                     },
-                  },
-                ]}
-                row={page}
-              />
-            </Box>
-          );
-        })}
+                    {
+                      label: t['Edit'],
+                      icon: Pencil2Icon,
+                      onClick: () =>
+                        (window.location.href = `${window.location.href}/pages/${uuid}`),
+                    },
+                    {
+                      label: t['Delete'],
+                      icon: Trash,
+                      onClick: async () => {
+                        await fetch(
+                          `/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${uuid}`,
+                          {
+                            method: 'DELETE',
+                          }
+                        );
+
+                        window.location.reload();
+                      },
+                    },
+                  ]}
+                  row={page}
+                />
+              </Box>
+            );
+          })}
+        </div>
+        <BottomBar>
+          <div className='page-list-bottom-bar'>
+            <Button
+              className='primary'
+              disabled={!isChanged}
+              onClick={onSubmit}
+            >
+              {t['save']}
+            </Button>
+          </div>
+        </BottomBar>
       </div>
-    </div>
+    </>
   );
 };
