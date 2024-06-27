@@ -7,11 +7,12 @@ import {
   ToggleInput,
   UserList,
 } from '@components/Formic/index.tsx';
+import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput.tsx';
 import countryOptions from '@lib/language-codes.js';
 import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 
 import './ProjectForm.css';
 
@@ -49,6 +50,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
     mediaPlayer: 'avannotate',
     autoPopulateHomePage: true,
     additionalUsers: [],
+    headerMap: {},
     tags: {
       tagGroups: [],
       tags: [],
@@ -56,6 +58,22 @@ export const ProjectForm = (props: ProjectFormProps) => {
     createdAt: new Date().toDateString(),
     updatedAt: '',
   };
+
+  const importAsOptions = useMemo(
+    () => [
+      {
+        label: t['Tag Name'],
+        required: true,
+        value: 'tag_name',
+      },
+      {
+        label: t['Tag Category'],
+        required: true,
+        value: 'tag_category',
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>
@@ -194,7 +212,18 @@ export const ProjectForm = (props: ProjectFormProps) => {
               />
 
               <div className='project-form-divider' />
-              {/* <div ref={tagRef} /> */}
+
+              <div ref={tagRef} />
+              <h2>{t['Tags (optional)']}</h2>
+              <div className='av-label'>{t['lorem']}</div>
+              <SpreadsheetInput
+                accept='.tsv, .csv, .xlsx, .txt'
+                i18n={props.i18n}
+                label={t['Tags File']}
+                name='tags'
+                importAsOptions={importAsOptions}
+              />
+
               <BottomBar>
                 <div className='project-form-actions-container'>
                   <Button type='submit'>{t['Create Project']}</Button>

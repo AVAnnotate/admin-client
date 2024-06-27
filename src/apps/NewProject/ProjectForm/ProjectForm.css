@@ -1,11 +1,15 @@
 .project-form {
   width: 100%;
+  position: relative;
+  margin-bottom: 80px;
 }
 
 .project-form-container {
-  height: calc(100vh - 120px);
+  height: calc(100vh - 250px);
   width: 780px;
   overflow-y: scroll;
+  margin-bottom: 32px;
+  position: relative;
 }
 
 .project-form-divider {
