@@ -33,37 +33,44 @@ interface TableRowProps {
 
 // We have to do some tricky stuff here to make sure we clear
 // any existing headers assigned to this index.
-const setSelectValue = (val: string | undefined, index: number, ctx: FormikContextType<unknown>) => {
-  const newValues = Object.fromEntries(Object.entries((ctx.values as any).headerMap)
-    .filter(ent => ent[1] !== index))
+const setSelectValue = (
+  val: string | undefined,
+  index: number,
+  ctx: FormikContextType<unknown>
+) => {
+  const newValues = Object.fromEntries(
+    Object.entries((ctx.values as any).headerMap).filter(
+      (ent) => ent[1] !== index
+    )
+  );
 
   if (val) {
-    newValues[val] = index
+    newValues[val] = index;
   }
 
-  ctx.setFieldValue('headerMap', newValues)
-}
+  ctx.setFieldValue('headerMap', newValues);
+};
 
 const TableRow: React.FC<TableRowProps> = (props) => {
   const ctx = useFormikContext();
 
   const selectionValue = useMemo(() => {
-    const match = Object.entries((ctx.values as any).headerMap).find(ent => ent[1] === props.index)
+    const match = Object.entries((ctx.values as any).headerMap).find(
+      (ent) => ent[1] === props.index
+    );
 
     if (match) {
-      return match[0]
+      return match[0];
     }
 
-    return undefined
-  }, [(ctx.values as any).headerMap])
+    return undefined;
+  }, [(ctx.values as any).headerMap]);
 
   return (
     <Table.Row>
       <Table.RowHeaderCell>{props.header}</Table.RowHeaderCell>
       <Table.Cell className='preview-data-cell'>
-        <span>
-          {props.example}
-        </span>
+        <span>{props.example}</span>
         <ArrowRightIcon />
       </Table.Cell>
       <Table.Cell className='import-as-cell'>
@@ -81,13 +88,17 @@ const TableRow: React.FC<TableRowProps> = (props) => {
             </Select.Icon>
           </Select.Trigger>
           <Select.Portal>
-            <Select.Content className="select-content" position='popper'>
-              <Select.Viewport className="select-viewport">
+            <Select.Content className='select-content' position='popper'>
+              <Select.Viewport className='select-viewport'>
                 {props.importAsOptions.map((item) => {
                   const disabled = useMemo(() => {
-                    return Object.keys((ctx.values as any).headerMap).includes(item.value)
-                      && (ctx.values as any).headerMap[item.value] !== props.index;
-                  }, [ctx.values, item.value])
+                    return (
+                      Object.keys((ctx.values as any).headerMap).includes(
+                        item.value
+                      ) &&
+                      (ctx.values as any).headerMap[item.value] !== props.index
+                    );
+                  }, [ctx.values, item.value]);
 
                   return (
                     <Select.Item
@@ -98,11 +109,13 @@ const TableRow: React.FC<TableRowProps> = (props) => {
                     >
                       <Select.ItemText>
                         {item.label}
-                        {item.required && !disabled && <span className='required-asterisk'>*</span>}
+                        {item.required && !disabled && (
+                          <span className='required-asterisk'>*</span>
+                        )}
                       </Select.ItemText>
                       <Select.ItemIndicator />
                     </Select.Item>
-                  )
+                  );
                 })}
               </Select.Viewport>
             </Select.Content>
@@ -120,7 +133,7 @@ const TableRow: React.FC<TableRowProps> = (props) => {
         )}
       </Table.Cell>
     </Table.Row>
-  )
+  );
 };
 
 interface SpreadsheetInputProps {
@@ -234,6 +247,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
         </label>
       </div>
       <Separator.Root className='SeparatorRoot' decorative />
+      <div className='spreadsheet-input-headers-switch'></div>
       <h2>{t['File configuration']}</h2>
       <ToggleInput
         label={t['Import file contains column headers?']}
@@ -242,9 +256,15 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
       <Table.Root className='spreadsheet-input-table'>
         <Table.Header className='spreadsheet-input-table-header'>
           <Table.Row className='spreadsheet-input-table-row'>
-            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>{t['Column']}</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>{t['Preview Data']}</Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>{t['Import As']}</Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+              {t['Column']}
+            </Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+              {t['Preview Data']}
+            </Table.ColumnHeaderCell>
+            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+              {t['Import As']}
+            </Table.ColumnHeaderCell>
           </Table.Row>
         </Table.Header>
         <Table.Body>{tableRows}</Table.Body>

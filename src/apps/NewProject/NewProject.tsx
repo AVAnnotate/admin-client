@@ -62,7 +62,7 @@ export const NewProject = (props: NewProjectProps) => {
   };
 
   return (
-    <div className='new-project-container'>
+    <div className='new-project-container container'>
       {saving && <LoadingOverlay />}
       <h1>{t['Create New Project']}</h1>
       <div className='new-project-panes'>
@@ -77,6 +77,7 @@ export const NewProject = (props: NewProjectProps) => {
             allUsers={props.allUsers}
             onSave={handleSaveProject}
             orgs={props.orgs}
+            selection={selection}
           />
         </div>
       </div>

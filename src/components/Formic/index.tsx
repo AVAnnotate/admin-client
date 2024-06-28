@@ -1,9 +1,5 @@
 import { Button } from '@radix-ui/themes';
-import {
-  Field,
-  ErrorMessage,
-  useField,
-} from 'formik';
+import { Field, ErrorMessage, useField } from 'formik';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
 import type { ProviderUser, Translations } from '@ty/Types.ts';
@@ -11,7 +7,7 @@ import { Trash } from '@phosphor-icons/react/Trash';
 import { useCallback, useState } from 'react';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
 import { SlateInput } from './SlateInput.tsx';
-import * as Switch from '@radix-ui/react-switch'
+import * as Switch from '@radix-ui/react-switch';
 import { CheckIcon } from '@radix-ui/react-icons';
 
 export const Required = () => {
@@ -266,7 +262,7 @@ export const ToggleInput = (props: ToggleInputProps) => {
   const { value } = meta;
   const { setValue } = helpers;
   return (
-    <>
+    <div className='formic-form-switch-container'>
       <div className='av-label-bold formic-form-label'>
         {props.label}
         {props.required && <Required />}
@@ -290,7 +286,7 @@ export const ToggleInput = (props: ToggleInputProps) => {
           {props.bottomNote}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
