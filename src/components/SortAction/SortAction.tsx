@@ -20,10 +20,10 @@ export const Sorters = {
     a.project.title > b.project.title ? 1 : -1,
 
   Newest: (a: ProjectData, b: ProjectData) =>
-    a.project.createdAt < b.project.createdAt ? 1 : -1,
+    a.project.created_at < b.project.created_at ? 1 : -1,
 
   Oldest: (a: ProjectData, b: ProjectData) =>
-    a.project.createdAt > b.project.createdAt ? 1 : -1,
+    a.project.created_at > b.project.created_at ? 1 : -1,
 };
 
 const Icons = {

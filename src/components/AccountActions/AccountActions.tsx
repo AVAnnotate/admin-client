@@ -51,11 +51,7 @@ export const AccountActions = (props: AccountProps) => {
           props.children
         ) : (
           <div className='unstyled account-actions-trigger'>
-            <Avatar
-              id={profile.name}
-              name={profile.gitHubName}
-              avatar={profile.avatarURL}
-            />
+            <Avatar name={profile.gitHubName} avatar={profile.avatarURL} />
             <span className='profile-name'>
               {props.profile.gitHubName
                 ? props.profile.gitHubName

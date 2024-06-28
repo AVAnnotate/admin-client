@@ -40,23 +40,22 @@ export const ProjectForm = (props: ProjectFormProps) => {
   const tagRef = useRef(null);
 
   const emptyProject: Project = {
-    gitHubOrg: '',
+    github_org: '',
     title: '',
     description: '',
     language: 'en',
     slug: '',
     creator: '',
     authors: '',
-    mediaPlayer: 'avannotate',
-    autoPopulateHomePage: true,
-    additionalUsers: [],
-    headerMap: {},
+    media_player: 'avannotate',
+    auto_populate_home_page: true,
+    additional_users: [],
     tags: {
       tagGroups: [],
       tags: [],
     },
-    createdAt: new Date().toDateString(),
-    updatedAt: '',
+    created_at: new Date().toDateString(),
+    updated_at: '',
   };
 
   const importAsOptions = useMemo(

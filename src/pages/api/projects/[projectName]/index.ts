@@ -156,26 +156,25 @@ export const POST: APIRoute = async ({
 
     project = {
       publish: {
-        publishPagesApp: true,
-        publishSHA: '',
-        publishISODate: '',
+        publish_pages_app: true,
+        publish_sha: '',
+        publish_iso_date: '',
       },
       users: collabs,
       project: {
-        gitHubOrg: body.gitHubOrg,
+        github_org: body.gitHubOrg,
         title: body.title,
         description: body.description,
         language: body.language,
         slug: body.slug,
         creator: info!.profile.gitHubName as string,
         authors: body.projectAuthors,
-        mediaPlayer: body.mediaPlayer,
-        autoPopulateHomePage: body.autoPopulateHomePage,
-        additionalUsers: collabs,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
+        media_player: body.mediaPlayer,
+        auto_populate_home_page: body.autoPopulateHomePage,
+        additional_users: collabs,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
       },
-      events: [],
     };
 
     const success = await writeFile(

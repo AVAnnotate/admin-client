@@ -35,16 +35,16 @@ export const NewProject = (props: NewProjectProps) => {
 
     const body: apiProjectsProjectNamePost = {
       templateRepo: import.meta.env.PUBLIC_GIT_REPO_PROJECT_TEMPLATE,
-      gitHubOrg: project.gitHubOrg,
+      gitHubOrg: project.github_org,
       description: project.description,
       title: project.title,
       slug: project.slug,
       projectDescription: project.description,
       projectAuthors: project.authors,
-      mediaPlayer: project.mediaPlayer,
-      additionalUsers: project.additionalUsers.map((u) => u.loginName),
+      mediaPlayer: project.media_player,
+      additionalUsers: project.additional_users.map((u) => u.loginName),
       language: project.language,
-      autoPopulateHomePage: project.autoPopulateHomePage,
+      autoPopulateHomePage: project.auto_populate_home_page,
       visibility: 'public',
     };
 
