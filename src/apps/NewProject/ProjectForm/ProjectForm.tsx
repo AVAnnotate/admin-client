@@ -114,7 +114,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
               <div ref={generalRef} />
               <SelectInput
                 label={t['GitHub Organization']}
-                name='gitHubOrg'
+                name='git_hub_org'
                 options={props.orgs.map((o) => ({
                   value: o.orgName,
                   label: o.orgName,
@@ -181,7 +181,7 @@ export const ProjectForm = (props: ProjectFormProps) => {
                     'Your project can be presented using either the Universal Viewer or the Aviary Player to present media. Annotation-centered projects like digital editions generally work better with Universal Viewer, while media-centered projects like exhibitions may benefit from the Aviary Player. You can change viewers at any time in your project settings.'
                   ]
                 }
-                name='mediaPlayer'
+                name='media_player'
                 optionLeft={{
                   value: 'avannotate',
                   label: t['AV Annotate Viewer'],
@@ -197,14 +197,14 @@ export const ProjectForm = (props: ProjectFormProps) => {
               <ToggleInput
                 label={t['Auto-populate Home page']}
                 helperText=''
-                name='autoPopulateHomePage'
+                name='auto_populate_home_page'
               />
 
               <div className='project-form-divider' />
               <div ref={userRef} />
               <UserList
                 label={t['Additional Users (optional)']}
-                name='additionalUsers'
+                name='additional_users'
                 addString={t['add']}
                 nameString={t['User GitHub Name']}
                 i18n={props.i18n}
