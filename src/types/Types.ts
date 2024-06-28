@@ -51,7 +51,6 @@ export type Project = {
   mediaPlayer: MediaPlayer;
   autoPopulateHomePage: boolean;
   additionalUsers: ProviderUser[];
-  headerMap: { [key: string]: string };
   tags?: Tags;
   createdAt: string;
   updatedAt: string;

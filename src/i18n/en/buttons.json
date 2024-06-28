@@ -7,5 +7,6 @@
   "import": "Import",
   "Open": "Open",
   "Edit": "Edit",
-  "Delete": "Delete"
+  "Delete": "Delete",
+  "Undo": "Undo"
 }

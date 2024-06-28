@@ -16,16 +16,13 @@ interface Props {
   project: ProjectData;
 }
 
-
 const initialValues = {
   autogenerate_web_pages: true,
-  contains_headers: true,
-  headerMap: {},
   events: {
     data: [],
-    headers: []
-  }
-}
+    headers: [],
+  },
+};
 
 export const EventImport: React.FC<Props> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,20 +35,24 @@ export const EventImport: React.FC<Props> = (props) => {
   );
 
   const onSubmit = useCallback(async (data: any) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
-    const events = mapEventData(data.events.data, data.headerMap, data.autogenerate_web_pages)
+    const events = mapEventData(
+      data.events.data,
+      data.headerMap,
+      data.autogenerate_web_pages
+    );
 
-    events.forEach(ev => {
+    events.forEach((ev) => {
       if (ev.description) {
         ev.description = [
           {
             type: 'paragraph',
             children: [{ text: ev.description as unknown as string }],
           },
-        ]
+        ];
       }
-    })
+    });
 
     const res = await fetch(`/api/projects/${projectSlug}/events`, {
       method: 'POST',
@@ -59,12 +60,12 @@ export const EventImport: React.FC<Props> = (props) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ events }),
-    })
+    });
 
-    setIsSubmitting(false)
+    setIsSubmitting(false);
 
-    window.location.pathname = `/${lang}/projects/${projectSlug}`
-  }, [])
+    window.location.pathname = `/${lang}/projects/${projectSlug}`;
+  }, []);
 
   return (
     <>
@@ -79,82 +80,84 @@ export const EventImport: React.FC<Props> = (props) => {
         ]}
       />
       <div className='container'>
-        <Formik
-          initialValues={initialValues}
-          onSubmit={onSubmit}
-        >
+        <Formik initialValues={initialValues} onSubmit={onSubmit}>
           <FormContents {...props} isSubmitting={isSubmitting} />
         </Formik>
       </div>
     </>
-  )
-}
+  );
+};
 
 interface FormContentsProps extends Props {
-  isSubmitting: boolean
+  isSubmitting: boolean;
 }
 
 export const FormContents: React.FC<FormContentsProps> = (props) => {
+  const [headerMap, setHeaderMap] = useState({});
+
   const { t } = props.i18n;
 
-  const importAsOptions = useMemo(() => ([
-    {
-      label: t['Audiovisual file label'],
-      required: true,
-      value: 'audiovisual_file_label'
-    },
-    {
-      label: t['Audiovisual file URL'],
-      required: true,
-      value: 'audiovisual_file_url'
-    },
-    {
-      label: t['Audiovisual file duration'],
-      required: true,
-      value: 'audiovisual_file_duration'
-    },
-    {
-      label: t['Item Type'],
-      required: true,
-      value: 'item_type'
-    },
-    {
-      label: t['Label'],
-      required: true,
-      value: 'label'
-    },
-    {
-      label: t['Description'],
-      value: 'description'
-    },
-    {
-      label: t['Citation'],
-      value: 'citation'
-    }
-  ]), [])
+  const importAsOptions = useMemo(
+    () => [
+      {
+        label: t['Audiovisual file label'],
+        required: true,
+        value: 'audiovisual_file_label',
+      },
+      {
+        label: t['Audiovisual file URL'],
+        required: true,
+        value: 'audiovisual_file_url',
+      },
+      {
+        label: t['Audiovisual file duration'],
+        required: true,
+        value: 'audiovisual_file_duration',
+      },
+      {
+        label: t['Item Type'],
+        required: true,
+        value: 'item_type',
+      },
+      {
+        label: t['Label'],
+        required: true,
+        value: 'label',
+      },
+      {
+        label: t['Description'],
+        value: 'description',
+      },
+      {
+        label: t['Citation'],
+        value: 'citation',
+      },
+    ],
+    []
+  );
 
-  const { values }: { values: typeof initialValues } = useFormikContext()
+  const { values }: { values: typeof initialValues } = useFormikContext();
 
   // Check whether all the required fields are mapped
   // to something in the spreadsheet.
   const requiredFieldsSet = useMemo(() => {
-    const requiredFields = importAsOptions.filter(f => f.required)
-    const selectedFields = Object.keys(values.headerMap)
+    const requiredFields = importAsOptions.filter((f) => f.required);
+    const selectedFields = Object.keys(headerMap);
 
-    return requiredFields
-      .filter(f => !selectedFields.includes(f.value))
-      .length === 0
-  }, [values])
+    return (
+      requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
+      0
+    );
+  }, [values]);
 
   return (
     <>
-
       <Form className='event-import-form'>
         <h1>{t['Import events file']}</h1>
         <p>
           {
             t[
-            "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project's events."
+              "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project's events."
             ]
           }
         </p>
@@ -163,21 +166,20 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
           i18n={props.i18n}
           label={t['Events file']}
           name='events'
+          headerMap={headerMap}
+          setHeaderMap={setHeaderMap}
           importAsOptions={importAsOptions}
         />
-        <Separator.Root
-          className="SeparatorRoot"
-          decorative
-        />
+        <Separator.Root className='SeparatorRoot' decorative />
         <ToggleInput
           helperText={t['lorem']}
           label={t['Auto-generate web page for this event?']}
           name='autogenerate_web_pages'
         />
         <BottomBar>
-          <div className="bottom-bar-flex">
+          <div className='bottom-bar-flex'>
             <Button
-              className="cancel-button outline"
+              className='cancel-button outline'
               onClick={() => history.back()}
               type='button'
               variant='outline'
@@ -185,7 +187,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
               {t['cancel']}
             </Button>
             <Button
-              className="save-button primary"
+              className='save-button primary'
               disabled={props.isSubmitting || !requiredFieldsSet}
               type='submit'
             >
@@ -194,7 +196,6 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
           </div>
         </BottomBar>
       </Form>
-
     </>
   );
 };

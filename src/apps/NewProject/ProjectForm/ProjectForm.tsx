@@ -50,7 +50,6 @@ export const ProjectForm = (props: ProjectFormProps) => {
     mediaPlayer: 'avannotate',
     autoPopulateHomePage: true,
     additionalUsers: [],
-    headerMap: {},
     tags: {
       tagGroups: [],
       tags: [],

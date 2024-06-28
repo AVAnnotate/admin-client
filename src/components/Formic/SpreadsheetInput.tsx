@@ -3,23 +3,16 @@ import type {
   ParseAnnotationResults,
   Translations,
 } from '@ty/Types.ts';
-import { useCallback, useEffect, useMemo, useRef } from 'react';
-import { Required, ToggleInput } from './index.tsx';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Required } from './index.tsx';
 import * as Separator from '@radix-ui/react-separator';
 import './Formic.css';
 import { ArrowRightIcon, CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
 import { parseSpreadsheetData } from '@lib/parse/index.ts';
-import { useFormikContext, type FormikContextType } from 'formik';
+import { useFormikContext } from 'formik';
 import { Button, ChevronDownIcon, Table } from '@radix-ui/themes';
 import * as Select from '@radix-ui/react-select';
-
-interface BaseFormValues {
-  contains_headers: boolean;
-}
-
-interface FormValues extends BaseFormValues {
-  [key: string]: any;
-}
+import * as Switch from '@radix-ui/react-switch';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -29,6 +22,8 @@ interface TableRowProps {
   importAsOptions: DropdownOption[];
   i18n: Translations;
   index: number;
+  headerMap: any;
+  setHeaderMap: (val: any) => void;
 }
 
 // We have to do some tricky stuff here to make sure we clear
@@ -36,26 +31,23 @@ interface TableRowProps {
 const setSelectValue = (
   val: string | undefined,
   index: number,
-  ctx: FormikContextType<unknown>
+  headerMap: any,
+  setHeaderMap: (val: any) => void
 ) => {
   const newValues = Object.fromEntries(
-    Object.entries((ctx.values as any).headerMap).filter(
-      (ent) => ent[1] !== index
-    )
+    Object.entries(headerMap).filter((ent: any) => ent[1] !== index)
   );
 
   if (val) {
     newValues[val] = index;
   }
 
-  ctx.setFieldValue('headerMap', newValues);
+  setHeaderMap(newValues);
 };
 
 const TableRow: React.FC<TableRowProps> = (props) => {
-  const ctx = useFormikContext();
-
   const selectionValue = useMemo(() => {
-    const match = Object.entries((ctx.values as any).headerMap).find(
+    const match = Object.entries(props.headerMap).find(
       (ent) => ent[1] === props.index
     );
 
@@ -64,7 +56,7 @@ const TableRow: React.FC<TableRowProps> = (props) => {
     }
 
     return undefined;
-  }, [(ctx.values as any).headerMap]);
+  }, [props.headerMap]);
 
   return (
     <Table.Row>
@@ -78,7 +70,14 @@ const TableRow: React.FC<TableRowProps> = (props) => {
           // Without this key prop, the Select won't re-render when
           // the value is set to undefined.
           key={selectionValue}
-          onValueChange={(val) => setSelectValue(val, props.index, ctx)}
+          onValueChange={(val) =>
+            setSelectValue(
+              val,
+              props.index,
+              props.headerMap,
+              props.setHeaderMap
+            )
+          }
           value={selectionValue}
         >
           <Select.Trigger className='select-trigger'>
@@ -93,12 +92,10 @@ const TableRow: React.FC<TableRowProps> = (props) => {
                 {props.importAsOptions.map((item) => {
                   const disabled = useMemo(() => {
                     return (
-                      Object.keys((ctx.values as any).headerMap).includes(
-                        item.value
-                      ) &&
-                      (ctx.values as any).headerMap[item.value] !== props.index
+                      Object.keys(props.headerMap).includes(item.value) &&
+                      props.headerMap[item.value] !== props.index
                     );
-                  }, [ctx.values, item.value]);
+                  }, [props.headerMap, item.value]);
 
                   return (
                     <Select.Item
@@ -121,10 +118,17 @@ const TableRow: React.FC<TableRowProps> = (props) => {
             </Select.Content>
           </Select.Portal>
         </Select.Root>
-        {Object.values((ctx.values as any).headerMap).includes(props.index) && (
+        {Object.values(props.headerMap).includes(props.index) && (
           <Button
             className='remove-value-button'
-            onClick={() => setSelectValue(undefined, props.index, ctx)}
+            onClick={() =>
+              setSelectValue(
+                undefined,
+                props.index,
+                props.headerMap,
+                props.setHeaderMap
+              )
+            }
             type='button'
             variant='ghost'
           >
@@ -143,40 +147,48 @@ interface SpreadsheetInputProps {
   i18n: Translations;
   name: string;
   importAsOptions: DropdownOption[];
+  headerMap?: any;
+  setHeaderMap?: (arg: any) => void;
 }
 
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
+  const [file, setFile] = useState<File | null>(null);
+  const [containsHeaders, setContainsHeaders] = useState(true);
+  const [displayPreview, setDisplayPreview] = useState(false);
+
+  // allow headermap and setheadermap to be optionally passed
+  // by a parent component (if the parent needs access to the
+  // value) or managed internally
+  const [myHeaderMap, setMyHeaderMap] = useState<any>({});
+  const headerMap = props.headerMap || myHeaderMap;
+  const setHeaderMap = props.setHeaderMap || setMyHeaderMap;
+
   const { t } = props.i18n;
-  const { setFieldValue, values }: { [key: string]: any; values: FormValues } =
+
+  const { setFieldValue, values }: { [key: string]: any; values: any } =
     useFormikContext();
 
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const parseData = useCallback(
-    async (file: File, containsHeaders: boolean) => {
+    async (file: File) => {
       const parsed = await parseSpreadsheetData(file, containsHeaders);
 
+      setDisplayPreview(false);
       setFieldValue(props.name, parsed);
     },
-    []
+    [containsHeaders]
   );
 
-  const onFileChange = async (event: any) => {
-    if (event.target.files && event.target.files.length > 0) {
-      await parseData(event.target.files[0], values.contains_headers);
-    } else {
-      setFieldValue(props.name, null);
-    }
-  };
-
-  // Re-parse when the user toggles the headers option
   useEffect(() => {
-    if (fileInputRef.current?.files && fileInputRef.current?.files.length > 0) {
-      // note: `await` is intentionally left off here.
-      //       calling async functions in useEffect is ANNOYING.
-      parseData(fileInputRef.current?.files[0], values.contains_headers);
-    }
-  }, [values.contains_headers]);
+    const handleFile = async () => {
+      if (file) {
+        await parseData(file);
+      } else {
+        setFieldValue(props.name, null);
+      }
+    };
+
+    handleFile();
+  }, [file, containsHeaders]);
 
   const tableRows = useMemo(() => {
     const headers = (values[props.name] as ParseAnnotationResults)?.headers;
@@ -189,10 +201,12 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
         <TableRow
           header={fieldName}
           example={firstItem[idx]}
-          i18n={props.i18n}
           index={idx}
-          importAsOptions={props.importAsOptions}
           key={idx}
+          headerMap={headerMap}
+          setHeaderMap={setHeaderMap}
+          importAsOptions={props.importAsOptions}
+          i18n={props.i18n}
         />
       ));
     } else if (firstItem) {
@@ -200,14 +214,16 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
         <TableRow
           header={alphabet[idx]}
           example={value}
-          i18n={props.i18n}
           index={idx}
-          importAsOptions={props.importAsOptions}
           key={idx}
+          headerMap={headerMap}
+          setHeaderMap={setHeaderMap}
+          importAsOptions={props.importAsOptions}
+          i18n={props.i18n}
         />
       ));
     }
-  }, [values[props.name]]);
+  }, [values[props.name], headerMap]);
 
   return (
     <div className='formic-spreadsheet-input'>
@@ -240,35 +256,93 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
           <input
             accept={props.accept}
             className='formic-spreadsheet-input-el'
-            onChange={onFileChange}
-            ref={fileInputRef}
+            onChange={(ev) =>
+              setFile(
+                ev.target.files && ev.target.files.length > 0
+                  ? ev.target.files[0]
+                  : null
+              )
+            }
             type='file'
           />
         </label>
       </div>
-      <Separator.Root className='SeparatorRoot' decorative />
-      <div className='spreadsheet-input-headers-switch'></div>
-      <h2>{t['File configuration']}</h2>
-      <ToggleInput
-        label={t['Import file contains column headers?']}
-        name='contains_headers'
-      />
-      <Table.Root className='spreadsheet-input-table'>
-        <Table.Header className='spreadsheet-input-table-header'>
-          <Table.Row className='spreadsheet-input-table-row'>
-            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
-              {t['Column']}
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
-              {t['Preview Data']}
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
-              {t['Import As']}
-            </Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
-        <Table.Body>{tableRows}</Table.Body>
-      </Table.Root>
+      {file && (
+        <>
+          <Separator.Root className='SeparatorRoot' decorative />
+          <div className='spreadsheet-input-headers-switch'></div>
+          <h2>{t['File configuration']}</h2>
+          <div className='options-row'>
+            <div>
+              <div className='av-label-bold formic-form-label'>
+                {t['Import file contains column headers?']}
+              </div>
+              {props.helperText && (
+                <div className='av-label formic-form-helper-text'>
+                  {props.helperText}
+                </div>
+              )}
+              <Switch.Root
+                checked={containsHeaders}
+                onCheckedChange={(checked) => setContainsHeaders(checked)}
+                className='formic-toggle-switch'
+              >
+                <CheckIcon className='formic-toggle-switch-icon' />
+                <Switch.Thumb className='formic-toggle-switch-thumb' />
+              </Switch.Root>
+            </div>
+            <div>
+              <Button
+                className='primary'
+                onClick={() => setDisplayPreview(!displayPreview)}
+                type='button'
+              >
+                {displayPreview ? t['Undo'] : t['import']}
+              </Button>
+            </div>
+          </div>
+          {displayPreview && (
+            <Table.Root className='spreadsheet-preview-table'>
+              <Table.Header className='spreadsheet-input-table-header'>
+                <Table.Row className='spreadsheet-input-table-row'>
+                  {props.importAsOptions.map((opt) => (
+                    <Table.ColumnHeaderCell>{opt.label}</Table.ColumnHeaderCell>
+                  ))}
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>
+                {(values as any)[props.name].data.map(
+                  (item: any, idx: number) => (
+                    <Table.Row key={idx}>
+                      {props.importAsOptions.map((opt) => (
+                        <Table.Cell>{item[headerMap[opt.value]]}</Table.Cell>
+                      ))}
+                    </Table.Row>
+                  )
+                )}
+              </Table.Body>
+            </Table.Root>
+          )}
+          {!displayPreview && (
+            <Table.Root className='spreadsheet-input-table'>
+              <Table.Header className='spreadsheet-input-table-header'>
+                <Table.Row className='spreadsheet-input-table-row'>
+                  <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+                    {t['Column']}
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+                    {t['Preview Data']}
+                  </Table.ColumnHeaderCell>
+                  <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+                    {t['Import As']}
+                  </Table.ColumnHeaderCell>
+                </Table.Row>
+              </Table.Header>
+              <Table.Body>{tableRows}</Table.Body>
+            </Table.Root>
+          )}
+        </>
+      )}
     </div>
   );
 };
