@@ -117,8 +117,8 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   const project: ProjectData = JSON.parse(proj as string);
 
   project.users.push({
-    loginName: userInfo.profile.gitHubName as string,
-    avatarURL: userInfo.profile.avatarURL,
+    login_name: userInfo.profile.gitHubName as string,
+    avatar_url: userInfo.profile.avatarURL,
     admin: true,
   });
 
@@ -156,8 +156,8 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
       );
       projectData.users = collabs.map((u: any) => {
         return {
-          loginName: u.login,
-          avatarURL: u.avatar_url,
+          login_name: u.login,
+          avatar_url: u.avatar_url,
           admin: u.site_admin,
         };
       });

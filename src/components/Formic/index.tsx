@@ -307,7 +307,9 @@ export const UserList = (props: UserListProps) => {
   const { setValue } = helpers;
 
   const handleDeleteUser = (user: ProviderUser) => {
-    setValue(value.filter((v: ProviderUser) => v.loginName !== user.loginName));
+    setValue(
+      value.filter((v: ProviderUser) => v.login_name !== user.login_name)
+    );
   };
   return (
     <div>
@@ -324,12 +326,12 @@ export const UserList = (props: UserListProps) => {
       />
       <div className='formic-user-list'>
         {value.map((user: ProviderUser) => (
-          <div className='formic-user-list-row' key={user.loginName}>
+          <div className='formic-user-list-row' key={user.login_name}>
             <div className='formnic-user-list-user-box'>
-              <Avatar name={user.name} avatar={user.avatarURL} />
+              <Avatar name={user.name} avatar={user.avatar_url} />
               <div className='formic-user-list-names'>
                 <div className='av-label-bold'>{user.name}</div>
-                <div className='av-label'>{user.loginName}</div>
+                <div className='av-label'>{user.login_name}</div>
               </div>
             </div>
             <Button className='formic-user-list-delete-button'>

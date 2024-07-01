@@ -119,8 +119,8 @@ export const POST: APIRoute = async ({
           const data = await userResp.json();
 
           collabs.push({
-            loginName: data.login,
-            avatarURL: data.avatar_url,
+            login_name: data.login,
+            avatar_url: data.avatar_url,
             admin: false,
           });
         }
@@ -129,8 +129,8 @@ export const POST: APIRoute = async ({
         const data: RepositoryInvitation = await respCollabs.json();
 
         collabs.push({
-          loginName: data.invitee!.login,
-          avatarURL: data.invitee!.avatar_url,
+          login_name: data.invitee!.login,
+          avatar_url: data.invitee!.avatar_url,
           admin: data.permissions === 'admin',
         });
       }

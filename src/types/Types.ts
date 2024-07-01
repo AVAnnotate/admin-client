@@ -57,8 +57,8 @@ export type Project = {
 };
 
 export type ProviderUser = {
-  loginName: string;
-  avatarURL?: string;
+  login_name: string;
+  avatar_url?: string;
   admin: boolean;
   name?: string;
 };
@@ -73,7 +73,7 @@ export type AudiovisualFile = {
   label: string;
   file_url: string;
   duration: number;
-}
+};
 
 export type Event = {
   audiovisual_files: { [key: string]: AudiovisualFile };
