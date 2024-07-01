@@ -1,0 +1,28 @@
+.page-form .page-form-body {
+  margin-bottom: 100px;
+}
+
+.page-form .top-config-bar {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+}
+
+.page-form .bottom-bar-flex {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.page-form .bottom-bar-flex button {
+  padding: 16px 18px 16px 18px;
+}
+
+.page-form .bottom-bar-flex .save-button {
+  width: 276px;
+}
+
+.page-form .bottom-bar-flex .cancel-button {
+  width: 176px;
+}

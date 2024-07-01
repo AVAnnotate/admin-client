@@ -1,14 +1,91 @@
-import type { FormPage, Page } from '@ty/Types.ts';
+import {
+  RichTextInput,
+  SelectInput,
+  TextInput,
+} from '@components/Formic/index.tsx';
+import type { FormPage, Page, ProjectData, Translations } from '@ty/Types.ts';
+import { Form, Formik, useFormikContext } from 'formik';
+import './PageForm.css';
+import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
+import { Button } from '@radix-ui/themes';
+import { useMemo } from 'react';
 
 const defaultPage: FormPage = {
   content: [],
   title: '',
+  parent: undefined,
 };
 
 interface Props {
+  i18n: Translations;
   page?: Page;
+  uuid?: string;
+  onSubmit: (page: FormPage) => Promise<any>;
+  project: ProjectData;
 }
 
+const FormContents: React.FC<Props> = (props) => {
+  const { t } = props.i18n;
+  const { isSubmitting } = useFormikContext();
+
+  const parentPageOptions = useMemo(
+    () =>
+      Object.keys(props.project.pages)
+        .filter((uuid) => uuid !== props.uuid)
+        .map((uuid) => {
+          const page = props.project.pages[uuid];
+          return {
+            label: page.title,
+            value: uuid,
+          };
+        }),
+    [props.uuid, props.project.pages]
+  );
+
+  return (
+    <Form className='page-form'>
+      <div className='page-form-body'>
+        <div className='top-config-bar'>
+          <div>
+            <TextInput label={t['Title']} name='title' required />
+          </div>
+          <div>
+            <SelectInput
+              label={t['Parent Page']}
+              name='parent'
+              options={parentPageOptions}
+            />
+          </div>
+        </div>
+        <RichTextInput name='content' />
+      </div>
+      <BottomBar>
+        <div className='bottom-bar-flex'>
+          <Button
+            className='cancel-button outline'
+            onClick={() => history.back()}
+            type='button'
+            variant='outline'
+          >
+            {t['cancel']}
+          </Button>
+          <Button
+            className='save-button primary'
+            disabled={isSubmitting}
+            type='submit'
+          >
+            {t['save']}
+          </Button>
+        </div>
+      </BottomBar>
+    </Form>
+  );
+};
+
 export const PageForm: React.FC<Props> = (props) => {
-  return <p>WIP</p>;
+  return (
+    <Formik initialValues={props.page || defaultPage} onSubmit={props.onSubmit}>
+      <FormContents {...props} />
+    </Formik>
+  );
 };

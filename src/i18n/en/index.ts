@@ -17,6 +17,7 @@ export default {
   'sign-out': signOut,
   'sign-in': signIn,
   projects: { ...projects, ...buttons, ...pages, ...all },
+  pages: { ...buttons, ...pages, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
   events: { ...events, ...projects, ...buttons, ...all },
 };

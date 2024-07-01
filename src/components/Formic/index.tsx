@@ -1,5 +1,5 @@
 import { Button } from '@radix-ui/themes';
-import { Field, ErrorMessage, useField } from 'formik';
+import { Field, ErrorMessage, useField, useFormikContext } from 'formik';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
 import type { ProviderUser, Translations } from '@ty/Types.ts';
@@ -56,10 +56,12 @@ export const TextInput = (props: TextInputProps) => {
 
 interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
   initialValue?: any;
-  onChange: (data: any) => any;
+  name: string;
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
+  const { setFieldValue } = useFormikContext();
+
   return (
     <div className={`formic-form-field ${props.className || ''}`}>
       {props.label && (
@@ -73,7 +75,10 @@ export const RichTextInput = (props: RichTextInputProps) => {
           {props.helperText}
         </div>
       )}
-      <SlateInput onChange={props.onChange} initialValue={props.initialValue} />
+      <SlateInput
+        onChange={(data) => setFieldValue(props.name, data)}
+        initialValue={props.initialValue}
+      />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
           {props.bottomNote}
@@ -136,7 +141,7 @@ export const TimeInput = (props: TimeInputProps) => {
   );
 };
 
-interface SelectInputProps {
+export interface SelectInputProps {
   label: string;
   helperText?: string;
   name: string;

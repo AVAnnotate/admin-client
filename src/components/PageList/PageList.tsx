@@ -100,7 +100,12 @@ export const PageList: React.FC<Props> = (props) => {
       <div className='page-list'>
         <div className='page-list-top-bar'>
           <span>{t['All Pages']}</span>
-          <Button className='primary'>
+          <Button
+            className='primary'
+            onClick={() =>
+              (window.location.pathname = `${window.location.pathname}/pages/new`)
+            }
+          >
             <PlusIcon />
             {t['Add']}
           </Button>
