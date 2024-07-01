@@ -97,7 +97,34 @@ export interface NewEvent
   updated_by?: string;
 }
 
+export type Page = {
+  content: Node[];
+  created_at: string;
+  created_by: string;
+  title: string;
+  order: number;
+  parent?: string;
+  updated_at: string;
+  updated_by: string;
+};
+
+export interface NewPage
+  extends Omit<
+    Page,
+    'created_at' | 'created_by' | 'updated_at' | 'updated_by'
+  > {
+  created_at?: string;
+  created_by?: string;
+  updated_at?: string;
+  updated_by?: string;
+}
+
 export type ProjectData = {
+  events: { [key: string]: Event };
+
+  pages: { [key: string]: Page };
+  pageOrder: string[];
+
   project: Project;
 
   users: ProviderUser[];

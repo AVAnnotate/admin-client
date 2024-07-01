@@ -2,11 +2,10 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { apiEventsPost } from '@ty/api.ts';
+import type { apiPagePost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
 
-// Create a new event
 export const POST: APIRoute = async ({
   cookies,
   params,
@@ -26,7 +25,7 @@ export const POST: APIRoute = async ({
     return redirect('/', 307);
   }
 
-  const body: apiEventsPost = await request.json();
+  const body: apiPagePost = await request.json();
 
   const created_at = new Date().toJSON();
   const created_by = info.profile.gitHubName as string;
@@ -42,18 +41,17 @@ export const POST: APIRoute = async ({
     userInfo: info,
   });
 
-  let uuids: string[] = [];
+  let titles: string[] = [];
 
-  // Support a single event or an array of events
-  (body.events || [body.event]).forEach((ev) => {
+  (body.pages || [body.page]).forEach((page) => {
     const uuid = uuidv4();
 
-    const filepath = `/data/events/${uuid}.json`;
+    const filepath = `/data/pages/${uuid}.json`;
 
     writeFile(
       filepath,
       JSON.stringify({
-        ...ev,
+        ...page,
         created_at,
         created_by,
         updated_at,
@@ -61,12 +59,12 @@ export const POST: APIRoute = async ({
       })
     );
 
-    uuids.push(uuid);
+    titles.push(page!.title);
   });
 
-  const commitMessage = body.events
-    ? `Added ${body.events.length} events`
-    : `Added event ${uuids[0]}`;
+  const commitMessage = body.pages
+    ? `Added ${body.pages.length} pages`
+    : `Added page "${titles[0]}"`;
 
   const successCommit = await commitAndPush(commitMessage);
 
@@ -78,5 +76,5 @@ export const POST: APIRoute = async ({
     });
   }
 
-  return new Response(JSON.stringify(body), { status: 200 });
+  return new Response(JSON.stringify(event), { status: 200 });
 };

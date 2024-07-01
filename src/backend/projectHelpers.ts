@@ -11,6 +11,7 @@ import type {
   AllProjects,
   ProjectData,
   Event,
+  Page,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
@@ -61,21 +62,44 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   return repos;
 };
 
-const getEventData = (fs: IFs, filenames: string[]) => {
-  const events: { [key: string]: Event } = {};
+const getDirData = (fs: IFs, filenames: string[], dir: string) => {
+  const data: { [key: string]: any } = {};
 
   for (const filename of filenames) {
     try {
-      const data = fs.readFileSync(`/data/events/${filename}`);
-      events[filename.replace('.json', '')] = JSON.parse(
-        data as unknown as string
-      );
+      const contents = fs.readFileSync(`/data/${dir}/${filename}`);
+      data[filename.replace('.json', '')] = JSON.parse(contents as string);
     } catch (e: any) {
       console.warn(`Error fetching data for event ${filename}: ${e.message}`);
     }
   }
 
-  return events;
+  return data;
+};
+
+export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
+  const pages: { [key: string]: Page } = {};
+
+  // Fill two separate arrays depending on whether a
+  // page is a child or a parent.
+  for (const filename of topLevelNames) {
+    if (filename !== 'order.json') {
+      const contents: Page = JSON.parse(
+        fs.readFileSync(`/data/${dir}/${filename}`) as string
+      );
+
+      pages[filename.replace('.json', '')] = contents;
+    }
+  }
+
+  let order: string[] = [];
+
+  if (fs.existsSync(`/data/${dir}/order.json`)) {
+    const orderFile = fs.readFileSync(`/data/${dir}/order.json`);
+    order = JSON.parse(orderFile as string);
+  }
+
+  return { pages, order };
 };
 
 export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
@@ -99,8 +123,14 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
   });
 
   const eventFiles = exists('/data/events') ? readDir('/data/events') : [];
+  const pageFiles = exists('/data/pages') ? readDir('/data/pages') : [];
 
-  project.events = getEventData(fs, eventFiles as unknown as string[]);
+  project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
+
+  const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
+
+  project.pages = pageData.pages;
+  project.pageOrder = pageData.order;
 
   return project;
 };
