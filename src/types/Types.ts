@@ -70,12 +70,14 @@ export type Publish = {
   publishISODate: string;
 };
 
+export type AudiovisualFile = {
+  label: string;
+  file_url: string;
+  duration: number;
+}
+
 export type Event = {
-  audiovisual_files: {
-    label: string;
-    file_url: string;
-    duration: number;
-  }[];
+  audiovisual_files: { [key: string]: AudiovisualFile };
   auto_generate_web_page: boolean;
   description: Node[];
   citation?: string;
@@ -87,7 +89,7 @@ export type Event = {
   updated_by: string;
 };
 
-export interface NewEvent
+export interface FormEvent
   extends Omit<
     Event,
     'created_at' | 'created_by' | 'updated_at' | 'updated_by'

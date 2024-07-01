@@ -1,11 +1,10 @@
 import type {
   AnnotationEntry,
-  Event,
-  NewEvent,
+  FormEvent,
   ParseAnnotationResults,
-  UserInfo,
 } from '@ty/Types.ts';
 import { read, utils } from 'xlsx';
+import { v4 as uuidv4 } from 'uuid';
 
 export const parseSpreadsheetData = async (
   data: File,
@@ -54,15 +53,15 @@ export const mapEventData = (
   data: any[],
   map: { [key: string]: number },
   autoGenerateWebpage: boolean
-): NewEvent[] => {
+): FormEvent[] => {
   return data.map((item) => ({
-    audiovisual_files: [
-      {
+    audiovisual_files: {
+      [uuidv4()]: {
         label: item[map['audiovisual_file_label']],
         file_url: item[map['audiovisual_file_url']],
         duration: item[map['audiovisual_file_duration']],
       },
-    ],
+    },
     auto_generate_web_page: autoGenerateWebpage,
     citation: item[map['citation']],
     item_type: item[map['item_type']],
