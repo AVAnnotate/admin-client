@@ -47,11 +47,9 @@ export const PageList: React.FC<Props> = (props) => {
   }, [props.project]);
 
   const projectSlug = useMemo(
-    () => `${props.project.project.gitHubOrg}+${props.project.project.slug}`,
+    () => `${props.project.project.github_org}+${props.project.project.slug}`,
     [props.project]
   );
-
-  console.log(pickedUp);
 
   const onDrop = async () => {
     if (pickedUp) {
@@ -163,7 +161,7 @@ export const PageList: React.FC<Props> = (props) => {
                       icon: Trash,
                       onClick: async () => {
                         await fetch(
-                          `/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${uuid}`,
+                          `/api/projects/${props.project.project.github_org}+${props.project.project.slug}/events/${uuid}`,
                           {
                             method: 'DELETE',
                           }
