@@ -7,7 +7,7 @@ import {
   ToggleInput,
   UserList,
 } from '@components/Formic/index.tsx';
-import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput.tsx';
+import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/SpreadsheetInput.tsx';
 import countryOptions from '@lib/language-codes.js';
 import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
@@ -15,6 +15,7 @@ import { Button } from '@radix-ui/themes';
 import { useEffect, useRef, useState, useMemo } from 'react';
 
 import './ProjectForm.css';
+import { SpreadsheetInputContextComponent } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 
 export interface ProjectFormProps {
   project?: Project;
@@ -30,7 +31,7 @@ export interface ProjectFormProps {
   onSave(project: Project): void;
 }
 
-export const ProjectForm = (props: ProjectFormProps) => {
+const FormContents = (props: ProjectFormProps) => {
   const { t } = props.i18n;
 
   const [searchOpen, setSearchOpen] = useState(false);
@@ -238,5 +239,13 @@ export const ProjectForm = (props: ProjectFormProps) => {
         </Formik>
       </div>
     </div>
+  );
+};
+
+export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
+  return (
+    <SpreadsheetInputContextComponent>
+      <FormContents {...props} />
+    </SpreadsheetInputContextComponent>
   );
 };

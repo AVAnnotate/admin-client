@@ -1,15 +1,19 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
-import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput.tsx';
+import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/SpreadsheetInput.tsx';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import { Form, Formik, useFormikContext } from 'formik';
+import { Form, Formik } from 'formik';
 import type React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useContext, useMemo, useState } from 'react';
 import './EventImport.css';
 import { ToggleInput } from '@components/Formic/index.tsx';
 import { BottomBar } from '@components/BottomBar/index.ts';
 import { Button } from '@radix-ui/themes';
 import { mapEventData } from '@lib/parse/index.ts';
 import * as Separator from '@radix-ui/react-separator';
+import {
+  SpreadsheetInputContext,
+  SpreadsheetInputContextComponent,
+} from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 
 interface Props {
   i18n: Translations;
@@ -81,7 +85,9 @@ export const EventImport: React.FC<Props> = (props) => {
       />
       <div className='container'>
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
-          <FormContents {...props} isSubmitting={isSubmitting} />
+          <SpreadsheetInputContextComponent>
+            <FormContents {...props} isSubmitting={isSubmitting} />
+          </SpreadsheetInputContextComponent>
         </Formik>
       </div>
     </>
@@ -93,8 +99,6 @@ interface FormContentsProps extends Props {
 }
 
 export const FormContents: React.FC<FormContentsProps> = (props) => {
-  const [headerMap, setHeaderMap] = useState({});
-
   const { t } = props.i18n;
 
   const importAsOptions = useMemo(
@@ -136,19 +140,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
     []
   );
 
-  const { values }: { values: typeof initialValues } = useFormikContext();
-
-  // Check whether all the required fields are mapped
-  // to something in the spreadsheet.
-  const requiredFieldsSet = useMemo(() => {
-    const requiredFields = importAsOptions.filter((f) => f.required);
-    const selectedFields = Object.keys(headerMap);
-
-    return (
-      requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
-      0
-    );
-  }, [values]);
+  const { requiredFieldsSet } = useContext(SpreadsheetInputContext);
 
   return (
     <>
@@ -166,8 +158,6 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
           i18n={props.i18n}
           label={t['Events file']}
           name='events'
-          headerMap={headerMap}
-          setHeaderMap={setHeaderMap}
           importAsOptions={importAsOptions}
         />
         <Separator.Root className='SeparatorRoot' decorative />

@@ -3,16 +3,20 @@ import type {
   ParseAnnotationResults,
   Translations,
 } from '@ty/Types.ts';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Required } from './index.tsx';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { Required } from '../index.tsx';
 import * as Separator from '@radix-ui/react-separator';
-import './Formic.css';
+import '../Formic.css';
 import { ArrowRightIcon, CheckIcon, Cross1Icon } from '@radix-ui/react-icons';
 import { parseSpreadsheetData } from '@lib/parse/index.ts';
 import { useFormikContext } from 'formik';
 import { Button, ChevronDownIcon, Table } from '@radix-ui/themes';
 import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
+import {
+  SpreadsheetInputContext,
+  SpreadsheetInputContextComponent,
+} from './SpreadsheetInputContext.tsx';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -147,8 +151,6 @@ interface SpreadsheetInputProps {
   i18n: Translations;
   name: string;
   importAsOptions: DropdownOption[];
-  headerMap?: any;
-  setHeaderMap?: (arg: any) => void;
 }
 
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
@@ -156,17 +158,23 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [containsHeaders, setContainsHeaders] = useState(true);
   const [displayPreview, setDisplayPreview] = useState(false);
 
-  // allow headermap and setheadermap to be optionally passed
-  // by a parent component (if the parent needs access to the
-  // value) or managed internally
-  const [myHeaderMap, setMyHeaderMap] = useState<any>({});
-  const headerMap = props.headerMap || myHeaderMap;
-  const setHeaderMap = props.setHeaderMap || setMyHeaderMap;
+  const { headerMap, setHeaderMap, requiredFieldsSet, setRequiredFieldsSet } =
+    useContext(SpreadsheetInputContext);
 
   const { t } = props.i18n;
 
   const { setFieldValue, values }: { [key: string]: any; values: any } =
     useFormikContext();
+
+  useEffect(() => {
+    const requiredFields = props.importAsOptions.filter((f) => f.required);
+    const selectedFields = Object.keys(headerMap);
+
+    setRequiredFieldsSet(
+      requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
+        0
+    );
+  }, [values, headerMap]);
 
   const parseData = useCallback(
     async (file: File) => {
@@ -294,6 +302,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
             <div>
               <Button
                 className='primary'
+                disabled={!requiredFieldsSet}
                 onClick={() => setDisplayPreview(!displayPreview)}
                 type='button'
               >
@@ -306,7 +315,9 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
               <Table.Header className='spreadsheet-input-table-header'>
                 <Table.Row className='spreadsheet-input-table-row'>
                   {props.importAsOptions.map((opt) => (
-                    <Table.ColumnHeaderCell>{opt.label}</Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell key={opt.value}>
+                      {opt.label}
+                    </Table.ColumnHeaderCell>
                   ))}
                 </Table.Row>
               </Table.Header>
@@ -315,7 +326,9 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
                   (item: any, idx: number) => (
                     <Table.Row key={idx}>
                       {props.importAsOptions.map((opt) => (
-                        <Table.Cell>{item[headerMap[opt.value]]}</Table.Cell>
+                        <Table.Cell key={opt.value}>
+                          {item[headerMap[opt.value]]}
+                        </Table.Cell>
                       ))}
                     </Table.Row>
                   )
