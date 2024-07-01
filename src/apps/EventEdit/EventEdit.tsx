@@ -1,5 +1,5 @@
 import { EventForm } from '@components/EventForm/index.ts';
-import type { Event, ProjectData, Translations } from '@ty/Types.ts';
+import type { Event, FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
 
 import './EventEdit.css';
@@ -21,7 +21,7 @@ export const EventEdit: React.FC<Props> = ({ event, uuid, i18n, project }) => {
     [project]
   );
 
-  const onSubmit = useCallback(async (newEvent: Event) => {
+  const onSubmit = useCallback(async (newEvent: Event | FormEvent) => {
     const res = await fetch(`/api/projects/${projectSlug}/events/${uuid}`, {
       method: 'PUT',
       headers: {

@@ -2,7 +2,7 @@ import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { EventForm } from '@components/EventForm/index.ts';
 import { ToggleInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
-import type { Event, ProjectData, Translations } from '@ty/Types.ts';
+import type { Event, FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import './NewEvent.css';
@@ -23,7 +23,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project }) => {
     [project]
   );
 
-  const onSubmit = useCallback(async (newEvent: Event) => {
+  const onSubmit = useCallback(async (newEvent: FormEvent) => {
     const res = await fetch(`/api/projects/${projectSlug}/events`, {
       method: 'POST',
       headers: {
