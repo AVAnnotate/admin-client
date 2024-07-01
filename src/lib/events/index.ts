@@ -1,20 +1,17 @@
-import type { Event } from '@ty/Types.ts';
+import type { FormEvent } from '@ty/Types.ts';
+import { v4 as uuidv4 } from 'uuid';
 
-export const defaultEvent: Event = {
-  audiovisual_files: [
-    {
+export const generateDefaultEvent = (): FormEvent => ({
+  audiovisual_files: {
+    [uuidv4()]: {
       label: '',
       file_url: '',
       duration: 90,
-    },
-  ],
+    }
+  },
   auto_generate_web_page: true,
   description: [],
   citation: '',
-  created_at: '',
-  created_by: '',
   item_type: 'Audio',
   label: '',
-  updated_at: '',
-  updated_by: '',
-};
+})
