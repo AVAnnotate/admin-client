@@ -24,12 +24,12 @@ export type UserInfo = {
 };
 
 export type Tag = {
-  tagGroupValue: string;
-  value: string;
+  category: string;
+  tag: string;
 };
 
 export type TagGroup = {
-  value: string;
+  category: string;
   color: string;
 };
 
@@ -41,19 +41,19 @@ export type Tags = {
 export type MediaPlayer = 'avannotate' | 'universal' | 'aviary';
 
 export type Project = {
-  gitHubOrg: string;
+  github_org: string;
   title: string;
   description: string;
   language: string;
   slug: string;
   creator: string;
   authors: string;
-  mediaPlayer: MediaPlayer;
-  autoPopulateHomePage: boolean;
-  additionalUsers: ProviderUser[];
+  media_player: MediaPlayer;
+  auto_populate_home_page: boolean;
+  additional_users: ProviderUser[];
   tags?: Tags;
-  createdAt: string;
-  updatedAt: string;
+  created_at: string;
+  updated_at: string;
 };
 
 export type ProviderUser = {
@@ -64,9 +64,9 @@ export type ProviderUser = {
 };
 
 export type Publish = {
-  publishPagesApp: boolean;
-  publishSHA: string;
-  publishISODate: string;
+  publish_pages_app: boolean;
+  publish_sha: string;
+  publish_iso_date: string;
 };
 
 export type Event = {
@@ -130,6 +130,8 @@ export type ProjectData = {
   users: ProviderUser[];
 
   publish: Publish;
+
+  events?: any[];
 };
 
 export type AllProjects = {

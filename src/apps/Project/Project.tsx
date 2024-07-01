@@ -6,10 +6,15 @@ import {
   GearIcon,
   OpenInNewWindowIcon,
   Pencil2Icon,
-  PlusIcon
+  PlusIcon,
 } from '@radix-ui/react-icons';
 import type React from 'react';
-import { BoxArrowUpRight, FileEarmarkArrowUp, Tag, Trash } from 'react-bootstrap-icons';
+import {
+  BoxArrowUpRight,
+  FileEarmarkArrowUp,
+  Tag,
+  Trash,
+} from 'react-bootstrap-icons';
 
 import './Project.css';
 import { PageList } from '@components/PageList/index.ts'
@@ -23,7 +28,7 @@ interface Props {
 }
 
 interface EventWithUuid extends Event {
-  uuid: string
+  uuid: string;
 }
 
 export const Project: React.FC<Props> = (props) => {
@@ -31,10 +36,14 @@ export const Project: React.FC<Props> = (props) => {
 
   // Add uuid fields to the event objects so we
   // can still use the onClick row handlers below.
-  const eventsWithUuids = useMemo(() => Object.entries(props.project.events).map((entry) => ({
-    uuid: entry[0],
-    ...entry[1]
-  })), [props.project.events])
+  const eventsWithUuids = useMemo(
+    () =>
+      Object.entries(props.project.events as any[]).map((entry) => ({
+        uuid: entry[0],
+        ...entry[1],
+      })),
+    [props.project.events]
+  );
 
   return (
     <>
@@ -74,60 +83,73 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['CSV'],
                       icon: DownloadIcon,
-                      variant: 'outline'
+                      variant: 'outline',
                     },
                     {
                       label: t['import'],
                       icon: FileEarmarkArrowUp,
-                      onClick: () => window.location.pathname = `${window.location.pathname}/events/import`
+                      onClick: () =>
+                        (window.location.pathname = `${window.location.pathname}/events/import`),
                     },
                     {
                       label: t['add'],
                       icon: PlusIcon,
-                      onClick: () => window.location.pathname = `${window.location.pathname}/events/new`
-                    }
+                      onClick: () =>
+                        (window.location.pathname = `${window.location.pathname}/events/new`),
+                    },
                   ]}
                   items={eventsWithUuids}
-                  rows={[{
-                    title: t['Name'],
-                    property: 'label',
-                    sortable: true
-                  }, {
-                    title: t['Type'],
-                    property: 'item_type'
-                  }, {
-                    title: t['Added'],
-                    property: (item: Event) => `${t['Added']} ${new Date(item.created_at).toLocaleDateString()}`,
-                    sortable: true
-                  }]}
+                  rows={[
+                    {
+                      title: t['Name'],
+                      property: 'label',
+                      sortable: true,
+                    },
+                    {
+                      title: t['Type'],
+                      property: 'item_type',
+                    },
+                    {
+                      title: t['Added'],
+                      property: (item: Event) =>
+                        `${t['Added']} ${new Date(
+                          item.created_at
+                        ).toLocaleDateString()}`,
+                      sortable: true,
+                    },
+                  ]}
                   rowButtons={[
                     {
                       label: t['Open'],
                       icon: BoxArrowUpRight,
-                      onClick: () => { }
+                      onClick: () => {},
                     },
                     {
                       label: t['Edit'],
                       icon: Pencil2Icon,
-                      onClick: (item: EventWithUuid) => window.location.href = `${window.location.href}/events/${item.uuid}`
+                      onClick: (item: EventWithUuid) =>
+                        (window.location.href = `${window.location.href}/events/${item.uuid}`),
                     },
                     {
                       label: t['Delete'],
                       icon: Trash,
                       onClick: async (item: EventWithUuid) => {
-                        await fetch(`/api/projects/${props.project.project.gitHubOrg}+${props.project.project.slug}/events/${item.uuid}`, {
-                          method: 'DELETE'
-                        })
+                        await fetch(
+                          `/api/projects/${props.project.project.github_org}+${props.project.project.slug}/events/${item.uuid}`,
+                          {
+                            method: 'DELETE',
+                          }
+                        );
 
-                        window.location.reload()
-                      }
-                    }
+                        window.location.reload();
+                      },
+                    },
                   ]}
                   searchAttribute='label'
                   showHeaderRow={false}
                   title={t['All Events']}
                 />
-              )
+              ),
             },
             {
               title: t['Pages'],
