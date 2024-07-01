@@ -3,7 +3,7 @@ import {
   TextInput,
   TimeInput,
 } from '@components/Formic/index.tsx';
-import type { FormEvent, Translations } from '@ty/Types.ts';
+import type { Event, FormEvent, Translations } from '@ty/Types.ts';
 import { FieldArray, Form, Formik, useFormikContext } from 'formik';
 import * as Separator from '@radix-ui/react-separator';
 import type React from 'react';
@@ -19,7 +19,7 @@ interface Props {
   children?: React.ReactNode;
   event?: FormEvent;
   i18n: Translations;
-  onSubmit: (data: FormEvent) => any;
+  onSubmit: (data: Event | FormEvent) => any;
   styles?: { [key: string]: any };
 }
 

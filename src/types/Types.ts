@@ -132,8 +132,6 @@ export type ProjectData = {
   users: ProviderUser[];
 
   publish: Publish;
-
-  events?: any[];
 };
 
 export type AllProjects = {

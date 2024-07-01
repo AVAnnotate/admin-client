@@ -34,7 +34,7 @@ export const EventImport: React.FC<Props> = (props) => {
   const { lang, t } = props.i18n;
 
   const projectSlug = useMemo(
-    () => `${props.project.project.gitHubOrg}+${props.project.project.slug}`,
+    () => `${props.project.project.github_org}+${props.project.project.slug}`,
     [props.project]
   );
 

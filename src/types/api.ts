@@ -1,7 +1,7 @@
 import type {
   Event,
   MediaPlayer,
-  NewEvent,
+  FormEvent,
   NewPage,
   Page,
   Tags,
@@ -24,12 +24,12 @@ export type apiProjectsProjectNamePost = {
 };
 
 export type apiEventPut = {
-  event: Event | NewEvent;
+  event: Event | FormEvent;
 };
 
 export type apiEventsPost = {
-  event?: NewEvent;
-  events?: NewEvent[];
+  event?: FormEvent;
+  events?: FormEvent[];
 };
 
 export type apiPageOrderPost = {
