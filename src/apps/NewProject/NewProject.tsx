@@ -42,7 +42,7 @@ export const NewProject = (props: NewProjectProps) => {
       projectDescription: project.description,
       projectAuthors: project.authors,
       mediaPlayer: project.media_player,
-      additionalUsers: project.additional_users.map((u) => u.loginName),
+      additionalUsers: project.additional_users.map((u) => u.login_name),
       language: project.language,
       autoPopulateHomePage: project.auto_populate_home_page,
       visibility: 'public',

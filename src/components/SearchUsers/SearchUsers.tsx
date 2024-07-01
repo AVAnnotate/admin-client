@@ -35,8 +35,8 @@ export const SearchUsers = (props: SearchUsersProps) => {
       fetch(`/api/users/${find.login}`).then((resp) => {
         resp.json().then((data) => {
           props.onSelect({
-            avatarURL: data.avatar_url,
-            loginName: data.login,
+            avatar_url: data.avatar_url,
+            login_name: data.login,
             name: data.name,
             admin: false,
           });

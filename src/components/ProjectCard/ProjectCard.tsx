@@ -26,13 +26,13 @@ export const ProjectCard = (props: ProjectCardProps) => {
           <Tooltip.Provider delayDuration={0}>
             {props.project.users.map((u) => {
               return (
-                <Tooltip.Root key={u.loginName}>
+                <Tooltip.Root key={u.login_name}>
                   <Tooltip.Trigger asChild>
                     <div className='project-card-avatar-container'>
                       <Avatar
-                        name={u.loginName}
+                        name={u.login_name}
                         color={'--gray-300'}
-                        avatar={u.avatarURL}
+                        avatar={u.avatar_url}
                         showBorder={true}
                       />
                     </div>
@@ -42,7 +42,7 @@ export const ProjectCard = (props: ProjectCardProps) => {
                       className='project-card-tooltip-content'
                       sideOffset={5}
                     >
-                      {u.name || u.loginName}
+                      {u.name || u.login_name}
                       <Tooltip.Arrow className='TooltipArrow' />
                     </Tooltip.Content>
                   </Tooltip.Portal>
