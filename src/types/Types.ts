@@ -104,13 +104,12 @@ export type Page = {
   created_at: string;
   created_by: string;
   title: string;
-  order: number;
   parent?: string;
   updated_at: string;
   updated_by: string;
 };
 
-export interface NewPage
+export interface FormPage
   extends Omit<
     Page,
     'created_at' | 'created_by' | 'updated_at' | 'updated_by'

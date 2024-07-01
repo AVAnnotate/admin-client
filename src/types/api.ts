@@ -2,7 +2,7 @@ import type {
   Event,
   MediaPlayer,
   FormEvent,
-  NewPage,
+  FormPage,
   Page,
   Tags,
 } from '@ty/Types.ts';
@@ -37,8 +37,8 @@ export type apiPageOrderPost = {
 };
 
 export type apiPagePost = {
-  page?: NewPage;
-  pages?: NewPage[];
+  page?: FormPage;
+  pages?: FormPage[];
 };
 
 export type apiPagePut = {
