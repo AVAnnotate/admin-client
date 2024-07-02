@@ -15,7 +15,8 @@
 }
 
 .page-form .page-content-editor .formic-form-textarea {
-  min-height: 80vh;
+  min-height: 600px;
+  height: auto;
 }
 
 .page-form .bottom-bar-flex {
