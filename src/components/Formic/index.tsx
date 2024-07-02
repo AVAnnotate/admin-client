@@ -163,6 +163,8 @@ export const SelectInput = (props: SelectInputProps) => {
         </div>
       )}
       <Field as='select' name={props.name} className='formic-form-select'>
+        {/* empty option to allow the user to leave the input blank */}
+        {!props.required && <option />}
         {props.options.map((option) => {
           return (
             <option key={option.value} value={option.value}>

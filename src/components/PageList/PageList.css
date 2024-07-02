@@ -1,3 +1,7 @@
+.page-list {
+  margin-bottom: 100px;
+}
+
 .page-list .page-list-top-bar {
   height: 38px;
   width: 100%;
@@ -21,6 +25,12 @@
 
 .page-list .page-list-box-container .page-list-box:not(:first-child) {
   border-top-style: none;
+}
+
+.page-list .page-title {
+  display: flex;
+  gap: 20px;
+  align-items: center;
 }
 
 .page-list .page-list-box-hovered {
