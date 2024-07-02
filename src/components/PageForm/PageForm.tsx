@@ -59,7 +59,7 @@ const FormContents: React.FC<Props> = (props) => {
             />
           </div>
         </div>
-        <RichTextInput name='content' />
+        <RichTextInput className='page-content-editor' name='content' />
       </div>
       <BottomBar>
         <div className='bottom-bar-flex'>
