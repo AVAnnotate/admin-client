@@ -6,7 +6,7 @@ import type { ProviderUser, Translations } from '@ty/Types.ts';
 import { Trash } from '@phosphor-icons/react/Trash';
 import { useCallback, useState } from 'react';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
-import { SlateInput } from './SlateInput.tsx';
+import { SlateInput } from './SlateInput/index.ts';
 import * as Switch from '@radix-ui/react-switch';
 import { CheckIcon } from '@radix-ui/react-icons';
 

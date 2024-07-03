@@ -9,3 +9,8 @@ export interface DraggedPage {
   originalIndex: number;
   hoverIndex: number;
 }
+
+export interface SlateButtonProps {
+  format: string;
+  icon: React.FC;
+}
