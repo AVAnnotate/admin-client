@@ -34,9 +34,9 @@ import type { SlateButtonProps } from '@ty/ui.ts';
 import {
   ColorButton,
   HighlightColorButton,
-  ImageButton,
   LinkButton,
 } from './FormattingComponents.tsx';
+import type { Translations } from '@ty/Types.ts';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -122,7 +122,7 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   }
 
   if (leaf.color) {
-    children = <div style={{ color: leaf.color }}>{children}</div>;
+    children = <span style={{ color: leaf.color }}>{children}</span>;
   }
 
   return <span {...attributes}>{children}</span>;
@@ -245,12 +245,15 @@ const initialValue: Descendant[] = [
 interface Props {
   initialValue?: any;
   onChange: (data: any) => any;
+  i18n: Translations;
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
   const editor = useMemo(() => withReact(createEditor()), []);
   const renderElement = useCallback((props: any) => <Element {...props} />, []);
   const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
+
+  const { t } = props.i18n;
 
   return (
     <div className='slate-form'>
@@ -278,8 +281,18 @@ export const SlateInput: React.FC<Props> = (props) => {
           <BlockButton format='right' icon={JustifyRight} />
           <BlockButton format='justify' icon={Justify} />
           <div className='toolbar-separator' />
-          <LinkButton format='link' icon={Link1Icon} />
-          <ImageButton format='image' icon={Images} />
+          <LinkButton
+            format='link'
+            icon={Link1Icon}
+            i18n={props.i18n}
+            title={t['Insert link']}
+          />
+          <LinkButton
+            format='image'
+            icon={Images}
+            i18n={props.i18n}
+            title={t['Insert image']}
+          />
         </div>
         <Editable
           name='description'

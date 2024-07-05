@@ -1,3 +1,5 @@
+import type { Translations } from "./Types.ts";
+
 export interface MeatballMenuItem {
   label: string;
   onClick: (item: any) => any | Promise<any>;
@@ -13,4 +15,9 @@ export interface DraggedPage {
 export interface SlateButtonProps {
   format: string;
   icon: React.FC;
+}
+
+export interface SlateDialogProps extends SlateButtonProps {
+  i18n: Translations;
+  title: string;
 }

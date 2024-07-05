@@ -57,6 +57,7 @@ export const TextInput = (props: TextInputProps) => {
 interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
   initialValue?: any;
   name: string;
+  i18n: Translations;
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
@@ -77,6 +78,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
       )}
       <SlateInput
         onChange={(data) => setFieldValue(props.name, data)}
+        i18n={props.i18n}
         initialValue={props.initialValue}
       />
       {props.bottomNote && (

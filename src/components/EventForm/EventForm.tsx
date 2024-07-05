@@ -132,6 +132,7 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
           label={t['Description (Optional)']}
           helperText={t['A brief paragraph describing your event.']}
           name='description'
+          i18n={i18n}
           initialValue={(values as FormEvent).description}
           onChange={(data) => setFieldValue('description', data)}
         />

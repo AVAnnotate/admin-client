@@ -1,7 +1,7 @@
-import type { ReactElement } from 'react';
+import { useState, type ReactElement } from 'react';
 import './SlateInput.css';
 import { useSlate } from 'slate-react';
-import type { SlateButtonProps } from '@ty/ui.ts';
+import type { SlateButtonProps, SlateDialogProps } from '@ty/ui.ts';
 import { Button } from '@radix-ui/themes';
 import * as Dialog from '@radix-ui/react-dialog';
 
@@ -45,8 +45,12 @@ export const ColorButton = (props: SlateButtonProps) => {
   );
 };
 
-export const LinkButton = (props: SlateButtonProps) => {
+export const LinkButton = (props: SlateDialogProps) => {
   const editor = useSlate();
+
+  const [url, setUrl] = useState<undefined | string>(undefined);
+
+  const { t } = props.i18n;
 
   return (
     <Dialog.Root>
@@ -55,50 +59,27 @@ export const LinkButton = (props: SlateButtonProps) => {
           <props.icon />
         </Button>
       </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay />
-        <Dialog.Content>
-          {/* todo: link prompt */}
-          <Dialog.Title>hi</Dialog.Title>
-          <Dialog.Description></Dialog.Description>
-          <fieldset className='Fieldset'>
-            <label className='Label' htmlFor='name'>
-              Name
-            </label>
-            <input className='Input' id='name' defaultValue='Pedro Duarte' />
-          </fieldset>
-          <Dialog.Close>close</Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
-  );
-};
-
-export const ImageButton = (props: SlateButtonProps) => {
-  const editor = useSlate();
-
-  return (
-    <Dialog.Root>
-      <Dialog.Trigger asChild>
-        <Button className='unstyled' type='button'>
-          <props.icon />
-        </Button>
-      </Dialog.Trigger>
-      <Dialog.Portal>
-        <Dialog.Overlay />
-        <Dialog.Content>
-          {/* todo: image URL prompt */}
-          <Dialog.Title>hi</Dialog.Title>
-          <Dialog.Description></Dialog.Description>
-          <fieldset className='Fieldset'>
-            <label className='Label' htmlFor='name'>
-              Name
-            </label>
-            <input className='Input' id='name' defaultValue='Pedro Duarte' />
-          </fieldset>
-          <Dialog.Close>close</Dialog.Close>
-        </Dialog.Content>
-      </Dialog.Portal>
+      <Dialog.Overlay className='slate-dialog-overlay' />
+      <Dialog.Content className='slate-dialog-content'>
+        {/* todo: link prompt */}
+        <Dialog.Title>{props.title}</Dialog.Title>
+        <label>
+          {t['URL']}
+          <input value={url} onChange={(ev) => setUrl(ev.target.value)} />
+        </label>
+        <div className='slate-dialog-close-bar'>
+          <Dialog.Close asChild>
+            <Button className='outline' role='button'>
+              {t['cancel']}
+            </Button>
+          </Dialog.Close>
+          <Dialog.Close asChild>
+            <Button className='primary' role='button'>
+              {t['Insert']}
+            </Button>
+          </Dialog.Close>
+        </div>
+      </Dialog.Content>
     </Dialog.Root>
   );
 };
