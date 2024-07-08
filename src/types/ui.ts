@@ -17,8 +17,9 @@ export interface SlateButtonProps {
   icon: React.FC;
 }
 
-export interface SlateDialogProps extends SlateButtonProps {
+export interface SlateDialogProps {
   i18n: Translations;
   title: string;
+  icon: React.FC;
   onSubmit: (url: string) => void;
 }

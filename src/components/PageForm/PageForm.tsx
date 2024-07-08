@@ -8,7 +8,7 @@ import { Form, Formik, useFormikContext } from 'formik';
 import './PageForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
 const defaultPage: FormPage = {
   content: [],
@@ -26,7 +26,9 @@ interface Props {
 
 const FormContents: React.FC<Props> = (props) => {
   const { t } = props.i18n;
-  const { isSubmitting, values } = useFormikContext();
+  const { isSubmitting, isValid, values } = useFormikContext();
+
+  const hasTitle = useMemo(() => !!(values as FormPage).title, [values])
 
   const parentPageOptions = useMemo(
     () =>
@@ -46,7 +48,7 @@ const FormContents: React.FC<Props> = (props) => {
 
   return (
     <Form className='page-form'>
-      < div className='page-form-body' >
+      <div className='page-form-body' >
         <div className='top-config-bar'>
           <div>
             <TextInput label={t['Title']} name='title' required />
@@ -77,7 +79,7 @@ const FormContents: React.FC<Props> = (props) => {
           </Button>
           <Button
             className='save-button primary'
-            disabled={isSubmitting}
+            disabled={!hasTitle || isSubmitting}
             type='submit'
           >
             {t['save']}

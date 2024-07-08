@@ -35,9 +35,12 @@ import type { SlateButtonProps } from '@ty/ui.ts';
 import {
   ColorButton,
   HighlightColorButton,
+  InsertButton,
   LinkButton,
 } from './FormattingComponents.tsx';
 import type { Translations } from '@ty/Types.ts';
+import { useFormContext } from '@ariakit/react';
+import { useFormikContext } from 'formik';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -286,6 +289,7 @@ export const SlateInput: React.FC<Props> = (props) => {
         onChange={props.onChange}
       >
         <div className='slate-toolbar'>
+          <InsertButton i18n={props.i18n} />
           <MarkButton format='bold' icon={FontBoldIcon} />
           <MarkButton format='italic' icon={FontItalicIcon} />
           <MarkButton format='underline' icon={UnderlineIcon} />
@@ -305,14 +309,12 @@ export const SlateInput: React.FC<Props> = (props) => {
           <BlockButton format='justify' icon={Justify} />
           <div className='toolbar-separator' />
           <LinkButton
-            format='link'
             icon={Link1Icon}
             i18n={props.i18n}
             title={t['Insert link']}
             onSubmit={(url) => editor.addMark('link', url)}
           />
           <LinkButton
-            format='image'
             icon={Images}
             i18n={props.i18n}
             title={t['Insert image']}

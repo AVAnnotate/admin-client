@@ -14,6 +14,12 @@ export const Required = () => {
   return <div className='formic-form-required'>*</div>;
 };
 
+const validateRequiredField = (name: string, value: any) => {
+  if (!value) {
+    return `Missing value for ${name}.`
+  }
+}
+
 interface TextInputProps {
   label?: string;
   helperText?: string;
@@ -43,6 +49,7 @@ export const TextInput = (props: TextInputProps) => {
         name={props.name}
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
         as={props.isLarge ? 'textarea' : 'input'}
+        validate={(val) => validateRequiredField(props.name, val)}
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
