@@ -44,8 +44,6 @@ const FormContents: React.FC<Props> = (props) => {
     [props.uuid, props.project.pages]
   );
 
-  console.log(values!.content)
-
   return (
     <Form className='page-form'>
       < div className='page-form-body' >
