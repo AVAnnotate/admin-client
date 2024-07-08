@@ -1,4 +1,4 @@
-import type { Translations } from "./Types.ts";
+import type { Translations } from './Types.ts';
 
 export interface MeatballMenuItem {
   label: string;
@@ -20,4 +20,5 @@ export interface SlateButtonProps {
 export interface SlateDialogProps extends SlateButtonProps {
   i18n: Translations;
   title: string;
+  onSubmit: (url: string) => void;
 }

@@ -26,7 +26,7 @@ interface Props {
 
 const FormContents: React.FC<Props> = (props) => {
   const { t } = props.i18n;
-  const { isSubmitting } = useFormikContext();
+  const { isSubmitting, values } = useFormikContext();
 
   const parentPageOptions = useMemo(
     () =>
@@ -44,9 +44,11 @@ const FormContents: React.FC<Props> = (props) => {
     [props.uuid, props.project.pages]
   );
 
+  console.log(values!.content)
+
   return (
     <Form className='page-form'>
-      <div className='page-form-body'>
+      < div className='page-form-body' >
         <div className='top-config-bar'>
           <div>
             <TextInput label={t['Title']} name='title' required />
@@ -64,7 +66,7 @@ const FormContents: React.FC<Props> = (props) => {
           i18n={props.i18n}
           name='content'
         />
-      </div>
+      </div >
       <BottomBar>
         <div className='bottom-bar-flex'>
           <Button
@@ -84,7 +86,7 @@ const FormContents: React.FC<Props> = (props) => {
           </Button>
         </div>
       </BottomBar>
-    </Form>
+    </Form >
   );
 };
 

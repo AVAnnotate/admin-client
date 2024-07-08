@@ -1,5 +1,5 @@
 .bottom-bar-container {
-  z-index: 9999;
+  z-index: 1;
   box-sizing: border-box;
   background-color: var(--white);
   width: 100vw;

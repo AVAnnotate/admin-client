@@ -46,6 +46,10 @@
   text-decoration: line-through;
 }
 
+.slate-form .formic-form-textarea {
+  border-radius: 0;
+}
+
 .slate-form .slate-highlight-color-button:hover {
   cursor: pointer;
   height: auto;
@@ -56,6 +60,7 @@
   position: fixed;
   inset: 0;
   animation: overlayShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
 }
 
 .slate-form .slate-dialog-content {
@@ -72,10 +77,11 @@
   max-height: 85vh;
   padding: 25px;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 3;
 }
 
 .slate-form .slate-dialog-content h2 {
-  margin: 10px;
+  margin: 0;
 }
 
 .slate-form .slate-dialog-content label {
@@ -95,4 +101,8 @@
 
 .slate-form .slate-dialog-content .slate-dialog-close-bar button {
   width: 100px;
+}
+
+.slate-form .formic-form-textarea img {
+  max-width: 100%;
 }

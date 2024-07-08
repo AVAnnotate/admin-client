@@ -1,15 +1,9 @@
-import { useState, type ReactElement } from 'react';
+import { useMemo, useState } from 'react';
 import './SlateInput.css';
 import { useSlate } from 'slate-react';
 import type { SlateButtonProps, SlateDialogProps } from '@ty/ui.ts';
 import { Button } from '@radix-ui/themes';
 import * as Dialog from '@radix-ui/react-dialog';
-
-interface CommonProps {
-  style: { textAlign: 'left' | 'center' | 'right' | 'justify' };
-  children: ReactElement | ReactElement[];
-  attributes: string[];
-}
 
 export const HighlightColorButton = (props: SlateButtonProps) => {
   const editor = useSlate();
@@ -46,35 +40,47 @@ export const ColorButton = (props: SlateButtonProps) => {
 };
 
 export const LinkButton = (props: SlateDialogProps) => {
+  const [open, setOpen] = useState(false)
   const editor = useSlate();
 
-  const [url, setUrl] = useState<undefined | string>(undefined);
+  const [url, setUrl] = useState('');
 
   const { t } = props.i18n;
 
+  const submit = () => {
+    props.onSubmit(url)
+    setOpen(false)
+  }
+
   return (
-    <Dialog.Root>
+    <Dialog.Root open={open}>
       <Dialog.Trigger asChild>
-        <Button className='unstyled' type='button'>
+        <Button className='unstyled' onClick={() => setOpen(true)} type='button'>
           <props.icon />
         </Button>
       </Dialog.Trigger>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
-        {/* todo: link prompt */}
         <Dialog.Title>{props.title}</Dialog.Title>
         <label>
           {t['URL']}
-          <input value={url} onChange={(ev) => setUrl(ev.target.value)} />
+          <input name='url' value={url} onChange={(ev) => setUrl(ev.target.value)} onKeyDown={ev => {
+            // override the default enter behavior,
+            // which is to submit the parent form
+            if (ev.key === 'Enter') {
+              ev.preventDefault();
+              submit()
+            }
+          }} />
         </label>
         <div className='slate-dialog-close-bar'>
           <Dialog.Close asChild>
-            <Button className='outline' role='button'>
+            <Button className='outline' onClick={() => setOpen(false)} role='button'>
               {t['cancel']}
             </Button>
           </Dialog.Close>
           <Dialog.Close asChild>
-            <Button className='primary' role='button'>
+            <Button className='primary' role='button' onClick={() => submit()}>
               {t['Insert']}
             </Button>
           </Dialog.Close>

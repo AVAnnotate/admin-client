@@ -6,6 +6,7 @@ import {
   createEditor,
   Element as SlateElement,
   type Descendant,
+  type BaseEditor,
 } from 'slate';
 import { Button } from '@radix-ui/themes';
 import {
@@ -40,8 +41,6 @@ import type { Translations } from '@ty/Types.ts';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
-
-// todo: use this? https://www.radix-ui.com/primitives/docs/components/toolbar
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
@@ -85,6 +84,10 @@ const Element = ({ attributes, children, element }: any) => {
           {children}
         </ol>
       );
+    case 'image':
+      return (
+        <img src={element.url} />
+      )
     default:
       return (
         <p style={style} {...attributes}>
@@ -117,12 +120,16 @@ const Leaf = ({ attributes, children, leaf }: any) => {
 
   if (leaf.highlight) {
     children = (
-      <div style={{ backgroundColor: leaf.highlight }}>{children}</div>
+      <span style={{ backgroundColor: leaf.highlight }}>{children}</span>
     );
   }
 
   if (leaf.color) {
     children = <span style={{ color: leaf.color }}>{children}</span>;
+  }
+
+  if (leaf.link) {
+    children = <a href={leaf.link} target="_blank" rel="noopener noreferrer">{children}</a>
   }
 
   return <span {...attributes}>{children}</span>;
@@ -202,9 +209,8 @@ const BlockButton = (props: SlateButtonProps) => {
   const editor = useSlate();
   return (
     <Button
-      className={`unstyled ${
-        isBlockActive(editor, props.format) ? 'active-button' : ''
-      }`}
+      className={`unstyled ${isBlockActive(editor, props.format) ? 'active-button' : ''
+        }`}
       onMouseDown={(event) => {
         event.preventDefault();
         toggleBlock(editor, props.format);
@@ -221,9 +227,8 @@ const MarkButton = (props: SlateButtonProps) => {
 
   return (
     <Button
-      className={`unstyled ${
-        isMarkActive(editor, props.format) ? 'active-button' : ''
-      }`}
+      className={`unstyled ${isMarkActive(editor, props.format) ? 'active-button' : ''
+        }`}
       onMouseDown={(event) => {
         event.preventDefault();
         toggleMark(editor, props.format);
@@ -234,6 +239,24 @@ const MarkButton = (props: SlateButtonProps) => {
     </Button>
   );
 };
+
+const insertImage = (editor: BaseEditor & ReactEditor, url: string) => {
+  const text = { text: '' }
+
+  const image = [
+    {
+      type: 'image',
+      url,
+      children: [text]
+    },
+    {
+      type: 'paragraph',
+      children: [text],
+    }
+  ];
+
+  Transforms.insertNodes(editor, image);
+}
 
 const initialValue: Descendant[] = [
   {
@@ -286,12 +309,14 @@ export const SlateInput: React.FC<Props> = (props) => {
             icon={Link1Icon}
             i18n={props.i18n}
             title={t['Insert link']}
+            onSubmit={(url) => editor.addMark('link', url)}
           />
           <LinkButton
             format='image'
             icon={Images}
             i18n={props.i18n}
             title={t['Insert image']}
+            onSubmit={url => insertImage(editor, url)}
           />
         </div>
         <Editable
