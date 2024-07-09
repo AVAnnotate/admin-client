@@ -16,9 +16,9 @@ export const Required = () => {
 
 const validateRequiredField = (name: string, value: any) => {
   if (!value) {
-    return `Missing value for ${name}.`
+    return `Missing value for ${name}.`;
   }
-}
+};
 
 interface TextInputProps {
   label?: string;
@@ -68,7 +68,7 @@ interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
-  const { setFieldValue } = useFormikContext();
+  const { setFieldValue, values } = useFormikContext();
 
   return (
     <div className={`formic-form-field ${props.className || ''}`}>
@@ -86,7 +86,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
       <SlateInput
         onChange={(data) => setFieldValue(props.name, data)}
         i18n={props.i18n}
-        initialValue={props.initialValue}
+        initialValue={(values as any)[props.name] || props.initialValue}
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>

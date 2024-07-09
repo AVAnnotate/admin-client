@@ -39,8 +39,6 @@ import {
   LinkButton,
 } from './FormattingComponents.tsx';
 import type { Translations } from '@ty/Types.ts';
-import { useFormContext } from '@ariakit/react';
-import { useFormikContext } from 'formik';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -88,9 +86,21 @@ const Element = ({ attributes, children, element }: any) => {
         </ol>
       );
     case 'image':
+      return <img src={element.url} />;
+    case 'grid':
       return (
-        <img src={element.url} />
-      )
+        <div
+          className='slate-grid'
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `${element.layout[0]}fr ${element.layout[1]}fr`,
+          }}
+        >
+          {children}
+        </div>
+      );
+    case 'column':
+      return <div className='slate-column'>{children}</div>;
     default:
       return (
         <p style={style} {...attributes}>
@@ -132,7 +142,11 @@ const Leaf = ({ attributes, children, leaf }: any) => {
   }
 
   if (leaf.link) {
-    children = <a href={leaf.link} target="_blank" rel="noopener noreferrer">{children}</a>
+    children = (
+      <a href={leaf.link} target='_blank' rel='noopener noreferrer'>
+        {children}
+      </a>
+    );
   }
 
   return <span {...attributes}>{children}</span>;
@@ -212,8 +226,9 @@ const BlockButton = (props: SlateButtonProps) => {
   const editor = useSlate();
   return (
     <Button
-      className={`unstyled ${isBlockActive(editor, props.format) ? 'active-button' : ''
-        }`}
+      className={`unstyled ${
+        isBlockActive(editor, props.format) ? 'active-button' : ''
+      }`}
       onMouseDown={(event) => {
         event.preventDefault();
         toggleBlock(editor, props.format);
@@ -230,8 +245,9 @@ const MarkButton = (props: SlateButtonProps) => {
 
   return (
     <Button
-      className={`unstyled ${isMarkActive(editor, props.format) ? 'active-button' : ''
-        }`}
+      className={`unstyled ${
+        isMarkActive(editor, props.format) ? 'active-button' : ''
+      }`}
       onMouseDown={(event) => {
         event.preventDefault();
         toggleMark(editor, props.format);
@@ -244,22 +260,22 @@ const MarkButton = (props: SlateButtonProps) => {
 };
 
 const insertImage = (editor: BaseEditor & ReactEditor, url: string) => {
-  const text = { text: '' }
+  const text = { text: '' };
 
   const image = [
     {
       type: 'image',
       url,
-      children: [text]
+      children: [text],
     },
     {
       type: 'paragraph',
       children: [text],
-    }
+    },
   ];
 
   Transforms.insertNodes(editor, image);
-}
+};
 
 const initialValue: Descendant[] = [
   {
@@ -318,11 +334,10 @@ export const SlateInput: React.FC<Props> = (props) => {
             icon={Images}
             i18n={props.i18n}
             title={t['Insert image']}
-            onSubmit={url => insertImage(editor, url)}
+            onSubmit={(url) => insertImage(editor, url)}
           />
         </div>
         <Editable
-          name='description'
           className='formic-form-textarea'
           renderElement={renderElement}
           renderLeaf={renderLeaf}

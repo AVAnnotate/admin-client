@@ -5,7 +5,13 @@
   "Add Page": "Add Page",
   "Last edited at": "Last edited at",
   "Added": "Added",
+  "Content columns": "Content columns",
+  "Single event": "Single event",
+  "Event comparison": "Event comparison",
   "Insert image": "Insert image",
   "Insert link": "Insert link",
-  "URL": "URL"
+  "URL": "URL",
+  "1/3 + 2/3": "1/3 + 2/3",
+  "1/2 + 1/2": "1/2 + 1/2",
+  "2/3 + 1/3": "2/3 + 1/3"
 }

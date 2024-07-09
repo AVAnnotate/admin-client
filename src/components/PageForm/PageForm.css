@@ -38,3 +38,11 @@
 .page-form .bottom-bar-flex .cancel-button {
   width: 176px;
 }
+
+.page-form .slate-column {
+  border: 1px solid var(--gray-400);
+}
+
+.page-form .slate-column:last-child {
+  border-left: none;
+}
