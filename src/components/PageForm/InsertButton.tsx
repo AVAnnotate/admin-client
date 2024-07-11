@@ -71,6 +71,127 @@ const insertEvent = (
   Transforms.insertNodes(editor, [eventObj, paragraph]);
 };
 
+interface ClipInterfaceProps {
+  start?: number;
+  end?: number;
+  setStart: (arg: number) => void;
+  setEnd: (arg: number) => void;
+  i18n: Translations;
+}
+
+const ClipInterface: React.FC<ClipInterfaceProps> = (props) => {
+  const { t } = props.i18n;
+
+  return (
+    <>
+      <div className='include-clip-times'>
+        <label>
+          <TimeInput
+            defaultValue={0}
+            label={t['Start Time']}
+            onChange={(val) => props.setStart(val)}
+            required
+          />
+        </label>
+        <label>
+          <TimeInput
+            defaultValue={0}
+            label={t['End Time']}
+            onChange={(val) => props.setEnd(val)}
+            required
+          />
+        </label>
+      </div>
+    </>
+  );
+};
+
+interface DurationInterfaceProps {
+  duration: 'full' | 'clip';
+  setDuration: (arg: 'full' | 'clip') => void;
+  i18n: Translations;
+}
+
+const DurationInterface: React.FC<DurationInterfaceProps> = (props) => {
+  const { t } = props.i18n;
+
+  return (
+    <>
+      <p>{t['Duration']}</p>
+      <div className='duration-buttons'>
+        <Button
+          className={props.duration === 'full' ? 'primary' : 'outline'}
+          onClick={() => props.setDuration('full')}
+          type='button'
+        >
+          {t['Full Recording']}
+        </Button>
+        <Button
+          className={props.duration === 'clip' ? 'primary' : 'outline'}
+          onClick={() => props.setDuration('clip')}
+          type='button'
+        >
+          {t['Clip']}
+        </Button>
+      </div>
+    </>
+  );
+};
+
+interface IncludeInterfaceProps {
+  include: string[];
+  toggleInclude: (arg: string) => void;
+  i18n: Translations;
+}
+
+const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
+  const { t } = props.i18n;
+
+  return (
+    <>
+      <p>{t['Include']}</p>
+      <div className='include-buttons'>
+        <Button
+          className={props.include.includes('media') ? 'primary' : 'outline'}
+          type='button'
+          onClick={() => props.toggleInclude('media')}
+        >
+          {props.include.includes('media') && <Check color='white' />}
+          {t['Media']}
+        </Button>
+        <Button
+          className={
+            props.include.includes('annotations') ? 'primary' : 'outline'
+          }
+          type='button'
+          onClick={() => props.toggleInclude('annotations')}
+        >
+          {props.include.includes('annotations') && <Check color='white' />}
+          {t['Annotations']}
+        </Button>
+        <Button
+          className={props.include.includes('label') ? 'primary' : 'outline'}
+          type='button'
+          onClick={() => props.toggleInclude('label')}
+        >
+          {props.include.includes('label') && <Check color='white' />}
+          {t['Label']}
+        </Button>
+        <Button
+          className={
+            props.include.includes('description') ? 'primary' : 'outline'
+          }
+          type='button'
+          onClick={() => props.toggleInclude('description')}
+        >
+          {props.include.includes('description') && <Check color='white' />}
+          {t['Description']}
+        </Button>
+      </div>
+    </>
+  );
+};
+
 interface InsertModalProps {
   i18n: Translations;
   clearModal: () => void;
@@ -90,8 +211,8 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
   );
   const [duration, setDuration] = useState<'full' | 'clip'>('full');
   const [include, setInclude] = useState<string[]>([]);
-  const [start, setStart] = useState<number | null>(null);
-  const [end, setEnd] = useState<number | null>(null);
+  const [start, setStart] = useState<number | undefined>(undefined);
+  const [end, setEnd] = useState<number | undefined>(undefined);
 
   const { t } = props.i18n;
 
@@ -130,84 +251,25 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
                   ))}
                 </select>
               </label>
-              <p>{t['Duration']}</p>
-              <div className='duration-buttons'>
-                <Button
-                  className={duration === 'full' ? 'primary' : 'outline'}
-                  onClick={() => setDuration('full')}
-                  type='button'
-                >
-                  {t['Full Recording']}
-                </Button>
-                <Button
-                  className={duration === 'clip' ? 'primary' : 'outline'}
-                  onClick={() => setDuration('clip')}
-                  type='button'
-                >
-                  {t['Clip']}
-                </Button>
-              </div>
+              <DurationInterface
+                duration={duration}
+                setDuration={setDuration}
+                i18n={props.i18n}
+              />
               {duration === 'clip' && (
-                <>
-                  <div className='include-clip-times'>
-                    <label>
-                      <TimeInput
-                        defaultValue={0}
-                        label={t['Start Time']}
-                        onChange={(val) => setStart(val)}
-                        required
-                      />
-                    </label>
-                    <label>
-                      <TimeInput
-                        defaultValue={0}
-                        label={t['End Time']}
-                        onChange={(val) => setEnd(val)}
-                        required
-                      />
-                    </label>
-                  </div>
-                </>
+                <ClipInterface
+                  start={start}
+                  end={end}
+                  setStart={setStart}
+                  setEnd={setEnd}
+                  i18n={props.i18n}
+                />
               )}
-              <p>{t['Include']}</p>
-              <div className='include-buttons'>
-                <Button
-                  className={include.includes('media') ? 'primary' : 'outline'}
-                  type='button'
-                  onClick={() => toggleInclude('media')}
-                >
-                  {include.includes('media') && <Check color='white' />}
-                  {t['Media']}
-                </Button>
-                <Button
-                  className={
-                    include.includes('annotations') ? 'primary' : 'outline'
-                  }
-                  type='button'
-                  onClick={() => toggleInclude('annotations')}
-                >
-                  {include.includes('annotations') && <Check color='white' />}
-                  {t['Annotations']}
-                </Button>
-                <Button
-                  className={include.includes('label') ? 'primary' : 'outline'}
-                  type='button'
-                  onClick={() => toggleInclude('label')}
-                >
-                  {include.includes('label') && <Check color='white' />}
-                  {t['Label']}
-                </Button>
-                <Button
-                  className={
-                    include.includes('description') ? 'primary' : 'outline'
-                  }
-                  type='button'
-                  onClick={() => toggleInclude('description')}
-                >
-                  {include.includes('description') && <Check color='white' />}
-                  {t['Description']}
-                </Button>
-              </div>
+              <IncludeInterface
+                include={include}
+                toggleInclude={toggleInclude}
+                i18n={props.i18n}
+              />
             </>
           )}
         </div>
@@ -241,6 +303,8 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
 };
 
 const CompareEventsModal: React.FC<InsertModalProps> = (props) => {
+  const [duration, setDuration] = useState<'full' | 'clip'>('full');
+
   const { t } = props.i18n;
 
   return (
@@ -248,6 +312,12 @@ const CompareEventsModal: React.FC<InsertModalProps> = (props) => {
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
         <Dialog.Title>{t['Event comparison']}</Dialog.Title>
+        <DurationInterface
+          duration={duration}
+          setDuration={setDuration}
+          i18n={props.i18n}
+        />
+
         <div className='slate-dialog-close-bar'>
           <Dialog.Close asChild>
             <Button
