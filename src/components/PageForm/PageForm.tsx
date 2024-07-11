@@ -69,6 +69,7 @@ const FormContents: React.FC<Props> = (props) => {
           className='page-content-editor'
           i18n={props.i18n}
           name='content'
+          project={props.project}
         >
           <InsertButton i18n={props.i18n} project={props.project} />
         </RichTextInput>

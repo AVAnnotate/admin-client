@@ -1,4 +1,4 @@
-import { type Event, type ProjectData, type Translations } from '@ty/Types.ts';
+import { type ProjectData, type Translations } from '@ty/Types.ts';
 import { useCallback, useState } from 'react';
 import { ReactEditor, useSlate } from 'slate-react';
 import {
@@ -24,7 +24,7 @@ const insertColumns = (
 ) => {
   const paragraph = { type: 'paragraph', children: [{ text: '' }] };
 
-  const columns = [
+  const columns: any[] = [
     {
       type: 'grid',
       layout: newLayout,
@@ -48,10 +48,38 @@ const insertColumns = (
   Transforms.insertNodes(editor, columns);
 };
 
+const insertEvent = (
+  editor: BaseEditor & ReactEditor,
+  uuid: string,
+  includes: string[],
+  timeRange?: [number, number]
+) => {
+  const paragraph = { type: 'paragraph', children: [{ text: '' }] };
+
+  const eventObj: any = {
+    type: 'event',
+    uuid,
+    includes,
+    children: [{ text: '' }],
+  };
+
+  if (timeRange) {
+    eventObj['start'] = timeRange[0];
+    eventObj['end'] = timeRange[1];
+  }
+
+  Transforms.insertNodes(editor, [eventObj, paragraph]);
+};
+
 interface InsertModalProps {
   i18n: Translations;
   clearModal: () => void;
   project: ProjectData;
+  onSubmit: (
+    uuid: string,
+    includes: string[],
+    timeRange?: [number, number]
+  ) => void;
 }
 
 const SingleEventModal: React.FC<InsertModalProps> = (props) => {
@@ -62,6 +90,9 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
   );
   const [duration, setDuration] = useState<'full' | 'clip'>('full');
   const [include, setInclude] = useState<string[]>([]);
+  const [start, setStart] = useState<number | null>(null);
+  const [end, setEnd] = useState<number | null>(null);
+
   const { t } = props.i18n;
 
   const toggleInclude = useCallback(
@@ -123,7 +154,7 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
                       <TimeInput
                         defaultValue={0}
                         label={t['Start Time']}
-                        onChange={() => {}}
+                        onChange={(val) => setStart(val)}
                         required
                       />
                     </label>
@@ -131,7 +162,7 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
                       <TimeInput
                         defaultValue={0}
                         label={t['End Time']}
-                        onChange={() => {}}
+                        onChange={(val) => setEnd(val)}
                         required
                       />
                     </label>
@@ -194,7 +225,11 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
             <Button
               className='primary'
               role='button'
-              onClick={() => console.log('todo')}
+              onClick={() =>
+                start && end
+                  ? props.onSubmit(event, include, [start, end])
+                  : props.onSubmit(event, include)
+              }
             >
               {t['Insert']}
             </Button>
@@ -270,6 +305,10 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
           i18n={props.i18n}
           clearModal={clearModal}
           project={props.project}
+          onSubmit={(uuid, includes, timeRange) => {
+            insertEvent(editor, uuid, includes, timeRange);
+            setModal(null);
+          }}
         />
       )}
       {modal === 'event-compare' && (
@@ -277,6 +316,7 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
           i18n={props.i18n}
           clearModal={clearModal}
           project={props.project}
+          onSubmit={() => console.log('todo')}
         />
       )}
       <Dropdown.Root modal={false} open={open}>

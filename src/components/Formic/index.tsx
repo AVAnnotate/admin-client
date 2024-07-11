@@ -2,7 +2,7 @@ import { Button } from '@radix-ui/themes';
 import { Field, ErrorMessage, useField, useFormikContext } from 'formik';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
-import type { ProviderUser, Translations } from '@ty/Types.ts';
+import type { ProjectData, ProviderUser, Translations } from '@ty/Types.ts';
 import { Trash } from '@phosphor-icons/react/Trash';
 import { useCallback, useState, type ReactElement } from 'react';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
@@ -68,6 +68,7 @@ interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
   name: string;
   i18n: Translations;
   children?: ReactElement | ReactElement[];
+  project?: ProjectData;
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
@@ -90,6 +91,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
         onChange={(data) => setFieldValue(props.name, data)}
         i18n={props.i18n}
         initialValue={(values as any)[props.name] || props.initialValue}
+        project={props.project}
       >
         {props.children}
       </SlateInput>

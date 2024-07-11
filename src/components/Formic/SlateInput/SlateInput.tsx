@@ -5,7 +5,6 @@ import {
   Transforms,
   createEditor,
   Element as SlateElement,
-  type Descendant,
   type BaseEditor,
 } from 'slate';
 import { Button } from '@radix-ui/themes';
@@ -37,8 +36,9 @@ import {
   HighlightColorButton,
   LinkButton,
 } from './FormattingComponents.tsx';
-import type { Translations } from '@ty/Types.ts';
+import type { ProjectData, Translations } from '@ty/Types.ts';
 import { initialPageValue } from '@lib/pages/index.ts';
+import { EmbeddedEvent } from '@components/EmbeddedEvent/EmbeddedEvent.tsx';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -46,7 +46,7 @@ import { initialPageValue } from '@lib/pages/index.ts';
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-const Element = ({ attributes, children, element }: any) => {
+const Element = ({ attributes, children, element, project }: any) => {
   const style = { textAlign: element.align };
   switch (element.type) {
     case 'block-quote':
@@ -105,6 +105,12 @@ const Element = ({ attributes, children, element }: any) => {
         <div className='slate-column' {...attributes}>
           {children}
         </div>
+      );
+    case 'event':
+      return (
+        <EmbeddedEvent {...element} project={project}>
+          {children}
+        </EmbeddedEvent>
       );
     default:
       return (
@@ -287,11 +293,15 @@ interface Props {
   onChange: (data: any) => any;
   i18n: Translations;
   children?: ReactElement | ReactElement[];
+  project?: ProjectData;
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
   const editor = useMemo(() => withReact(createEditor()), []);
-  const renderElement = useCallback((props: any) => <Element {...props} />, []);
+  const renderElement = useCallback(
+    (elProps: any) => <Element {...elProps} project={props.project} />,
+    [props.project]
+  );
   const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
   const { t } = props.i18n;
