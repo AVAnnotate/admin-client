@@ -73,6 +73,10 @@ export const gitRepo = async (options: GitRepoOptions) => {
     return fs.readdirSync(absoluteDirectoryName);
   };
 
+  const mkDir = (absoluteDirectoryName: string) => {
+    return fs.mkdirSync(absoluteDirectoryName);
+  };
+
   const deleteFile = async (absoluteFileName: string) => {
     await git.remove({
       fs,
@@ -136,5 +140,6 @@ export const gitRepo = async (options: GitRepoOptions) => {
     readDir,
     readFile,
     commitAndPush,
+    mkDir,
   };
 };

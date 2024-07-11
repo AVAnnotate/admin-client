@@ -41,14 +41,20 @@ export const POST: APIRoute = async ({
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const fs = initFs()
+  const fs = initFs();
 
-  const { readDir, readFile, writeFile, commitAndPush } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { readDir, readFile, writeFile, commitAndPush, exists, mkDir } =
+    await gitRepo({
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    });
+
+  // Create the events folder if it doesn't exist
+  if (!exists('/data/events')) {
+    mkDir('/data/events');
+  }
 
   const uuid = uuidv4();
 
@@ -63,11 +69,15 @@ export const POST: APIRoute = async ({
     })
   );
 
-  const { pages } = getPageData(fs, readDir('/data/pages') as unknown as string[], 'pages');
+  const { pages } = getPageData(
+    fs,
+    readDir('/data/pages') as unknown as string[],
+    'pages'
+  );
 
-  const orderFile = readFile('/data/pages/order.json')
+  const orderFile = readFile('/data/pages/order.json');
 
-  const newOrder = getNewOrder(pages, uuid, JSON.parse(orderFile.toString()))
+  const newOrder = getNewOrder(pages, uuid, JSON.parse(orderFile.toString()));
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
 

@@ -10,8 +10,16 @@
   "Event comparison": "Event comparison",
   "Insert image": "Insert image",
   "Insert link": "Insert link",
+  "Insert event": "Insert event",
   "URL": "URL",
   "1/3 + 2/3": "1/3 + 2/3",
   "1/2 + 1/2": "1/2 + 1/2",
-  "2/3 + 1/3": "2/3 + 1/3"
+  "2/3 + 1/3": "2/3 + 1/3",
+  "This project has no events.": "This project has no events.",
+  "Media": "Media",
+  "Annotations": "Annotations",
+  "Description": "Description",
+  "Duration": "Duration",
+  "Full Recording": "Full Recording",
+  "Clip": "Clip"
 }

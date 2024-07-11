@@ -4,7 +4,7 @@ import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
 import type { ProviderUser, Translations } from '@ty/Types.ts';
 import { Trash } from '@phosphor-icons/react/Trash';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ReactElement } from 'react';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
 import { SlateInput } from './SlateInput/index.ts';
 import * as Switch from '@radix-ui/react-switch';
@@ -49,7 +49,9 @@ export const TextInput = (props: TextInputProps) => {
         name={props.name}
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
         as={props.isLarge ? 'textarea' : 'input'}
-        validate={(val) => validateRequiredField(props.name, val)}
+        validate={(val) =>
+          props.required ? validateRequiredField(props.name, val) : undefined
+        }
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
@@ -65,6 +67,7 @@ interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
   initialValue?: any;
   name: string;
   i18n: Translations;
+  children?: ReactElement | ReactElement[];
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
@@ -87,7 +90,9 @@ export const RichTextInput = (props: RichTextInputProps) => {
         onChange={(data) => setFieldValue(props.name, data)}
         i18n={props.i18n}
         initialValue={(values as any)[props.name] || props.initialValue}
-      />
+      >
+        {props.children}
+      </SlateInput>
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
           {props.bottomNote}

@@ -9,9 +9,11 @@ import './PageForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
 import { useMemo } from 'react';
+import { initialPageValue } from '@lib/pages/index.ts';
+import { InsertButton } from './InsertButton.tsx';
 
 const defaultPage: FormPage = {
-  content: [],
+  content: initialPageValue,
   title: '',
   parent: undefined,
 };
@@ -67,7 +69,9 @@ const FormContents: React.FC<Props> = (props) => {
           className='page-content-editor'
           i18n={props.i18n}
           name='content'
-        />
+        >
+          <InsertButton i18n={props.i18n} project={props.project} />
+        </RichTextInput>
       </div>
       <BottomBar>
         <div className='bottom-bar-flex'>

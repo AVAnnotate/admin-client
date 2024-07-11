@@ -1,4 +1,4 @@
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, type ReactElement } from 'react';
 import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react';
 import {
   Editor,
@@ -35,10 +35,10 @@ import type { SlateButtonProps } from '@ty/ui.ts';
 import {
   ColorButton,
   HighlightColorButton,
-  InsertButton,
   LinkButton,
 } from './FormattingComponents.tsx';
 import type { Translations } from '@ty/Types.ts';
+import { initialPageValue } from '@lib/pages/index.ts';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -95,12 +95,17 @@ const Element = ({ attributes, children, element }: any) => {
             display: 'grid',
             gridTemplateColumns: `${element.layout[0]}fr ${element.layout[1]}fr`,
           }}
+          {...attributes}
         >
           {children}
         </div>
       );
     case 'column':
-      return <div className='slate-column'>{children}</div>;
+      return (
+        <div className='slate-column' {...attributes}>
+          {children}
+        </div>
+      );
     default:
       return (
         <p style={style} {...attributes}>
@@ -277,17 +282,11 @@ const insertImage = (editor: BaseEditor & ReactEditor, url: string) => {
   Transforms.insertNodes(editor, image);
 };
 
-const initialValue: Descendant[] = [
-  {
-    type: 'paragraph',
-    children: [{ text: '' }],
-  },
-];
-
 interface Props {
   initialValue?: any;
   onChange: (data: any) => any;
   i18n: Translations;
+  children?: ReactElement | ReactElement[];
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
@@ -301,11 +300,11 @@ export const SlateInput: React.FC<Props> = (props) => {
     <div className='slate-form'>
       <Slate
         editor={editor}
-        initialValue={props.initialValue || initialValue}
+        initialValue={props.initialValue || initialPageValue}
         onChange={props.onChange}
       >
         <div className='slate-toolbar'>
-          <InsertButton i18n={props.i18n} />
+          {props.children}
           <MarkButton format='bold' icon={FontBoldIcon} />
           <MarkButton format='italic' icon={FontItalicIcon} />
           <MarkButton format='underline' icon={UnderlineIcon} />
