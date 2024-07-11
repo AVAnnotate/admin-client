@@ -83,3 +83,12 @@
   height: 20px;
   width: 20px;
 }
+
+.page-form .include-clip-times {
+  display: flex;
+  gap: 10px;
+}
+
+.page-form .include-clip-times input {
+  width: 100px;
+}

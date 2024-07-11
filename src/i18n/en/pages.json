@@ -21,5 +21,7 @@
   "Description": "Description",
   "Duration": "Duration",
   "Full Recording": "Full Recording",
-  "Clip": "Clip"
+  "Clip": "Clip",
+  "Start Time": "Start Time",
+  "End Time": "End Time"
 }

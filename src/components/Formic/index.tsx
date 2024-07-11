@@ -143,14 +143,18 @@ export const TimeInput = (props: TimeInputProps) => {
   }, []);
 
   return (
-    <div className={`formic-form-field ${props.className}`}>
+    <div className={`formic-form-field ${props.className || ''}`}>
       {props.label && (
-        <div className='av-label-bold formic-form-label'>
+        <div className='av-label-bold formic-form-label formic'>
           {props.label}
           {props.required && <Required />}
         </div>
       )}
-      <input className='formic-form-text' onChange={onChange} value={display} />
+      <input
+        className='formic-form-text formic-time-input'
+        onChange={onChange}
+        value={display}
+      />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import { Button } from '@radix-ui/themes';
 import * as Dialog from '@radix-ui/react-dialog';
 import './PageForm.css';
 import { Check } from 'react-bootstrap-icons';
+import { TimeInput } from '@components/Formic/index.tsx';
 
 type InsertButtonModalTypes = 'single-event' | 'event-compare';
 
@@ -115,6 +116,28 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
                   {t['Clip']}
                 </Button>
               </div>
+              {duration === 'clip' && (
+                <>
+                  <div className='include-clip-times'>
+                    <label>
+                      <TimeInput
+                        defaultValue={0}
+                        label={t['Start Time']}
+                        onChange={() => {}}
+                        required
+                      />
+                    </label>
+                    <label>
+                      <TimeInput
+                        defaultValue={0}
+                        label={t['End Time']}
+                        onChange={() => {}}
+                        required
+                      />
+                    </label>
+                  </div>
+                </>
+              )}
               <p>{t['Include']}</p>
               <div className='include-buttons'>
                 <Button
@@ -134,6 +157,14 @@ const SingleEventModal: React.FC<InsertModalProps> = (props) => {
                 >
                   {include.includes('annotations') && <Check color='white' />}
                   {t['Annotations']}
+                </Button>
+                <Button
+                  className={include.includes('label') ? 'primary' : 'outline'}
+                  type='button'
+                  onClick={() => toggleInclude('label')}
+                >
+                  {include.includes('label') && <Check color='white' />}
+                  {t['Label']}
                 </Button>
                 <Button
                   className={
