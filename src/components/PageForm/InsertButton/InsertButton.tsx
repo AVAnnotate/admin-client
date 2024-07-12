@@ -12,7 +12,12 @@ import { Button } from '@radix-ui/themes';
 import '../PageForm.css';
 import { CompareEventsModal } from './CompareEventsModal.tsx';
 import { SingleEventModal } from './SingleEventModal.tsx';
-import type { ColumnLayout, InsertButtonModalTypes } from './lib.ts';
+import type {
+  ColumnLayout,
+  InsertButtonModalTypes,
+  SlateCompareEventData,
+  SlateEventNodeData,
+} from '../../../types/slate.ts';
 
 const insertColumns = (
   editor: BaseEditor & ReactEditor,
@@ -46,13 +51,28 @@ const insertColumns = (
 
 const insertEvent = (
   editor: BaseEditor & ReactEditor,
-  event: { [key: string]: any }
+  event: SlateEventNodeData
 ) => {
   const paragraph = { type: 'paragraph', children: [{ text: '' }] };
 
   const eventObj: any = {
     type: 'event',
     ...event,
+    children: [{ text: '' }],
+  };
+
+  Transforms.insertNodes(editor, [eventObj, paragraph]);
+};
+
+const insertEventComparison = (
+  editor: BaseEditor & ReactEditor,
+  data: SlateCompareEventData
+) => {
+  const paragraph = { type: 'paragraph', children: [{ text: '' }] };
+
+  const eventObj: any = {
+    type: 'event-comparison',
+    ...data,
     children: [{ text: '' }],
   };
 
@@ -102,7 +122,10 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
           i18n={props.i18n}
           clearModal={clearModal}
           project={props.project}
-          onSubmit={() => console.log('todo')}
+          onSubmit={(comparisonData) => {
+            insertEventComparison(editor, comparisonData);
+            setModal(null);
+          }}
         />
       )}
       <Dropdown.Root modal={false} open={open}>

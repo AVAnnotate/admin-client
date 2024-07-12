@@ -1,5 +1,4 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import type { InsertModalProps } from './lib.ts';
 import { useCallback, useState } from 'react';
 import {
   ClipInterface,
@@ -8,8 +7,19 @@ import {
   IncludeInterface,
 } from './FormElements.tsx';
 import { Button } from '@radix-ui/themes';
+import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { Includes, SlateCompareEventData } from './lib.ts';
 
-export const CompareEventsModal: React.FC<InsertModalProps> = (props) => {
+interface CompareEventsModalProps {
+  i18n: Translations;
+  clearModal: () => void;
+  project: ProjectData;
+  onSubmit: (arg: SlateCompareEventData) => void;
+}
+
+export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
+  props
+) => {
   const [duration, setDuration] = useState<'full' | 'clip'>('full');
   const [event1Uuid, setEvent1Uuid] = useState(
     Object.keys(props.project.events).length > 0
@@ -21,7 +31,7 @@ export const CompareEventsModal: React.FC<InsertModalProps> = (props) => {
       ? Object.keys(props.project.events)[1]
       : ''
   );
-  const [includes, setIncludes] = useState<string[]>([]);
+  const [includes, setIncludes] = useState<Includes[]>([]);
   const [event1Start, setEvent1Start] = useState<number | undefined>(undefined);
   const [event2Start, setEvent2Start] = useState<number | undefined>(undefined);
   const [event1End, setEvent1End] = useState<number | undefined>(undefined);
@@ -88,7 +98,21 @@ export const CompareEventsModal: React.FC<InsertModalProps> = (props) => {
             <Button
               className='primary'
               role='button'
-              onClick={() => console.log('todo')}
+              onClick={() =>
+                props.onSubmit({
+                  includes,
+                  event1: {
+                    uuid: event1Uuid,
+                    start: event1Start,
+                    end: event1End,
+                  },
+                  event2: {
+                    uuid: event2Uuid,
+                    start: event2Start,
+                    end: event2End,
+                  },
+                })
+              }
             >
               {t['Embed']}
             </Button>

@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import type { InsertModalProps } from './lib.ts';
-import { useCallback, useState } from 'react';
+import type { Includes, SlateEventNodeData } from '../../../types/slate.ts';
+import { useState } from 'react';
 import {
   ClipInterface,
   DurationInterface,
@@ -8,15 +8,23 @@ import {
   IncludeInterface,
 } from './FormElements.tsx';
 import { Button } from '@radix-ui/themes';
+import type { ProjectData, Translations } from '@ty/Types.ts';
 
-export const SingleEventModal: React.FC<InsertModalProps> = (props) => {
+export interface InsertEventModalProps {
+  i18n: Translations;
+  clearModal: () => void;
+  project: ProjectData;
+  onSubmit: (event: SlateEventNodeData) => void;
+}
+
+export const SingleEventModal: React.FC<InsertEventModalProps> = (props) => {
   const [eventUuid, setEventUuid] = useState<string>(
     Object.keys(props.project.events).length > 0
       ? Object.keys(props.project.events)[0]
       : ''
   );
   const [duration, setDuration] = useState<'full' | 'clip'>('full');
-  const [includes, setIncludes] = useState<string[]>([]);
+  const [includes, setIncludes] = useState<Includes[]>([]);
   const [start, setStart] = useState<number | undefined>(undefined);
   const [end, setEnd] = useState<number | undefined>(undefined);
 
@@ -83,7 +91,7 @@ export const SingleEventModal: React.FC<InsertModalProps> = (props) => {
                 })
               }
             >
-              {t['Insert']}
+              {t['Embed']}
             </Button>
           </Dialog.Close>
         </div>

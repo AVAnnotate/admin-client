@@ -3,6 +3,7 @@ import { Button } from '@radix-ui/themes';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { useCallback } from 'react';
 import { Check } from 'react-bootstrap-icons';
+import type { Includes } from './lib.ts';
 
 interface ClipInterfaceProps {
   start?: number;
@@ -72,8 +73,8 @@ export const DurationInterface: React.FC<DurationInterfaceProps> = (props) => {
 };
 
 interface IncludeInterfaceProps {
-  includes: string[];
-  setIncludes: (arg: string[]) => void;
+  includes: Includes[];
+  setIncludes: (arg: Includes[]) => void;
   i18n: Translations;
 }
 
@@ -81,7 +82,7 @@ export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
   const { t } = props.i18n;
 
   const toggleInclude = useCallback(
-    (type: string) => {
+    (type: Includes) => {
       if (props.includes.includes(type)) {
         props.setIncludes(props.includes.filter((i) => i !== type));
       } else {
