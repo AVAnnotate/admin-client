@@ -38,7 +38,10 @@ import {
 } from './FormattingComponents.tsx';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { initialPageValue } from '@lib/pages/index.ts';
-import { EmbeddedEvent } from '@components/EmbeddedEvent/EmbeddedEvent.tsx';
+import {
+  EmbeddedEvent,
+  EmbeddedEventComparison,
+} from '@components/EmbeddedEvent/EmbeddedEvent.tsx';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -46,7 +49,7 @@ import { EmbeddedEvent } from '@components/EmbeddedEvent/EmbeddedEvent.tsx';
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
-const Element = ({ attributes, children, element, project }: any) => {
+const Element = ({ attributes, children, element, project, i18n }: any) => {
   const style = { textAlign: element.align };
   switch (element.type) {
     case 'block-quote':
@@ -111,6 +114,12 @@ const Element = ({ attributes, children, element, project }: any) => {
         <EmbeddedEvent {...element} project={project}>
           {children}
         </EmbeddedEvent>
+      );
+    case 'event-comparison':
+      return (
+        <EmbeddedEventComparison {...element} project={project} i18n={i18n}>
+          {children}
+        </EmbeddedEventComparison>
       );
     default:
       return (
@@ -299,7 +308,9 @@ interface Props {
 export const SlateInput: React.FC<Props> = (props) => {
   const editor = useMemo(() => withReact(createEditor()), []);
   const renderElement = useCallback(
-    (elProps: any) => <Element {...elProps} project={props.project} />,
+    (elProps: any) => (
+      <Element {...elProps} project={props.project} i18n={props.i18n} />
+    ),
     [props.project]
   );
   const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);

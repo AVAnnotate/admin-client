@@ -17,17 +17,18 @@ export type InsertButtonModalTypes = 'single-event' | 'event-compare';
 
 export type ColumnLayout = [2, 4] | [3, 3] | [4, 2];
 
-export type Includes = 'media' | 'annotations' | 'label' | 'description'
+export type Includes = 'media' | 'annotations' | 'label' | 'description';
 
 export interface SlateEventNodeData {
-  uuid: string,
-  includes: Includes[],
-  start?: number,
-  end?: number
+  end?: number;
+  event_type: 'audio' | 'video';
+  includes: Includes[];
+  start?: number;
+  uuid: string;
 }
 
 export interface SlateCompareEventData {
-  includes: Includes[],
-  event1: Omit<SlateEventNodeData, 'includes'>,
-  event2: Omit<SlateEventNodeData, 'includes'>,
+  event1: Omit<SlateEventNodeData, 'includes'>;
+  event2: Omit<SlateEventNodeData, 'includes'>;
+  includes: Includes[];
 }
