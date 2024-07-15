@@ -32,18 +32,15 @@ const insertColumns = (
       children: [
         {
           type: 'column',
-          children: [paragraph],
+          children: [structuredClone(paragraph)],
         },
         {
           type: 'column',
-          children: [paragraph],
+          children: [structuredClone(paragraph)],
         },
       ],
     },
-    {
-      type: 'paragraph',
-      children: [{ text: '' }],
-    },
+    structuredClone(paragraph),
   ];
 
   Transforms.insertNodes(editor, columns);
