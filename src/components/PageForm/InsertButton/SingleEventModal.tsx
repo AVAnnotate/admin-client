@@ -15,18 +15,27 @@ export interface InsertEventModalProps {
   clearModal: () => void;
   project: ProjectData;
   onSubmit: (event: SlateEventNodeData) => void;
+  // form state
+  eventUuid?: string;
+  duration?: 'full' | 'clip';
+  includes?: Includes[];
+  start?: number;
+  end?: number;
 }
 
 export const SingleEventModal: React.FC<InsertEventModalProps> = (props) => {
   const [eventUuid, setEventUuid] = useState<string>(
-    Object.keys(props.project.events).length > 0
-      ? Object.keys(props.project.events)[0]
-      : ''
+    props.eventUuid ||
+      (Object.keys(props.project.events).length > 0
+        ? Object.keys(props.project.events)[0]
+        : '')
   );
-  const [duration, setDuration] = useState<'full' | 'clip'>('full');
-  const [includes, setIncludes] = useState<Includes[]>([]);
-  const [start, setStart] = useState<number | undefined>(undefined);
-  const [end, setEnd] = useState<number | undefined>(undefined);
+  const [duration, setDuration] = useState<'full' | 'clip'>(
+    props.start || props.end ? 'clip' : 'full'
+  );
+  const [includes, setIncludes] = useState<Includes[]>(props.includes || []);
+  const [start, setStart] = useState<number | undefined>(props.start);
+  const [end, setEnd] = useState<number | undefined>(props.end);
 
   const { t } = props.i18n;
 

@@ -3,7 +3,7 @@ import { Button } from '@radix-ui/themes';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { useCallback } from 'react';
 import { Check } from 'react-bootstrap-icons';
-import type { Includes } from './lib.ts';
+import type { Includes } from '../../../types/slate.ts';
 
 interface ClipInterfaceProps {
   start?: number;

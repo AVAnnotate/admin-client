@@ -111,7 +111,7 @@ const Element = ({ attributes, children, element, project, i18n }: any) => {
       );
     case 'event':
       return (
-        <EmbeddedEvent {...element} project={project}>
+        <EmbeddedEvent {...element} project={project} i18n={i18n}>
           {children}
         </EmbeddedEvent>
       );

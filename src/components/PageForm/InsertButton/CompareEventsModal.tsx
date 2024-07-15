@@ -8,13 +8,22 @@ import {
 } from './FormElements.tsx';
 import { Button } from '@radix-ui/themes';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import type { Includes, SlateCompareEventData } from './lib.ts';
+import type { Includes, SlateCompareEventData } from '../../../types/slate.ts';
 
 interface CompareEventsModalProps {
   i18n: Translations;
   clearModal: () => void;
   project: ProjectData;
   onSubmit: (arg: SlateCompareEventData) => void;
+  // form state
+  event1Uuid?: string;
+  event2Uuid?: string;
+  duration?: 'full' | 'clip';
+  includes?: Includes[];
+  event1Start?: number;
+  event1End?: number;
+  event2Start?: number;
+  event2End?: number;
 }
 
 export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
@@ -22,20 +31,30 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
 ) => {
   const [duration, setDuration] = useState<'full' | 'clip'>('full');
   const [event1Uuid, setEvent1Uuid] = useState(
-    Object.keys(props.project.events).length > 0
-      ? Object.keys(props.project.events)[0]
-      : ''
+    props.event1Uuid ||
+      (Object.keys(props.project.events).length > 0
+        ? Object.keys(props.project.events)[0]
+        : '')
   );
   const [event2Uuid, setEvent2Uuid] = useState(
-    Object.keys(props.project.events).length > 1
-      ? Object.keys(props.project.events)[1]
-      : ''
+    props.event2Uuid ||
+      (Object.keys(props.project.events).length > 1
+        ? Object.keys(props.project.events)[1]
+        : '')
   );
-  const [includes, setIncludes] = useState<Includes[]>([]);
-  const [event1Start, setEvent1Start] = useState<number | undefined>(undefined);
-  const [event2Start, setEvent2Start] = useState<number | undefined>(undefined);
-  const [event1End, setEvent1End] = useState<number | undefined>(undefined);
-  const [event2End, setEvent2End] = useState<number | undefined>(undefined);
+  const [includes, setIncludes] = useState<Includes[]>(props.includes || []);
+  const [event1Start, setEvent1Start] = useState<number | undefined>(
+    props.event1Start
+  );
+  const [event2Start, setEvent2Start] = useState<number | undefined>(
+    props.event2Start
+  );
+  const [event1End, setEvent1End] = useState<number | undefined>(
+    props.event1End
+  );
+  const [event2End, setEvent2End] = useState<number | undefined>(
+    props.event2End
+  );
 
   const { t } = props.i18n;
 

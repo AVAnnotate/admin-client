@@ -21,7 +21,6 @@ export type Includes = 'media' | 'annotations' | 'label' | 'description';
 
 export interface SlateEventNodeData {
   end?: number;
-  event_type: 'audio' | 'video';
   includes: Includes[];
   start?: number;
   uuid: string;
