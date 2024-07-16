@@ -110,14 +110,22 @@ const Element = ({ attributes, children, element, project, i18n }: any) => {
         </div>
       );
     case 'event':
-      return <EmbeddedEvent element={element} project={project} i18n={i18n} />;
+      return (
+        <div {...attributes} contentEditable={false}>
+          <EmbeddedEvent element={element} project={project} i18n={i18n} />
+          {children}
+        </div>
+      );
     case 'event-comparison':
       return (
-        <EmbeddedEventComparison
-          element={element}
-          project={project}
-          i18n={i18n}
-        />
+        <div {...attributes} contentEditable={false}>
+          <EmbeddedEventComparison
+            element={element}
+            project={project}
+            i18n={i18n}
+          />
+          {children}
+        </div>
       );
     default:
       return (
@@ -295,6 +303,29 @@ const insertImage = (editor: BaseEditor & ReactEditor, url: string) => {
   Transforms.insertNodes(editor, image);
 };
 
+// Complex/rich elements that the user shouldn't be able to accidentally
+// delete by backspacing.
+const NO_BACKSPACE_DELETE = ['grid', 'event', 'event-comparison'];
+
+const withPreventBlockDeletion = (editor: Editor) => {
+  const { apply } = editor;
+
+  editor.apply = (operation) => {
+    console.log(operation);
+    if (
+      operation.type === 'remove_node' &&
+      NO_BACKSPACE_DELETE.includes(operation.node.type)
+    ) {
+      return;
+    }
+
+    // Other cases
+    apply(operation);
+  };
+
+  return editor;
+};
+
 interface Props {
   initialValue?: any;
   onChange: (data: any) => any;
@@ -304,7 +335,10 @@ interface Props {
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
-  const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = useMemo(
+    () => withReact(withPreventBlockDeletion(createEditor())),
+    []
+  );
   const renderElement = useCallback(
     (elProps: any) => (
       <Element {...elProps} project={props.project} i18n={props.i18n} />

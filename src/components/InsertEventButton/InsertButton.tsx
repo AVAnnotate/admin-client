@@ -64,13 +64,13 @@ const insertEventComparison = (
   editor: BaseEditor & ReactEditor,
   data: SlateCompareEventData
 ) => {
-  const paragraph = { type: 'paragraph', children: [{ text: '' }] };
-
   const eventObj: any = {
     type: 'event-comparison',
     ...data,
     children: [{ text: '' }],
   };
+
+  const paragraph = { type: 'paragraph', children: [{ text: '' }] };
 
   Transforms.insertNodes(editor, [eventObj, paragraph]);
 };
