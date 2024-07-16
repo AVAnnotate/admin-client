@@ -29,7 +29,16 @@ interface CompareEventsModalProps {
 export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
   props
 ) => {
-  const [duration, setDuration] = useState<'full' | 'clip'>('full');
+  const [duration, setDuration] = useState<'full' | 'clip'>(
+    [
+      props.event1Start,
+      props.event1End,
+      props.event2Start,
+      props.event2End,
+    ].filter(Boolean).length > 0
+      ? 'clip'
+      : 'full'
+  );
   const [event1Uuid, setEvent1Uuid] = useState(
     props.event1Uuid ||
       (Object.keys(props.project.events).length > 0

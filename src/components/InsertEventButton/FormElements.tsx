@@ -21,7 +21,7 @@ export const ClipInterface: React.FC<ClipInterfaceProps> = (props) => {
       <div className='include-clip-times'>
         <label>
           <TimeInput
-            defaultValue={0}
+            initialValue={props.start || 0}
             label={t['Start Time']}
             onChange={(val) => props.setStart(val)}
             required
@@ -29,7 +29,7 @@ export const ClipInterface: React.FC<ClipInterfaceProps> = (props) => {
         </label>
         <label>
           <TimeInput
-            defaultValue={0}
+            initialValue={props.end || 0}
             label={t['End Time']}
             onChange={(val) => props.setEnd(val)}
             required
