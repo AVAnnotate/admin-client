@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useCallback, useState } from 'react';
+import { useState } from 'react';
 import {
   ClipInterface,
   DurationInterface,
@@ -8,7 +8,7 @@ import {
 } from './FormElements.tsx';
 import { Button } from '@radix-ui/themes';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import type { Includes, SlateCompareEventData } from '../../../types/slate.ts';
+import type { Includes, SlateCompareEventData } from '../../types/slate.ts';
 
 interface CompareEventsModalProps {
   i18n: Translations;

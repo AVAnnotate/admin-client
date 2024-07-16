@@ -9,7 +9,6 @@ import {
 import { Transforms, type BaseEditor } from 'slate';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { Button } from '@radix-ui/themes';
-import '../PageForm.css';
 import { CompareEventsModal } from './CompareEventsModal.tsx';
 import { SingleEventModal } from './SingleEventModal.tsx';
 import type {
@@ -17,7 +16,7 @@ import type {
   InsertButtonModalTypes,
   SlateCompareEventData,
   SlateEventNodeData,
-} from '../../../types/slate.ts';
+} from '../../types/slate.ts';
 
 const insertColumns = (
   editor: BaseEditor & ReactEditor,

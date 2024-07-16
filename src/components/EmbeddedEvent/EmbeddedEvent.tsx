@@ -7,19 +7,20 @@ import './EmbeddedEvent.css';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { useCallback, useMemo, useState } from 'react';
-import type { Includes, SlateCompareEventData } from '@ty/slate.ts';
-import { Transforms } from 'slate';
-import { useSlate } from 'slate-react';
-import { SingleEventModal } from '@components/PageForm/InsertButton/SingleEventModal.tsx';
-import { CompareEventsModal } from '@components/PageForm/InsertButton/CompareEventsModal.tsx';
+import type {
+  Includes,
+  SlateCompareEventData,
+  SlateEventNodeData,
+} from '@ty/slate.ts';
+import { Node, Transforms } from 'slate';
+import { ReactEditor, useSlate } from 'slate-react';
+import { SingleEventModal } from '@components/InsertEventButton/SingleEventModal.tsx';
+import { CompareEventsModal } from '@components/InsertEventButton/CompareEventsModal.tsx';
 
 interface EmbeddedEventProps {
-  uuid: string;
-  includes: Includes[];
-  start?: number;
-  end?: number;
   project: ProjectData;
   i18n: Translations;
+  element: SlateEventNodeData & Node;
 }
 
 const getEvent = (project: ProjectData, uuid: string) => {
@@ -42,18 +43,20 @@ export const EmbeddedEvent: React.FC<EmbeddedEventProps> = (props) => {
   const editor = useSlate();
 
   const event = useMemo(
-    () => getEvent(props.project, props.uuid),
-    [props.project, props.uuid]
+    () => getEvent(props.project, props.element.uuid),
+    [props.project, props.element.uuid]
   );
 
   const includeStr = useMemo(
-    () => getIncludesLabel(props.includes),
-    [props.includes]
+    () => getIncludesLabel(props.element.includes),
+    [props.element.includes]
   );
 
   const { t } = props.i18n;
 
   const clearModal = useCallback(() => setShowModal(false), []);
+
+  const path = ReactEditor.findPath(editor, props.element);
 
   return (
     <div className='embedded-event' contentEditable={false}>
@@ -64,11 +67,14 @@ export const EmbeddedEvent: React.FC<EmbeddedEventProps> = (props) => {
               i18n={props.i18n}
               project={props.project}
               clearModal={clearModal}
-              onSubmit={() => {}}
-              eventUuid={props.uuid}
-              includes={props.includes}
-              start={props.start}
-              end={props.end}
+              onSubmit={(data) => {
+                Transforms.setNodes(editor, data, { at: path });
+                setShowModal(false);
+              }}
+              eventUuid={props.element.uuid}
+              includes={props.element.includes}
+              start={props.element.start}
+              end={props.element.end}
             />
           )}
           <div className='embedded-event-left'>
@@ -88,7 +94,7 @@ export const EmbeddedEvent: React.FC<EmbeddedEventProps> = (props) => {
               },
               {
                 label: t['Delete'],
-                onClick: () => Transforms.removeNodes(editor),
+                onClick: () => Transforms.removeNodes(editor, { at: path }),
               },
             ]}
           />
@@ -100,9 +106,10 @@ export const EmbeddedEvent: React.FC<EmbeddedEventProps> = (props) => {
   );
 };
 
-interface EmbeddedEventComparisonProps extends SlateCompareEventData {
+interface EmbeddedEventComparisonProps {
   project: ProjectData;
   i18n: Translations;
+  element: SlateCompareEventData & Node;
 }
 
 export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
@@ -113,23 +120,25 @@ export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
   const editor = useSlate();
 
   const event1 = useMemo(
-    () => getEvent(props.project, props.event1.uuid),
-    [props.project, props.event1]
+    () => getEvent(props.project, props.element.event1.uuid),
+    [props.project, props.element.event1]
   );
 
   const event2 = useMemo(
-    () => getEvent(props.project, props.event2.uuid),
-    [props.project, props.event2]
+    () => getEvent(props.project, props.element.event2.uuid),
+    [props.project, props.element.event2]
   );
 
   const includeStr = useMemo(
-    () => getIncludesLabel(props.includes),
-    [props.includes]
+    () => getIncludesLabel(props.element.includes),
+    [props.element.includes]
   );
 
   const { t } = props.i18n;
 
   const clearModal = useCallback(() => setShowModal(false), []);
+
+  const path = ReactEditor.findPath(editor, props.element);
 
   return (
     <div className='embedded-event' contentEditable={false}>
@@ -140,14 +149,17 @@ export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
               i18n={props.i18n}
               project={props.project}
               clearModal={clearModal}
-              onSubmit={() => {}}
-              includes={props.includes}
-              event1Uuid={props.event1.uuid}
-              event2Uuid={props.event2.uuid}
-              event1Start={props.event1.start}
-              event1End={props.event1.end}
-              event2Start={props.event2.start}
-              event2End={props.event2.end}
+              onSubmit={(data) => {
+                Transforms.setNodes(editor, data, { at: path });
+                setShowModal(false);
+              }}
+              includes={props.element.includes}
+              event1Uuid={props.element.event1.uuid}
+              event2Uuid={props.element.event2.uuid}
+              event1Start={props.element.event1.start}
+              event1End={props.element.event1.end}
+              event2Start={props.element.event2.start}
+              event2End={props.element.event2.end}
             />
           )}
           <div className='embedded-event-left'>
@@ -168,7 +180,7 @@ export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
                 label: t['Delete'],
                 // todo: removes last node instead of the event
                 // need location by index (I think?)
-                onClick: () => Transforms.removeNodes(editor),
+                onClick: () => Transforms.removeNodes(editor, { at: path }),
               },
             ]}
           />

@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import type { Includes, SlateEventNodeData } from '../../../types/slate.ts';
+import type { Includes, SlateEventNodeData } from '../../types/slate.ts';
 import { useState } from 'react';
 import {
   ClipInterface,

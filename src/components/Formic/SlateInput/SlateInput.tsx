@@ -110,16 +110,14 @@ const Element = ({ attributes, children, element, project, i18n }: any) => {
         </div>
       );
     case 'event':
-      return (
-        <EmbeddedEvent {...element} project={project} i18n={i18n}>
-          {children}
-        </EmbeddedEvent>
-      );
+      return <EmbeddedEvent element={element} project={project} i18n={i18n} />;
     case 'event-comparison':
       return (
-        <EmbeddedEventComparison {...element} project={project} i18n={i18n}>
-          {children}
-        </EmbeddedEventComparison>
+        <EmbeddedEventComparison
+          element={element}
+          project={project}
+          i18n={i18n}
+        />
       );
     default:
       return (
