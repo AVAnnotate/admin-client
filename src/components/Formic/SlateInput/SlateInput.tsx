@@ -34,6 +34,7 @@ import type { SlateButtonProps } from '@ty/ui.ts';
 import {
   ColorButton,
   HighlightColorButton,
+  ImageButton,
   LinkButton,
 } from './FormattingComponents.tsx';
 import type { ProjectData, Translations } from '@ty/Types.ts';
@@ -42,6 +43,7 @@ import {
   EmbeddedEvent,
   EmbeddedEventComparison,
 } from '@components/EmbeddedEvent/EmbeddedEvent.tsx';
+import type { ImageData } from '@ty/slate.ts';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -89,7 +91,12 @@ const Element = ({ attributes, children, element, project, i18n }: any) => {
         </ol>
       );
     case 'image':
-      return <img src={element.url} />;
+      return (
+        <div {...attributes} style={style} contentEditable={false}>
+          <img src={element.url} className={`slate-img-${element.size}`} />
+          {children}
+        </div>
+      );
     case 'grid':
       return (
         <div
@@ -285,22 +292,20 @@ const MarkButton = (props: SlateButtonProps) => {
   );
 };
 
-const insertImage = (editor: BaseEditor & ReactEditor, url: string) => {
-  const text = { text: '' };
-
-  const image = [
+const insertImage = (editor: BaseEditor & ReactEditor, image: ImageData) => {
+  const nodes = [
     {
       type: 'image',
-      url,
-      children: [text],
+      ...image,
+      children: [{ text: '' }],
     },
     {
       type: 'paragraph',
-      children: [text],
+      children: [{ text: '' }],
     },
   ];
 
-  Transforms.insertNodes(editor, image);
+  Transforms.insertNodes(editor, nodes);
 };
 
 // Complex/rich elements that the user shouldn't be able to accidentally
@@ -349,17 +354,6 @@ export const SlateInput: React.FC<Props> = (props) => {
 
   const { t } = props.i18n;
 
-  // Determine whether the user has highlighted some text.
-  // We only want to enable the link button if the user
-  // has some highlighted text to which to apply the link.
-  const highlightedText = useMemo(() => {
-    if (editor.selection) {
-      return editor.selection.anchor.offset !== editor.selection.focus.offset;
-    }
-
-    return false;
-  }, [editor.selection]);
-
   return (
     <div className='slate-form'>
       <Slate
@@ -388,17 +382,16 @@ export const SlateInput: React.FC<Props> = (props) => {
           <BlockButton format='justify' icon={Justify} />
           <div className='toolbar-separator' />
           <LinkButton
-            disabled={!highlightedText}
             icon={Link1Icon}
             i18n={props.i18n}
             title={t['Insert link']}
             onSubmit={(url) => editor.addMark('link', url)}
           />
-          <LinkButton
+          <ImageButton
             icon={Images}
             i18n={props.i18n}
             title={t['Insert image']}
-            onSubmit={(url) => insertImage(editor, url)}
+            onSubmit={(image) => insertImage(editor, image)}
           />
         </div>
         <Editable

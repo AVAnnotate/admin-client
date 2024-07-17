@@ -30,8 +30,6 @@ const FormContents: React.FC<Props> = (props) => {
   const { t } = props.i18n;
   const { isSubmitting, values } = useFormikContext();
 
-  console.log(values);
-
   const hasTitle = useMemo(() => !!(values as FormPage).title, [values]);
 
   const parentPageOptions = useMemo(

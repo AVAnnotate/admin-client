@@ -119,10 +119,22 @@
   width: 100px;
 }
 
-.slate-form .formic-form-textarea img {
-  max-width: 100%;
-}
-
 .slate-form .disabled-link-button svg {
   color: var(--gray-500);
+}
+
+.slate-form .slate-img-thumbnail {
+  max-width: 160px;
+}
+
+.slate-form .slate-img-medium {
+  max-width: 400px;
+}
+
+.slate-form .slate-img-large {
+  max-width: 640px;
+}
+
+.slate-form .slate-img-full {
+  max-width: 100%;
 }
