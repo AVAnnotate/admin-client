@@ -349,6 +349,17 @@ export const SlateInput: React.FC<Props> = (props) => {
 
   const { t } = props.i18n;
 
+  // Determine whether the user has highlighted some text.
+  // We only want to enable the link button if the user
+  // has some highlighted text to which to apply the link.
+  const highlightedText = useMemo(() => {
+    if (editor.selection) {
+      return editor.selection.anchor.offset !== editor.selection.focus.offset;
+    }
+
+    return false;
+  }, [editor.selection]);
+
   return (
     <div className='slate-form'>
       <Slate
@@ -377,6 +388,7 @@ export const SlateInput: React.FC<Props> = (props) => {
           <BlockButton format='justify' icon={Justify} />
           <div className='toolbar-separator' />
           <LinkButton
+            disabled={!highlightedText}
             icon={Link1Icon}
             i18n={props.i18n}
             title={t['Insert link']}

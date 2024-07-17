@@ -122,3 +122,7 @@
 .slate-form .formic-form-textarea img {
   max-width: 100%;
 }
+
+.slate-form .disabled-link-button svg {
+  color: var(--gray-500);
+}

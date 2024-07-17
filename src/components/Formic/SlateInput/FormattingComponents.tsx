@@ -41,7 +41,6 @@ export const ColorButton = (props: SlateButtonProps) => {
 
 export const LinkButton = (props: SlateDialogProps) => {
   const [open, setOpen] = useState(false);
-
   const [url, setUrl] = useState('');
 
   const { t } = props.i18n;
@@ -55,7 +54,8 @@ export const LinkButton = (props: SlateDialogProps) => {
     <Dialog.Root open={open}>
       <Dialog.Trigger asChild>
         <Button
-          className='unstyled'
+          className={`unstyled ${props.disabled ? 'disabled-link-button' : ''}`}
+          disabled={props.disabled}
           onClick={() => setOpen(true)}
           type='button'
         >

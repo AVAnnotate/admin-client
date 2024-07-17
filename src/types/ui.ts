@@ -18,8 +18,9 @@ export interface SlateButtonProps {
 }
 
 export interface SlateDialogProps {
+  disabled?: boolean;
   i18n: Translations;
-  title: string;
   icon: React.FC;
   onSubmit: (url: string) => void;
+  title: string;
 }
