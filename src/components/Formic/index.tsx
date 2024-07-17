@@ -148,7 +148,7 @@ export const TimeInput = (props: TimeInputProps) => {
     <div className={`formic-form-field ${props.className || ''}`}>
       {props.label && (
         <div className='av-label-bold formic-form-label formic'>
-          {props.label}
+          <span>{props.label}</span>
           {props.required && <Required />}
         </div>
       )}

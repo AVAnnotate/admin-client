@@ -43,8 +43,10 @@ export const SingleEventModal: React.FC<InsertEventModalProps> = (props) => {
     <Dialog.Root open>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
-        <Dialog.Title>{t['Insert event']}</Dialog.Title>
-        <div>
+        <Dialog.Title className='slate-dialog-title'>
+          {t['Embed Event']}
+        </Dialog.Title>
+        <div className='slate-dialog-body'>
           {Object.keys(props.project.events).length === 0 ? (
             <p>{t['This project has no events.']}</p>
           ) : (
@@ -80,7 +82,7 @@ export const SingleEventModal: React.FC<InsertEventModalProps> = (props) => {
         <div className='slate-dialog-close-bar'>
           <Dialog.Close asChild>
             <Button
-              className='outline'
+              className='unstyled'
               onClick={props.clearModal}
               role='button'
             >

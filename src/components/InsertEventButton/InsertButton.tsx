@@ -174,7 +174,7 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
               className='dropdown-item'
               onClick={() => updateModal('event-compare')}
             >
-              {t['Event comparison']}
+              {t['Compare Events']}
             </Dropdown.Item>
           </Dropdown.Content>
         </Dropdown.Portal>

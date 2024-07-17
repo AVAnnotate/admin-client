@@ -2,8 +2,8 @@ import { TimeInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { useCallback } from 'react';
-import { Check } from 'react-bootstrap-icons';
 import type { Includes } from '../../types/slate.ts';
+import { CheckIcon } from '@radix-ui/react-icons';
 
 interface ClipInterfaceProps {
   start?: number;
@@ -101,8 +101,8 @@ export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
           type='button'
           onClick={() => toggleInclude('media')}
         >
-          {props.includes.includes('media') && <Check color='white' />}
-          {t['Media']}
+          {props.includes.includes('media') && <CheckIcon color='white' />}
+          <span>{t['Media']}</span>
         </Button>
         <Button
           className={
@@ -111,16 +111,18 @@ export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
           type='button'
           onClick={() => toggleInclude('annotations')}
         >
-          {props.includes.includes('annotations') && <Check color='white' />}
-          {t['Annotations']}
+          {props.includes.includes('annotations') && (
+            <CheckIcon color='white' />
+          )}
+          <span>{t['Annotations']}</span>
         </Button>
         <Button
           className={props.includes.includes('label') ? 'primary' : 'outline'}
           type='button'
           onClick={() => toggleInclude('label')}
         >
-          {props.includes.includes('label') && <Check color='white' />}
-          {t['Label']}
+          {props.includes.includes('label') && <CheckIcon color='white' />}
+          <span>{t['Label']}</span>
         </Button>
         <Button
           className={
@@ -129,8 +131,10 @@ export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
           type='button'
           onClick={() => toggleInclude('description')}
         >
-          {props.includes.includes('description') && <Check color='white' />}
-          {t['Description']}
+          {props.includes.includes('description') && (
+            <CheckIcon color='white' />
+          )}
+          <span>{t['Description']}</span>
         </Button>
       </div>
     </>

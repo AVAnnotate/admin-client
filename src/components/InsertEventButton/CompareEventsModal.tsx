@@ -71,80 +71,84 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
     <Dialog.Root open>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
-        <Dialog.Title>{t['Event comparison']}</Dialog.Title>
-        <DurationInterface
-          duration={duration}
-          setDuration={setDuration}
-          i18n={props.i18n}
-        />
-        <EventSelect
-          eventUuid={event1Uuid}
-          setEventUuid={setEvent1Uuid}
-          project={props.project}
-          label={`${t['Audiovisual Item']} 1`}
-        />
-        {duration === 'clip' && (
-          <ClipInterface
+        <Dialog.Title className='slate-dialog-title'>
+          {t['Compare Events']}
+        </Dialog.Title>
+        <div className='slate-dialog-body'>
+          <DurationInterface
+            duration={duration}
+            setDuration={setDuration}
             i18n={props.i18n}
-            start={event1Start}
-            setStart={setEvent1Start}
-            end={event1End}
-            setEnd={setEvent1End}
           />
-        )}
-        <EventSelect
-          eventUuid={event2Uuid}
-          setEventUuid={setEvent2Uuid}
-          project={props.project}
-          label={`${t['Audiovisual Item']} 2`}
-        />
-        {duration === 'clip' && (
-          <ClipInterface
+          <EventSelect
+            eventUuid={event1Uuid}
+            setEventUuid={setEvent1Uuid}
+            project={props.project}
+            label={`${t['Audiovisual Item']} 1`}
+          />
+          {duration === 'clip' && (
+            <ClipInterface
+              i18n={props.i18n}
+              start={event1Start}
+              setStart={setEvent1Start}
+              end={event1End}
+              setEnd={setEvent1End}
+            />
+          )}
+          <EventSelect
+            eventUuid={event2Uuid}
+            setEventUuid={setEvent2Uuid}
+            project={props.project}
+            label={`${t['Audiovisual Item']} 2`}
+          />
+          {duration === 'clip' && (
+            <ClipInterface
+              i18n={props.i18n}
+              start={event2Start}
+              setStart={setEvent2Start}
+              end={event2End}
+              setEnd={setEvent2End}
+            />
+          )}
+          <IncludeInterface
+            includes={includes}
+            setIncludes={setIncludes}
             i18n={props.i18n}
-            start={event2Start}
-            setStart={setEvent2Start}
-            end={event2End}
-            setEnd={setEvent2End}
           />
-        )}
-        <IncludeInterface
-          includes={includes}
-          setIncludes={setIncludes}
-          i18n={props.i18n}
-        />
-        <div className='slate-dialog-close-bar'>
-          <Dialog.Close asChild>
-            <Button
-              className='outline'
-              onClick={props.clearModal}
-              role='button'
-            >
-              {t['cancel']}
-            </Button>
-          </Dialog.Close>
-          <Dialog.Close asChild>
-            <Button
-              className='primary'
-              role='button'
-              onClick={() =>
-                props.onSubmit({
-                  includes,
-                  event1: {
-                    uuid: event1Uuid,
-                    start: event1Start,
-                    end: event1End,
-                  },
-                  event2: {
-                    uuid: event2Uuid,
-                    start: event2Start,
-                    end: event2End,
-                  },
-                })
-              }
-            >
-              {t['Embed']}
-            </Button>
-          </Dialog.Close>
+          <div className='slate-dialog-close-bar'>
+            <Dialog.Close asChild>
+              <Button
+                className='unstyled'
+                onClick={props.clearModal}
+                role='button'
+              >
+                {t['cancel']}
+              </Button>
+            </Dialog.Close>
+            <Dialog.Close asChild>
+              <Button
+                className='primary'
+                role='button'
+                onClick={() =>
+                  props.onSubmit({
+                    includes,
+                    event1: {
+                      uuid: event1Uuid,
+                      start: event1Start,
+                      end: event1End,
+                    },
+                    event2: {
+                      uuid: event2Uuid,
+                      start: event2Start,
+                      end: event2End,
+                    },
+                  })
+                }
+              >
+                {t['Embed']}
+              </Button>
+            </Dialog.Close>
+          </div>
         </div>
       </Dialog.Content>
     </Dialog.Root>
