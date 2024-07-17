@@ -28,7 +28,7 @@ export interface ProjectFormProps {
 
   selection: 'general' | 'users' | 'tags';
 
-  onSave(project: Project): void;
+  onSave(project: Project, importOptions: any[]): void;
 }
 
 const FormContents = (props: ProjectFormProps) => {
@@ -105,7 +105,7 @@ const FormContents = (props: ProjectFormProps) => {
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
-            props.onSave(values);
+            props.onSave(values, tag);
             setSubmitting(false);
           }}
         >
