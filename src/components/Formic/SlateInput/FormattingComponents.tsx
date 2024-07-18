@@ -88,27 +88,31 @@ export const LinkButton = (props: LinkDialogProps) => {
       </Dialog.Trigger>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
-        <Dialog.Title>{props.title}</Dialog.Title>
-        <label>
-          {t['URL']}
-          <input
-            name='url'
-            value={url}
-            onChange={(ev) => setUrl(ev.target.value)}
-            onKeyDown={(ev) => {
-              // override the default enter behavior,
-              // which is to submit the parent form
-              if (ev.key === 'Enter') {
-                ev.preventDefault();
-                submit();
-              }
-            }}
-          />
-        </label>
+        <Dialog.Title className='slate-dialog-title'>
+          {props.title}
+        </Dialog.Title>
+        <div className='slate-dialog-body'>
+          <label>
+            {t['URL']}
+            <input
+              name='url'
+              value={url}
+              onChange={(ev) => setUrl(ev.target.value)}
+              onKeyDown={(ev) => {
+                // override the default enter behavior,
+                // which is to submit the parent form
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  submit();
+                }
+              }}
+            />
+          </label>
+        </div>
         <div className='slate-dialog-close-bar'>
           <Dialog.Close asChild>
             <Button
-              className='outline'
+              className='unstyled'
               onClick={() => setOpen(false)}
               role='button'
             >
@@ -160,41 +164,45 @@ export const ImageButton = (props: ImageDialogProps) => {
       </Dialog.Trigger>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
-        <Dialog.Title>{props.title}</Dialog.Title>
-        <label>
-          {t['URL']}
-          <input
-            name='url'
-            value={url}
-            onChange={(ev) => setUrl(ev.target.value)}
-            onKeyDown={(ev) => {
-              // override the default enter behavior,
-              // which is to submit the parent form
-              if (ev.key === 'Enter') {
-                ev.preventDefault();
-                submit();
-              }
-            }}
-          />
-        </label>
-        <label>
-          {t['Size']}
-          <select
-            className='formic-form-select'
-            onChange={(ev) => setSize(ev.target.value as ImageSize)}
-            value={size}
-          >
-            {imageSizes.map((val) => (
-              <option key={val} value={val}>
-                {t[val]}
-              </option>
-            ))}
-          </select>
-        </label>
+        <Dialog.Title className='slate-dialog-title'>
+          {props.title}
+        </Dialog.Title>
+        <div className='slate-dialog-body'>
+          <label>
+            {t['URL']}
+            <input
+              name='url'
+              value={url}
+              onChange={(ev) => setUrl(ev.target.value)}
+              onKeyDown={(ev) => {
+                // override the default enter behavior,
+                // which is to submit the parent form
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  submit();
+                }
+              }}
+            />
+          </label>
+          <label>
+            {t['Size']}
+            <select
+              className='formic-form-select'
+              onChange={(ev) => setSize(ev.target.value as ImageSize)}
+              value={size}
+            >
+              {imageSizes.map((val) => (
+                <option key={val} value={val}>
+                  {t[val]}
+                </option>
+              ))}
+            </select>
+          </label>
+        </div>
         <div className='slate-dialog-close-bar'>
           <Dialog.Close asChild>
             <Button
-              className='outline'
+              className='unstyled'
               onClick={() => setOpen(false)}
               role='button'
             >
