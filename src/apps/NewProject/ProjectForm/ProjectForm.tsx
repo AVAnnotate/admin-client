@@ -8,19 +8,20 @@ import {
   UserList,
 } from '@components/Formic/index.tsx';
 import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/SpreadsheetInput.tsx';
-import countryOptions from '@lib/language-codes.js';
+import countryOptions from '@lib/language-codes.ts';
 import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useRef, useState, useMemo, useContext } from 'react';
 
 import './ProjectForm.css';
-import { SpreadsheetInputContextComponent } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
+import {
+  SpreadsheetInputContextComponent,
+  SpreadsheetInputContext,
+} from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 
 export interface ProjectFormProps {
   project?: Project;
-
-  allUsers: ProviderUser[];
 
   orgs: GitHubOrganization[];
 
@@ -28,11 +29,13 @@ export interface ProjectFormProps {
 
   selection: 'general' | 'users' | 'tags';
 
-  onSave(project: Project, importOptions: any[]): void;
+  onSave(project: Project, importOptions: { [key: string]: number }): void;
 }
 
 const FormContents = (props: ProjectFormProps) => {
   const { t } = props.i18n;
+
+  const { headerMap } = useContext(SpreadsheetInputContext);
 
   const [searchOpen, setSearchOpen] = useState(false);
 
@@ -41,7 +44,7 @@ const FormContents = (props: ProjectFormProps) => {
   const tagRef = useRef(null);
 
   const emptyProject: Project = {
-    github_org: '',
+    github_org: props.orgs[0].orgName,
     title: '',
     description: '',
     language: 'en',
@@ -105,7 +108,7 @@ const FormContents = (props: ProjectFormProps) => {
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
-            props.onSave(values, tag);
+            props.onSave(values, headerMap);
             setSubmitting(false);
           }}
         >

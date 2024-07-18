@@ -34,7 +34,6 @@ export const POST: APIRoute = async ({
     const body: apiProjectsProjectNamePost = await request.json();
 
     // Create the new repo from template
-    console.log('Template repo: ', body.templateRepo);
     const resp: Response = await createRepositoryFromTemplate(
       body.templateRepo,
       body.gitHubOrg,
@@ -46,6 +45,7 @@ export const POST: APIRoute = async ({
 
     if (!resp.ok) {
       console.error('Failed to create project repo: ', resp.statusText);
+      console.error('Body: ', body);
       return new Response(null, { status: 500, statusText: resp.statusText });
     }
 
@@ -125,7 +125,6 @@ export const POST: APIRoute = async ({
           });
         }
       } else {
-        console.log('Reading Collabs resp', respCollabs);
         const data: RepositoryInvitation = await respCollabs.json();
 
         collabs.push({
@@ -143,7 +142,6 @@ export const POST: APIRoute = async ({
     // Update the project data
     const fs = initFs();
 
-    console.log('Repo: ', repo.html_url);
     // Update the admin project.json file
     const { readFile, writeFile, commitAndPush } = await gitRepo({
       fs: fs,
@@ -172,6 +170,7 @@ export const POST: APIRoute = async ({
         media_player: body.mediaPlayer,
         auto_populate_home_page: body.autoPopulateHomePage,
         additional_users: collabs,
+        tags: body.tags,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },

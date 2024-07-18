@@ -2,9 +2,11 @@ import type {
   AnnotationEntry,
   FormEvent,
   ParseAnnotationResults,
+  Tags,
 } from '@ty/Types.ts';
 import { read, utils } from 'xlsx';
 import { v4 as uuidv4 } from 'uuid';
+import tagColors from '@lib/tag-colors.ts';
 
 export const parseSpreadsheetData = async (
   data: File,
@@ -44,6 +46,34 @@ export const mapAnnotationData = (
       annotation: d[map['annotation']],
       tags: d[map['tags']],
     });
+  });
+
+  return ret;
+};
+
+export const mapTagData = (
+  data: any[],
+  map: { [key: string]: number }
+): Tags => {
+  const ret: Tags = {
+    tagGroups: [],
+    tags: [],
+  };
+
+  let colorIndex = 0;
+  data.forEach((d) => {
+    if (d[map['tag_name']]) {
+      if (!ret.tagGroups.find((g) => g.category === d[map['tag_category']])) {
+        ret.tagGroups.push({
+          category: d[map['tag_category']],
+          color: tagColors[colorIndex++],
+        });
+      }
+      ret.tags.push({
+        tag: d[map['tag_name']],
+        category: d[map['tag_category']],
+      });
+    }
   });
 
   return ret;
