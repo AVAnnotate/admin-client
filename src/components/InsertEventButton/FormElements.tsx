@@ -3,7 +3,8 @@ import { Button } from '@radix-ui/themes';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { useCallback } from 'react';
 import type { Includes } from '../../types/slate.ts';
-import { CheckIcon } from '@radix-ui/react-icons';
+import { CheckIcon, ChevronDownIcon } from '@radix-ui/react-icons';
+import * as Select from '@radix-ui/react-select';
 
 interface ClipInterfaceProps {
   start?: number;
@@ -17,7 +18,7 @@ export const ClipInterface: React.FC<ClipInterfaceProps> = (props) => {
   const { t } = props.i18n;
 
   return (
-    <>
+    <div>
       <div className='include-clip-times'>
         <label>
           <TimeInput
@@ -36,7 +37,7 @@ export const ClipInterface: React.FC<ClipInterfaceProps> = (props) => {
           />
         </label>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -50,7 +51,7 @@ export const DurationInterface: React.FC<DurationInterfaceProps> = (props) => {
   const { t } = props.i18n;
 
   return (
-    <>
+    <div>
       <p>{t['Duration']}</p>
       <div className='duration-buttons'>
         <Button
@@ -68,7 +69,7 @@ export const DurationInterface: React.FC<DurationInterfaceProps> = (props) => {
           {t['Clip']}
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -93,7 +94,7 @@ export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
   );
 
   return (
-    <>
+    <div>
       <p>{t['Include']}</p>
       <div className='include-buttons'>
         <Button
@@ -137,7 +138,7 @@ export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
           <span>{t['Description']}</span>
         </Button>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -150,19 +151,31 @@ interface EventSelectProps {
 
 export const EventSelect: React.FC<EventSelectProps> = (props) => {
   return (
-    <label>
+    <label className='slate-event-select'>
       {props.label}
-      <select
-        className='formic-form-select'
-        onChange={(ev) => props.setEventUuid(ev.target.value)}
+      <Select.Root
+        onValueChange={(val) => props.setEventUuid(val)}
         value={props.eventUuid}
       >
-        {Object.keys(props.project.events).map((uuid) => (
-          <option key={uuid} value={uuid}>
-            {props.project.events[uuid].label}
-          </option>
-        ))}
-      </select>
+        <Select.Trigger className='slate-event-select-trigger'>
+          <Select.Value />
+          <Select.Icon>
+            <ChevronDownIcon />
+          </Select.Icon>
+        </Select.Trigger>
+        <Select.Content className='select-content' position='popper'>
+          <Select.Viewport className='select-viewport'>
+            {Object.keys(props.project.events).map((uuid) => (
+              <Select.Item className='select-item' key={uuid} value={uuid}>
+                <Select.ItemText>
+                  {props.project.events[uuid].label}
+                </Select.ItemText>
+                <Select.ItemIndicator />
+              </Select.Item>
+            ))}
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Root>
     </label>
   );
 };

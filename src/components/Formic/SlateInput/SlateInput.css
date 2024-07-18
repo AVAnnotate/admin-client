@@ -91,8 +91,8 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 40vw;
-  min-width: 800px;
+  width: 45vw;
+  min-width: 900px;
   max-height: 85vh;
   animation: contentShow 150ms cubic-bezier(0.16, 1, 0.3, 1);
   z-index: 3;
@@ -100,6 +100,9 @@
 
 .slate-form .slate-dialog-content .slate-dialog-body {
   padding: 10px 24px;
+  display: flex;
+  flex-flow: column;
+  gap: 16px;
 }
 
 .slate-form .compare-events-header {
@@ -166,4 +169,41 @@
 
 .slate-form .slate-img-full {
   max-width: 100%;
+}
+
+.slate-event-select [data-radix-popper-content-wrapper] {
+  /* subtract the 24px padding around the modal content */
+  width: calc(100% - 48px);
+}
+
+.slate-form .slate-event-select .slate-event-select-trigger {
+  background: #fff;
+  height: 36px;
+  color: #000;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.slate-form .slate-event-select .select-content {
+  overflow: hidden;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+    0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+}
+
+.slate-form .slate-event-select .select-viewport {
+  padding: 5px;
+}
+
+.slate-form .slate-event-select .select-viewport .select-item {
+  font-size: 14px;
+  line-height: 1;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  padding: 8px 14px 8px 14px;
+  position: relative;
+  user-select: none;
 }
