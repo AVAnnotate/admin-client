@@ -1,7 +1,8 @@
 import { gitRepo } from '@backend/gitRepo.ts';
-import { getRepositoryUrl } from '@backend/projectHelpers.ts';
+import { getPageData, getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { getNewOrder } from '@lib/pages/index.ts';
 import type { apiPagePut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 
@@ -24,7 +25,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   const token = cookies.get('access-token');
   const info = await userInfo(cookies);
 
-  if (!token || !info || !projectName) {
+  if (!token || !info || !projectName || !pageUuid) {
     return redirect('/', 307);
   }
 
@@ -45,14 +46,24 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { writeFile, commitAndPush } = await gitRepo({
-    fs: initFs(),
+  const fs = initFs()
+
+  const { readFile, readDir, writeFile, commitAndPush } = await gitRepo({
+    fs,
     repositoryURL,
     branch: 'main',
     userInfo: info,
   });
 
   writeFile(`/data/pages/${pageUuid}.json`, JSON.stringify(page));
+
+  const { pages } = getPageData(fs, readDir('/data/pages') as unknown as string[], 'pages');
+
+  const orderFile = readFile('/data/pages/order.json')
+
+  const newOrder = getNewOrder(pages, pageUuid, JSON.parse(orderFile.toString()))
+
+  writeFile('/data/pages/order.json', JSON.stringify(newOrder));
 
   const successCommit = await commitAndPush(`Updated page ${body.page.title}`);
 
@@ -78,7 +89,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { commitAndPush, deleteFile } = await gitRepo({
+  const { commitAndPush, readFile, deleteFile, writeFile } = await gitRepo({
     fs: initFs(),
     repositoryURL,
     branch: 'main',
@@ -88,6 +99,12 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   const filepath = `/data/pages/${pageUuid}.json`;
 
   await deleteFile(filepath);
+
+  const order: string[] = JSON.parse(readFile('/data/pages/order.json').toString())
+
+  const newOrder = order.filter(uuid => uuid !== pageUuid)
+
+  writeFile('/data/pages/order.json', JSON.stringify(newOrder));
 
   const successCommit = await commitAndPush(`Deleted page ${pageUuid}`);
 

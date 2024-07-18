@@ -1,0 +1,104 @@
+.page-form {
+  box-sizing: border-box;
+}
+
+.page-form .page-form-body {
+  margin-bottom: 100px;
+}
+
+.page-form .top-config-bar {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 20px;
+}
+
+.page-form .page-form-body {
+  display: flex;
+  flex-flow: column;
+  gap: 20px;
+}
+
+.page-form .page-content-editor .formic-form-textarea {
+  min-height: 600px;
+  height: auto;
+}
+
+.page-form .bottom-bar-flex {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.page-form .bottom-bar-flex button {
+  padding: 16px 18px 16px 18px;
+}
+
+.page-form .bottom-bar-flex .save-button {
+  width: 276px;
+}
+
+.page-form .bottom-bar-flex .cancel-button {
+  width: 176px;
+}
+
+.page-form .slate-column {
+  border: 1px solid var(--gray-400);
+}
+
+.page-form .slate-column:last-child {
+  border-left: none;
+}
+
+.page-form .duration-buttons {
+  display: flex;
+}
+
+.page-form .duration-buttons button {
+  width: 160px;
+  box-shadow: none;
+}
+
+.page-form .duration-buttons button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.page-form .duration-buttons button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+}
+
+.page-form .include-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.page-form .include-buttons button {
+  width: auto;
+  box-shadow: none;
+  border-radius: 50px;
+  padding: 8px 16px 8px 16px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-form .include-buttons button svg {
+  padding: 0;
+  margin: 0;
+  height: 16px;
+  width: 16px;
+}
+
+.page-form .include-clip-times {
+  display: flex;
+  gap: 10px;
+}
+
+.page-form .include-clip-times input {
+  width: 100px;
+}

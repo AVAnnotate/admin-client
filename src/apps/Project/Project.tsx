@@ -17,7 +17,7 @@ import {
 } from 'react-bootstrap-icons';
 
 import './Project.css';
-import { PageList } from '@components/PageList/index.ts'
+import { PageList } from '@components/PageList/index.ts';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
 import { useMemo } from 'react';
@@ -38,7 +38,7 @@ export const Project: React.FC<Props> = (props) => {
   // can still use the onClick row handlers below.
   const eventsWithUuids = useMemo(
     () =>
-      Object.entries(props.project.events as any[]).map((entry) => ({
+      Object.entries(props.project.events).map((entry) => ({
         uuid: entry[0],
         ...entry[1],
       })),
@@ -153,12 +153,7 @@ export const Project: React.FC<Props> = (props) => {
             },
             {
               title: t['Pages'],
-              component: (
-                <PageList
-                  i18n={props.i18n}
-                  project={props.project}
-                />
-              ),
+              component: <PageList i18n={props.i18n} project={props.project} />,
             },
           ]}
         />

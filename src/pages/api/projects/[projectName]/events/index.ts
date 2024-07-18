@@ -35,14 +35,21 @@ export const POST: APIRoute = async ({
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { writeFile, commitAndPush } = await gitRepo({
-    fs: initFs(),
+  const fs = initFs();
+
+  const { exists, writeFile, commitAndPush, mkDir } = await gitRepo({
+    fs,
     repositoryURL,
     branch: 'main',
     userInfo: info,
   });
 
   let uuids: string[] = [];
+
+  // Create the events folder if it doesn't exist
+  if (!exists('/data/events')) {
+    mkDir('/data/events');
+  }
 
   // Support a single event or an array of events
   (body.events || [body.event]).forEach((ev) => {

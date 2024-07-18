@@ -1,7 +1,8 @@
 import { gitRepo } from '@backend/gitRepo.ts';
-import { getRepositoryUrl } from '@backend/projectHelpers.ts';
+import { getPageData, getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { getNewOrder } from '@lib/pages/index.ts';
 import type { apiPagePost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -27,6 +28,12 @@ export const POST: APIRoute = async ({
 
   const body: apiPagePost = await request.json();
 
+  const { page } = body;
+
+  if (!page) {
+    return new Response('Missing page data', { status: 400 });
+  }
+
   const created_at = new Date().toJSON();
   const created_by = info.profile.gitHubName as string;
   const updated_at = new Date().toJSON();
@@ -34,47 +41,55 @@ export const POST: APIRoute = async ({
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { writeFile, commitAndPush } = await gitRepo({
-    fs: initFs(),
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const fs = initFs();
 
-  let titles: string[] = [];
+  const { readDir, readFile, writeFile, commitAndPush, exists, mkDir } =
+    await gitRepo({
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    });
 
-  (body.pages || [body.page]).forEach((page) => {
-    const uuid = uuidv4();
+  // Create the events folder if it doesn't exist
+  if (!exists('/data/events')) {
+    mkDir('/data/events');
+  }
 
-    const filepath = `/data/pages/${uuid}.json`;
+  const uuid = uuidv4();
 
-    writeFile(
-      filepath,
-      JSON.stringify({
-        ...page,
-        created_at,
-        created_by,
-        updated_at,
-        updated_by,
-      })
-    );
+  writeFile(
+    `/data/pages/${uuid}.json`,
+    JSON.stringify({
+      ...page,
+      created_at,
+      created_by,
+      updated_at,
+      updated_by,
+    })
+  );
 
-    titles.push(page!.title);
-  });
+  const { pages } = getPageData(
+    fs,
+    readDir('/data/pages') as unknown as string[],
+    'pages'
+  );
 
-  const commitMessage = body.pages
-    ? `Added ${body.pages.length} pages`
-    : `Added page "${titles[0]}"`;
+  const orderFile = readFile('/data/pages/order.json');
 
-  const successCommit = await commitAndPush(commitMessage);
+  const newOrder = getNewOrder(pages, uuid, JSON.parse(orderFile.toString()));
+
+  writeFile('/data/pages/order.json', JSON.stringify(newOrder));
+
+  const successCommit = await commitAndPush(`Added page "${page.title}"`);
 
   if (successCommit.error) {
-    console.error('Failed to write event data: ', successCommit.error);
+    console.error('Failed to write page data: ', successCommit.error);
     return new Response(null, {
       status: 500,
-      statusText: 'Failed to write event data: ' + successCommit.error,
+      statusText: 'Failed to write page data: ' + successCommit.error,
     });
   }
 
-  return new Response(JSON.stringify(event), { status: 200 });
+  return new Response(JSON.stringify(body), { status: 200 });
 };

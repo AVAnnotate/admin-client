@@ -185,26 +185,32 @@ export const Table: React.FC<Props> = ({
             </RadixTable.Row>
           )}
         </RadixTable.Header>
-        {sortedItems.length > 0 ? (
-          <RadixTable.Body>
-            {sortedItems.map((item, idx) => (
-              <RadixTable.Row key={idx}>
-                {rows.map((row, rowIndex) => (
-                  <RadixTable.Cell key={rowIndex}>
-                    {getCellValue(item, row)}
-                  </RadixTable.Cell>
-                ))}
-                {rowButtons && (
-                  <RadixTable.Cell>
-                    <MeatballMenu buttons={rowButtons} row={item} />
-                  </RadixTable.Cell>
-                )}
-              </RadixTable.Row>
-            ))}
-          </RadixTable.Body>
-        ) : (
-          <p className='table-empty-text'>{emptyText}</p>
-        )}
+        <RadixTable.Body>
+          {sortedItems.length > 0 ? (
+            <>
+              {sortedItems.map((item, idx) => (
+                <RadixTable.Row key={idx}>
+                  {rows.map((row, rowIndex) => (
+                    <RadixTable.Cell key={rowIndex}>
+                      {getCellValue(item, row)}
+                    </RadixTable.Cell>
+                  ))}
+                  {rowButtons && (
+                    <RadixTable.Cell>
+                      <MeatballMenu buttons={rowButtons} row={item} />
+                    </RadixTable.Cell>
+                  )}
+                </RadixTable.Row>
+              ))}
+            </>
+          ) : (
+            <RadixTable.Row>
+              <RadixTable.Cell>
+                <div className='table-empty-text'>{emptyText}</div>
+              </RadixTable.Cell>
+            </RadixTable.Row>
+          )}
+        </RadixTable.Body>
       </RadixTable.Root>
     </div>
   );

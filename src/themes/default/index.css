@@ -193,6 +193,10 @@ textarea {
   padding: 0 20px;
 }
 
+.hidden {
+  display: none;
+}
+
 .SeparatorRoot {
   background-color: var(--gray-300);
 }

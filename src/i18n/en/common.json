@@ -15,5 +15,10 @@
   "Column": "Column",
   "Select": "Select",
   "Required": "Required",
-  "Optional": "Optional"
+  "Optional": "Optional",
+  "Projects": "Projects",
+  "Events": "Events",
+  "Audiovisual event": "Audiovisual event",
+  "Include": "Include",
+  "Size": "Size"
 }

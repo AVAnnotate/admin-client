@@ -1,17 +1,23 @@
 import { Button } from '@radix-ui/themes';
-import { Field, ErrorMessage, useField } from 'formik';
+import { Field, ErrorMessage, useField, useFormikContext } from 'formik';
 import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
-import type { ProviderUser, Translations } from '@ty/Types.ts';
+import type { ProjectData, ProviderUser, Translations } from '@ty/Types.ts';
 import { Trash } from '@phosphor-icons/react/Trash';
-import { useCallback, useState } from 'react';
+import { useCallback, useState, type ReactElement } from 'react';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
-import { SlateInput } from './SlateInput.tsx';
+import { SlateInput } from './SlateInput/index.ts';
 import * as Switch from '@radix-ui/react-switch';
 import { CheckIcon } from '@radix-ui/react-icons';
 
 export const Required = () => {
   return <div className='formic-form-required'>*</div>;
+};
+
+const validateRequiredField = (name: string, value: any) => {
+  if (!value) {
+    return `Missing value for ${name}.`;
+  }
 };
 
 interface TextInputProps {
@@ -43,6 +49,9 @@ export const TextInput = (props: TextInputProps) => {
         name={props.name}
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
         as={props.isLarge ? 'textarea' : 'input'}
+        validate={(val) =>
+          props.required ? validateRequiredField(props.name, val) : undefined
+        }
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
@@ -56,10 +65,15 @@ export const TextInput = (props: TextInputProps) => {
 
 interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
   initialValue?: any;
-  onChange: (data: any) => any;
+  name: string;
+  i18n: Translations;
+  children?: ReactElement | ReactElement[];
+  project?: ProjectData;
 }
 
 export const RichTextInput = (props: RichTextInputProps) => {
+  const { setFieldValue, values } = useFormikContext();
+
   return (
     <div className={`formic-form-field ${props.className || ''}`}>
       {props.label && (
@@ -73,7 +87,14 @@ export const RichTextInput = (props: RichTextInputProps) => {
           {props.helperText}
         </div>
       )}
-      <SlateInput onChange={props.onChange} initialValue={props.initialValue} />
+      <SlateInput
+        onChange={(data) => setFieldValue(props.name, data)}
+        i18n={props.i18n}
+        initialValue={(values as any)[props.name] || props.initialValue}
+        project={props.project}
+      >
+        {props.children}
+      </SlateInput>
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
           {props.bottomNote}
@@ -85,7 +106,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
 };
 
 interface TimeInputProps {
-  defaultValue: number;
+  initialValue: number;
   label?: string;
   onChange: (input: number) => any;
   required?: boolean;
@@ -97,7 +118,7 @@ export const TimeInput = (props: TimeInputProps) => {
     return new Date(seconds * 1000).toISOString().slice(11, 19);
   }, []);
 
-  const [display, setDisplay] = useState(valueToDisplay(props.defaultValue));
+  const [display, setDisplay] = useState(valueToDisplay(props.initialValue));
 
   const onChange = useCallback((event: any) => {
     const input = event.target.value.replaceAll(':', '');
@@ -124,19 +145,23 @@ export const TimeInput = (props: TimeInputProps) => {
   }, []);
 
   return (
-    <div className={`formic-form-field ${props.className}`}>
+    <div className={`formic-form-field ${props.className || ''}`}>
       {props.label && (
-        <div className='av-label-bold formic-form-label'>
-          {props.label}
+        <div className='av-label-bold formic-form-label formic'>
+          <span>{props.label}</span>
           {props.required && <Required />}
         </div>
       )}
-      <input className='formic-form-text' onChange={onChange} value={display} />
+      <input
+        className='formic-form-text formic-time-input'
+        onChange={onChange}
+        value={display}
+      />
     </div>
   );
 };
 
-interface SelectInputProps {
+export interface SelectInputProps {
   label: string;
   helperText?: string;
   name: string;
@@ -158,6 +183,8 @@ export const SelectInput = (props: SelectInputProps) => {
         </div>
       )}
       <Field as='select' name={props.name} className='formic-form-select'>
+        {/* empty option to allow the user to leave the input blank */}
+        {!props.required && <option />}
         {props.options.map((option) => {
           return (
             <option key={option.value} value={option.value}>

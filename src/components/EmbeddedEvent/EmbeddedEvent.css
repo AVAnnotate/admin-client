@@ -1,0 +1,17 @@
+.embedded-event {
+  width: 100%;
+  background-color: var(--gray-100);
+  border: 1px solid var(--gray-300);
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  padding: 0 20px;
+}
+
+.embedded-event .embedded-event-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}

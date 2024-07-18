@@ -1,0 +1,39 @@
+---
+import { PageEdit } from '@apps/PageEdit';
+import { getProject, parseSlug } from '@backend/projectHelpers';
+import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
+import Layout from '@layouts/Layout.astro';
+
+const { projectSlug, pageUuid } = Astro.params;
+const info = await userInfo(Astro.cookies);
+
+if (!projectSlug || !pageUuid || !info) {
+  return null;
+}
+
+const { org, repo } = parseSlug(projectSlug);
+
+const i18n = getTranslations(Astro.request, 'pages');
+
+const baseUrl = 'https://github.com';
+const repoUrl = `${baseUrl}/${org}/${repo}`;
+
+const projectData = await getProject(info, repoUrl);
+
+const page = projectData.pages[pageUuid];
+
+if (!page && pageUuid !== 'new') {
+  return Astro.redirect('/404');
+}
+---
+
+<Layout title={page?.title || i18n.t['Add Page']} profile={info.profile}>
+  <PageEdit
+    page={pageUuid === 'new' ? undefined : page}
+    i18n={i18n}
+    project={projectData}
+    uuid={pageUuid === 'new' ? undefined : pageUuid}
+    client:only='react'
+  />
+</Layout>
