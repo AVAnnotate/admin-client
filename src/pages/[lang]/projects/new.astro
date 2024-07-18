@@ -26,24 +26,9 @@ if (!provider) {
   Astro.redirect('/500');
 }
 
-const users = await provider?.getUsers(
-  import.meta.env.GIT_ADMIN_REPO,
-  info.token
-);
-
-const allUsers = await users?.json();
-
 const orgs = await getOrgs(info);
-
-console.log(orgs);
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <NewProject
-    i18n={i18n}
-    onSave={() => {}}
-    allUsers={allUsers}
-    orgs={orgs}
-    client:only='react'
-  />
+  <NewProject i18n={i18n} onSave={() => {}} orgs={orgs} client:only='react' />
 </Layout>

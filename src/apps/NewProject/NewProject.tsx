@@ -8,16 +8,15 @@ import { Sidebar, type SidebarSelection } from './Sidebar/index.ts';
 import { useState } from 'react';
 import { ProjectForm } from './ProjectForm/index.ts';
 import type { apiProjectsProjectNamePost } from '@ty/api.ts';
+import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
+import { mapTagData } from '@lib/parse/index.ts';
 
 import './NewProject.css';
-import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 
 interface NewProjectProps {
   project?: Project;
 
   i18n: Translations;
-
-  allUsers: ProviderUser[];
 
   orgs: GitHubOrganization[];
 
@@ -30,7 +29,10 @@ export const NewProject = (props: NewProjectProps) => {
 
   const { t, lang } = props.i18n;
 
-  const handleSaveProject = (project: Project) => {
+  const handleSaveProject = (
+    project: Project,
+    map: { [key: string]: number }
+  ) => {
     setSaving(true);
 
     const body: apiProjectsProjectNamePost = {
@@ -46,6 +48,10 @@ export const NewProject = (props: NewProjectProps) => {
       language: project.language,
       autoPopulateHomePage: project.auto_populate_home_page,
       visibility: 'public',
+      tags: project.tags
+        ? // @ts-ignore
+          mapTagData(project!.tags.data, map)
+        : undefined,
     };
 
     fetch(`/api/projects/${project.slug}`, {
@@ -55,7 +61,6 @@ export const NewProject = (props: NewProjectProps) => {
       },
       body: JSON.stringify(body),
     }).then((result) => {
-      console.log('Result: ', result);
       setSaving(false);
       window.location.pathname = `/${lang}/projects`;
     });
@@ -74,7 +79,6 @@ export const NewProject = (props: NewProjectProps) => {
         <div className='new-project-form-container'>
           <ProjectForm
             i18n={props.i18n}
-            allUsers={props.allUsers}
             onSave={handleSaveProject}
             orgs={props.orgs}
             selection={selection}

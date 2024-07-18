@@ -158,8 +158,6 @@ export const enablePages = async (
     build_type: 'workflow',
     https_enforced: true,
   };
-  console.log('API Body: ', body);
-  console.log('Repo: ', repo);
   return await fetch(`https://api.github.com/repos/${org}/${repo}/pages`, {
     method: 'POST',
     headers: {
