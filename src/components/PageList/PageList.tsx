@@ -11,6 +11,7 @@ import { PageRow } from './PageRow.tsx';
 interface Props {
   i18n: Translations;
   project: ProjectData;
+  projectSlug: string;
 }
 
 export const PageList: React.FC<Props> = (props) => {
@@ -24,11 +25,6 @@ export const PageList: React.FC<Props> = (props) => {
   const isChanged = useMemo(
     () => pageOrder !== props.project.pageOrder,
     [props.project.pageOrder, pageOrder]
-  );
-
-  const projectSlug = useMemo(
-    () => `${props.project.project.github_org}+${props.project.project.slug}`,
-    [props.project]
   );
 
   const onDrop = async () => {
@@ -60,7 +56,7 @@ export const PageList: React.FC<Props> = (props) => {
 
   const onSubmit = async () => {
     setSaving(true);
-    const res = await fetch(`/api/projects/${projectSlug}/pages/order`, {
+    const res = await fetch(`/api/projects/${props.projectSlug}/pages/order`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',

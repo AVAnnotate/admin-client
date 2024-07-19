@@ -4,22 +4,24 @@ import type React from 'react';
 
 import './EventEdit.css';
 import { Breadcrumbs } from '@components/Breadcrumbs/Breadcrumbs.tsx';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 interface Props {
   event: Event;
   i18n: Translations;
   project: ProjectData;
+  projectSlug: string;
   uuid: string;
 }
 
-export const EventEdit: React.FC<Props> = ({ event, uuid, i18n, project }) => {
+export const EventEdit: React.FC<Props> = ({
+  event,
+  uuid,
+  i18n,
+  project,
+  projectSlug,
+}) => {
   const { t, lang } = i18n;
-
-  const projectSlug = useMemo(
-    () => `${project.project.github_org}+${project.project.slug}`,
-    [project]
-  );
 
   const onSubmit = useCallback(async (newEvent: Event | FormEvent) => {
     const res = await fetch(`/api/projects/${projectSlug}/events/${uuid}`, {

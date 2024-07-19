@@ -7,6 +7,7 @@ interface Props {
   i18n: Translations;
   page?: Page;
   project: ProjectData;
+  projectSlug: string;
   uuid?: string;
 }
 
@@ -37,20 +38,15 @@ const onSubmitEdit = async (
 export const PageEdit: React.FC<Props> = (props) => {
   const { lang, t } = props.i18n;
 
-  const projectSlug = useMemo(
-    () => `${props.project.project.github_org}+${props.project.project.slug}`,
-    [props.project]
-  );
-
   const onSubmit = useCallback(async (page: Page | FormPage) => {
     if (props.uuid) {
-      await onSubmitEdit(page, projectSlug, props.uuid);
+      await onSubmitEdit(page, props.projectSlug, props.uuid);
     } else {
-      await onSubmitNew(page, projectSlug);
+      await onSubmitNew(page, props.projectSlug);
     }
 
     // Should probably redirect to the page view component once that's built.
-    window.location.pathname = `/${lang}/projects/${projectSlug}`;
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
   }, []);
 
   return (
@@ -60,7 +56,7 @@ export const PageEdit: React.FC<Props> = (props) => {
           { label: t['Projects'], link: `/${lang}/projects` },
           {
             label: props.project.project.title,
-            link: `/${lang}/projects/${projectSlug}`,
+            link: `/${lang}/projects/${props.projectSlug}`,
           },
           { label: t['Add Page'], link: '' },
         ]}

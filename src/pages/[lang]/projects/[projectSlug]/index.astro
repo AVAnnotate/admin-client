@@ -5,7 +5,7 @@ import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
 import Layout from '@layouts/Layout.astro';
 
-const { lang, slug } = Astro.params;
+const { lang, projectSlug } = Astro.params;
 
 const info = await userInfo(Astro.cookies);
 
@@ -13,14 +13,14 @@ if (!lang) {
   return Astro.redirect('/');
 }
 
-if (!info || !slug) {
+if (!info || !projectSlug) {
   console.log('Redirecting: ', lang);
   return Astro.redirect(`/${lang}/sign-in`);
 }
 
 const i18n = getTranslations(Astro.request, 'projects');
 
-const { org, repo } = parseSlug(slug);
+const { org, repo } = parseSlug(projectSlug);
 
 const baseUrl = 'https://github.com';
 const repoUrl = `${baseUrl}/${org}/${repo}`;
@@ -29,5 +29,10 @@ const projectData = await getProject(info, repoUrl);
 ---
 
 <Layout title='Projects' profile={info.profile}>
-  <Project i18n={i18n} project={projectData} client:only='react' />
+  <Project
+    i18n={i18n}
+    project={projectData}
+    client:only='react'
+    projectSlug={projectSlug}
+  />
 </Layout>
