@@ -13,10 +13,7 @@ import { useFormikContext } from 'formik';
 import { Button, ChevronDownIcon, Table } from '@radix-ui/themes';
 import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
-import {
-  SpreadsheetInputContext,
-  SpreadsheetInputContextComponent,
-} from './SpreadsheetInputContext.tsx';
+import { SpreadsheetInputContext } from './SpreadsheetInputContext.tsx';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 

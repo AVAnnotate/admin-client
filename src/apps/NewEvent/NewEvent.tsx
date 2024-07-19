@@ -2,26 +2,22 @@ import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { EventForm } from '@components/EventForm/index.ts';
 import { ToggleInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
-import type { Event, FormEvent, ProjectData, Translations } from '@ty/Types.ts';
+import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import './NewEvent.css';
 import { ImportForm } from '@components/ImportForm/ImportForm.tsx';
 
 interface Props {
   i18n: Translations;
   project: ProjectData;
+  projectSlug: string;
 }
 
-export const NewEvent: React.FC<Props> = ({ i18n, project }) => {
+export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
   const [tab, setTab] = useState(0);
 
   const { t, lang } = i18n;
-
-  const projectSlug = useMemo(
-    () => `${project.project.github_org}+${project.project.slug}`,
-    [project]
-  );
 
   const onSubmit = useCallback(async (newEvent: FormEvent) => {
     const res = await fetch(`/api/projects/${projectSlug}/events`, {

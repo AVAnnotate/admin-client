@@ -25,6 +25,7 @@ import { useMemo } from 'react';
 interface Props {
   i18n: Translations;
   project: ProjectData;
+  projectSlug: string;
 }
 
 interface EventWithUuid extends Event {
@@ -38,7 +39,7 @@ export const Project: React.FC<Props> = (props) => {
   // can still use the onClick row handlers below.
   const eventsWithUuids = useMemo(
     () =>
-      Object.entries(props.project.events).map((entry) => ({
+      Object.entries(props.project.events!).map((entry) => ({
         uuid: entry[0],
         ...entry[1],
       })),
@@ -57,10 +58,12 @@ export const Project: React.FC<Props> = (props) => {
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
           <div className='project-top-bar-buttons'>
-            <Button className='outline' variant='outline'>
-              <GearIcon />
-              {t['Settings']}
-            </Button>
+            <a href={`/${lang}/projects/${props.projectSlug}/settings`}>
+              <Button className='outline' variant='outline'>
+                <GearIcon />
+                {t['Settings']}
+              </Button>
+            </a>
             <Button className='outline' variant='outline'>
               <Tag />
               {t['Tags']}
@@ -153,7 +156,13 @@ export const Project: React.FC<Props> = (props) => {
             },
             {
               title: t['Pages'],
-              component: <PageList i18n={props.i18n} project={props.project} />,
+              component: (
+                <PageList
+                  i18n={props.i18n}
+                  project={props.project}
+                  projectSlug={props.projectSlug}
+                />
+              ),
             },
           ]}
         />

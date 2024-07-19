@@ -26,5 +26,10 @@ const projectData = await getProject(info, repoUrl);
   title={`${projectData.project.title} - ${i18n.t['Import events file']}`}
   profile={info.profile}
 >
-  <EventImport i18n={i18n} project={projectData} client:only='react' />
+  <EventImport
+    i18n={i18n}
+    project={projectData}
+    projectSlug={projectSlug}
+    client:only='react'
+  />
 </Layout>

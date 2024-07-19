@@ -18,6 +18,7 @@ import {
 interface Props {
   i18n: Translations;
   project: ProjectData;
+  projectSlug: string;
 }
 
 const initialValues = {
@@ -32,11 +33,6 @@ export const EventImport: React.FC<Props> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { lang, t } = props.i18n;
-
-  const projectSlug = useMemo(
-    () => `${props.project.project.github_org}+${props.project.project.slug}`,
-    [props.project]
-  );
 
   const onSubmit = useCallback(async (data: any) => {
     setIsSubmitting(true);
@@ -58,7 +54,7 @@ export const EventImport: React.FC<Props> = (props) => {
       }
     });
 
-    const res = await fetch(`/api/projects/${projectSlug}/events`, {
+    const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -68,7 +64,7 @@ export const EventImport: React.FC<Props> = (props) => {
 
     setIsSubmitting(false);
 
-    window.location.pathname = `/${lang}/projects/${projectSlug}`;
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
   }, []);
 
   return (
@@ -78,7 +74,7 @@ export const EventImport: React.FC<Props> = (props) => {
           { label: t['Projects'], link: `/${lang}/projects` },
           {
             label: props.project.project.title,
-            link: `/${lang}/projects/${projectSlug}`,
+            link: `/${lang}/projects/${props.projectSlug}`,
           },
           { label: t['Edit Event'], link: '' },
         ]}

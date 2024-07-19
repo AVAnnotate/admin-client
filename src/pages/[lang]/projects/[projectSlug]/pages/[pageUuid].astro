@@ -21,7 +21,7 @@ const repoUrl = `${baseUrl}/${org}/${repo}`;
 
 const projectData = await getProject(info, repoUrl);
 
-const page = projectData.pages[pageUuid];
+const page = projectData.pages ? projectData.pages[pageUuid] : null;
 
 if (!page && pageUuid !== 'new') {
   return Astro.redirect('/404');
@@ -30,9 +30,10 @@ if (!page && pageUuid !== 'new') {
 
 <Layout title={page?.title || i18n.t['Add Page']} profile={info.profile}>
   <PageEdit
-    page={pageUuid === 'new' ? undefined : page}
+    page={pageUuid === 'new' ? undefined : page!}
     i18n={i18n}
     project={projectData}
+    projectSlug={projectSlug}
     uuid={pageUuid === 'new' ? undefined : pageUuid}
     client:only='react'
   />

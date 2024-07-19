@@ -22,7 +22,7 @@ const repoUrl = `${baseUrl}/${org}/${repo}`;
 
 const projectData = await getProject(info, repoUrl);
 
-const event = projectData.events[eventUuid];
+const event = projectData.events ? projectData.events[eventUuid] : null;
 
 if (!event && eventUuid !== 'new') {
   return Astro.redirect('/404');
@@ -36,11 +36,17 @@ if (!event && eventUuid !== 'new') {
         event={event}
         i18n={i18n}
         project={projectData}
+        projectSlug={projectSlug}
         uuid={eventUuid}
         client:only='react'
       />
     ) : (
-      <NewEvent i18n={i18n} project={projectData} client:only='react' />
+      <NewEvent
+        i18n={i18n}
+        project={projectData}
+        projectSlug={projectSlug}
+        client:only='react'
+      />
     )
   }
 </Layout>

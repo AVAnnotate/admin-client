@@ -10,7 +10,6 @@ import type {
   GitHubOrganization,
   AllProjects,
   ProjectData,
-  Event,
   Page,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
