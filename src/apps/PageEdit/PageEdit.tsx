@@ -1,7 +1,7 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/Breadcrumbs.tsx';
 import { PageForm } from '@components/PageForm/PageForm.tsx';
 import type { FormPage, Page, ProjectData, Translations } from '@ty/Types.ts';
-import { useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 interface Props {
   i18n: Translations;

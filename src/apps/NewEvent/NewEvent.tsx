@@ -2,9 +2,9 @@ import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { EventForm } from '@components/EventForm/index.ts';
 import { ToggleInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
-import type { Event, FormEvent, ProjectData, Translations } from '@ty/Types.ts';
+import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useState } from 'react';
 import './NewEvent.css';
 import { ImportForm } from '@components/ImportForm/ImportForm.tsx';
 

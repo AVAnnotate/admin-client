@@ -9,7 +9,6 @@ import {
 } from '@components/Formic/index.tsx';
 import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/SpreadsheetInput.tsx';
 import countryOptions from '@lib/language-codes.ts';
-import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
 import { useEffect, useRef, useState, useMemo, useContext } from 'react';
