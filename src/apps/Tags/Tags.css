@@ -1,0 +1,27 @@
+.tags-container {
+  box-sizing: border-box;
+  padding: 32px;
+  width: 100%;
+}
+
+.tags-no-tags-container {
+  box-sizing: border-box;
+  padding: 40px;
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+  border: 1px dotted var(--gray-300);
+}
+
+.tags-no-tags-buttons {
+  display: flex;
+  gap: 10px;
+}
+.tags-add-tag-group-button {
+  color: var(--secondary);
+  border: 1px solid var(--secondary);
+  box-shadow: none !important;
+}

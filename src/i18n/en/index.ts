@@ -8,6 +8,7 @@ import signIn from './sign-in.json';
 import pages from './pages.json';
 import projects from './projects.json';
 import newProject from './new-project.json';
+import tags from './tags.json';
 
 const all = { ...common };
 export default {
@@ -20,4 +21,5 @@ export default {
   pages: { ...buttons, ...pages, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
   events: { ...events, ...projects, ...buttons, ...all },
+  tags: { ...all, ...tags },
 };
