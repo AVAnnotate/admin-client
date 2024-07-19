@@ -7,7 +7,7 @@ import './Tags.css';
 export interface NoTagsProps {
   i18n: Translations;
 
-  onImportTags(tags: Tags): void;
+  onImportTags(data: any[], headerMap: { [key: string]: number }): void;
 
   onAddTagGroup(): void;
 }

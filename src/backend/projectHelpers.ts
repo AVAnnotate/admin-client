@@ -56,6 +56,8 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   // For each org, retrieve the repos and filter for the avannotate-project topic
   for await (const org of myOrgs) {
     const myRepos = await getUserMemberReposInOrg(userInfo.token, org.login);
+
+    console.log('Repos: ', JSON.stringify(repos, null, 2));
     repos = [
       ...repos,
       ...myRepos.filter((r) => r.topics.includes('avannotate-project')),

@@ -24,14 +24,6 @@ export type apiProjectsProjectNamePost = {
   tags?: Tags;
 };
 
-export type apiProjectPut = {
-  additional_users: ProviderUser[];
-  authors: string,
-  description: string,
-  media_player: MediaPlayer;
-  title: string,
-}
-
 export type apiEventPut = {
   event: Event | FormEvent;
 };

@@ -215,9 +215,11 @@
 
 .formic-spreadsheet-input .options-row {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   max-width: 800px;
+  width: 800px;
 }
 
 .spreadsheet-preview-table {
@@ -340,4 +342,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
+}
+.formic-spreadsheet-display-preview-button {
+  height: 40px;
+  width: 80px;
 }

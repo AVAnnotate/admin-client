@@ -8,5 +8,10 @@
   "Tag Category": "Tag Category",
   "Import file contains column headers?": "Import file contains column headers?",
   "Tags File": "Tags File",
-  "choose file": "choose file"
+  "choose file": "choose file",
+  "Undo": "Undo",
+  "import": "Import",
+  "Save": "Save",
+  "Preview Data": "Preview Data",
+  "Import As": "Import As"
 }

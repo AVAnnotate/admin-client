@@ -25,5 +25,10 @@ const projectData = await getProject(info, repoUrl);
 ---
 
 <Layout title='Tags' profile={info.profile}>
-  <Tags i18n={i18n} project={projectData} client:only='react' />
+  <Tags
+    i18n={i18n}
+    project={projectData}
+    projectSlug={projectSlug}
+    client:only='react'
+  />
 </Layout>
