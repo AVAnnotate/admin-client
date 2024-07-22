@@ -308,29 +308,6 @@ const insertImage = (editor: BaseEditor & ReactEditor, image: ImageData) => {
   Transforms.insertNodes(editor, nodes);
 };
 
-// Complex/rich elements that the user shouldn't be able to accidentally
-// delete by backspacing.
-const NO_BACKSPACE_DELETE = ['grid', 'event', 'event-comparison'];
-
-const withPreventBlockDeletion = (editor: Editor) => {
-  const { apply } = editor;
-
-  editor.apply = (operation) => {
-    console.log(operation);
-    if (
-      operation.type === 'remove_node' &&
-      NO_BACKSPACE_DELETE.includes(operation.node.type)
-    ) {
-      return;
-    }
-
-    // Other cases
-    apply(operation);
-  };
-
-  return editor;
-};
-
 interface Props {
   initialValue?: any;
   onChange: (data: any) => any;
@@ -340,10 +317,7 @@ interface Props {
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
-  const editor = useMemo(
-    () => withReact(withPreventBlockDeletion(createEditor())),
-    []
-  );
+  const editor = useMemo(() => withReact(createEditor()), []);
   const renderElement = useCallback(
     (elProps: any) => (
       <Element {...elProps} project={props.project} i18n={props.i18n} />
