@@ -82,7 +82,7 @@ export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   // Fill two separate arrays depending on whether a
   // page is a child or a parent.
   for (const filename of topLevelNames) {
-    if (filename !== 'order.json') {
+    if (filename !== 'order.json' && filename !== '.gitkeep') {
       const contents: Page = JSON.parse(
         fs.readFileSync(`/data/${dir}/${filename}`) as string
       );
