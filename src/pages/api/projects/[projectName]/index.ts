@@ -1,20 +1,21 @@
 import {
-  addCollaborator,
   createRepositoryFromTemplate,
   enablePages,
   replaceRepoTopics,
-  getUser,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
-import type { apiProjectsProjectNamePost } from '@ty/api.ts';
-import type { FullRepository, RepositoryInvitation } from '@ty/github.ts';
+import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
+import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { ProjectData, UserInfo } from '@ty/Types.ts';
+import type { Project, ProjectData, UserInfo } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
-import type { Tags, MediaPlayer, ProviderUser } from '@ty/Types.ts';
 import { delay } from '@lib/utility/index.ts';
+import { addCollaborators, getRepositoryUrl, parseSlug } from '@backend/projectHelpers.ts';
 
+// Note: this POST route is the only /api/projects route that expects the
+// `projectName` param to be the bare name instead of the slug version that
+// combines org and name. All other /api/projects API routes expect the full slug.
 export const POST: APIRoute = async ({
   cookies,
   params,
@@ -30,7 +31,13 @@ export const POST: APIRoute = async ({
     if (!token || !info) {
       redirect('/', 307);
     }
+
     const { projectName } = params;
+
+    if (!projectName) {
+      return new Response(null, { status: 400 })
+    }
+
     const body: apiProjectsProjectNamePost = await request.json();
 
     // Create the new repo from template
@@ -87,54 +94,18 @@ export const POST: APIRoute = async ({
     }
 
     // Add Collaborators
-    const collabs: ProviderUser[] = [];
-    for (let i = 0; i < body.additionalUsers.length; i++) {
-      const respCollabs: Response = await addCollaborator(
-        projectName as string,
-        body.gitHubOrg,
-        body.additionalUsers[i],
-        token?.value as string
-      );
+    let collabs
 
-      if (!respCollabs.ok) {
-        console.error(`Failed to add collaborator ${body.additionalUsers[i]}`);
-        return new Response(null, {
-          status: 500,
-          statusText: respTopics.statusText,
-        });
-      }
-
-      if (respCollabs.status == 204) {
-        // Must be a team member
-        const userResp = await getUser(
-          token?.value as string,
-          body.additionalUsers[i]
-        );
-
-        if (!userResp.ok) {
-          console.error(
-            `Failed to find collaborator ${body.additionalUsers[i]}`
-          );
-        } else {
-          const data = await userResp.json();
-
-          collabs.push({
-            login_name: data.login,
-            avatar_url: data.avatar_url,
-            admin: false,
-          });
-        }
-      } else {
-        const data: RepositoryInvitation = await respCollabs.json();
-
-        collabs.push({
-          login_name: data.invitee!.login,
-          avatar_url: data.invitee!.avatar_url,
-          admin: data.permissions === 'admin',
-        });
-      }
+    try {
+      collabs = await addCollaborators(
+        body.additionalUsers, projectName, body.gitHubOrg, token
+      )
+    } catch (e) {
+      return new Response(null, {
+        status: 500,
+        statusText: e as string,
+      });
     }
-    console.log('Collaborators created');
 
     // Delay before continuing as generating a repo from a template is not instantaneous
     await delay(5000);
@@ -149,7 +120,7 @@ export const POST: APIRoute = async ({
       userInfo: info as UserInfo,
     });
 
-    const projs = await readFile('/data/project.json');
+    const projs = readFile('/data/project.json');
     let project: ProjectData = JSON.parse(projs as string);
 
     project = {
@@ -211,3 +182,90 @@ export const POST: APIRoute = async ({
     return new Response(null, { status: 400 });
   }
 };
+
+export const PUT: APIRoute = async ({
+  cookies,
+  params,
+  request,
+  redirect
+}) => {
+  const token = cookies.get('access-token');
+
+  // Get the user info
+  const info = await userInfo(cookies);
+
+  if (!token || !info) {
+    redirect('/', 307);
+  }
+
+  const { projectName } = params;
+
+  if (!projectName) {
+    return new Response(null, { status: 400 });
+  }
+
+  const body: apiProjectPut = await request.json();
+
+  const slugContents = parseSlug(projectName)
+  const repositoryURL = getRepositoryUrl(projectName)
+
+  const { readFile, exists, writeFile, commitAndPush } = await gitRepo({
+    fs: initFs(),
+    repositoryURL,
+    userInfo: info as UserInfo,
+  });
+
+  if (!exists('/data/project.json')) {
+    return new Response('Missing project.json file in repository.', { status: 400 });
+  }
+
+  // Add Collaborators
+  let collabs
+
+  try {
+    collabs = await addCollaborators(
+      body.additional_users.map((u) => u.login_name),
+      slugContents.repo,
+      slugContents.org,
+      token
+    )
+  } catch (e) {
+    return new Response(null, {
+      status: 500,
+      statusText: e as string,
+    });
+  }
+
+  const projectConfig = JSON.parse(readFile('/data/project.json').toString())
+
+  // override existing properties with new ones from the request
+  const newConfig: Project = {
+    ...projectConfig,
+    project: {
+      ...projectConfig.project,
+      ...body,
+      additional_users: collabs
+    }
+  }
+
+  writeFile('/data/project.json', JSON.stringify(newConfig))
+
+  const successCommit = await commitAndPush(
+    `Updated project file for ${body.title}`
+  );
+
+  if (successCommit.error) {
+    console.error('Failed to write project data: ', successCommit.error);
+    return new Response(null, {
+      status: 500,
+      statusText: 'Failed to write project data: ' + successCommit.error,
+    });
+  }
+
+  return new Response(
+    JSON.stringify({
+      repoName: slugContents.repo,
+      url: repositoryURL,
+    })
+  );
+}

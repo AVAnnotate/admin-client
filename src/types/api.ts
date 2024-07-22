@@ -5,6 +5,7 @@ import type {
   FormPage,
   Page,
   Tags,
+  ProviderUser,
 } from '@ty/Types.ts';
 
 export type apiProjectsProjectNamePost = {
@@ -22,6 +23,14 @@ export type apiProjectsProjectNamePost = {
   autoPopulateHomePage: boolean;
   tags?: Tags;
 };
+
+export type apiProjectPut = {
+  additional_users: ProviderUser[];
+  authors: string,
+  description: string,
+  media_player: MediaPlayer;
+  title: string,
+}
 
 export type apiEventPut = {
   event: Event | FormEvent;

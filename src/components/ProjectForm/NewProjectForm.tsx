@@ -3,7 +3,6 @@ import { Formik, Form } from 'formik';
 import {
   TextInput,
   SelectInput,
-  TripleSwitchInput,
   ToggleInput,
   UserList,
 } from '@components/Formic/index.tsx';
@@ -11,32 +10,31 @@ import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/Spreadshee
 import countryOptions from '@lib/language-codes.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
-import { useEffect, useRef, useState, useMemo, useContext } from 'react';
+import { useEffect, useRef, useMemo, useContext } from 'react';
 
 import './ProjectForm.css';
 import {
   SpreadsheetInputContextComponent,
   SpreadsheetInputContext,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
+import { MediaPlayerField } from './Fields.tsx';
 
-export interface ProjectFormProps {
+export interface NewProjectFormProps {
   project?: Project;
 
   orgs: GitHubOrganization[];
 
   i18n: Translations;
 
-  selection: 'general' | 'users' | 'tags';
+  selection: string;
 
   onSave(project: Project, importOptions: { [key: string]: number }): void;
 }
 
-const FormContents = (props: ProjectFormProps) => {
+const FormContents = (props: NewProjectFormProps) => {
   const { t } = props.i18n;
 
   const { headerMap } = useContext(SpreadsheetInputContext);
-
-  const [searchOpen, setSearchOpen] = useState(false);
 
   const generalRef = useRef(null);
   const userRef = useRef(null);
@@ -177,25 +175,7 @@ const FormContents = (props: ProjectFormProps) => {
                 name='authors'
               />
 
-              <TripleSwitchInput
-                label={t['Media Player']}
-                helperText={
-                  t[
-                    'Your project can be presented using either the Universal Viewer or the Aviary Player to present media. Annotation-centered projects like digital editions generally work better with Universal Viewer, while media-centered projects like exhibitions may benefit from the Aviary Player. You can change viewers at any time in your project settings.'
-                  ]
-                }
-                name='media_player'
-                optionLeft={{
-                  value: 'avannotate',
-                  label: t['AV Annotate Viewer'],
-                }}
-                optionMiddle={{
-                  value: 'universal',
-                  label: t['Universal Viewer'],
-                }}
-                optionRight={{ value: 'aviary', label: t['Aviary Player'] }}
-                required
-              />
+              <MediaPlayerField i18n={props.i18n} />
 
               <ToggleInput
                 label={t['Auto-populate Home page']}
@@ -228,7 +208,9 @@ const FormContents = (props: ProjectFormProps) => {
 
               <BottomBar>
                 <div className='project-form-actions-container'>
-                  <Button type='submit'>{t['Create Project']}</Button>
+                  <Button className='primary' type='submit'>
+                    {t['Create Project']}
+                  </Button>
                   <a href={`/${props.i18n.lang}/projects`}>
                     <Button type='submit' className='outline'>
                       {t['cancel']}
@@ -244,7 +226,7 @@ const FormContents = (props: ProjectFormProps) => {
   );
 };
 
-export const ProjectForm: React.FC<ProjectFormProps> = (props) => {
+export const NewProjectForm: React.FC<NewProjectFormProps> = (props) => {
   return (
     <SpreadsheetInputContextComponent>
       <FormContents {...props} />

@@ -1,14 +1,11 @@
 .project-form {
   width: 100%;
   position: relative;
-  margin-bottom: 80px;
+  margin-bottom: 100px;
 }
 
 .project-form-container {
-  height: calc(100vh - 250px);
   width: 780px;
-  overflow-y: scroll;
-  margin-bottom: 32px;
   position: relative;
 }
 

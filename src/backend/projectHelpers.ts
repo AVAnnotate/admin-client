@@ -3,6 +3,8 @@ import {
   getUserMemberReposInOrg,
   getUserMemberRepos,
   getCollaborators,
+  addCollaborator,
+  getUser,
 } from '@lib/GitHub/index.ts';
 import { gitRepo } from './gitRepo.ts';
 import type {
@@ -11,9 +13,11 @@ import type {
   AllProjects,
   ProjectData,
   Page,
+  ProviderUser,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
+import type { RepositoryInvitation } from '@ty/github.ts';
 
 export const getOrgs = async (
   userInfo: UserInfo
@@ -83,11 +87,14 @@ export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   // page is a child or a parent.
   for (const filename of topLevelNames) {
     if (filename !== 'order.json' && filename !== '.gitkeep') {
-      const contents: Page = JSON.parse(
-        fs.readFileSync(`/data/${dir}/${filename}`) as string
-      );
+      const file = fs.readFileSync(`/data/${dir}/${filename}`)
 
-      pages[filename.replace('.json', '')] = contents;
+      try {
+        const contents: Page = JSON.parse(file.toString());
+        pages[filename.replace('.json', '')] = contents;
+      } catch (e) {
+        console.warn(`Error parsing ${filename}: ${e}`)
+      }
     }
   }
 
@@ -190,3 +197,51 @@ export const getRepositoryUrl = (projectSlug: string) => {
   const { org, repo } = parseSlug(projectSlug);
   return `https://github.com/${org}/${repo}`;
 };
+
+export const addCollaborators = async (additionalUsers: string[], projectName: string, org: string, token: any) => {
+  const collabs: ProviderUser[] = [];
+  for (let i = 0; i < additionalUsers.length; i++) {
+    const respCollabs: Response = await addCollaborator(
+      projectName as string,
+      org,
+      additionalUsers[i],
+      token?.value as string
+    );
+
+    if (!respCollabs.ok) {
+      throw new Error(`Failed to add collaborator ${additionalUsers[i]}`)
+    }
+
+    if (respCollabs.status == 204) {
+      // Must be a team member
+      const userResp = await getUser(
+        token?.value as string,
+        additionalUsers[i]
+      );
+
+      if (!userResp.ok) {
+        console.error(
+          `Failed to find collaborator ${additionalUsers[i]}`
+        );
+      } else {
+        const data = await userResp.json();
+
+        collabs.push({
+          login_name: data.login,
+          avatar_url: data.avatar_url,
+          admin: false,
+        });
+      }
+    } else {
+      const data: RepositoryInvitation = await respCollabs.json();
+
+      collabs.push({
+        login_name: data.invitee!.login,
+        avatar_url: data.invitee!.avatar_url,
+        admin: data.permissions === 'admin',
+      });
+    }
+  }
+  console.log('Collaborators created');
+  return collabs;
+}
