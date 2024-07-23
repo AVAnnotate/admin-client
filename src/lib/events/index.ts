@@ -7,11 +7,20 @@ export const generateDefaultEvent = (): FormEvent => ({
       label: '',
       file_url: '',
       duration: 90,
-    }
+    },
   },
   auto_generate_web_page: true,
-  description: [],
+  description: [
+    {
+      type: 'paragraph',
+      children: [
+        {
+          text: '',
+        },
+      ],
+    },
+  ],
   citation: '',
   item_type: 'Audio',
   label: '',
-})
+});
