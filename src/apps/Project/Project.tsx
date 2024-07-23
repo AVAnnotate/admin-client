@@ -133,13 +133,14 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['Open'],
                       icon: BoxArrowUpRight,
-                      onClick: () => {},
+                      onClick: (item: EventWithUuid) =>
+                        (window.location.href = `${window.location.href}/events/${item.uuid}`),
                     },
                     {
                       label: t['Edit'],
                       icon: Pencil2Icon,
                       onClick: (item: EventWithUuid) =>
-                        (window.location.href = `${window.location.href}/events/${item.uuid}`),
+                        (window.location.href = `${window.location.href}/events/${item.uuid}/edit`),
                     },
                     {
                       label: t['Delete'],

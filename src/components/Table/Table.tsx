@@ -11,7 +11,9 @@ import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 
 interface Row {
   title: string;
-  property: string | ((...args: any) => string);
+  property:
+    | string
+    | ((...args: any) => string | React.ReactElement | React.ReactElement[]);
   sortable?: boolean;
 }
 

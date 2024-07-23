@@ -147,6 +147,7 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
     ? readDir('/data/annotations')
     : [];
 
+  project.annotations = getDirData(fs, annotationFiles as unknown as string[], 'annotations')
   project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
 
   project.annotations = getDirData(

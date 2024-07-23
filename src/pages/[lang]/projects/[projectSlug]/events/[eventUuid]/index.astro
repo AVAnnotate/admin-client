@@ -1,6 +1,5 @@
 ---
-import { EventEdit } from '@apps/EventEdit';
-import { NewEvent } from '@apps/NewEvent';
+import { EventDetail } from '@apps/EventDetail';
 import { getProject, parseSlug } from '@backend/projectHelpers';
 import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
@@ -24,29 +23,18 @@ const projectData = await getProject(info, repoUrl);
 
 const event = projectData.events ? projectData.events[eventUuid] : null;
 
-if (!event && eventUuid !== 'new') {
+if (!event) {
   return Astro.redirect('/404');
 }
 ---
 
 <Layout title={event?.label || i18n.t['Add Event']} profile={info.profile}>
-  {
-    event ? (
-      <EventEdit
-        event={event}
-        i18n={i18n}
-        project={projectData}
-        projectSlug={projectSlug}
-        uuid={eventUuid}
-        client:only='react'
-      />
-    ) : (
-      <NewEvent
-        i18n={i18n}
-        project={projectData}
-        projectSlug={projectSlug}
-        client:only='react'
-      />
-    )
-  }
+  <EventDetail
+    event={event}
+    uuid={eventUuid}
+    i18n={i18n}
+    project={projectData}
+    projectSlug={projectSlug}
+    client:only='react'
+  />
 </Layout>
