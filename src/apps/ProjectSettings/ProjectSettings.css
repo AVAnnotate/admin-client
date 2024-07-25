@@ -1,0 +1,9 @@
+.project-settings-container {
+  margin: 20px auto;
+  max-width: 1200px;
+}
+
+.project-settings-form-container {
+  display: flex;
+  gap: 10px;
+}

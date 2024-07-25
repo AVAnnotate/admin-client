@@ -16,7 +16,7 @@ export default {
   'account-actions': { ...all, ...accountActions },
   'sign-out': signOut,
   'sign-in': signIn,
-  projects: { ...projects, ...buttons, ...pages, ...all },
+  projects: { ...projects, ...newProject, ...buttons, ...pages, ...all },
   pages: { ...buttons, ...pages, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
   events: { ...events, ...projects, ...buttons, ...all },

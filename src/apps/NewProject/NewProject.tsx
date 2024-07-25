@@ -4,9 +4,9 @@ import type {
   ProviderUser,
   Translations,
 } from '@ty/Types.ts';
-import { Sidebar, type SidebarSelection } from './Sidebar/index.ts';
+import { Sidebar } from '../../components/Sidebar/index.ts';
 import { useState } from 'react';
-import { ProjectForm } from './ProjectForm/index.ts';
+import { NewProjectForm } from '../../components/ProjectForm/index.ts';
 import type { apiProjectsProjectNamePost } from '@ty/api.ts';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { mapTagData } from '@lib/parse/index.ts';
@@ -24,7 +24,7 @@ interface NewProjectProps {
 }
 
 export const NewProject = (props: NewProjectProps) => {
-  const [selection, setSelection] = useState<SidebarSelection>('general');
+  const [selection, setSelection] = useState<string>('general');
   const [saving, setSaving] = useState(false);
 
   const { t, lang } = props.i18n;
@@ -73,11 +73,24 @@ export const NewProject = (props: NewProjectProps) => {
       <div className='new-project-panes'>
         <Sidebar
           selection={selection}
-          i18n={props.i18n}
           onSelect={setSelection}
+          tabs={[
+            {
+              name: 'general',
+              label: t['General'],
+            },
+            {
+              name: 'users',
+              label: t['Users'],
+            },
+            {
+              name: 'tags',
+              label: t['Tags'],
+            },
+          ]}
         />
         <div className='new-project-form-container'>
-          <ProjectForm
+          <NewProjectForm
             i18n={props.i18n}
             onSave={handleSaveProject}
             orgs={props.orgs}
