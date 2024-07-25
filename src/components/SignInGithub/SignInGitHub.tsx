@@ -31,7 +31,7 @@ export const SignInGitHub = (props: SignInGitHubProps) => {
         className='sign-in-anchor'
         href={`https://github.com/login/oauth/authorize?client_id=${
           import.meta.env.PUBLIC_GITHUB_CLIENT_ID
-        }&redirect_uri=http://localhost:4321/git&scope=repo`}
+        }&redirect_uri=${import.meta.env.PUBLIC_REDIRECT_URL}/git&scope=repo`}
       >
         <svg
           xmlns='http://www.w3.org/2000/svg'
