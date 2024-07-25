@@ -97,7 +97,7 @@ export const deleteTagGroup = async (
   // Move all tags in this group to the _uncategorized_ group
   // Make sure we have an _uncategorized_ group
   const groupIdx = project.project.tags!.tagGroups.findIndex(
-    (g) => g.category === '_uncategroized_'
+    (g) => g.category === '_uncategorized_'
   );
 
   if (groupIdx < 0) {
@@ -201,13 +201,12 @@ const regroupTags = async (
 export const addTag = async (htmlUrl: string, userInfo: UserInfo, tag: Tag) => {
   const fs = initFs();
 
-  const { readFile, writeFile, readDir, exists, commitAndPush, context } =
-    await gitRepo({
-      fs: fs,
-      repositoryURL: htmlUrl,
-      branch: 'main',
-      userInfo: userInfo,
-    });
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
 
   const proj = readFile('/data/project.json');
 
@@ -317,6 +316,99 @@ const updateAllTags = async (
         let tag = annotation.tags[j];
         if (tag.category === oldTag.category && tag.tag === oldTag.tag) {
           annotation.tags[j] = newTag;
+        }
+      }
+    }
+
+    // Write the file back
+    const writeResult = await writeFile(
+      `/data/annotations/${key}.json`,
+      JSON.stringify(annoPage)
+    );
+    if (!writeResult) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+export const deleteTag = async (
+  htmlUrl: string,
+  userInfo: UserInfo,
+  tag: Tag
+) => {
+  const fs = initFs();
+
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
+
+  const proj = readFile('/data/project.json');
+
+  // Get the project
+  const project: ProjectData = JSON.parse(proj as string);
+
+  // Delete the tag
+  const idx = project.project.tags.tags.findIndex(
+    (t) => t.category === tag.category && t.tag === tag.tag
+  );
+  if (idx > -1) {
+    project.project.tags.tags.splice(idx, 1);
+
+    // Write project file
+    const writeResult = await writeFile(
+      '/data/project.json',
+      JSON.stringify(project)
+    );
+
+    if (writeResult) {
+      // Delete all matching tags
+      const resultDel = await deleteAllTags(tag, context);
+      if (resultDel) {
+        // Commit and push the repo
+        const commitResult = await commitAndPush(`Added tag ${tag.tag}`);
+
+        if (commitResult.ok) {
+          buildProjectData(project, context);
+          return project;
+        }
+      }
+    }
+  }
+
+  return undefined;
+};
+
+const deleteAllTags = async (
+  tag: Tag,
+  repoContext: GitRepoContext
+): Promise<boolean> => {
+  const { exists, readDir, writeFile, options } = repoContext;
+  // Read through all the annotations and update
+  const annotationFiles = exists('/data/annotations')
+    ? readDir('/data/annotations', '.json')
+    : [];
+
+  const annos = getDirData(
+    options.fs,
+    annotationFiles as unknown as string[],
+    'annotations'
+  );
+
+  for (const key in annos) {
+    const annoPage: AnnotationPage = annos[key];
+
+    for (let i = 0; i < annoPage.annotations.length; i++) {
+      let annotation = annoPage.annotations[i];
+      let j = annotation.tags.length;
+      while (j--) {
+        const t = annotation.tags[j];
+        if (t.category === tag.category && t.tag === tag.tag) {
+          annoPage.annotations[i].tags.splice(j, 1);
         }
       }
     }

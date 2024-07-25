@@ -9,11 +9,14 @@ import type {
 import { NoTags } from './NoTags.tsx';
 import { Breadcrumbs } from '@components/Breadcrumbs/Breadcrumbs.tsx';
 import { mapTagData } from '@lib/parse/index.ts';
-import './Tags.css';
 import { useEffect, useMemo, useState } from 'react';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { TagGroupCard } from './TagGroupCard.tsx';
 import { AddTagGroupDialog } from './AddTagGroupDialog/AddTagGroupDialog.tsx';
+import { ToastProvider, Toast } from '@components/Toast/Toast.tsx';
+
+import './Tags.css';
+import type { ToastContent } from '@components/Toast/ToastContent.ts';
 
 export interface TagsProps {
   i18n: Translations;
@@ -29,6 +32,7 @@ export const Tags = (props: TagsProps) => {
   const [addOpen, setAddOpen] = useState(false);
   const [groupName, setGroupName] = useState<string | undefined>();
   const [groupColor, setGroupColor] = useState<string | undefined>();
+  const [toast, setToast] = useState<ToastContent | undefined>();
 
   useEffect(() => {
     if (props.project) {
@@ -69,10 +73,26 @@ export const Tags = (props: TagsProps) => {
       body: JSON.stringify({ tagGroup: group }),
     })
       .then((data) => {
-        return data.json();
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Group deleted'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Group not deleted'],
+            type: 'error',
+          });
+          return undefined;
+        }
       })
       .then((p) => {
-        setProject(p.project);
+        if (p) {
+          setProject(p.project);
+        }
         setSaving(false);
       });
   };
@@ -94,10 +114,26 @@ export const Tags = (props: TagsProps) => {
       body: JSON.stringify({ tagGroup: group }),
     })
       .then((data) => {
-        return data.json();
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Tag group saved'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Tag group not saved'],
+            type: 'error',
+          });
+          return undefined;
+        }
       })
       .then((p) => {
-        setProject(p.project);
+        if (p) {
+          setProject(p.project);
+        }
         setSaving(false);
       });
   };
@@ -117,14 +153,30 @@ export const Tags = (props: TagsProps) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ project: proj }),
-    }).then((result) => {
-      setSaving(false);
-      if (result.ok) {
-        return result.json().then((data) => {
-          setProject(data);
-        });
-      }
-    });
+    })
+      .then((data) => {
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Tags imported'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Tags failed to import'],
+            type: 'error',
+          });
+          return undefined;
+        }
+      })
+      .then((p) => {
+        if (p) {
+          setProject(p.project);
+        }
+        setSaving(false);
+      });
   };
 
   const handleAddTagGroup = () => {
@@ -133,7 +185,39 @@ export const Tags = (props: TagsProps) => {
     setGroupColor(undefined);
   };
 
-  const handleDeleteTag = (tag: Tag) => {};
+  const handleDeleteTag = (tag: Tag) => {
+    setSaving(true);
+    return fetch(`/api/projects/${props.projectSlug}/tags`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ tag }),
+    })
+      .then((data) => {
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Tag deleted'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Tag not deleted'],
+            type: 'error',
+          });
+          return undefined;
+        }
+      })
+      .then((p) => {
+        if (p) {
+          setProject(p.project);
+        }
+        setSaving(false);
+      });
+  };
 
   const handleUpdateTag = (oldTag: Tag, newTag: Tag) => {
     setSaving(true);
@@ -145,10 +229,26 @@ export const Tags = (props: TagsProps) => {
       body: JSON.stringify({ oldTag, newTag }),
     })
       .then((data) => {
-        return data.json();
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Tag updated'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Tag not updated'],
+            type: 'error',
+          });
+          return undefined;
+        }
       })
       .then((p) => {
-        setProject(p.project);
+        if (p) {
+          setProject(p.project);
+        }
         setSaving(false);
       });
   };
@@ -163,10 +263,26 @@ export const Tags = (props: TagsProps) => {
       body: JSON.stringify({ tag: tag }),
     })
       .then((data) => {
-        return data.json();
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Tag added'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Tag not added'],
+            type: 'error',
+          });
+          return undefined;
+        }
       })
       .then((p) => {
-        setProject(p.project);
+        if (p) {
+          setProject(p.project);
+        }
         setSaving(false);
       });
   };
@@ -175,7 +291,7 @@ export const Tags = (props: TagsProps) => {
     project && project.project.tags ? project.project.tags : undefined;
 
   return (
-    <>
+    <ToastProvider>
       {saving && <LoadingOverlay />}
       <Breadcrumbs
         items={[
@@ -203,6 +319,7 @@ export const Tags = (props: TagsProps) => {
                 i18n={props.i18n}
                 tagGroup={g}
                 tags={tags.tags}
+                tagGroups={tags.tagGroups}
                 counts={counts[g.category] ? counts[g.category] : {}}
                 onDeleteGroup={handleDeleteGroup}
                 onUpdateGroup={handleUpdateGroup}
@@ -217,6 +334,7 @@ export const Tags = (props: TagsProps) => {
               i18n={props.i18n}
               counts={{}}
               onAddTagGroup={handleAddTagGroup}
+              tagGroups={tags.tagGroups}
             />
           </div>
         )}
@@ -232,6 +350,10 @@ export const Tags = (props: TagsProps) => {
           onClose={() => setAddOpen(false)}
         />
       )}
-    </>
+      <Toast
+        content={toast}
+        onOpenChange={(open) => !open && setToast(undefined)}
+      />
+    </ToastProvider>
   );
 };

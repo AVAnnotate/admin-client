@@ -1,0 +1,93 @@
+.select-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 13px;
+  line-height: 1;
+  height: 35px;
+  gap: 5px;
+  background-color: white;
+  color: var(--violet-11);
+  box-shadow: 0 2px 10px var(--black);
+}
+.select-trigger:hover {
+  background-color: var(--primary);
+}
+.select-trigger:focus {
+  box-shadow: 0 0 0 2px black;
+}
+.select-trigger[data-placeholder] {
+  color: var(--violet-9);
+}
+
+.select-icon {
+  color: Var(--violet-11);
+}
+
+.select-context {
+  overflow: hidden;
+  background-color: white;
+  border-radius: 6px;
+  box-shadow: 0px 10px 38px -10px rgba(22, 23, 24, 0.35),
+    0px 10px 20px -15px rgba(22, 23, 24, 0.2);
+}
+
+.select-viewport {
+  padding: 5px;
+}
+
+.select-item {
+  font-size: 13px;
+  line-height: 1;
+  color: var(--gray-800);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  height: 25px;
+  padding: 0 35px 0 25px;
+  position: relative;
+  user-select: none;
+}
+.select-item[data-disabled] {
+  color: var(--primary);
+  pointer-events: none;
+}
+.select-item[data-highlighted] {
+  outline: none;
+  background-color: var(--gray-300);
+  color: var(--primary);
+}
+
+.select-label {
+  padding: 0 25px;
+  font-size: 12px;
+  line-height: 25px;
+  color: var(--primary);
+}
+
+.select-separator {
+  height: 1px;
+  background-color: var(--primary);
+  margin: 5px;
+}
+
+.select-item-indicator {
+  position: absolute;
+  left: 0;
+  width: 25px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-scroll-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 25px;
+  background-color: white;
+  color: var(--primary);
+  cursor: default;
+}

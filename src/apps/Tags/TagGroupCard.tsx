@@ -5,7 +5,7 @@ import { Plus } from '@phosphor-icons/react/dist/icons/Plus';
 import { IconButton } from '@radix-ui/themes';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { ConfirmationDialog } from '@components/ConfirmedAction/index.ts';
-import { useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Dialog } from '@radix-ui/react-dialog';
 import { EditTagDialog } from './EditTagDialog/EditTagDialog.tsx';
 
@@ -15,6 +15,8 @@ export interface TagGroupCardProps {
   tagGroup: TagGroup;
 
   tags?: Tag[];
+
+  tagGroups: TagGroup[];
 
   counts?: { [key: string]: number };
 
@@ -42,8 +44,19 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
   const [confirmTarget, setConfirmTarget] = useState<Tag | undefined>();
   const [updateTarget, setUpdateTarget] = useState<Tag | undefined>();
   const [editOpen, setEditOpen] = useState(false);
+  const [group, setGroup] = useState<string | undefined>();
 
   const color = props.tagGroup!.color;
+
+  useEffect(() => {
+    if (props.tagGroup) {
+      setGroup(props.tagGroup.category);
+    }
+  }, [props.tagGroup]);
+
+  const availableGroups = useMemo(() => {
+    return props.tagGroups.map((g) => g.category);
+  }, [props.tagGroups]);
 
   const HandleEditGroup = () => {
     if (props.onUpdateGroup) {
@@ -71,7 +84,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
       setConfirmOpen(true);
       setConfirmTitle(t['Confirm Tag Deletion']);
       setConfirmDescription(t['delete-tag-description']);
-      setConfirmTarget(undefined);
+      setConfirmTarget(tag);
     }
   };
 
@@ -204,10 +217,12 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
           existingTags={
             props.tags
               ? props.tags
-                  .filter((t) => t.category === props.tagGroup.category)
+                  .filter((t) => t.category === group)
                   .map((t) => t.tag.toLocaleLowerCase())
               : []
           }
+          availableGroups={availableGroups}
+          onChangeGroup={setGroup}
         />
       )}
     </>

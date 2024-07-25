@@ -22,5 +22,7 @@
   "Include": "Include",
   "Size": "Size",
   "General": "General",
-  "Users": "Users"
+  "Users": "Users",
+  "Success!": "Success!",
+  "Problem!": "Problem!"
 }

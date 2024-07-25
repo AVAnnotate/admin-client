@@ -68,3 +68,7 @@ export type apiUpdateTag = {
   oldTag: Tag;
   newTag: Tag;
 };
+
+export type apiDeleteTag = {
+  tag: Tag;
+};

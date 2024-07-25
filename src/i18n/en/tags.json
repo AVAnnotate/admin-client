@@ -28,5 +28,17 @@
   "Confirm Tag Deletion": "Confirm Tag Deletion",
   "delete-tag-description": "Deleting this tag will remove it from all annotations.",
   "Edit Tag": "Edit Tag",
-  "Create Tag": "Create Tag"
+  "Create Tag": "Create Tag",
+  "Group deleted": "Group deleted",
+  "Group not deleted": "Group not deleted",
+  "Tag group saved": "Tag group saved",
+  "Tag group not saved": "Tag group not saved",
+  "Tags imported": "Tags imported",
+  "Tags failed to import": "Tags failed to import",
+  "Tag deleted": "Tag deleted",
+  "Tag not deleted": "Tag not deleted",
+  "Tag updated": "Tag updated",
+  "Tag not updated": "Tag not updated",
+  "Tag added": "Tag added",
+  "Tag not added": "Tag not added"
 }
