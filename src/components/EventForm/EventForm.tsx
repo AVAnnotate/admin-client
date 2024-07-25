@@ -91,7 +91,7 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                           input
                         )
                       }
-                      defaultValue={
+                      initialValue={
                         (values as FormEvent).audiovisual_files[key].duration
                       }
                     />
@@ -134,7 +134,6 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
           name='description'
           i18n={i18n}
           initialValue={(values as FormEvent).description}
-          onChange={(data) => setFieldValue('description', data)}
         />
         <TextInput label={t['Citation (Optional)']} name='citation' />
         {children}
