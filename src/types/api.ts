@@ -5,7 +5,7 @@ import type {
   FormPage,
   Page,
   Tags,
-  ProviderUser,
+  ProjectData,
   TagGroup,
   Tag,
 } from '@ty/Types.ts';

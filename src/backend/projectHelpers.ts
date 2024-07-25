@@ -75,11 +75,13 @@ export const getDirData = (fs: IFs, filenames: string[], dir: string) => {
   const data: { [key: string]: any } = {};
 
   for (const filename of filenames) {
-    try {
-      const contents = fs.readFileSync(`/data/${dir}/${filename}`);
-      data[filename.replace('.json', '')] = JSON.parse(contents as string);
-    } catch (e: any) {
-      console.warn(`Error fetching data for event ${filename}: ${e.message}`);
+    if (filename !== 'order.json' && filename !== '.gitkeep') {
+      try {
+        const contents = fs.readFileSync(`/data/${dir}/${filename}`);
+        data[filename.replace('.json', '')] = JSON.parse(contents as string);
+      } catch (e: any) {
+        console.warn(`Error fetching data for event ${filename}: ${e.message}`);
+      }
     }
   }
 

@@ -8,11 +8,10 @@ import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { Project, ProjectData, UserInfo } from '@ty/Types.ts';
+import type { ProjectData, UserInfo } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
-import type { Tags, ProviderUser } from '@ty/Types.ts';
 import { delay } from '@lib/utility/index.ts';
-import { getRepositoryUrl } from '@backend/projectHelpers.ts';
+import { getRepositoryUrl, addCollaborators } from '@backend/projectHelpers.ts';
 
 // Note: this POST route is the only /api/projects route that expects the
 // `projectName` param to be the bare name instead of the slug version that
