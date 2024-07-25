@@ -6,7 +6,7 @@ import {
   addCollaborator,
   getUser,
 } from '@lib/GitHub/index.ts';
-import { gitRepo } from './gitRepo.ts';
+import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
   UserInfo,
   GitHubOrganization,
@@ -55,19 +55,23 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
 
   // For each org, retrieve the repos and filter for the avannotate-project topic
   for await (const org of myOrgs) {
-    const myRepos = await getUserMemberReposInOrg(userInfo.token, org.login);
+    const reps = await getUserMemberReposInOrg(userInfo.token, org.login);
 
-    console.log('Repos: ', JSON.stringify(repos, null, 2));
-    repos = [
-      ...repos,
-      ...myRepos.filter((r) => r.topics.includes('avannotate-project')),
-    ];
+    repos = repos.concat(
+      reps.filter((r) => {
+        return r.topics.includes('avannotate-project');
+      })
+    );
+    // repos = [
+    //   ...repos,
+    //   ...reps.filter((r) => r.topics.includes('avannotate-project')),
+    // ];
   }
 
   return repos;
 };
 
-const getDirData = (fs: IFs, filenames: string[], dir: string) => {
+export const getDirData = (fs: IFs, filenames: string[], dir: string) => {
   const data: { [key: string]: any } = {};
 
   for (const filename of filenames) {
@@ -89,13 +93,13 @@ export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   // page is a child or a parent.
   for (const filename of topLevelNames) {
     if (filename !== 'order.json' && filename !== '.gitkeep') {
-      const file = fs.readFileSync(`/data/${dir}/${filename}`)
+      const file = fs.readFileSync(`/data/${dir}/${filename}`);
 
       try {
         const contents: Page = JSON.parse(file.toString());
         pages[filename.replace('.json', '')] = contents;
       } catch (e) {
-        console.warn(`Error parsing ${filename}: ${e}`)
+        console.warn(`Error parsing ${filename}: ${e}`);
       }
     }
   }
@@ -130,10 +134,24 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
     admin: true,
   });
 
-  const eventFiles = exists('/data/events') ? readDir('/data/events') : [];
-  const pageFiles = exists('/data/pages') ? readDir('/data/pages') : [];
+  const eventFiles = exists('/data/events')
+    ? readDir('/data/events', '.json')
+    : [];
+  const pageFiles = exists('/data/pages')
+    ? readDir('/data/pages', '.json')
+    : [];
+
+  const annotationFiles = exists('/data/annotations')
+    ? readDir('/data/annotations')
+    : [];
 
   project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
+
+  project.annotations = getDirData(
+    fs,
+    annotationFiles as unknown as string[],
+    'annotations'
+  );
 
   const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
 
@@ -200,7 +218,52 @@ export const getRepositoryUrl = (projectSlug: string) => {
   return `https://github.com/${org}/${repo}`;
 };
 
-export const addCollaborators = async (additionalUsers: string[], projectName: string, org: string, token: any) => {
+export const buildProjectData = (
+  project: ProjectData,
+  context: GitRepoContext
+) => {
+  const { exists, readDir, options } = context;
+
+  const eventFiles = exists('/data/events')
+    ? readDir('/data/events', '.json')
+    : [];
+  const pageFiles = exists('/data/pages')
+    ? readDir('/data/pages', '.json')
+    : [];
+  const annotationFiles = exists('/data/annotations')
+    ? readDir('/data/annotations', '.json')
+    : [];
+
+  project.events = getDirData(
+    options.fs,
+    eventFiles as unknown as string[],
+    'events'
+  );
+
+  project.annotations = getDirData(
+    options.fs,
+    annotationFiles as unknown as string[],
+    'annotations'
+  );
+
+  const pageData = getPageData(
+    options.fs,
+    pageFiles as unknown as string[],
+    'pages'
+  );
+
+  project.pages = pageData.pages;
+  project.pageOrder = pageData.order;
+
+  return project;
+};
+
+export const addCollaborators = async (
+  additionalUsers: string[],
+  projectName: string,
+  org: string,
+  token: any
+) => {
   const collabs: ProviderUser[] = [];
   for (let i = 0; i < additionalUsers.length; i++) {
     const respCollabs: Response = await addCollaborator(
@@ -211,7 +274,7 @@ export const addCollaborators = async (additionalUsers: string[], projectName: s
     );
 
     if (!respCollabs.ok) {
-      throw new Error(`Failed to add collaborator ${additionalUsers[i]}`)
+      throw new Error(`Failed to add collaborator ${additionalUsers[i]}`);
     }
 
     if (respCollabs.status == 204) {
@@ -222,9 +285,7 @@ export const addCollaborators = async (additionalUsers: string[], projectName: s
       );
 
       if (!userResp.ok) {
-        console.error(
-          `Failed to find collaborator ${additionalUsers[i]}`
-        );
+        console.error(`Failed to find collaborator ${additionalUsers[i]}`);
       } else {
         const data = await userResp.json();
 
@@ -246,4 +307,4 @@ export const addCollaborators = async (additionalUsers: string[], projectName: s
   }
   console.log('Collaborators created');
   return collabs;
-}
+};

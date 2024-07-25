@@ -145,7 +145,7 @@ export const POST: APIRoute = async ({
         media_player: body.mediaPlayer,
         auto_populate_home_page: body.autoPopulateHomePage,
         additional_users: collabs,
-        tags: body.tags,
+        tags: body.tags || { tagGroups: [], tags: [] },
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       },

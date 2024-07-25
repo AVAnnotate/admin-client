@@ -6,6 +6,8 @@ import type {
   Page,
   Tags,
   ProviderUser,
+  TagGroup,
+  Tag,
 } from '@ty/Types.ts';
 
 export type apiProjectsProjectNamePost = {
@@ -44,4 +46,25 @@ export type apiPagePost = {
 
 export type apiPagePut = {
   page: Page;
+};
+
+export type apiProjectPut = {
+  project: ProjectData;
+};
+
+export type apiAddTagGroup = {
+  tagGroup: TagGroup;
+};
+
+export type apiDeleteTagGroup = {
+  tagGroup: TagGroup;
+};
+
+export type apiAddTag = {
+  tag: Tag;
+};
+
+export type apiUpdateTag = {
+  oldTag: Tag;
+  newTag: Tag;
 };

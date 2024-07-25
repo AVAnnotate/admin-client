@@ -1,5 +1,6 @@
 {
   "Tags": "Tags",
+  "Tag": "Tag",
   "No tags have been added": "No tags have been added",
   "Import File": "Import File",
   "Add Tag Group": "Add Tag Group",
@@ -13,5 +14,19 @@
   "import": "Import",
   "Save": "Save",
   "Preview Data": "Preview Data",
-  "Import As": "Import As"
+  "Import As": "Import As",
+  "Uncategorized": "Uncategorized",
+  "Edit": "Edit",
+  "Delete Group": "Delete Group",
+  "Confirm Group Deletion": "Confirm Group Deletion",
+  "delete-group-description": "Deleting this group will move all tags within it to the Uncategorized group.",
+  "Tag Group": "Tag Group",
+  "Edit Tag Group": "Edit Tag Group",
+  "Tag Group Name": "Tag Group Name",
+  "Tag Color": "Tag Color",
+  "Create": "Create",
+  "Confirm Tag Deletion": "Confirm Tag Deletion",
+  "delete-tag-description": "Deleting this tag will remove it from all annotations.",
+  "Edit Tag": "Edit Tag",
+  "Create Tag": "Create Tag"
 }

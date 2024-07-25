@@ -21,5 +21,5 @@ export default {
   pages: { ...buttons, ...pages, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
   events: { ...events, ...projects, ...buttons, ...all },
-  tags: { ...all, ...tags },
+  tags: { ...all, ...tags, ...buttons },
 };
