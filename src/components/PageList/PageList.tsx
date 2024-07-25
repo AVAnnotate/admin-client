@@ -34,15 +34,15 @@ export const PageList: React.FC<Props> = (props) => {
         return setPickedUp(null);
       }
 
-      const selectedPage = props.project.pages[pickedUp.uuid];
+      const selectedPage = props.project.pages![pickedUp.uuid];
 
-      let newArray = pageOrder.filter((k) => k !== pickedUp.uuid);
+      let newArray = pageOrder!.filter((k) => k !== pickedUp.uuid);
 
       if (selectedPage.parent) {
         newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
       } else {
-        const children = pageOrder.filter(
-          (key) => props.project.pages[key].parent === pickedUp.uuid
+        const children = pageOrder!.filter(
+          (key) => props.project.pages![key].parent === pickedUp.uuid
         );
 
         newArray = newArray.filter((k) => !children.includes(k));
@@ -87,7 +87,7 @@ export const PageList: React.FC<Props> = (props) => {
           </Button>
         </div>
         <div className='page-list-box-container'>
-          {pageOrder.map((uuid, idx) => (
+          {pageOrder!.map((uuid, idx) => (
             <PageRow
               project={props.project}
               uuid={uuid}

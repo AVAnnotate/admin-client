@@ -165,9 +165,11 @@ export const EventSelect: React.FC<EventSelectProps> = (props) => {
         </Select.Trigger>
         <Select.Content className='select-content' position='popper'>
           <Select.Viewport className='select-viewport'>
+            {/* @ts-ignore */}
             {Object.keys(props.project.events).map((uuid) => (
               <Select.Item className='select-item' key={uuid} value={uuid}>
                 <Select.ItemText>
+                  {/* @ts-ignore */}
                   {props.project.events[uuid].label}
                 </Select.ItemText>
                 <Select.ItemIndicator />

@@ -204,10 +204,12 @@ const toggleBlock = (editor: ReactEditor, format: string) => {
   let newProperties: Partial<SlateElement>;
   if (TEXT_ALIGN_TYPES.includes(format)) {
     newProperties = {
+      // @ts-ignore
       align: isActive ? undefined : format,
     };
   } else {
     newProperties = {
+      // @ts-ignore
       type: isActive ? 'paragraph' : isList ? 'list-item' : format,
     };
   }
@@ -215,6 +217,7 @@ const toggleBlock = (editor: ReactEditor, format: string) => {
 
   if (!isActive && isList) {
     const block = { type: format, children: [] };
+    // @ts-ignore
     Transforms.wrapNodes(editor, block);
   }
 };
@@ -305,6 +308,7 @@ const insertImage = (editor: BaseEditor & ReactEditor, image: ImageData) => {
     },
   ];
 
+  // @ts-ignore
   Transforms.insertNodes(editor, nodes);
 };
 

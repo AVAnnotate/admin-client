@@ -23,7 +23,7 @@ interface Props {
 
 export const PageRow: React.FC<Props> = (props) => {
   const page = useMemo(
-    () => props.project.pages[props.uuid],
+    () => props.project.pages![props.uuid],
     [props.project, props.uuid]
   );
 
@@ -52,8 +52,8 @@ export const PageRow: React.FC<Props> = (props) => {
     // they need to delete all the children first
     if (
       page.parent ||
-      Object.keys(props.project.pages).filter(
-        (key) => props.project.pages[key].parent === props.uuid
+      Object.keys(props.project.pages!).filter(
+        (key) => props.project.pages![key].parent === props.uuid
       ).length === 0
     ) {
       options.push({

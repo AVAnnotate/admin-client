@@ -1,9 +1,4 @@
-import type {
-  GitHubOrganization,
-  Project,
-  ProviderUser,
-  Translations,
-} from '@ty/Types.ts';
+import type { GitHubOrganization, Project, Translations } from '@ty/Types.ts';
 import { Sidebar } from '../../components/Sidebar/index.ts';
 import { useState } from 'react';
 import { NewProjectForm } from '../../components/ProjectForm/index.ts';

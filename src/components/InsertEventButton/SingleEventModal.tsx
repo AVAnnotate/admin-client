@@ -26,8 +26,10 @@ export interface InsertEventModalProps {
 export const SingleEventModal: React.FC<InsertEventModalProps> = (props) => {
   const [eventUuid, setEventUuid] = useState<string>(
     props.eventUuid ||
+      // @ts-ignore
       (Object.keys(props.project.events).length > 0
-        ? Object.keys(props.project.events)[0]
+        ? // @ts-ignore
+          Object.keys(props.project.events)[0]
         : '')
   );
   const [duration, setDuration] = useState<'full' | 'clip'>(
@@ -47,6 +49,7 @@ export const SingleEventModal: React.FC<InsertEventModalProps> = (props) => {
           {t['Embed Event']}
         </Dialog.Title>
         <div className='slate-dialog-body'>
+          {/* @ts-ignore */}
           {Object.keys(props.project.events).length === 0 ? (
             <p>{t['This project has no events.']}</p>
           ) : (
