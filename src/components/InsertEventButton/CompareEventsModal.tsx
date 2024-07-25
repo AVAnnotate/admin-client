@@ -7,7 +7,7 @@ import {
   IncludeInterface,
 } from './FormElements.tsx';
 import { Button } from '@radix-ui/themes';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { Event, ProjectData, Translations } from '@ty/Types.ts';
 import type { Includes, SlateCompareEventData } from '../../types/slate.ts';
 
 interface CompareEventsModalProps {
@@ -41,14 +41,18 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
   );
   const [event1Uuid, setEvent1Uuid] = useState(
     props.event1Uuid ||
+      // @ts-ignore
       (Object.keys(props.project.events).length > 0
-        ? Object.keys(props.project.events)[0]
+        ? // @ts-ignore
+          Object.keys(props.project.events)[0]
         : '')
   );
   const [event2Uuid, setEvent2Uuid] = useState(
     props.event2Uuid ||
+      // @ts-ignore
       (Object.keys(props.project.events).length > 1
-        ? Object.keys(props.project.events)[1]
+        ? // @ts-ignore
+          Object.keys(props.project.events)[1]
         : '')
   );
   const [includes, setIncludes] = useState<Includes[]>(props.includes || []);

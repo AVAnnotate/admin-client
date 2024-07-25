@@ -26,11 +26,11 @@ interface EmbeddedEventProps {
 const getEvent = (project: ProjectData, uuid: string) => {
   // avoid crashing if the event isn't found, e.g. if the user
   // deletes an event after embedding it in a page
-  const found = Object.hasOwn(project.events, uuid);
+  const found = Object.hasOwn(project.events as object, uuid);
   if (!found) {
     return null;
   } else {
-    return project.events[uuid];
+    return project.events![uuid];
   }
 };
 
@@ -68,6 +68,7 @@ export const EmbeddedEvent: React.FC<EmbeddedEventProps> = (props) => {
               project={props.project}
               clearModal={clearModal}
               onSubmit={(data) => {
+                // @ts-ignore
                 Transforms.setNodes(editor, data, { at: path });
                 setShowModal(false);
               }}
@@ -150,6 +151,7 @@ export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
               project={props.project}
               clearModal={clearModal}
               onSubmit={(data) => {
+                // @ts-ignore
                 Transforms.setNodes(editor, data, { at: path });
                 setShowModal(false);
               }}

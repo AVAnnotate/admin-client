@@ -34,12 +34,13 @@ const FormContents: React.FC<Props> = (props) => {
 
   const parentPageOptions = useMemo(
     () =>
+      // @ts-ignore
       Object.keys(props.project.pages)
         .filter(
-          (uuid) => uuid !== props.uuid && !props.project.pages[uuid].parent
+          (uuid) => uuid !== props.uuid && !props.project.pages![uuid].parent
         )
         .map((uuid) => {
-          const page = props.project.pages[uuid];
+          const page = props.project.pages![uuid];
           return {
             label: page.title,
             value: uuid,

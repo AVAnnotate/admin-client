@@ -49,7 +49,7 @@ export const TextInput = (props: TextInputProps) => {
         name={props.name}
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
         as={props.isLarge ? 'textarea' : 'input'}
-        validate={(val) =>
+        validate={(val: any) =>
           props.required ? validateRequiredField(props.name, val) : undefined
         }
       />
