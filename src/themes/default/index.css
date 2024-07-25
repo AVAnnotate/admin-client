@@ -3,6 +3,9 @@
 @import './dropdown/index.css';
 @import './popover/index.css';
 @import './popover/index.css';
+@import './dialog/index.css';
+@import './select/index.css';
+@import './toast/index.css';
 @import '@radix-ui/themes/styles.css';
 
 @font-face {
@@ -77,8 +80,6 @@
   --green: #22ad5c;
   --black: #0a0a0a;
   --white: #ffffff;
-
-  --secondary: #b5c8dc;
 
   --color-background: var(--gray-200);
 }

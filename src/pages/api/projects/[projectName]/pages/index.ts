@@ -71,7 +71,7 @@ export const POST: APIRoute = async ({
 
   const { pages } = getPageData(
     fs,
-    readDir('/data/pages') as unknown as string[],
+    readDir('/data/pages', '.json') as unknown as string[],
     'pages'
   );
 

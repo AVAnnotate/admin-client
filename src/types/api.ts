@@ -6,6 +6,8 @@ import type {
   Page,
   Tags,
   ProviderUser,
+  TagGroup,
+  Tag,
 } from '@ty/Types.ts';
 
 export type apiProjectsProjectNamePost = {
@@ -23,14 +25,6 @@ export type apiProjectsProjectNamePost = {
   autoPopulateHomePage: boolean;
   tags?: Tags;
 };
-
-export type apiProjectPut = {
-  additional_users: ProviderUser[];
-  authors: string,
-  description: string,
-  media_player: MediaPlayer;
-  title: string,
-}
 
 export type apiEventPut = {
   event: Event | FormEvent;
@@ -52,4 +46,33 @@ export type apiPagePost = {
 
 export type apiPagePut = {
   page: Page;
+};
+
+export type apiAddTagGroup = {
+  tagGroup: TagGroup;
+};
+
+export type apiDeleteTagGroup = {
+  tagGroup: TagGroup;
+};
+
+export type apiAddTag = {
+  tag: Tag;
+};
+
+export type apiUpdateTag = {
+  oldTag: Tag;
+  newTag: Tag;
+};
+
+export type apiDeleteTag = {
+  tag: Tag;
+};
+
+export type apiProjectPut = {
+  additional_users: ProviderUser[];
+  authors: string;
+  description: string;
+  media_player: MediaPlayer;
+  title: string;
 };

@@ -6,8 +6,6 @@ import './SearchUsers.css';
 import type { ProviderUser, Translations } from '@ty/Types.ts';
 import { X } from '@phosphor-icons/react/dist/icons/X';
 import { Avatar } from '@components/Avatar/index.ts';
-import { Item } from '@radix-ui/react-dropdown-menu';
-import { Spinner } from '@radix-ui/themes';
 
 interface SearchUsersProps {
   buttonText: string;
@@ -86,17 +84,15 @@ export const SearchUsers = (props: SearchUsersProps) => {
   return (
     <Dialog.Root>
       <Dialog.Trigger asChild>
-        <button className='search-users-button primary'>
-          {props.buttonText}
-        </button>
+        <button className='dialog-button primary'>{props.buttonText}</button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className='search-users-overlay' />
-        <Dialog.Content className='search-users-content'>
-          <Dialog.Title className='search-users-title'>
+        <Dialog.Overlay className='dialog-overlay' />
+        <Dialog.Content className='dialog-content'>
+          <Dialog.Title className='dialog-title'>
             {t['Search Users']}
           </Dialog.Title>
-          <Dialog.Description className='search-users-description'>
+          <Dialog.Description className='dialog-description'>
             <div>{t['Start typing to search for users.']}</div>
           </Dialog.Description>
           <Ariakit.ComboboxProvider setValue={(val) => setValue(val)}>
@@ -154,7 +150,7 @@ export const SearchUsers = (props: SearchUsersProps) => {
             </Dialog.Close>
           </div>
           <Dialog.Close asChild>
-            <button className='search-users-icon-button' aria-label='Close'>
+            <button className='dialog-close-button' aria-label='Close'>
               <X />
             </button>
           </Dialog.Close>

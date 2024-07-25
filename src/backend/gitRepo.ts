@@ -3,12 +3,39 @@ import type { UserInfo } from '@ty/Types.ts';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import type { PushResult } from 'isomorphic-git';
+import type { TDataOut } from 'memfs/lib/encoding.js';
+import type { Dirent } from 'memfs/lib/Dirent.js';
 
 interface GitRepoOptions {
   fs: IFs;
   repositoryURL: string;
   branch?: string;
   userInfo: UserInfo;
+}
+
+export interface GitRepoContext {
+  options: GitRepoOptions;
+
+  writeFile(
+    absoluteFileName: string,
+    data: string,
+    writeOptions?: any
+  ): Promise<boolean>;
+
+  readFile(absoluteFileName: string, encoding?: 'utf8'): Uint8Array | string;
+
+  readDir(
+    absoluteDirectoryName: string,
+    filterExt?: string
+  ): (TDataOut | Dirent)[];
+
+  mkDir(absoluteDirectoryName: string): void;
+
+  deleteFile(absoluteFileName: string): void;
+
+  exists(absolutePath: string): boolean;
+
+  commitAndPush(message: string): Promise<PushResult>;
 }
 
 export const gitRepo = async (options: GitRepoOptions) => {
@@ -69,7 +96,12 @@ export const gitRepo = async (options: GitRepoOptions) => {
     return fs.readFileSync(absoluteFileName, encoding || 'utf8');
   };
 
-  const readDir = (absoluteDirectoryName: string) => {
+  const readDir = (absoluteDirectoryName: string, filterExt?: string) => {
+    if (filterExt) {
+      return fs
+        .readdirSync(absoluteDirectoryName)
+        .filter((f) => (f as string).endsWith(filterExt));
+    }
     return fs.readdirSync(absoluteDirectoryName);
   };
 
@@ -133,6 +165,17 @@ export const gitRepo = async (options: GitRepoOptions) => {
     });
   };
 
+  const context: GitRepoContext = {
+    options,
+    deleteFile,
+    exists,
+    writeFile,
+    readDir,
+    readFile,
+    commitAndPush,
+    mkDir,
+  };
+
   return {
     deleteFile,
     exists,
@@ -141,5 +184,6 @@ export const gitRepo = async (options: GitRepoOptions) => {
     readFile,
     commitAndPush,
     mkDir,
+    context,
   };
 };

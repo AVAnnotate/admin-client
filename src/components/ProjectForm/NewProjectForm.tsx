@@ -115,7 +115,7 @@ const FormContents = (props: NewProjectFormProps) => {
               <div ref={generalRef} />
               <SelectInput
                 label={t['GitHub Organization']}
-                name='git_hub_org'
+                name='github_org'
                 options={props.orgs.map((o) => ({
                   value: o.orgName,
                   label: o.orgName,

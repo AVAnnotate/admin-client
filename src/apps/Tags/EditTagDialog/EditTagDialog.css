@@ -1,0 +1,43 @@
+.edit-tag-dialog {
+  width: 250px;
+}
+
+.edit-tag-label {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.edit-tag-name-input {
+  width: 230px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+}
+
+.edit-tag-color-square {
+  width: 46px;
+  height: 32px;
+  border-radius: 3px;
+  position: relative;
+}
+
+.edit-tag-color-overlay {
+  position: absolute;
+  top: -1px;
+  left: 6px;
+}
+
+.edit-tag-color-grid {
+  width: 250px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.edit-tag-button-row {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}

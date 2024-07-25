@@ -1,0 +1,43 @@
+.add-tag-group-dialog {
+  width: 250px;
+}
+
+.add-tag-group-label {
+  margin-top: 15px;
+  margin-bottom: 10px;
+}
+
+.add-tag-group-name-input {
+  width: 230px;
+  border: 1px solid var(--gray-200);
+  border-radius: 4px;
+}
+
+.add-tag-group-color-square {
+  width: 46px;
+  height: 32px;
+  border-radius: 3px;
+  position: relative;
+}
+
+.add-tag-group-color-overlay {
+  position: absolute;
+  top: -1px;
+  left: 6px;
+}
+
+.add-tag-group-color-grid {
+  width: 250px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.add-tag-group-button-row {
+  width: 100%;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+}

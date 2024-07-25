@@ -148,6 +148,7 @@ interface SpreadsheetInputProps {
   i18n: Translations;
   name: string;
   importAsOptions: DropdownOption[];
+  isValid?(valid: boolean): void;
 }
 
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
@@ -230,6 +231,9 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     }
   }, [values[props.name], headerMap]);
 
+  if (props.isValid) {
+    props.isValid(!!file && displayPreview);
+  }
   return (
     <div className='formic-spreadsheet-input'>
       {props.label && (
@@ -296,16 +300,14 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
                 <Switch.Thumb className='formic-toggle-switch-thumb' />
               </Switch.Root>
             </div>
-            <div>
-              <Button
-                className='primary'
-                disabled={!requiredFieldsSet}
-                onClick={() => setDisplayPreview(!displayPreview)}
-                type='button'
-              >
-                {displayPreview ? t['Undo'] : t['import']}
-              </Button>
-            </div>
+            <Button
+              className='formic-spreadsheet-display-preview-button primary'
+              disabled={!requiredFieldsSet}
+              onClick={() => setDisplayPreview(!displayPreview)}
+              type='button'
+            >
+              {displayPreview ? t['Undo'] : t['import']}
+            </Button>
           </div>
           {displayPreview && (
             <Table.Root className='spreadsheet-preview-table'>

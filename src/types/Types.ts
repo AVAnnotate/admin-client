@@ -51,7 +51,7 @@ export type Project = {
   media_player: MediaPlayer;
   auto_populate_home_page: boolean;
   additional_users: ProviderUser[];
-  tags?: Tags;
+  tags: Tags;
   created_at: string;
   updated_at: string;
 };
@@ -124,6 +124,9 @@ export type ProjectData = {
   events?: { [key: string]: Event };
 
   pages?: { [key: string]: Page };
+
+  annotations?: { [key: string]: AnnotationPage };
+
   pageOrder?: string[];
 
   project: Project;
@@ -153,8 +156,8 @@ export type ParseAnnotationResults = {
 export type AnnotationEntry = {
   start_time: number;
   end_time: number;
-  annotation: string;
-  tags: string[];
+  annotation: Node[];
+  tags: Tag[];
 };
 
 export type DropdownOption = {
@@ -162,3 +165,11 @@ export type DropdownOption = {
   required?: boolean;
   value: string;
 };
+
+export type AnnotationPage = {
+  event_id: string;
+  source_id: string;
+  annotations: AnnotationEntry[];
+};
+
+export type AnnotationCounts = { [key: string]: { [key: string]: number } };

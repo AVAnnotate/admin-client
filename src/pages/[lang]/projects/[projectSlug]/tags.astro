@@ -1,0 +1,33 @@
+---
+// @ts-ignore
+import { Tags } from '@apps/Tags';
+import { getProject, parseSlug } from '@backend/projectHelpers';
+import { userInfo } from '@backend/userInfo';
+import { getTranslations } from '@i18n';
+import Layout from '@layouts/Layout.astro';
+
+const { projectSlug } = Astro.params;
+const info = await userInfo(Astro.cookies);
+
+const i18n = getTranslations(Astro.request, 'tags');
+
+if (!projectSlug || !info) {
+  return Astro.redirect(`/${i18n.lang}/projects`);
+}
+
+const { org, repo } = parseSlug(projectSlug);
+
+const baseUrl = 'https://github.com';
+const repoUrl = `${baseUrl}/${org}/${repo}`;
+
+const projectData = await getProject(info, repoUrl);
+---
+
+<Layout title='Tags' profile={info.profile}>
+  <Tags
+    i18n={i18n}
+    project={projectData}
+    projectSlug={projectSlug}
+    client:only='react'
+  />
+</Layout>

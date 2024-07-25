@@ -46,6 +46,10 @@ export const Project: React.FC<Props> = (props) => {
     [props.project.events]
   );
 
+  const handleNavToTags = () => {
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}/tags`;
+  };
+
   return (
     <>
       <Breadcrumbs
@@ -64,7 +68,11 @@ export const Project: React.FC<Props> = (props) => {
                 {t['Settings']}
               </Button>
             </a>
-            <Button className='outline' variant='outline'>
+            <Button
+              className='outline'
+              variant='outline'
+              onClick={handleNavToTags}
+            >
               <Tag />
               {t['Tags']}
             </Button>
