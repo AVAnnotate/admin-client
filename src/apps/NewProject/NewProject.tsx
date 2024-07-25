@@ -1,9 +1,4 @@
-import type {
-  GitHubOrganization,
-  Project,
-  ProviderUser,
-  Translations,
-} from '@ty/Types.ts';
+import type { GitHubOrganization, Project, Translations } from '@ty/Types.ts';
 import { Sidebar, type SidebarSelection } from './Sidebar/index.ts';
 import { useState } from 'react';
 import { ProjectForm } from './ProjectForm/index.ts';
@@ -60,7 +55,7 @@ export const NewProject = (props: NewProjectProps) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    }).then((result) => {
+    }).then((_result) => {
       setSaving(false);
       window.location.pathname = `/${lang}/projects`;
     });

@@ -24,7 +24,7 @@ export const EventEdit: React.FC<Props> = ({
   const { t, lang } = i18n;
 
   const onSubmit = useCallback(async (newEvent: Event | FormEvent) => {
-    const res = await fetch(`/api/projects/${projectSlug}/events/${uuid}`, {
+    await fetch(`/api/projects/${projectSlug}/events/${uuid}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
