@@ -8,10 +8,14 @@ import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { ProjectData, UserInfo } from '@ty/Types.ts';
+import type { ProjectData, UserInfo, Project } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { delay } from '@lib/utility/index.ts';
-import { getRepositoryUrl, addCollaborators } from '@backend/projectHelpers.ts';
+import {
+  getRepositoryUrl,
+  addCollaborators,
+  parseSlug,
+} from '@backend/projectHelpers.ts';
 
 // Note: this POST route is the only /api/projects route that expects the
 // `projectName` param to be the bare name instead of the slug version that
@@ -196,33 +200,71 @@ const setup = async (cookies: AstroCookies) => {
 };
 
 export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
+  const token = cookies.get('access-token');
+
+  // Get the user info
+  const info = await userInfo(cookies);
+
+  if (!token || !info) {
+    redirect('/', 307);
+  }
+
   const { projectName } = params;
 
-  const { token, info } = await setup(cookies);
-
-  if (!token || !info || !projectName) {
-    return redirect('/', 307);
+  if (!projectName) {
+    return new Response(null, { status: 400 });
   }
 
   const body: apiProjectPut = await request.json();
 
-  const { project } = body;
-
+  const slugContents = parseSlug(projectName);
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { writeFile, commitAndPush } = await gitRepo({
+  const { readFile, exists, writeFile, commitAndPush } = await gitRepo({
     fs: initFs(),
     repositoryURL,
-    branch: 'main',
     userInfo: info as UserInfo,
   });
 
-  const filepath = '/data/project.json';
+  if (!exists('/data/project.json')) {
+    return new Response('Missing project.json file in repository.', {
+      status: 400,
+    });
+  }
 
-  writeFile(filepath, JSON.stringify(project));
+  // Add Collaborators
+  let collabs;
+
+  try {
+    collabs = await addCollaborators(
+      body.additional_users.map((u) => u.login_name),
+      slugContents.repo,
+      slugContents.org,
+      token
+    );
+  } catch (e) {
+    return new Response(null, {
+      status: 500,
+      statusText: e as string,
+    });
+  }
+
+  const projectConfig = JSON.parse(readFile('/data/project.json').toString());
+
+  // override existing properties with new ones from the request
+  const newConfig: Project = {
+    ...projectConfig,
+    project: {
+      ...projectConfig.project,
+      ...body,
+      additional_users: collabs,
+    },
+  };
+
+  writeFile('/data/project.json', JSON.stringify(newConfig));
 
   const successCommit = await commitAndPush(
-    `Updated project ${project.project.title}`
+    `Updated project file for ${body.title}`
   );
 
   if (successCommit.error) {
@@ -233,5 +275,10 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     });
   }
 
-  return new Response(JSON.stringify(project), { status: 200 });
+  return new Response(
+    JSON.stringify({
+      repoName: slugContents.repo,
+      url: repositoryURL,
+    })
+  );
 };
