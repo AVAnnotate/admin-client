@@ -5,7 +5,7 @@ import type {
   FormPage,
   Page,
   Tags,
-  ProviderUser,
+  ProjectData,
   TagGroup,
   Tag,
 } from '@ty/Types.ts';
@@ -70,9 +70,5 @@ export type apiDeleteTag = {
 };
 
 export type apiProjectPut = {
-  additional_users: ProviderUser[];
-  authors: string;
-  description: string;
-  media_player: MediaPlayer;
-  title: string;
+  project: ProjectData;
 };
