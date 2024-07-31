@@ -123,6 +123,7 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
             <Button
               className='primary'
               role='button'
+              disabled={duration === 'clip' && !file}
               onClick={() =>
                 props.onSubmit({
                   uuid: eventUuid,

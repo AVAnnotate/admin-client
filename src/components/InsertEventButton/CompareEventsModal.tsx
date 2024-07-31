@@ -184,6 +184,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
             <Dialog.Close asChild>
               <Button
                 className='primary'
+                disabled={duration === 'clip' && (!event1File || !event2File)}
                 role='button'
                 onClick={() =>
                   props.onSubmit({
