@@ -262,7 +262,7 @@ const BlockButton = (props: SlateButtonProps) => {
   const editor = useSlate();
   return (
     <Button
-      className={`unstyled ${
+      className={`block-button unstyled ${
         isBlockActive(editor, props.format) ? 'active-button' : ''
       }`}
       onMouseDown={(event) => {
@@ -281,7 +281,7 @@ const MarkButton = (props: SlateButtonProps) => {
 
   return (
     <Button
-      className={`unstyled ${
+      className={`mark-button unstyled ${
         isMarkActive(editor, props.format) ? 'active-button' : ''
       }`}
       onMouseDown={(event) => {
