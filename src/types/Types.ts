@@ -69,8 +69,6 @@ export type Publish = {
   publish_iso_date: string;
 };
 
-
-
 export type AudiovisualFile = {
   label: string;
   file_url: string;
@@ -122,20 +120,22 @@ export interface FormPage
   updated_by?: string;
 }
 
-export type ProjectData = {
-  annotations: { [key: string]: Annotation }
-
-  events: { [key: string]: Event };
-
-  pages: { [key: string]: Page };
-  pageOrder?: string[];
-
+export type ProjectFile = {
   project: Project;
 
   users: ProviderUser[];
 
   publish: Publish;
 };
+
+export type ProjectData = {
+  annotations: { [key: string]: Annotation };
+
+  events: { [key: string]: Event };
+
+  pages: { [key: string]: Page };
+  pageOrder?: string[];
+} & ProjectFile;
 
 export type AllProjects = {
   myProjects: ProjectData[];
@@ -165,8 +165,8 @@ export type AnnotationEntry = {
 export type Annotation = {
   event_id: string;
   source_id: string;
-  annotations: AnnotationEntry[]
-}
+  annotations: AnnotationEntry[];
+};
 
 export type DropdownOption = {
   label: string;
