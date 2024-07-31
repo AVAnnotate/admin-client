@@ -76,6 +76,7 @@ export const EmbeddedEvent: React.FC<EmbeddedEventProps> = (props) => {
               includes={props.element.includes}
               start={props.element.start}
               end={props.element.end}
+              file={props.element.file}
             />
           )}
           <div className='embedded-event-left'>
@@ -158,6 +159,8 @@ export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
               includes={props.element.includes}
               event1Uuid={props.element.event1.uuid}
               event2Uuid={props.element.event2.uuid}
+              event1File={props.element.event1.file}
+              event2File={props.element.event2.file}
               event1Start={props.element.event1.start}
               event1End={props.element.event1.end}
               event2Start={props.element.event2.start}
@@ -180,8 +183,6 @@ export const EmbeddedEventComparison: React.FC<EmbeddedEventComparisonProps> = (
               },
               {
                 label: t['Delete'],
-                // todo: removes last node instead of the event
-                // need location by index (I think?)
                 onClick: () => Transforms.removeNodes(editor, { at: path }),
               },
             ]}

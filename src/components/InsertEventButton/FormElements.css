@@ -1,0 +1,56 @@
+.include-clip-times {
+  display: flex;
+  gap: 10px;
+}
+
+.include-clip-times input {
+  width: 100px;
+}
+
+.duration-buttons {
+  display: flex;
+}
+
+.duration-buttons button {
+  width: 160px !important;
+  box-shadow: none;
+}
+
+.duration-buttons button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.duration-buttons button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none;
+}
+
+.include-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.include-buttons button {
+  width: auto !important;
+  box-shadow: none;
+  border-radius: 50px;
+  padding: 8px 16px 8px 16px;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.include-buttons button svg {
+  padding: 0;
+  margin: 0;
+  height: 16px;
+  width: 16px;
+}
+
+.radio-item {
+  display: flex;
+  gap: 8px;
+}

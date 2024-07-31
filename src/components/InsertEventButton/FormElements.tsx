@@ -1,10 +1,12 @@
-import { TimeInput } from '@components/Formic/index.tsx';
+import { Required, TimeInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { AudiovisualFile, ProjectData, Translations } from '@ty/Types.ts';
 import { useCallback } from 'react';
 import type { Includes } from '../../types/slate.ts';
 import { CheckIcon, ChevronDownIcon } from '@radix-ui/react-icons';
 import * as Select from '@radix-ui/react-select';
+import React from 'react';
+import './FormElements.css';
 
 interface ClipInterfaceProps {
   start?: number;
@@ -59,7 +61,7 @@ export const DurationInterface: React.FC<DurationInterfaceProps> = (props) => {
           onClick={() => props.setDuration('full')}
           type='button'
         >
-          {t['Full Recording']}
+          {t['Full Event']}
         </Button>
         <Button
           className={props.duration === 'clip' ? 'primary' : 'outline'}
@@ -78,6 +80,43 @@ interface IncludeInterfaceProps {
   setIncludes: (arg: Includes[]) => void;
   i18n: Translations;
 }
+
+interface FileRadioInterfaceProps {
+  files: { [uuid: string]: AudiovisualFile };
+  selectedFile: null | string;
+  setSelectedFile: (arg: string) => void;
+  i18n: Translations;
+}
+
+export const FileRadioInterface: React.FC<FileRadioInterfaceProps> = (
+  props
+) => {
+  const { t } = props.i18n;
+
+  return (
+    <div>
+      <div className='av-label-bold formic-form-label'>
+        <span>{t['Audiovisual File']}</span>
+        <Required />
+      </div>
+      {Object.keys(props.files).map((uuid) => {
+        const file = props.files[uuid];
+
+        return (
+          <div className='radio-item' key={uuid}>
+            <input
+              type='radio'
+              onChange={() => props.setSelectedFile(uuid)}
+              checked={props.selectedFile === uuid}
+              value={uuid}
+            />
+            <label>{file.label}</label>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 export const IncludeInterface: React.FC<IncludeInterfaceProps> = (props) => {
   const { t } = props.i18n;

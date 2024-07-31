@@ -64,6 +64,7 @@ const insertEventComparison = (
   editor: BaseEditor & ReactEditor,
   data: SlateCompareEventData
 ) => {
+  console.log(data);
   const eventObj: any = {
     type: 'event-comparison',
     ...data,
