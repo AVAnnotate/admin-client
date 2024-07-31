@@ -126,10 +126,6 @@
   font-size: 14px;
 }
 
-.event-detail .tag-category {
-  font-weight: 600;
-}
-
 .event-detail .event-detail-table-header .formic-form-field {
   display: flex;
   align-items: center;

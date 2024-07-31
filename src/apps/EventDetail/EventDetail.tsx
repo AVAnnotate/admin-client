@@ -173,8 +173,6 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                               ],
                           }}
                         >
-                          <span className='tag-category'>{t.category}</span>
-                          :&nbsp;
                           <span className='tag-content'>{t.tag}</span>
                         </div>
                       ))}
