@@ -40,6 +40,16 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     if (match) {
       const annos = props.project.annotations[match].annotations;
 
+      annos.sort((a, b) => {
+        if (a.start_time > b.start_time) {
+          return 1;
+        } else if (a.start_time < b.start_time) {
+          return -1;
+        } else {
+          return 0;
+        }
+      });
+
       if (search) {
         return annos.filter((anno) => {
           // since annos are rich text, we have to grab the plain text
