@@ -94,7 +94,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   // we need to delete corresponding annotation files too
   const matchingAnnoFiles = annotationFiles.filter(filepath => {
     const contents = readFile(`/data/annotations/${filepath}`)
-    const parsed: Annotation = JSON.parse(contents)
+    const parsed: Annotation = JSON.parse(contents as string)
     if (parsed.event_id === uuid) {
       return true
     }
