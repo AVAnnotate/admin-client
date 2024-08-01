@@ -8,7 +8,7 @@ import {
   SpeakerLoudIcon,
   VideoIcon,
 } from '@radix-ui/react-icons';
-import { Button, Table } from '@radix-ui/themes';
+import { AlertDialog, Button, Table } from '@radix-ui/themes';
 import { Player } from './Player.tsx';
 import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
 import { useMemo, useState } from 'react';
@@ -30,6 +30,7 @@ interface EventDetailProps {
 }
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [search, setSearch] = useState('');
 
   // position of the most recently clicked annotation
@@ -122,6 +123,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               </a>
               <Button
                 className='event-detail-button delete-button'
+                onClick={() => setShowDeleteModal(true)}
                 type='button'
               >
                 <Trash />
