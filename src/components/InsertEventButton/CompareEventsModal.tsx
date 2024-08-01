@@ -1,14 +1,16 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ClipInterface,
   DurationInterface,
   EventSelect,
+  FileRadioInterface,
   IncludeInterface,
 } from './FormElements.tsx';
 import { Button } from '@radix-ui/themes';
-import type { Event, ProjectData, Translations } from '@ty/Types.ts';
+import type { ProjectData, Translations } from '@ty/Types.ts';
 import type { Includes, SlateCompareEventData } from '../../types/slate.ts';
+import './CompareEventsModal.css';
 
 interface CompareEventsModalProps {
   i18n: Translations;
@@ -18,6 +20,8 @@ interface CompareEventsModalProps {
   // form state
   event1Uuid?: string;
   event2Uuid?: string;
+  event1File?: string;
+  event2File?: string;
   duration?: 'full' | 'clip';
   includes?: Includes[];
   event1Start?: number;
@@ -41,21 +45,19 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
   );
   const [event1Uuid, setEvent1Uuid] = useState(
     props.event1Uuid ||
-      // @ts-ignore
-      (Object.keys(props.project.events).length > 0
-        ? // @ts-ignore
-          Object.keys(props.project.events)[0]
+      (Object.keys(props.project.events!).length > 0
+        ? Object.keys(props.project.events!)[0]
         : '')
   );
   const [event2Uuid, setEvent2Uuid] = useState(
     props.event2Uuid ||
-      // @ts-ignore
-      (Object.keys(props.project.events).length > 1
-        ? // @ts-ignore
-          Object.keys(props.project.events)[1]
+      (Object.keys(props.project.events!).length > 1
+        ? Object.keys(props.project.events!)[1]
         : '')
   );
   const [includes, setIncludes] = useState<Includes[]>(props.includes || []);
+  const [event1File, setEvent1File] = useState(props.event1File || '');
+  const [event2File, setEvent2File] = useState(props.event2File || '');
   const [event1Start, setEvent1Start] = useState<number | undefined>(
     props.event1Start
   );
@@ -69,7 +71,33 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
     props.event2End
   );
 
+  const event1 = useMemo(() => {
+    if (event1Uuid && props.project.events![event1Uuid]) {
+      return props.project.events![event1Uuid];
+    } else {
+      return null;
+    }
+  }, [event1Uuid]);
+
+  const event2 = useMemo(() => {
+    if (event2Uuid && props.project.events![event2Uuid]) {
+      return props.project.events![event2Uuid];
+    } else {
+      return null;
+    }
+  }, [event2Uuid]);
+
   const { t } = props.i18n;
+
+  // Default to the only AV file if there's only one
+  useEffect(() => {
+    if (event1 && Object.keys(event1.audiovisual_files).length === 1) {
+      setEvent1File(Object.keys(event1.audiovisual_files)[0]);
+    }
+    if (event2 && Object.keys(event2.audiovisual_files).length === 1) {
+      setEvent2File(Object.keys(event2.audiovisual_files)[0]);
+    }
+  }, [event1, event2]);
 
   return (
     <Dialog.Root open>
@@ -88,31 +116,55 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
             eventUuid={event1Uuid}
             setEventUuid={setEvent1Uuid}
             project={props.project}
-            label={`${t['Audiovisual Item']} 1`}
+            label={`${t['Audiovisual Event']} 1`}
           />
           {duration === 'clip' && (
-            <ClipInterface
-              i18n={props.i18n}
-              start={event1Start}
-              setStart={setEvent1Start}
-              end={event1End}
-              setEnd={setEvent1End}
-            />
+            <div className='event-options-container'>
+              <div>
+                {event1 && Object.keys(event1.audiovisual_files).length > 1 && (
+                  <FileRadioInterface
+                    i18n={props.i18n}
+                    files={event1.audiovisual_files}
+                    selectedFile={event1File}
+                    setSelectedFile={(newFile) => setEvent1File(newFile)}
+                  />
+                )}
+                <ClipInterface
+                  i18n={props.i18n}
+                  start={event1Start}
+                  setStart={setEvent1Start}
+                  end={event1End}
+                  setEnd={setEvent1End}
+                />
+              </div>
+            </div>
           )}
           <EventSelect
             eventUuid={event2Uuid}
             setEventUuid={setEvent2Uuid}
             project={props.project}
-            label={`${t['Audiovisual Item']} 2`}
+            label={`${t['Audiovisual Event']} 2`}
           />
           {duration === 'clip' && (
-            <ClipInterface
-              i18n={props.i18n}
-              start={event2Start}
-              setStart={setEvent2Start}
-              end={event2End}
-              setEnd={setEvent2End}
-            />
+            <div className='event-options-container'>
+              <div>
+                {event2 && Object.keys(event2.audiovisual_files).length > 1 && (
+                  <FileRadioInterface
+                    i18n={props.i18n}
+                    files={event2.audiovisual_files}
+                    selectedFile={event2File}
+                    setSelectedFile={(newFile) => setEvent2File(newFile)}
+                  />
+                )}
+                <ClipInterface
+                  i18n={props.i18n}
+                  start={event2Start}
+                  setStart={setEvent2Start}
+                  end={event2End}
+                  setEnd={setEvent2End}
+                />
+              </div>
+            </div>
           )}
           <IncludeInterface
             includes={includes}
@@ -132,6 +184,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
             <Dialog.Close asChild>
               <Button
                 className='primary'
+                disabled={duration === 'clip' && (!event1File || !event2File)}
                 role='button'
                 onClick={() =>
                   props.onSubmit({
@@ -140,11 +193,13 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
                       uuid: event1Uuid,
                       start: event1Start,
                       end: event1End,
+                      file: event1File,
                     },
                     event2: {
                       uuid: event2Uuid,
                       start: event2Start,
                       end: event2End,
+                      file: event2File,
                     },
                   })
                 }

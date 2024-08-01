@@ -1,4 +1,3 @@
-// TypeScript users only add this code
 import type { BaseEditor } from 'slate';
 import { ReactEditor } from 'slate-react';
 
@@ -28,6 +27,7 @@ export type Includes = 'media' | 'annotations' | 'label' | 'description';
 
 export interface SlateEventNodeData {
   end?: number;
+  file: string;
   includes: Includes[];
   start?: number;
   uuid: string;

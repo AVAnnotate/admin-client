@@ -76,7 +76,7 @@ export const LinkButton = (props: LinkDialogProps) => {
     <Dialog.Root open={open}>
       <Dialog.Trigger asChild>
         <Button
-          className={`unstyled ${
+          className={`link-button unstyled ${
             highlightedText ? '' : 'disabled-link-button'
           }`}
           disabled={!highlightedText}
@@ -155,7 +155,7 @@ export const ImageButton = (props: ImageDialogProps) => {
     <Dialog.Root open={open}>
       <Dialog.Trigger asChild>
         <Button
-          className='unstyled'
+          className='image-button unstyled'
           onClick={() => setOpen(true)}
           type='button'
         >

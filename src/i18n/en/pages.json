@@ -20,14 +20,15 @@
   "Annotations": "Annotations",
   "Description": "Description",
   "Duration": "Duration",
-  "Full Recording": "Full Recording",
+  "Full Event": "Full Event",
   "Clip": "Clip",
   "Start Time": "Start Time",
   "End Time": "End Time",
-  "Audiovisual Item": "Audiovisual Item",
+  "Audiovisual Event": "Audiovisual Event",
   "Item Comparison": "Item Comparison",
   "thumbnail": "Thumbnail",
   "medium": "Medium",
   "large": "Large",
-  "full": "Full"
+  "full": "Full",
+  "Audiovisual File": "Audiovisual File"
 }
