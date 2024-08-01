@@ -41,6 +41,7 @@ export const mapAnnotationData = (
 
   data.forEach((d) => {
     ret.push({
+      uuid: uuidv4(),
       start_time: d[map['start_time']],
       end_time: d[map['end_time']],
       annotation: d[map['annotation']],

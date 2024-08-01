@@ -8,7 +8,7 @@ import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { ProjectData, UserInfo, Project } from '@ty/Types.ts';
+import type { UserInfo, Project, ProjectFile } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { delay } from '@lib/utility/index.ts';
 import {
@@ -128,7 +128,7 @@ export const POST: APIRoute = async ({
     });
 
     const projs = readFile('/data/project.json');
-    let project: ProjectData = JSON.parse(projs as string);
+    let project: ProjectFile = JSON.parse(projs as string);
 
     project = {
       publish: {

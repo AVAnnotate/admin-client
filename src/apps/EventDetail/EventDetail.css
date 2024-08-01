@@ -1,0 +1,207 @@
+.breadcrumbs-container {
+  position: sticky;
+  top: 60px;
+  z-index: 2;
+}
+
+.event-detail {
+  box-sizing: border-box;
+  padding-bottom: 60px;
+}
+
+.event-detail .event-detail-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 32px;
+}
+
+.event-detail .event-detail-label svg {
+  height: 24px;
+  width: 24px;
+}
+
+.event-detail .event-detail-options {
+  display: flex;
+  gap: 10px;
+  height: 38px;
+}
+
+.event-detail .event-detail-options .event-detail-button {
+  padding: 9px 16px 9px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+.event-detail .event-detail-options .event-detail-button svg {
+  height: 16px;
+  width: 16px;
+}
+
+.event-detail .event-detail-top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-detail-options a {
+  padding: 0;
+  margin: 0;
+}
+
+.event-detail-options a:hover {
+  text-decoration: none;
+}
+
+.event-detail .event-detail-floating-header {
+  position: sticky;
+  top: 120px;
+  display: block;
+  z-index: 2;
+  background-color: var(--gray-100);
+  padding: 10px 0;
+}
+
+.csv-button,
+.edit-button {
+  border: 1px solid var(--gray-900);
+  background: none;
+  color: var(--gray-900);
+}
+
+.csv-button svg,
+.edit-button svg {
+  color: var(--gray-900);
+}
+
+.delete-button {
+  border: 1px solid #db2828;
+  background: none;
+  color: #db2828;
+}
+
+.delete-button svg {
+  color: #db2828;
+}
+
+.event-detail .rt-TableRootTable {
+  background: #fff;
+  border-radius: 0;
+  table-layout: fixed;
+}
+
+.event-detail .event-detail-table-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 38px;
+  margin: 10px 0;
+}
+
+.event-detail .annotation-table-row:hover {
+  background: var(--gray-100);
+}
+
+.event-detail .annotation-table-row .annotation-data-cell:hover {
+  cursor: pointer;
+}
+
+.event-detail .timestamp-column {
+  width: 180px;
+}
+
+.event-detail .text-column {
+  width: 50%;
+}
+
+.event-detail .options-column {
+  width: 40px;
+}
+
+.event-detail .meatball-cell {
+  padding: 0;
+}
+
+.event-detail .meatball-cell .meatball-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
+.event-detail .event-detail-table-header .header-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.event-detail .tag-cell-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.event-detail .tag-item {
+  border-radius: 50px;
+  padding: 6px 12px 6px 12px;
+  font-size: 14px;
+}
+
+.event-detail .event-detail-table-header .formic-form-field {
+  display: flex;
+  align-items: center;
+}
+
+.event-detail .event-detail-table-header .searchbox {
+  margin: 0;
+  height: 100%;
+  padding: 0 8px;
+  width: auto;
+}
+
+.event-detail .event-detail-table-header .formic-form-field svg {
+  position: relative;
+  left: -30px;
+  height: 16px;
+  width: 16px;
+}
+
+.event-detail .rt-TableColumnHeaderCell {
+  padding: 0;
+  height: 32px;
+}
+
+.event-detail .rt-TableColumnHeaderCell .header-cell-container {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0 10px;
+}
+
+.event-detail .options-header-cell {
+  border-left: none !important;
+}
+
+.event-detail .tags-header-cell {
+  border-right: none !important;
+}
+
+.event-detail .rt-TableColumnHeaderCell {
+  border-top: 1px solid var(--gray-200);
+}
+
+.event-detail .rt-TableCell {
+  border-left: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+}
+
+.event-detail .annotation-cell p,
+.event-detail .timestamp-cell p {
+  margin: 0;
+}
+
+.event-detail .timestamp-cell {
+  white-space: nowrap;
+}

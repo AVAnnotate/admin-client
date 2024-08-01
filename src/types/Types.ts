@@ -120,21 +120,22 @@ export interface FormPage
   updated_by?: string;
 }
 
-export type ProjectData = {
-  events?: { [key: string]: Event };
-
-  pages?: { [key: string]: Page };
-
-  annotations?: { [key: string]: AnnotationPage };
-
-  pageOrder?: string[];
-
+export type ProjectFile = {
   project: Project;
 
   users: ProviderUser[];
 
   publish: Publish;
 };
+
+export type ProjectData = {
+  annotations: { [key: string]: Annotation };
+
+  events: { [key: string]: Event };
+
+  pages: { [key: string]: Page };
+  pageOrder?: string[];
+} & ProjectFile;
 
 export type AllProjects = {
   myProjects: ProjectData[];
@@ -154,10 +155,17 @@ export type ParseAnnotationResults = {
 };
 
 export type AnnotationEntry = {
+  uuid: string;
   start_time: number;
   end_time: number;
   annotation: Node[];
   tags: Tag[];
+};
+
+export type Annotation = {
+  event_id: string;
+  source_id: string;
+  annotations: AnnotationEntry[];
 };
 
 export type DropdownOption = {

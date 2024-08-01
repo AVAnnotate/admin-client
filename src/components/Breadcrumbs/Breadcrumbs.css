@@ -19,7 +19,8 @@
   font-weight: 700;
 }
 
-.breadcrumbs-container .breadcrumbs-list a {
+.breadcrumbs-container .breadcrumbs-list a,
+.breadcrumbs-container .breadcrumbs-list span {
   color: white;
 }
 
