@@ -160,6 +160,7 @@ export type AnnotationEntry = {
   end_time: number;
   annotation: Node[];
   tags: Tag[];
+  uuid: string;
 };
 
 export type Annotation = {

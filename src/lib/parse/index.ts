@@ -46,6 +46,7 @@ export const mapAnnotationData = (
       end_time: d[map['end_time']],
       annotation: d[map['annotation']],
       tags: d[map['tags']],
+      uuid: uuidv4(),
     });
   });
 

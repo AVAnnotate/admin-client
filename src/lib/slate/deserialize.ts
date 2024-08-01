@@ -1,13 +1,20 @@
 import { jsx } from 'slate-hyperscript';
+// @ts-ignore
+import { JSDOM } from 'jsdom';
+
+const Node = new JSDOM('').window.Node;
 
 export const deserialize = (
-  el: ChildNode | Element,
+  el: DocumentFragment | ChildNode,
   markAttributes: { [key: string]: boolean } = {}
 ): any => {
-  console.log(el);
   if (el.nodeType === Node.TEXT_NODE) {
     return jsx('text', markAttributes, el.textContent);
-  } else if (el.nodeType !== Node.ELEMENT_NODE) {
+  } else if (
+    el.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
+    el.nodeType !== Node.ELEMENT_NODE
+  ) {
+    console.log('Node type !==  Node.DOCUMENT_FRAGMENT_NODE', el.nodeType);
     return null;
   }
 
