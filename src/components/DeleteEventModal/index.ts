@@ -1,1 +1,1 @@
-export * from './DeleteEventModal';
+export * from './DeleteEventModal.tsx';
