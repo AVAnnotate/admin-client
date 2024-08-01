@@ -20,7 +20,8 @@ import './Project.css';
 import { PageList } from '@components/PageList/index.ts';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 
 interface Props {
   i18n: Translations;
@@ -33,6 +34,8 @@ interface EventWithUuid extends Event {
 }
 
 export const Project: React.FC<Props> = (props) => {
+  const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
+
   const { lang, t } = props.i18n;
 
   // Add uuid fields to the event objects so we
@@ -52,6 +55,16 @@ export const Project: React.FC<Props> = (props) => {
 
   return (
     <>
+      {deleteUuid && (
+        <DeleteEventModal
+          annotations={props.project.annotations}
+          eventUuid={deleteUuid}
+          i18n={props.i18n}
+          onAfterSave={() => window.location.reload()}
+          onCancel={() => setDeleteUuid(null)}
+          projectSlug={props.projectSlug}
+        />
+      )}
       <Breadcrumbs
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
@@ -145,16 +158,8 @@ export const Project: React.FC<Props> = (props) => {
                     {
                       label: t['Delete'],
                       icon: Trash,
-                      onClick: async (item: EventWithUuid) => {
-                        await fetch(
-                          `/api/projects/${props.project.project.github_org}+${props.project.project.slug}/events/${item.uuid}`,
-                          {
-                            method: 'DELETE',
-                          }
-                        );
-
-                        window.location.reload();
-                      },
+                      onClick: async (item: EventWithUuid) =>
+                        setDeleteUuid(item.uuid),
                     },
                   ]}
                   searchAttribute='label'

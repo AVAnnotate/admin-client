@@ -34,5 +34,5 @@
   "Copy timestamp": "Copy timestamp",
   "Timestamp": "Timestamp",
   "Are you sure you want to delete this event?": "Are you sure you want to delete this event?",
-  "associated annotations will be deleted.": "associated annotations will be deleted."
+  "associated annotations will also be deleted.": "associated annotations will also be deleted."
 }

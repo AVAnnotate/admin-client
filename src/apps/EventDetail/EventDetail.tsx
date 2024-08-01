@@ -8,7 +8,7 @@ import {
   SpeakerLoudIcon,
   VideoIcon,
 } from '@radix-ui/react-icons';
-import { AlertDialog, Button, Table } from '@radix-ui/themes';
+import { Button, Table } from '@radix-ui/themes';
 import { Player } from './Player.tsx';
 import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
 import { useMemo, useState } from 'react';
@@ -17,6 +17,7 @@ import { serialize } from '@lib/slate/index.tsx';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { Node } from 'slate';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
+import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -87,6 +88,18 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   return (
     <>
       {/* todo: edit/delete modals */}
+      {showDeleteModal && (
+        <DeleteEventModal
+          annotations={props.project.annotations}
+          eventUuid={props.uuid}
+          i18n={props.i18n}
+          onAfterSave={() =>
+            (window.location.pathname = `/${lang}/projects/${props.projectSlug}`)
+          }
+          onCancel={() => setShowDeleteModal(false)}
+          projectSlug={props.projectSlug}
+        />
+      )}
       <div className='breadcrumbs-container'>
         <Breadcrumbs
           items={[

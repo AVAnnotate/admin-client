@@ -2,7 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { UserInfo } from '@ty/Types.ts';
+import type { Annotation, UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 
@@ -20,11 +20,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     return new Response(null, { status: 400 });
   }
 
-  const { eventSlug, projectName } = params;
+  const { uuid, projectName } = params;
 
   const { token, info } = await setup(cookies);
 
-  if (!token || !info || !projectName || !eventSlug) {
+  if (!token || !info || !projectName || !uuid) {
     return redirect('/', 307);
   }
 
@@ -52,11 +52,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     userInfo: info as UserInfo,
   });
 
-  const filepath = `/data/events/${eventSlug}.json`;
+  const filepath = `/data/events/${uuid}.json`;
 
   writeFile(filepath, JSON.stringify(event));
 
-  const successCommit = await commitAndPush(`Updated event ${eventSlug}`);
+  const successCommit = await commitAndPush(`Updated event ${uuid}`);
 
   if (successCommit.error) {
     console.error('Failed to write event data: ', successCommit.error);
@@ -70,34 +70,49 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 };
 
 export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
-  const { eventSlug, projectName } = params;
+  const { uuid, projectName } = params;
 
   const { token, info } = await setup(cookies);
 
-  if (!token || !info || !projectName || !eventSlug) {
+  if (!token || !info || !projectName || !uuid) {
     return redirect('/', 307);
   }
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { commitAndPush, deleteFile } = await gitRepo({
+  const { readDir, readFile, commitAndPush, deleteFile } = await gitRepo({
     fs: initFs(),
     repositoryURL,
     branch: 'main',
     userInfo: info as UserInfo,
   });
 
-  const filepath = `/data/events/${eventSlug}.json`;
+  const filepath = `/data/events/${uuid}.json`;
+
+  const annotationFiles = readDir('/data/annotations')
+
+  // we need to delete corresponding annotation files too
+  const matchingAnnoFiles = annotationFiles.filter(filepath => {
+    const contents = readFile(`/data/annotations/${filepath}`)
+    const parsed: Annotation = JSON.parse(contents)
+    if (parsed.event_id === uuid) {
+      return true
+    }
+  })
+
+  matchingAnnoFiles.forEach(async filepath => {
+    await deleteFile(`/data/annotations/${filepath}`)
+  })
 
   await deleteFile(filepath);
 
-  const successCommit = await commitAndPush(`Deleted event ${eventSlug}`);
+  const successCommit = await commitAndPush(`Deleted event ${uuid}`);
 
   if (successCommit.error) {
-    console.error('Failed to write event data: ', successCommit.error);
+    console.error('Failed to delete event: ', successCommit.error);
     return new Response(null, {
       status: 500,
-      statusText: 'Failed to write event data: ' + successCommit.error,
+      statusText: 'Failed to delete event: ' + successCommit.error,
     });
   }
 
