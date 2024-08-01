@@ -16,6 +16,7 @@ import { formatTimestamp } from '@lib/events/index.ts';
 import { serialize } from '@lib/slate/index.tsx';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { Node } from 'slate';
+import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -85,6 +86,20 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   return (
     <>
       {/* todo: edit/delete modals */}
+      <div className='breadcrumbs-container'>
+        <Breadcrumbs
+          items={[
+            { label: t['Projects'], link: `/${lang}/projects` },
+            {
+              label: props.project.project.title,
+              link: `/${lang}/projects/${props.projectSlug}`,
+            },
+            {
+              label: props.event.label,
+            },
+          ]}
+        />
+      </div>
       <div className='event-detail container'>
         <div className='event-detail-floating-header'>
           <div className='event-detail-top-bar'>

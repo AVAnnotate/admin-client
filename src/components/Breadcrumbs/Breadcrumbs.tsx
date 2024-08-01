@@ -6,7 +6,7 @@ import React from 'react';
 interface BreadcrumbsProps {
   items: {
     label: string;
-    link: string;
+    link?: string;
   }[];
 }
 
@@ -27,7 +27,11 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
             <li
               className={idx === props.items.length - 1 ? 'current-item' : ''}
             >
-              <a href={item.link}>{truncate(item.label)}</a>
+              {item.link ? (
+                <a href={item.link}>{truncate(item.label)}</a>
+              ) : (
+                <span>{truncate(item.label)}</span>
+              )}
             </li>
             {idx !== props.items.length - 1 ? (
               <CaretRightIcon color='white' height={22} width={22} />
