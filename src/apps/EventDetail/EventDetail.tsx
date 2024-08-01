@@ -167,17 +167,23 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             </Table.Header>
             <Table.Body>
               {annotations.map((an) => (
-                <Table.Row
-                  key={an.uuid}
-                  onClick={() => setAnnoPosition(an.start_time)}
-                >
-                  <Table.Cell className='timestamp-cell'>
+                <Table.Row className='annotation-table-row' key={an.uuid}>
+                  <Table.Cell
+                    className='annotation-data-cell timestamp-cell'
+                    onClick={() => setAnnoPosition(an.start_time)}
+                  >
                     <p>{formatTimestamps(an.start_time, an.end_time)}</p>
                   </Table.Cell>
-                  <Table.Cell className='annotation-cell'>
+                  <Table.Cell
+                    className='annotation-data-cell annotation-cell'
+                    onClick={() => setAnnoPosition(an.start_time)}
+                  >
                     {serialize(an.annotation)}
                   </Table.Cell>
-                  <Table.Cell className='tag-cell'>
+                  <Table.Cell
+                    className='annotation-data-cell tag-cell'
+                    onClick={() => setAnnoPosition(an.start_time)}
+                  >
                     <div className='tag-cell-container'>
                       {an.tags.map((t, idx) => (
                         <div

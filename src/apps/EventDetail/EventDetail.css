@@ -105,6 +105,14 @@
   margin: 10px 0;
 }
 
+.event-detail .annotation-table-row:hover {
+  background: var(--gray-100);
+}
+
+.event-detail .annotation-table-row .annotation-data-cell:hover {
+  cursor: pointer;
+}
+
 .event-detail .timestamp-column {
   width: 180px;
 }
