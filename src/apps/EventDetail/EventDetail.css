@@ -1,6 +1,6 @@
 .event-detail {
   box-sizing: border-box;
-  margin-bottom: 60px;
+  padding-bottom: 60px;
 }
 
 .event-detail .event-detail-label {
@@ -48,6 +48,26 @@
 .event-detail-options a:hover {
   text-decoration: none;
 }
+
+.event-detail .event-detail-floating-header {
+  position: sticky;
+  top: 60px;
+  display: block;
+  z-index: 2;
+  background-color: var(--gray-100);
+  padding: 10px 0;
+}
+
+/* .event-detail .event-detail-floating-header::after {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.1) 0%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  content: '';
+  display: block;
+  height: 8px;
+} */
 
 .csv-button,
 .edit-button {

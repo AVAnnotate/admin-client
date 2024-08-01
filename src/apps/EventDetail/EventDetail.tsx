@@ -30,6 +30,10 @@ interface EventDetailProps {
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const [search, setSearch] = useState('');
+
+  // position of the most recently clicked annotation
+  const [annoPosition, setAnnoPosition] = useState(0);
+
   const { lang, t } = props.i18n;
 
   const annotations = useMemo(() => {
@@ -82,58 +86,67 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     <>
       {/* todo: edit/delete modals */}
       <div className='event-detail container'>
-        <div className='event-detail-top-bar'>
-          <div className='event-detail-label'>
-            {props.event.item_type === 'Audio' && <SpeakerLoudIcon />}
-            {props.event.item_type === 'Video' && <VideoIcon />}
-            <h2>{props.event.label}</h2>
-          </div>
-          <div className='event-detail-options'>
-            <a
-              href={`/${lang}/projects/${props.projectSlug}/events/${props.uuid}/edit`}
-            >
-              <Button className='event-detail-button edit-button' type='button'>
-                <Pencil2Icon />
-                {t['Edit']}
-              </Button>
-            </a>
-            <Button className='event-detail-button delete-button' type='button'>
-              <Trash />
-              {t['Delete']}
-            </Button>
-          </div>
-        </div>
-        {props.event.citation && (
-          <p>{`${t['Provider']}: ${props.event.citation}`}</p>
-        )}
-        <p>{serialize(props.event.description)}</p>
-        <Player
-          i18n={props.i18n}
-          url={Object.entries(props.event.audiovisual_files)[0][1].file_url}
-        />
-        <div className='event-detail-table-header'>
-          <h3>{t['Annotations']}</h3>
-          <div className='header-buttons'>
-            <div className='formic-form-field'>
-              <input
-                className='searchbox formic-form-text'
-                onChange={(ev) => setSearch(ev.target.value)}
-                type='text'
-              />
-              <MagnifyingGlassIcon />
+        <div className='event-detail-floating-header'>
+          <div className='event-detail-top-bar'>
+            <div className='event-detail-label'>
+              {props.event.item_type === 'Audio' && <SpeakerLoudIcon />}
+              {props.event.item_type === 'Video' && <VideoIcon />}
+              <h2>{props.event.label}</h2>
             </div>
-            <Button className='csv-button' type='button'>
-              <DownloadIcon />
-              {t['CSV']}
-            </Button>
-            <Button className='primary'>
-              <FileEarmarkArrowUp />
-              {t['import']}
-            </Button>
-            <Button className='primary'>
-              <PlusIcon />
-              {t['Add']}
-            </Button>
+            <div className='event-detail-options'>
+              <a
+                href={`/${lang}/projects/${props.projectSlug}/events/${props.uuid}/edit`}
+              >
+                <Button
+                  className='event-detail-button edit-button'
+                  type='button'
+                >
+                  <Pencil2Icon />
+                  {t['Edit']}
+                </Button>
+              </a>
+              <Button
+                className='event-detail-button delete-button'
+                type='button'
+              >
+                <Trash />
+                {t['Delete']}
+              </Button>
+            </div>
+          </div>
+          {props.event.citation && (
+            <p>{`${t['Provider']}: ${props.event.citation}`}</p>
+          )}
+          <div>{serialize(props.event.description)}</div>
+          <Player
+            i18n={props.i18n}
+            url={Object.entries(props.event.audiovisual_files)[0][1].file_url}
+            position={annoPosition}
+          />
+          <div className='event-detail-table-header'>
+            <h3>{t['Annotations']}</h3>
+            <div className='header-buttons'>
+              <div className='formic-form-field'>
+                <input
+                  className='searchbox formic-form-text'
+                  onChange={(ev) => setSearch(ev.target.value)}
+                  type='text'
+                />
+                <MagnifyingGlassIcon />
+              </div>
+              <Button className='csv-button' type='button'>
+                <DownloadIcon />
+                {t['CSV']}
+              </Button>
+              <Button className='primary'>
+                <FileEarmarkArrowUp />
+                {t['import']}
+              </Button>
+              <Button className='primary'>
+                <PlusIcon />
+                {t['Add']}
+              </Button>
+            </div>
           </div>
         </div>
         <div className='event-detail-table-container'>
@@ -154,7 +167,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             </Table.Header>
             <Table.Body>
               {annotations.map((an) => (
-                <Table.Row key={an.uuid}>
+                <Table.Row
+                  key={an.uuid}
+                  onClick={() => setAnnoPosition(an.start_time)}
+                >
                   <Table.Cell className='timestamp-cell'>
                     <p>{formatTimestamps(an.start_time, an.end_time)}</p>
                   </Table.Cell>
@@ -163,9 +179,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                   </Table.Cell>
                   <Table.Cell className='tag-cell'>
                     <div className='tag-cell-container'>
-                      {an.tags.map((t) => (
+                      {an.tags.map((t, idx) => (
                         <div
                           className='tag-item'
+                          key={idx}
                           style={{
                             backgroundColor:
                               tagGroups[

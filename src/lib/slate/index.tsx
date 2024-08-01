@@ -145,17 +145,20 @@ export const Leaf = ({ attributes, children, leaf }: any) => {
 };
 
 export const serialize = (nodes: Node[]) => {
-  return nodes.map((node) => {
+  return nodes.map((node, idx) => {
     if (Text.isText(node)) {
-      console.log('is text');
       return node.text;
     }
 
     if (node.children) {
       const children = node.children.map((node) => serialize([node])).join('');
-      return <Element element={node}>{children}</Element>;
+      return (
+        <Element element={node} key={idx}>
+          {children}
+        </Element>
+      );
     }
 
-    return <Element element={node} />;
+    return <Element element={node} key={idx} />;
   });
 };

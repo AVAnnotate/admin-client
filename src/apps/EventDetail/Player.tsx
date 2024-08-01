@@ -1,7 +1,7 @@
 // react-player requires a weird workaround to keep TS from complaining
 import { default as _ReactPlayer } from 'react-player';
 import type { ReactPlayerProps } from 'react-player/types/lib';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import './Player.css';
 import { Button } from '@radix-ui/themes';
 import {
@@ -19,6 +19,10 @@ import { formatTimestamp } from '@lib/events/index.ts';
 interface Props {
   i18n: Translations;
   url: string;
+  // optional props for controlling the
+  // player from a parent component
+  playing?: boolean;
+  position?: number;
 }
 
 const ReactPlayer = _ReactPlayer as unknown as React.FC<ReactPlayerProps>;
@@ -26,20 +30,40 @@ const ReactPlayer = _ReactPlayer as unknown as React.FC<ReactPlayerProps>;
 export const Player: React.FC<Props> = (props) => {
   // total length of recording, in seconds
   const [duration, setDuration] = useState(0);
+
   const [muted, setMuted] = useState(false);
-  // percent of file played so far
+
+  // seconds played so far
   const [position, setPosition] = useState(0);
+
   const [playing, setPlaying] = useState(false);
+
+  // store the player itself in state instead of a ref
+  // because there's something weird in their packaging
+  // that breaks ref-based calls
   const [player, setPlayer] = useState<any>(null);
+
   // whether the user is currently seeking
   const [seeking, setSeeking] = useState(false);
 
+  useEffect(() => {
+    // we need to use typeof here instead of a null
+    // check because 0 is falsy!
+    if (player && typeof props.position === 'number') {
+      player.seekTo(props.position);
+    }
+  }, [props.position]);
+
+  useEffect(() => {
+    if (props.playing) {
+      setPlaying(props.playing);
+    }
+  }, [props.playing]);
+
   const { t } = props.i18n;
 
-  const playerRef = useRef<React.FC<typeof ReactPlayer>>(null);
-
   const formattedPosition = useMemo(
-    () => formatTimestamp(position * duration),
+    () => formatTimestamp(position),
     [position]
   );
 
@@ -52,7 +76,7 @@ export const Player: React.FC<Props> = (props) => {
     (val: number[]) => {
       setSeeking(false);
       if (player) {
-        player.seekTo(val[0]);
+        player.seekTo(val[0] * duration);
       }
     },
     [player, setSeeking]
@@ -68,14 +92,13 @@ export const Player: React.FC<Props> = (props) => {
       {/* when we add video support, we'll need to conditionally set the width/height */}
       <ReactPlayer
         playing={playing}
-        ref={playerRef}
-        played={position}
+        played={position / duration || 0}
         muted={muted}
         onDuration={(dur) => setDuration(dur)}
         onProgress={(data) => {
           // don't move the point if the user is currently dragging it
           if (!seeking) {
-            setPosition(data.played);
+            setPosition(data.playedSeconds);
           }
         }}
         onReady={(player) => setPlayer(player)}
@@ -105,11 +128,11 @@ export const Player: React.FC<Props> = (props) => {
               max={0.999999999}
               onValueChange={(val) => {
                 setSeeking(true);
-                setPosition(val[0]);
+                setPosition(val[0] * duration);
               }}
               onValueCommit={onSeek}
               step={0.0001}
-              value={[position]}
+              value={[position / duration]}
             >
               <Slider.Track className='seek-bar-slider-track'>
                 <Slider.Range className='seek-bar-slider-range' />
