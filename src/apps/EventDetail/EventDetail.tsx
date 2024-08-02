@@ -17,6 +17,7 @@ import { serialize } from '@lib/slate/index.tsx';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { Node } from 'slate';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
+import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -30,6 +31,7 @@ interface EventDetailProps {
 }
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [search, setSearch] = useState('');
 
   // position of the most recently clicked annotation
@@ -86,6 +88,18 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   return (
     <>
       {/* todo: edit/delete modals */}
+      {showDeleteModal && (
+        <DeleteEventModal
+          annotations={props.project.annotations}
+          eventUuid={props.uuid}
+          i18n={props.i18n}
+          onAfterSave={() =>
+            (window.location.pathname = `/${lang}/projects/${props.projectSlug}`)
+          }
+          onCancel={() => setShowDeleteModal(false)}
+          projectSlug={props.projectSlug}
+        />
+      )}
       <div className='breadcrumbs-container'>
         <Breadcrumbs
           items={[
@@ -122,6 +136,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               </a>
               <Button
                 className='event-detail-button delete-button'
+                onClick={() => setShowDeleteModal(true)}
                 type='button'
               >
                 <Trash />
