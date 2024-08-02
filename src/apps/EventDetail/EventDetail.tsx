@@ -1,6 +1,7 @@
 import type { Event, ProjectData, Translations } from '@ty/Types.ts';
 import './EventDetail.css';
 import {
+  ChevronDownIcon,
   DownloadIcon,
   MagnifyingGlassIcon,
   Pencil2Icon,
@@ -18,6 +19,7 @@ import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { Node } from 'slate';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
+import * as Select from '@radix-ui/react-select';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -31,8 +33,16 @@ interface EventDetailProps {
 }
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // AV files are required in the Add Event form so we can safely
+  // assume that one exists
+  const [avFile, setAvFile] = useState(
+    Object.keys(props.event.audiovisual_files)[0]
+  );
+
+  // annotation search state
   const [search, setSearch] = useState('');
+
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // position of the most recently clicked annotation
   const [annoPosition, setAnnoPosition] = useState(0);
@@ -40,9 +50,11 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const { lang, t } = props.i18n;
 
   const annotations = useMemo(() => {
-    const match = Object.keys(props.project.annotations).find(
-      (uuid) => props.project.annotations[uuid].event_id === props.uuid
-    );
+    const match = Object.keys(props.project.annotations).find((uuid) => {
+      const annoFile = props.project.annotations[uuid];
+
+      return annoFile.event_id === props.uuid && annoFile.source_id === avFile;
+    });
 
     if (match) {
       const annos = props.project.annotations[match].annotations;
@@ -73,7 +85,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     } else {
       return [];
     }
-  }, [props.project, search]);
+  }, [props.project, search, avFile]);
 
   const tagGroups = useMemo(() => {
     const obj: { [key: string]: string } = {};
@@ -148,9 +160,52 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             <p>{`${t['Provider']}: ${props.event.citation}`}</p>
           )}
           <div>{serialize(props.event.description)}</div>
+          {Object.keys(props.event.audiovisual_files).length > 1 && (
+            <div className='av-file-selection'>
+              <span className='av-file-label'>{t['AV File']}</span>
+              <Select.Root
+                onValueChange={(uuid) => setAvFile(uuid)}
+                value={avFile}
+              >
+                <Select.Trigger className='select-trigger'>
+                  <Select.Value className='select-value' />
+                  <Select.Icon className='select-icon'>
+                    <ChevronDownIcon />
+                  </Select.Icon>
+                </Select.Trigger>
+                <Select.Portal>
+                  <Select.Content className='select-content' position='popper'>
+                    <Select.Viewport className='select-viewport'>
+                      {Object.keys(props.event.audiovisual_files).map(
+                        (uuid, idx) => (
+                          <Select.Item
+                            className='select-item'
+                            key={uuid}
+                            value={uuid}
+                          >
+                            <Select.ItemText className='select-item-text'>
+                              {idx + 1}.&nbsp;
+                              {props.event.audiovisual_files[uuid].label}&nbsp;
+                              (
+                              {formatTimestamp(
+                                props.event.audiovisual_files[uuid].duration,
+                                false
+                              )}
+                              )
+                            </Select.ItemText>
+                            <Select.ItemIndicator className='select-indicator'></Select.ItemIndicator>
+                          </Select.Item>
+                        )
+                      )}
+                    </Select.Viewport>
+                  </Select.Content>
+                </Select.Portal>
+              </Select.Root>
+            </div>
+          )}
           <Player
             i18n={props.i18n}
-            url={Object.entries(props.event.audiovisual_files)[0][1].file_url}
+            url={props.event.audiovisual_files[avFile].file_url}
             position={annoPosition}
           />
           <div className='event-detail-table-header'>
@@ -196,6 +251,13 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               </Table.Row>
             </Table.Header>
             <Table.Body>
+              {annotations.length === 0 && (
+                <Table.Row>
+                  <Table.Cell colSpan={4} className='empty-annos-note'>
+                    <p>{t['No annotations have been added.']}</p>
+                  </Table.Cell>
+                </Table.Row>
+              )}
               {annotations.map((an) => (
                 <Table.Row className='annotation-table-row' key={an.uuid}>
                   <Table.Cell
