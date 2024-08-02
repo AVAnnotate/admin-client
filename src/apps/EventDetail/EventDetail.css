@@ -13,6 +13,22 @@
   z-index: 100;
 }
 
+.event-detail .av-file-selection {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.event-detail .av-file-selection .select-trigger {
+  box-shadow: none;
+  width: auto;
+}
+
+.event-detail .av-file-selection .av-file-label {
+  font-weight: 600;
+}
+
 .event-detail .event-detail-label {
   display: flex;
   align-items: center;
@@ -170,6 +186,11 @@
   left: -30px;
   height: 16px;
   width: 16px;
+}
+
+.event-detail .empty-annos-note {
+  text-align: center;
+  width: 100%;
 }
 
 .event-detail .rt-TableColumnHeaderCell {
