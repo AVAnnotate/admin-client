@@ -43,7 +43,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     Object.keys(props.event.audiovisual_files)[0]
   );
 
-  const [editUuid, setEditUuid] = useState('');
+  const [editUuid, setEditUuid] = useState<null | string>(null);
   const [search, setSearch] = useState('');
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -99,13 +99,14 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
   return (
     <>
-      {/* todo: edit/delete modals */}
       {editUuid && (
         <AnnotationModal
           annotation={annotations.find((ann) => ann.uuid === editUuid)}
+          onClose={() => setEditUuid(null)}
           onSubmit={(ann) => console.log(ann)}
           i18n={props.i18n}
           title={t['Edit Annotation']}
+          project={props.project}
         />
       )}
       {showDeleteModal && (

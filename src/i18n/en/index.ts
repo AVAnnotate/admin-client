@@ -17,9 +17,16 @@ export default {
   'account-actions': { ...all, ...accountActions },
   'sign-out': signOut,
   'sign-in': signIn,
-  projects: { ...projects, ...newProject, ...buttons, ...pages, ...events, ...all },
+  projects: {
+    ...projects,
+    ...newProject,
+    ...buttons,
+    ...pages,
+    ...events,
+    ...all,
+  },
   pages: { ...buttons, ...pages, ...all },
   'new-project': { ...newProject, ...buttons, ...all },
-  events: { ...events, ...projects, ...buttons, ...all },
+  events: { ...events, ...projects, ...pages, ...buttons, ...all },
   tags: { ...all, ...tags, ...buttons },
 };

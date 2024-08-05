@@ -66,6 +66,7 @@ const FormContents: React.FC<Props> = (props) => {
         </div>
         <RichTextInput
           className='page-content-editor'
+          elementTypes={['blocks', 'marks', 'images']}
           i18n={props.i18n}
           name='content'
           project={props.project}

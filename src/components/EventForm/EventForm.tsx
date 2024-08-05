@@ -129,6 +129,7 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
         <Separator.Root className='SeparatorRoot' decorative />
         <h2>{t['Other']}</h2>
         <RichTextInput
+          elementTypes={['blocks', 'marks']}
           label={t['Description (Optional)']}
           helperText={t['A brief paragraph describing your event.']}
           name='description'
