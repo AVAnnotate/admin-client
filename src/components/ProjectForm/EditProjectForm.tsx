@@ -112,7 +112,7 @@ export const EditProjectForm: React.FC<EditProjectFormProps> = (props) => {
       authors: props.projectData.project.authors,
       title: props.projectData.project.title,
     };
-  }, [props.projectData.project]);
+  }, [props.projectData]);
 
   return (
     <Formik initialValues={initialValues} onSubmit={props.onSave}>
