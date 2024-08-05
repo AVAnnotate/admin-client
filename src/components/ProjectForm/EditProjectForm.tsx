@@ -40,8 +40,6 @@ const FormContents = (props: EditProjectFormProps) => {
     }
   }, [props.selection]);
 
-  console.log(values);
-
   return (
     <div className='project-form'>
       <div className='project-form-container'>

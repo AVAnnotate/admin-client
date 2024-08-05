@@ -130,11 +130,28 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
 
   const project: ProjectData = JSON.parse(proj as string);
 
-  project.users.push({
-    login_name: userInfo.profile.gitHubName as string,
-    avatar_url: userInfo.profile.avatarURL,
-    admin: true,
-  });
+  const users = await getCollaborators(
+    project.project.slug,
+    project.project.github_org,
+    userInfo.token
+  );
+
+  if (users.ok) {
+    const userData: any[] = await users.json();
+    const collabs = userData.filter((u) =>
+      ['write', 'maintain', 'admin'].includes(u.role_name)
+    );
+
+    console.log(collabs)
+
+    project.users = collabs.map((u: any) => {
+      return {
+        login_name: u.login,
+        avatar_url: u.avatar_url,
+        admin: u.site_admin,
+      };
+    });
+  }
 
   const eventFiles = exists('/data/events')
     ? readDir('/data/events', '.json')
@@ -171,26 +188,6 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
   const projects: ProjectData[] = [];
   for await (const repo of repos) {
     const projectData = await getProject(userInfo, repo.html_url);
-
-    const users = await getCollaborators(
-      repo.name,
-      repo.owner.login,
-      userInfo.token
-    );
-
-    if (users.ok) {
-      const userData: any[] = await users.json();
-      const collabs = userData.filter((u) =>
-        ['write', 'maintain', 'admin'].includes(u.role_name)
-      );
-      projectData.users = collabs.map((u: any) => {
-        return {
-          login_name: u.login,
-          avatar_url: u.avatar_url,
-          admin: u.site_admin,
-        };
-      });
-    }
 
     projects.push(projectData);
   }

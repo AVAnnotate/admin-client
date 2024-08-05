@@ -27,7 +27,9 @@ export const ProjectCard = (props: ProjectCardProps) => {
             {props.project.users.map((u) => {
               return (
                 <Tooltip.Root key={u.login_name}>
-                  <Tooltip.Trigger asChild>
+                  {/* React expects a key on the trigger too due
+                      to the way Radix renders the tooltip. */}
+                  <Tooltip.Trigger asChild key={u.login_name}>
                     <div className='project-card-avatar-container'>
                       <Avatar
                         name={u.login_name}
