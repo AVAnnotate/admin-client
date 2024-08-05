@@ -137,7 +137,6 @@ export const TimeInput = (props: TimeInputProps) => {
       if (hours < 24) {
         const totalSeconds = seconds + minutes * 60 + hours * 3600;
         setDisplay(valueToDisplay(totalSeconds));
-        // setDisplay(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`)
 
         props.onChange(totalSeconds);
       }

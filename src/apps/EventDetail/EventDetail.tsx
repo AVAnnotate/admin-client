@@ -104,6 +104,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
         <AnnotationModal
           annotation={annotations.find((ann) => ann.uuid === editUuid)}
           onSubmit={(ann) => console.log(ann)}
+          i18n={props.i18n}
           title={t['Edit Annotation']}
         />
       )}
