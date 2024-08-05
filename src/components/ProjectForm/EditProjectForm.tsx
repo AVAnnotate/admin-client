@@ -1,4 +1,4 @@
-import type { Project, Translations } from '@ty/Types.ts';
+import type { Project, ProjectData, Translations } from '@ty/Types.ts';
 import { Formik, Form, useFormikContext } from 'formik';
 import { TextInput, UserList } from '@components/Formic/index.tsx';
 import { useEffect, useRef, useMemo } from 'react';
@@ -10,7 +10,7 @@ import { Button } from '@radix-ui/themes';
 import type { apiProjectPut } from '@ty/api.ts';
 
 export interface EditProjectFormProps {
-  project: Project;
+  projectData: ProjectData;
 
   projectSlug: string;
 
@@ -108,13 +108,13 @@ const FormContents = (props: EditProjectFormProps) => {
 export const EditProjectForm: React.FC<EditProjectFormProps> = (props) => {
   const initialValues = useMemo(() => {
     return {
-      additional_users: props.project.additional_users,
-      description: props.project.description,
-      media_player: props.project.media_player,
-      authors: props.project.authors,
-      title: props.project.title,
+      additional_users: props.projectData.users,
+      description: props.projectData.project.description,
+      media_player: props.projectData.project.media_player,
+      authors: props.projectData.project.authors,
+      title: props.projectData.project.title,
     };
-  }, [props.project]);
+  }, [props.projectData.project]);
 
   return (
     <Formik initialValues={initialValues} onSubmit={props.onSave}>

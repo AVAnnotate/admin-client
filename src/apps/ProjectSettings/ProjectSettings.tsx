@@ -67,7 +67,7 @@ export const ProjectSettings: React.FC<Props> = (props) => {
           />
           <EditProjectForm
             selection={tab}
-            project={props.project.project}
+            projectData={props.project}
             projectSlug={props.projectSlug}
             i18n={props.i18n}
             onSave={(data) => handleSaveProject(data)}

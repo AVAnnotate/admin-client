@@ -130,8 +130,7 @@ export const createRepositoryFromTemplate = async (
   };
 
   return await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
+    `https://api.github.com/repos/${import.meta.env.GIT_REPO_ORG
     }/${templateRepo}/generate`,
     {
       method: 'POST',
