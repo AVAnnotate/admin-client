@@ -40,9 +40,4 @@ export const getNewOrder = (
   return newOrder;
 };
 
-export const initialPageValue: Descendant[] = [
-  {
-    type: 'paragraph',
-    children: [{ text: '' }],
-  },
-];
+

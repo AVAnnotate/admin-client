@@ -1,5 +1,14 @@
-import type { FormEvent } from '@ty/Types.ts';
+import { emptyParagraph } from '@lib/slate/index.tsx';
+import type { AnnotationEntry, FormEvent } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
+
+export const generateDefaultAnnotation = (): AnnotationEntry => ({
+  uuid: uuidv4(),
+  start_time: 0,
+  end_time: 0,
+  annotation: emptyParagraph,
+  tags: []
+})
 
 export const generateDefaultEvent = (): FormEvent => ({
   audiovisual_files: {

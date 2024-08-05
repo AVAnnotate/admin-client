@@ -20,6 +20,7 @@ import { Node } from 'slate';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 import * as Select from '@radix-ui/react-select';
+import { AnnotationModal } from '@components/AnnotationModal/AnnotationModal.tsx';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -33,19 +34,18 @@ interface EventDetailProps {
 }
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
+  // position of the most recently clicked annotation
+  const [annoPosition, setAnnoPosition] = useState(0);
+
   // AV files are required in the Add Event form so we can safely
   // assume that one exists
   const [avFile, setAvFile] = useState(
     Object.keys(props.event.audiovisual_files)[0]
   );
 
-  // annotation search state
+  const [editUuid, setEditUuid] = useState('');
   const [search, setSearch] = useState('');
-
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
-  // position of the most recently clicked annotation
-  const [annoPosition, setAnnoPosition] = useState(0);
 
   const { lang, t } = props.i18n;
 
@@ -100,6 +100,13 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   return (
     <>
       {/* todo: edit/delete modals */}
+      {editUuid && (
+        <AnnotationModal
+          annotation={annotations.find((ann) => ann.uuid === editUuid)}
+          onSubmit={(ann) => console.log(ann)}
+          title={t['Edit Annotation']}
+        />
+      )}
       {showDeleteModal && (
         <DeleteEventModal
           annotations={props.project.annotations}
@@ -300,7 +307,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                           {
                             label: t['Edit'],
                             icon: Pencil2Icon,
-                            onClick: () => {},
+                            onClick: () => setEditUuid(an.uuid),
                           },
                           {
                             label: t['Delete'],

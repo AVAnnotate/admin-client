@@ -38,9 +38,8 @@ import {
   LinkButton,
 } from './FormattingComponents.tsx';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import { initialPageValue } from '@lib/pages/index.ts';
 import type { ImageData } from '@ty/slate.ts';
-import { Element, Leaf } from '../../../lib/slate/index.tsx';
+import { Element, emptyParagraph, Leaf } from '../../../lib/slate/index.tsx';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -199,7 +198,7 @@ export const SlateInput: React.FC<Props> = (props) => {
     <div className='slate-form'>
       <Slate
         editor={editor}
-        initialValue={props.initialValue || initialPageValue}
+        initialValue={props.initialValue || emptyParagraph}
         onChange={props.onChange}
       >
         <div className='slate-toolbar'>
