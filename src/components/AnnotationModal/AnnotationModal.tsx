@@ -5,11 +5,11 @@ import type { AnnotationEntry, ProjectData, Translations } from '@ty/Types.ts';
 import {
   RichTextInput,
   SelectInput,
-  TextInput,
   TimeInput,
 } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
 import './AnnotationModal.css';
+import { TagSelect } from './TagSelect.tsx';
 
 interface Props {
   annotation?: AnnotationEntry;
@@ -60,23 +60,17 @@ export const AnnotationModalContents: React.FC<Props> = (props) => {
               name='annotation'
               elementTypes={['blocks', 'marks']}
             />
-            <SelectInput
+            {/* <SelectInput
               label={t['Annotation Set']}
               // todo: I think we're using some sort of tag-based system for sets,
               //       not a separate field.
               name='annotation_set'
               options={[]}
-            />
-            <SelectInput
-              label={t['Tags']}
-              // todo: I think we're using some sort of tag-based system for sets,
-              //       not a separate field.
-              name='tags'
-              options={props.project.project.tags.tags.map((t) => ({
-                label: t.tag,
-                value: t.tag,
-              }))}
-            />
+            /> */}
+            <div>
+              <div className='av-label-bold formic-form-label'>{t['Tags']}</div>
+              <TagSelect tags={props.project.project.tags} />
+            </div>
           </div>
           <div className='annotation-modal-close-bar'>
             <Dialog.Close asChild>
