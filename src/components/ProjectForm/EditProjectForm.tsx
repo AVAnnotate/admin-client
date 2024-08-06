@@ -1,10 +1,5 @@
-import type {
-  Project,
-  ProjectData,
-  Translations,
-  UserInfo,
-} from '@ty/Types.ts';
-import { Formik, Form, useFormikContext } from 'formik';
+import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
+import { Formik, Form } from 'formik';
 import { TextInput, UserList } from '@components/Formic/index.tsx';
 import { useEffect, useRef, useMemo } from 'react';
 
@@ -33,8 +28,6 @@ const FormContents = (props: EditProjectFormProps) => {
 
   const generalRef = useRef(null);
   const userRef = useRef(null);
-
-  const { values } = useFormikContext();
 
   useEffect(() => {
     const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>

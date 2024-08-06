@@ -338,6 +338,7 @@ export const UserList = (props: UserListProps) => {
       value.filter((v: ProviderUser) => v.login_name !== user.login_name)
     );
   };
+
   return (
     <div>
       <div className='av-label-bold formic-form-label'>
