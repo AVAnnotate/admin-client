@@ -1,1 +1,1 @@
-export * from './AnnotationModal'
+export * from './AnnotationModal.tsx';

@@ -1,35 +1,7 @@
-.delete-event-modal {
-  position: fixed;
-  left: calc(50vw - 250px);
-  top: 20vh;
-  width: 500px;
-}
-
 .delete-event-modal .annotation-note {
   color: #db2828;
 }
 
 .delete-event-modal .annotation-count {
   font-weight: 600;
-}
-
-.delete-event-modal .delete-event-button {
-  padding: 16px 18px 16px 18px;
-  border: 1px solid var(--gray-700);
-  border-radius: 5px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 4px;
-}
-
-.delete-event-modal .delete-button {
-  border-color: #db2828;
-  color: #db2828;
-}
-
-.delete-event-modal .delete-button svg {
-  color: #db2828;
-  height: 16px;
-  width: 16px;
 }

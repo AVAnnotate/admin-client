@@ -2,7 +2,6 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Formik, useFormikContext } from 'formik';
 import { generateDefaultAnnotation } from '@lib/events/index.ts';
 import type { AnnotationEntry, ProjectData, Translations } from '@ty/Types.ts';
-import './AnnotationModal.css';
 import {
   RichTextInput,
   SelectInput,
@@ -10,6 +9,7 @@ import {
   TimeInput,
 } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
+import './AnnotationModal.css';
 
 interface Props {
   annotation?: AnnotationEntry;

@@ -1,0 +1,54 @@
+.delete-modal {
+  position: fixed;
+  left: calc(50vw - 250px);
+  top: calc(50vh - 200px);
+  width: 500px;
+  padding: 48px 24px 24px 24px;
+}
+
+.delete-modal h1 {
+  margin-top: 0;
+}
+
+.delete-modal p {
+  margin: 0;
+  line-height: 1.5rem;
+}
+
+.delete-modal .content-container {
+  display: flex;
+  gap: 24px;
+}
+
+.delete-modal .icon-container {
+  width: 32px;
+}
+
+.delete-modal .icon-container svg {
+  width: 32px;
+  color: var(--red);
+  height: 32px;
+}
+
+.delete-modal .text-container {
+  flex-grow: 1;
+}
+
+.delete-modal .text-container .alert-description {
+  font-weight: 600;
+}
+
+.delete-modal .delete-modal-button {
+  padding: 16px 18px 16px 18px;
+  border-radius: 5px;
+}
+
+.delete-modal .delete-button {
+  border-color: var(--red);
+  background: var(--red);
+  color: #fff;
+}
+
+.delete-modal .bottom-bar {
+  padding-top: 24px;
+}

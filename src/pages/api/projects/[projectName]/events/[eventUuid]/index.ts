@@ -20,11 +20,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     return new Response(null, { status: 400 });
   }
 
-  const { uuid, projectName } = params;
+  const { eventUuid, projectName } = params;
 
   const { token, info } = await setup(cookies);
 
-  if (!token || !info || !projectName || !uuid) {
+  if (!token || !info || !projectName || !eventUuid) {
     return redirect('/', 307);
   }
 
@@ -52,11 +52,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     userInfo: info as UserInfo,
   });
 
-  const filepath = `/data/events/${uuid}.json`;
+  const filepath = `/data/events/${eventUuid}.json`;
 
   writeFile(filepath, JSON.stringify(event));
 
-  const successCommit = await commitAndPush(`Updated event ${uuid}`);
+  const successCommit = await commitAndPush(`Updated event ${eventUuid}`);
 
   if (successCommit.error) {
     console.error('Failed to write event data: ', successCommit.error);
@@ -89,20 +89,20 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const filepath = `/data/events/${uuid}.json`;
 
-  const annotationFiles = readDir('/data/annotations')
+  const annotationFiles = readDir('/data/annotations');
 
   // we need to delete corresponding annotation files too
-  const matchingAnnoFiles = annotationFiles.filter(filepath => {
-    const contents = readFile(`/data/annotations/${filepath}`)
-    const parsed: Annotation = JSON.parse(contents as string)
+  const matchingAnnoFiles = annotationFiles.filter((filepath) => {
+    const contents = readFile(`/data/annotations/${filepath}`);
+    const parsed: Annotation = JSON.parse(contents as string);
     if (parsed.event_id === uuid) {
-      return true
+      return true;
     }
-  })
+  });
 
-  matchingAnnoFiles.forEach(async filepath => {
-    await deleteFile(`/data/annotations/${filepath}`)
-  })
+  matchingAnnoFiles.forEach(async (filepath) => {
+    await deleteFile(`/data/annotations/${filepath}`);
+  });
 
   await deleteFile(filepath);
 

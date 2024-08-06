@@ -1,8 +1,7 @@
-import { AlertDialog, Button, Flex, Spinner } from '@radix-ui/themes';
-import './DeleteEventModal.css';
 import type { Annotation, Translations } from '@ty/Types.ts';
-import { useMemo, useState } from 'react';
-import { Trash } from 'react-bootstrap-icons';
+import { useMemo } from 'react';
+import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
+import './DeleteEventModal.css';
 
 interface Props {
   annotations: { [key: string]: Annotation };
@@ -14,13 +13,11 @@ interface Props {
 }
 
 export const DeleteEventModal: React.FC<Props> = (props) => {
-  const [loading, setLoading] = useState(false);
-
   const { t } = props.i18n;
 
   // get a count of the number of annotations that will be deleted
   // alongside this event.
-  const annoCount = useMemo(() => {
+  const warningText = useMemo(() => {
     const annoFileUuids = Object.keys(props.annotations).filter(
       (uuid) => props.annotations[uuid].event_id === props.eventUuid
     );
@@ -30,7 +27,17 @@ export const DeleteEventModal: React.FC<Props> = (props) => {
       0
     );
 
-    return count;
+    if (count === 0) {
+      return undefined;
+    } else {
+      return (
+        <p className='annotation-note'>
+          <span className='annotation-count'>{count}</span>
+          &nbsp;
+          {t['associated annotations will also be deleted.']}
+        </p>
+      );
+    }
   }, [props.annotations, props.eventUuid]);
 
   const deletePath = useMemo(
@@ -39,8 +46,6 @@ export const DeleteEventModal: React.FC<Props> = (props) => {
   );
 
   const deleteEvent = async () => {
-    setLoading(true);
-
     await fetch(deletePath, {
       method: 'DELETE',
       headers: {
@@ -52,35 +57,13 @@ export const DeleteEventModal: React.FC<Props> = (props) => {
   };
 
   return (
-    <AlertDialog.Root open>
-      <AlertDialog.Content className='delete-event-modal'>
-        {loading && <Spinner />}
-        <AlertDialog.Title>{t['Delete Event']}</AlertDialog.Title>
-        <AlertDialog.Description>
-          <p>{t['Are you sure you want to delete this event?']}</p>
-
-          {annoCount > 0 ? (
-            <p className='annotation-note'>
-              <span className='annotation-count'>{annoCount}</span>
-              &nbsp;
-              {t['associated annotations will also be deleted.']}
-            </p>
-          ) : null}
-        </AlertDialog.Description>
-        <Flex gap='3' mt='4' justify='end'>
-          <AlertDialog.Cancel onClick={props.onCancel}>
-            <Button className='unstyled delete-event-button cancel-button'>
-              {t['cancel']}
-            </Button>
-          </AlertDialog.Cancel>
-          <AlertDialog.Action onClick={async () => await deleteEvent()}>
-            <Button className='unstyled delete-event-button delete-button'>
-              <Trash />
-              <span>{t['Delete']}</span>
-            </Button>
-          </AlertDialog.Action>
-        </Flex>
-      </AlertDialog.Content>
-    </AlertDialog.Root>
+    <DeleteModal
+      additionalText={warningText}
+      className='delete-event-modal'
+      name={t['Event']}
+      i18n={props.i18n}
+      onCancel={props.onCancel}
+      onDelete={deleteEvent}
+    />
   );
 };
