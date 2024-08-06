@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({
   redirect,
 }) => {
   if (request.headers.get('Content-Type') === 'application/json') {
-    const token = cookies.get('access-token');
+    const token = cookies.get('access-token')?.json();
 
     // Get the user info
     const info = await userInfo(cookies);
@@ -240,7 +240,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       body.additional_users.map((u) => u.login_name),
       slugContents.repo,
       slugContents.org,
-      token
+      info?.token
     );
   } catch (e) {
     return new Response(null, {

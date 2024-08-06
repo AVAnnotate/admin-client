@@ -114,6 +114,25 @@ export const addCollaborator = async (
   );
 };
 
+export const removeCollaborator = async (
+  repoName: string,
+  org: string,
+  collaborator: string,
+  token: string
+): Promise<Response> => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repoName}/collaborators/${collaborator}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
+};
+
 export const createRepositoryFromTemplate = async (
   templateRepo: string,
   org: string,
@@ -130,7 +149,8 @@ export const createRepositoryFromTemplate = async (
   };
 
   return await fetch(
-    `https://api.github.com/repos/${import.meta.env.GIT_REPO_ORG
+    `https://api.github.com/repos/${
+      import.meta.env.GIT_REPO_ORG
     }/${templateRepo}/generate`,
     {
       method: 'POST',

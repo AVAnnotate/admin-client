@@ -1,4 +1,9 @@
-import type { Project, ProjectData, Translations } from '@ty/Types.ts';
+import type {
+  Project,
+  ProjectData,
+  Translations,
+  UserInfo,
+} from '@ty/Types.ts';
 import { Formik, Form, useFormikContext } from 'formik';
 import { TextInput, UserList } from '@components/Formic/index.tsx';
 import { useEffect, useRef, useMemo } from 'react';
@@ -19,6 +24,8 @@ export interface EditProjectFormProps {
   selection: string;
 
   onSave(project: apiProjectPut): void;
+
+  userInfo: UserInfo;
 }
 
 const FormContents = (props: EditProjectFormProps) => {
@@ -106,7 +113,7 @@ const FormContents = (props: EditProjectFormProps) => {
 export const EditProjectForm: React.FC<EditProjectFormProps> = (props) => {
   const initialValues = useMemo(() => {
     return {
-      additional_users: props.projectData.users,
+      additional_users: props.projectData.users.filter((u) => !u.admin),
       description: props.projectData.project.description,
       media_player: props.projectData.project.media_player,
       authors: props.projectData.project.authors,
