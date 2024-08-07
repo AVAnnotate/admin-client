@@ -1,8 +1,94 @@
-.select-trigger {
+.anno-dropdown-trigger {
+  width: 100%;
   background: #fff;
   box-shadow: none;
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  padding: 0 15px;
+  font-size: 13px;
+  line-height: 1;
+  height: 35px;
+  gap: 5px;
+  color: var(--gray-900);
 }
 
-.select-group {
+.anno-dropdown-content {
+  background: #fff;
+  padding: 8px;
+  width: var(--radix-dropdown-menu-trigger-width);
+  box-sizing: border-box;
+  margin: 10px;
+  box-shadow: 0px 4px 4px 0px #00000040;
+}
+
+.anno-dropdown-content .searchbox {
+  border: 1px solid var(--gray-300);
+  border-radius: 4px;
+  box-sizing: border-box;
+  position: sticky;
   width: 100%;
+}
+
+.anno-list {
+  max-height: 360px;
+  overflow-y: auto;
+}
+
+.anno-dropdown-group {
+  width: 100%;
+}
+
+.tag-dropdown-item,
+.tag-value {
+  border-radius: 50px;
+  margin: 4px 0 !important;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 10px 6px 8px;
+  font-size: 12px;
+  gap: 8px;
+  height: 24px;
+}
+
+.selected-tag {
+  border: 1px solid #000;
+}
+
+.selected-tag-check {
+  color: #000;
+  position: relative;
+  top: 1px;
+  height: 12px;
+  width: 12px;
+}
+
+button.remove-tag-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  height: 16px;
+  width: 16px;
+  position: relative;
+  top: 1px;
+}
+
+.remove-tag-icon {
+  color: #000;
+  height: 100%;
+  width: 100%;
+}
+
+.tag-value-list {
+  display: flex;
+  gap: 8px;
+  position: absolute;
+  z-index: 1;
+  left: 36px;
+  margin-top: 1px;
 }

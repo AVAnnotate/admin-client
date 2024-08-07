@@ -1,53 +1,119 @@
-import * as Select from '@radix-ui/react-select';
-import type { Tag, Tags } from '@ty/Types.ts';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import type {
+  AnnotationEntry,
+  ProjectData,
+  Tags,
+  Translations,
+} from '@ty/Types.ts';
 import './TagSelect.css';
 import { useFormikContext } from 'formik';
 import { ChevronDownIcon } from '@radix-ui/react-icons';
+import { useMemo, useState } from 'react';
+import { TagSelectItem } from './TagSelectItem.tsx';
+import { X } from 'react-bootstrap-icons';
+import { matchTag } from '@lib/events/index.ts';
+import { Button } from '@radix-ui/themes';
 
 interface Props {
+  i18n: Translations;
+  project: ProjectData;
   tags: Tags;
 }
 
 export const TagSelect: React.FC<Props> = (props) => {
+  const [search, setSearch] = useState('');
+
   const { setFieldValue, values } = useFormikContext();
 
-  console.log(values);
+  const { t } = props.i18n;
+
+  // create a quick lookup table so we can get tag colors more easily
+  const categoryMap = useMemo(() => {
+    const obj: { [key: string]: string } = {};
+
+    props.project.project.tags.tagGroups.forEach((tg) => {
+      obj[tg.category.toLowerCase()] = tg.color;
+    });
+
+    return obj;
+  }, [props.project]);
+
+  const tagEls = useMemo(
+    () =>
+      (values as AnnotationEntry).tags.map((tag, idx) => (
+        <div
+          className='tag-value'
+          key={idx}
+          style={{
+            backgroundColor:
+              categoryMap[
+                tag.category.toLowerCase() as keyof typeof categoryMap
+              ],
+          }}
+        >
+          {tag.tag}
+          <Button className='remove-tag-button'>
+            <X
+              className='remove-tag-icon'
+              onClick={() =>
+                setFieldValue(
+                  'tags',
+                  (values as AnnotationEntry).tags.filter(
+                    (tg) => !matchTag(tg, tag)
+                  )
+                )
+              }
+            />
+          </Button>
+        </div>
+      )),
+    [values, props.tags]
+  );
 
   return (
-    <Select.Root onValueChange={(data) => console.log(data)}>
-      <Select.Trigger className='select-trigger'>
-        {/* todo: render values */}
-        <Select.Value asChild>
-          <div>
-            {(values as any).tags &&
-              (values as any).tags.map((t) => <span>{t.tag}</span>)}
-          </div>
-        </Select.Value>
-        <Select.Icon>
-          <ChevronDownIcon />
-        </Select.Icon>
-      </Select.Trigger>
-      <Select.Portal>
-        <Select.Content className='select-content' position='popper'>
-          <Select.Viewport className='select-viewport'>
-            {props.tags.tagGroups.map((tg) => (
-              <Select.Group className='select-group' title={tg.category}>
+    <DropdownMenu.Root>
+      {/* Beware: these tags use an absolute positioning hack to appear inside
+          the dropdown trigger while actually being siblings in the DOM tree. This
+          was necessary because the trigger's onClick handler would override the tags'
+          onClick handlers due to the DOM structure. With this hack, we can allow the
+          user to click on tags inside the triggerwhile also being able to click on
+          the trigger itself.*/}
+      <div className='tag-value-list'>{tagEls}</div>
+      <DropdownMenu.Trigger className='anno-dropdown-trigger'>
+        <ChevronDownIcon className='tag-value-x' />
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Portal>
+        <DropdownMenu.Content className='anno-dropdown-content' side='top'>
+          <input
+            className='searchbox'
+            onChange={(ev) => setSearch(ev.target.value)}
+            placeholder={t['Search']}
+            type='text'
+            autoFocus
+          />
+          <div className='anno-list'>
+            {props.tags.tagGroups.map((tg, tagGroupIdx) => (
+              <DropdownMenu.Group
+                className='anno-dropdown-group'
+                key={tagGroupIdx}
+              >
+                <DropdownMenu.Label>{tg.category}</DropdownMenu.Label>
                 {props.tags.tags
-                  .filter((tag) => tag.category === tg.category)
-                  .map((tag) => (
-                    <Select.Item
-                      className='select-item'
-                      key={tag.tag}
-                      value={tag.tag}
-                    >
-                      {tag.tag}
-                    </Select.Item>
+                  .filter((tag) => {
+                    if (tag.category !== tg.category) return false;
+
+                    return search
+                      ? tag.tag.toLowerCase().includes(search.toLowerCase())
+                      : true;
+                  })
+                  .map((tag, tagIdx) => (
+                    <TagSelectItem key={tagIdx} tag={tag} tagGroup={tg} />
                   ))}
-              </Select.Group>
+              </DropdownMenu.Group>
             ))}
-          </Select.Viewport>
-        </Select.Content>
-      </Select.Portal>
-    </Select.Root>
+          </div>
+        </DropdownMenu.Content>
+      </DropdownMenu.Portal>
+    </DropdownMenu.Root>
   );
 };

@@ -10,6 +10,7 @@ import {
 import { Button } from '@radix-ui/themes';
 import './AnnotationModal.css';
 import { TagSelect } from './TagSelect.tsx';
+import { useState } from 'react';
 
 interface Props {
   annotation?: AnnotationEntry;
@@ -69,7 +70,11 @@ export const AnnotationModalContents: React.FC<Props> = (props) => {
             /> */}
             <div>
               <div className='av-label-bold formic-form-label'>{t['Tags']}</div>
-              <TagSelect tags={props.project.project.tags} />
+              <TagSelect
+                i18n={props.i18n}
+                project={props.project}
+                tags={props.project.project.tags}
+              />
             </div>
           </div>
           <div className='annotation-modal-close-bar'>
