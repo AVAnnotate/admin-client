@@ -5,6 +5,7 @@ import {
   getCollaborators,
   addCollaborator,
   getUser,
+  removeCollaborator,
 } from '@lib/GitHub/index.ts';
 import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
@@ -130,11 +131,26 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
 
   const project: ProjectData = JSON.parse(proj as string);
 
-  project.users.push({
-    login_name: userInfo.profile.gitHubName as string,
-    avatar_url: userInfo.profile.avatarURL,
-    admin: true,
-  });
+  const users = await getCollaborators(
+    project.project.slug,
+    project.project.github_org,
+    userInfo.token
+  );
+
+  if (users.ok) {
+    const userData: any[] = await users.json();
+    const collabs = userData.filter((u) =>
+      ['write', 'maintain', 'admin'].includes(u.role_name)
+    );
+
+    project.users = collabs.map((u: any) => {
+      return {
+        login_name: u.login,
+        avatar_url: u.avatar_url,
+        admin: u.role_name === 'admin',
+      };
+    });
+  }
 
   const eventFiles = exists('/data/events')
     ? readDir('/data/events', '.json')
@@ -147,7 +163,11 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
     ? readDir('/data/annotations')
     : [];
 
-  project.annotations = getDirData(fs, annotationFiles as unknown as string[], 'annotations')
+  project.annotations = getDirData(
+    fs,
+    annotationFiles as unknown as string[],
+    'annotations'
+  );
   project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
 
   project.annotations = getDirData(
@@ -171,26 +191,6 @@ export const getProjects = async (userInfo: UserInfo): Promise<AllProjects> => {
   const projects: ProjectData[] = [];
   for await (const repo of repos) {
     const projectData = await getProject(userInfo, repo.html_url);
-
-    const users = await getCollaborators(
-      repo.name,
-      repo.owner.login,
-      userInfo.token
-    );
-
-    if (users.ok) {
-      const userData: any[] = await users.json();
-      const collabs = userData.filter((u) =>
-        ['write', 'maintain', 'admin'].includes(u.role_name)
-      );
-      projectData.users = collabs.map((u: any) => {
-        return {
-          login_name: u.login,
-          avatar_url: u.avatar_url,
-          admin: u.site_admin,
-        };
-      });
-    }
 
     projects.push(projectData);
   }
@@ -268,46 +268,94 @@ export const addCollaborators = async (
   token: any
 ) => {
   const collabs: ProviderUser[] = [];
-  for (let i = 0; i < additionalUsers.length; i++) {
-    const respCollabs: Response = await addCollaborator(
-      projectName as string,
-      org,
-      additionalUsers[i],
-      token?.value as string
+  const users = await getCollaborators(projectName, org, token);
+
+  let currentUsers: ProviderUser[] = [];
+
+  if (users.ok) {
+    const userData: any[] = await users.json();
+    const collabs = userData.filter((u) =>
+      ['write', 'maintain', 'admin'].includes(u.role_name)
     );
 
-    if (!respCollabs.ok) {
-      throw new Error(`Failed to add collaborator ${additionalUsers[i]}`);
-    }
-
-    if (respCollabs.status == 204) {
-      // Must be a team member
-      const userResp = await getUser(
-        token?.value as string,
-        additionalUsers[i]
-      );
-
-      if (!userResp.ok) {
-        console.error(`Failed to find collaborator ${additionalUsers[i]}`);
-      } else {
-        const data = await userResp.json();
-
-        collabs.push({
-          login_name: data.login,
-          avatar_url: data.avatar_url,
-          admin: false,
-        });
-      }
-    } else {
-      const data: RepositoryInvitation = await respCollabs.json();
-
-      collabs.push({
-        login_name: data.invitee!.login,
-        avatar_url: data.invitee!.avatar_url,
-        admin: data.permissions === 'admin',
+    if (collabs.length > 0) {
+      currentUsers = collabs.map((u: any) => {
+        return {
+          login_name: u.login,
+          avatar_url: u.avatar_url,
+          admin: u.role_name === 'admin',
+        };
       });
     }
   }
-  console.log('Collaborators created');
+
+  // Look for new users to add
+  for (let i = 0; i < additionalUsers.length; i++) {
+    const findIdx = currentUsers.findIndex((u) => {
+      return u.login_name === additionalUsers[i];
+    });
+    if (findIdx === -1) {
+      console.log('Did not find user, adding: ', additionalUsers[i]);
+      const respCollabs: Response = await addCollaborator(
+        projectName as string,
+        org,
+        additionalUsers[i],
+        token as string
+      );
+
+      if (!respCollabs.ok) {
+        throw new Error(`Failed to add collaborator ${additionalUsers[i]}`);
+      }
+
+      if (respCollabs.status == 204) {
+        // Must be a team member
+        const userResp = await getUser(token as string, additionalUsers[i]);
+
+        if (!userResp.ok) {
+          console.error(`Failed to find collaborator ${additionalUsers[i]}`);
+        } else {
+          const data = await userResp.json();
+
+          collabs.push({
+            login_name: data.login,
+            avatar_url: data.avatar_url,
+            admin: false,
+          });
+        }
+      } else {
+        const data: RepositoryInvitation = await respCollabs.json();
+
+        collabs.push({
+          login_name: data.invitee!.login,
+          avatar_url: data.invitee!.avatar_url,
+          admin: data.permissions === 'admin',
+        });
+      }
+    }
+  }
+
+  // Now see if there are users to remove
+  for (let i = 0; i < currentUsers.length; i++) {
+    const findIdx = additionalUsers.findIndex(
+      (u) => u === currentUsers[i].login_name
+    );
+
+    if (findIdx === -1 && !currentUsers[i].admin) {
+      console.log('Here!');
+      const respCollabs: Response = await removeCollaborator(
+        projectName as string,
+        org,
+        currentUsers[i].login_name,
+        token as string
+      );
+
+      console.log('!done');
+
+      if (!respCollabs.ok) {
+        throw new Error(`Failed to remove collaborator ${additionalUsers[i]}`);
+      }
+    }
+  }
+  console.log('Collaborators updated');
   return collabs;
 };

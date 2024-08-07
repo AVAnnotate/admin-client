@@ -1,5 +1,5 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
 import './ProjectSettings.css';
 import { Sidebar } from '@components/Sidebar/Sidebar.tsx';
 import { useState } from 'react';
@@ -11,6 +11,7 @@ interface Props {
   i18n: Translations;
   project: ProjectData;
   projectSlug: string;
+  userInfo: UserInfo;
 }
 
 type Tabs = 'general' | 'users';
@@ -67,10 +68,11 @@ export const ProjectSettings: React.FC<Props> = (props) => {
           />
           <EditProjectForm
             selection={tab}
-            project={props.project.project}
+            projectData={props.project}
             projectSlug={props.projectSlug}
             i18n={props.i18n}
             onSave={(data) => handleSaveProject(data)}
+            userInfo={props.userInfo}
           />
         </div>
       </div>

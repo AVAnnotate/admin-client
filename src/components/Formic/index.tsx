@@ -338,6 +338,7 @@ export const UserList = (props: UserListProps) => {
       value.filter((v: ProviderUser) => v.login_name !== user.login_name)
     );
   };
+
   return (
     <div>
       <div className='av-label-bold formic-form-label'>
@@ -361,7 +362,7 @@ export const UserList = (props: UserListProps) => {
                 <div className='av-label'>{user.login_name}</div>
               </div>
             </div>
-            <Button className='formic-user-list-delete-button'>
+            <Button className='formic-user-list-delete-button' type='button'>
               <Trash onClick={() => handleDeleteUser(user)} />
             </Button>
           </div>
