@@ -39,13 +39,12 @@ export const DELETE: APIRoute = async ({
 
   const fs = initFs();
 
-  const { commitAndPush, exists, deleteFile, readFile, writeFile } =
-    await gitRepo({
-      fs,
-      repositoryURL,
-      branch: 'main',
-      userInfo: info,
-    });
+  const { commitAndPush, exists, readFile, writeFile } = await gitRepo({
+    fs,
+    repositoryURL,
+    branch: 'main',
+    userInfo: info,
+  });
 
   const filePath = `/data/annotations/${annotationFileUuid}.json`;
 
@@ -56,7 +55,7 @@ export const DELETE: APIRoute = async ({
     });
   }
 
-  const annos: AnnotationPage = JSON.parse(readFile(filePath));
+  const annos: AnnotationPage = JSON.parse(readFile(filePath) as string);
 
   if (annos.event_id !== eventUuid) {
     return new Response(null, {
@@ -78,12 +77,7 @@ export const DELETE: APIRoute = async ({
 
   annos.annotations.splice(deleteIdx, 1);
 
-  // Delete the file if there are no annotations left.
-  if (annos.annotations.length === 0) {
-    deleteFile(filePath);
-  } else {
-    writeFile(filePath, JSON.stringify(annos, null, '  '));
-  }
+  writeFile(filePath, JSON.stringify(annos, null, '  '));
 
   const commitMessage = `Deleted annotation ${annotationUuid}`;
 
