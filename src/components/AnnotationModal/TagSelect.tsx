@@ -92,25 +92,31 @@ export const TagSelect: React.FC<Props> = (props) => {
             autoFocus
           />
           <div className='anno-list'>
-            {props.tags.tagGroups.map((tg, tagGroupIdx) => (
-              <DropdownMenu.Group
-                className='anno-dropdown-group'
-                key={tagGroupIdx}
-              >
-                <DropdownMenu.Label>{tg.category}</DropdownMenu.Label>
-                {props.tags.tags
-                  .filter((tag) => {
-                    if (tag.category !== tg.category) return false;
+            {props.tags.tagGroups.map((tg, tagGroupIdx) => {
+              const groupTags = props.tags.tags.filter((tag) => {
+                if (tag.category !== tg.category) return false;
 
-                    return search
-                      ? tag.tag.toLowerCase().includes(search.toLowerCase())
-                      : true;
-                  })
-                  .map((tag, tagIdx) => (
+                return search
+                  ? tag.tag.toLowerCase().includes(search.toLowerCase())
+                  : true;
+              });
+
+              if (groupTags.length === 0) {
+                return null;
+              }
+
+              return (
+                <DropdownMenu.Group
+                  className='anno-dropdown-group'
+                  key={tagGroupIdx}
+                >
+                  <DropdownMenu.Label>{tg.category}</DropdownMenu.Label>
+                  {groupTags.map((tag, tagIdx) => (
                     <TagSelectItem key={tagIdx} tag={tag} tagGroup={tg} />
                   ))}
-              </DropdownMenu.Group>
-            ))}
+                </DropdownMenu.Group>
+              );
+            })}
           </div>
         </DropdownMenu.Content>
       </DropdownMenu.Portal>

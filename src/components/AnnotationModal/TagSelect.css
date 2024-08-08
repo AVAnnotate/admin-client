@@ -41,6 +41,10 @@
   width: 100%;
 }
 
+.anno-dropdown-group:not(:last-child) {
+  border-bottom: 1px solid var(--gray-100);
+}
+
 .tag-dropdown-item,
 .tag-value {
   border-radius: 50px;
