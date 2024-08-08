@@ -29,11 +29,11 @@ export const DeleteModal: React.FC<Props> = (props) => {
 
   return (
     <>
-      {loading && <LoadingOverlay />}
       <AlertDialog.Root open>
         <AlertDialog.Content
           className={`delete-modal ${props.className || ''}`}
         >
+          {loading && <LoadingOverlay />}
           <div className='content-container'>
             <div className='icon-container'>
               <ExclamationTriangle />
