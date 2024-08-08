@@ -2,11 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { Formik, useFormikContext } from 'formik';
 import { generateDefaultAnnotation } from '@lib/events/index.ts';
 import type { AnnotationEntry, ProjectData, Translations } from '@ty/Types.ts';
-import {
-  RichTextInput,
-  SelectInput,
-  TimeInput,
-} from '@components/Formic/index.tsx';
+import { RichTextInput, TimeInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
 import './AnnotationModal.css';
 import { TagSelect } from './TagSelect.tsx';
@@ -24,7 +20,9 @@ interface Props {
 
 export const AnnotationModal: React.FC<Props> = (props) => (
   <Formik
-    initialValues={props.annotation || generateDefaultAnnotation()}
+    initialValues={
+      props.annotation || (generateDefaultAnnotation() as AnnotationEntry)
+    }
     onSubmit={props.onSubmit}
   >
     <AnnotationModalContents {...props} />
@@ -66,13 +64,6 @@ export const AnnotationModalContents: React.FC<Props> = (props) => {
                 name='annotation'
                 elementTypes={['blocks', 'marks']}
               />
-              {/* <SelectInput
-              label={t['Annotation Set']}
-              // todo: I think we're using some sort of tag-based system for sets,
-              //       not a separate field.
-              name='annotation_set'
-              options={[]}
-            /> */}
               <div>
                 <div className='av-label-bold formic-form-label'>
                   {t['Tags']}

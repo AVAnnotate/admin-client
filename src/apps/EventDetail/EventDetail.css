@@ -9,6 +9,24 @@
   padding-bottom: 60px;
 }
 
+.event-detail .set-info-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.event-detail .set-info-bar .set-info-bar-right {
+  display: flex;
+  gap: 8px;
+  width: 60%;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.event-detail .add-set-button svg {
+  margin: 0;
+}
+
 .delete-confirmation-dialog {
   z-index: 100;
 }
@@ -81,7 +99,7 @@
   display: block;
   z-index: 2;
   background-color: var(--gray-100);
-  padding: 10px 0;
+  padding-top: 10px;
 }
 
 .csv-button,
@@ -116,8 +134,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 38px;
-  margin: 10px 0;
+  height: 58px;
+  padding: 0 16px;
+  background: #fff;
+  border: 1px solid var(--gray-200);
 }
 
 .event-detail .annotation-table-row:hover {
@@ -157,10 +177,21 @@
   gap: 12px;
 }
 
-.event-detail .tag-cell-container {
+.event-detail .tag-cell-container,
+.event-detail .invisible-tag-holder {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.event-detail .tag-cell-container .tag-cell-overflow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  background: var(--gray-200);
+  padding: 4px 10px;
+  font-weight: 700;
 }
 
 .event-detail .tag-item {
@@ -193,9 +224,12 @@
   width: 100%;
 }
 
-.event-detail .rt-TableColumnHeaderCell {
+.event-detail .header-row .rt-TableColumnHeaderCell {
   padding: 0;
   height: 32px;
+  background: var(--gray-200);
+  border-left: 1px solid #fff;
+  border-right: 1px solid #fff;
 }
 
 .event-detail .rt-TableColumnHeaderCell .header-cell-container {
@@ -203,14 +237,6 @@
   align-items: center;
   height: 100%;
   margin: 0 10px;
-}
-
-.event-detail .options-header-cell {
-  border-left: none !important;
-}
-
-.event-detail .tags-header-cell {
-  border-right: none !important;
 }
 
 .event-detail .rt-TableColumnHeaderCell {
@@ -229,4 +255,10 @@
 
 .event-detail .timestamp-cell {
   white-space: nowrap;
+}
+
+.invisible-tag-holder {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
 }

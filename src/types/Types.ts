@@ -165,6 +165,7 @@ export type AnnotationEntry = {
 export type Annotation = {
   event_id: string;
   source_id: string;
+  set: string;
   annotations: AnnotationEntry[];
 };
 
