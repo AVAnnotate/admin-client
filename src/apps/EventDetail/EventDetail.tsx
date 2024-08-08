@@ -28,6 +28,7 @@ import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.
 import * as Select from '@radix-ui/react-select';
 import { AnnotationModal } from '@components/AnnotationModal/index.ts';
 import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
+import type { apiAnnotationPost } from '@ty/api.ts';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -62,6 +63,7 @@ const searchAnnotations = (annos: AnnotationEntry[], search: string) =>
     return plainTextAnno.includes(search.toLowerCase());
   });
 
+// sort by start time and then by end time
 const sortAnnotations = (annos: AnnotationEntry[]) =>
   annos.sort((a, b) => {
     if (a.start_time > b.start_time) {
@@ -69,9 +71,43 @@ const sortAnnotations = (annos: AnnotationEntry[]) =>
     } else if (a.start_time < b.start_time) {
       return -1;
     } else {
-      return 0;
+      if (a.end_time > b.end_time) {
+        return 1;
+      } else if (a.end_time < b.end_time) {
+        return -1;
+      } else {
+        return 0;
+      }
     }
   });
+
+const onSubmitAdd = async (body: apiAnnotationPost, baseUrl: string) => {
+  const res = await fetch(baseUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (res.ok) {
+    return (await res.json()) as AnnotationEntry;
+  }
+};
+
+const onSubmitEdit = async (body: AnnotationEntry, baseUrl: string) => {
+  const res = await fetch(`${baseUrl}/${body.uuid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (res.ok) {
+    return (await res.json()) as AnnotationEntry;
+  }
+};
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
   // position of the most recently clicked annotation
@@ -125,6 +161,12 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
   const { lang, t } = props.i18n;
 
+  const baseUrl = useMemo(
+    () =>
+      `/api/projects/${props.projectSlug}/events/${props.uuid}/annotations/${annoFile}`,
+    [props.projectSlug, props.uuid, annoFile]
+  );
+
   const tagGroups = useMemo(() => {
     const obj: { [key: string]: string } = {};
 
@@ -168,7 +210,19 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
         <AnnotationModal
           annotation={filteredAnnotations.find((ann) => ann.uuid === editUuid)}
           onClose={() => setEditUuid(null)}
-          onSubmit={(ann) => console.log(ann)}
+          onSubmit={async (body) => {
+            const newAnno = await onSubmitEdit(body, baseUrl);
+
+            if (newAnno) {
+              setAllAnnotations(
+                allAnnotations.map((ann) =>
+                  ann.uuid === newAnno.uuid ? newAnno : ann
+                )
+              );
+            }
+
+            setEditUuid(null);
+          }}
           i18n={props.i18n}
           title={t['Edit Annotation']}
           project={props.project}
@@ -177,7 +231,17 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
       {showAnnoCreateModal && (
         <AnnotationModal
           onClose={() => setShowAnnoCreateModal(false)}
-          onSubmit={(ann) => console.log(ann)}
+          onSubmit={async (body) => {
+            const newAnno = await onSubmitAdd(body, baseUrl);
+
+            if (newAnno) {
+              setAllAnnotations(
+                sortAnnotations(allAnnotations.concat(newAnno))
+              );
+            }
+
+            setShowAnnoCreateModal(false);
+          }}
           i18n={props.i18n}
           title={t['Add Annotation']}
           project={props.project}
