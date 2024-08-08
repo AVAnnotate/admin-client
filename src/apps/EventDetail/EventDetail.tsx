@@ -86,6 +86,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
   const [editUuid, setEditUuid] = useState<null | string>(null);
   const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
+  const [showAnnoCreateModal, setShowAnnoCreateModal] = useState(false);
 
   const annoFile = useMemo(
     () =>
@@ -170,6 +171,15 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           onSubmit={(ann) => console.log(ann)}
           i18n={props.i18n}
           title={t['Edit Annotation']}
+          project={props.project}
+        />
+      )}
+      {showAnnoCreateModal && (
+        <AnnotationModal
+          onClose={() => setShowAnnoCreateModal(false)}
+          onSubmit={(ann) => console.log(ann)}
+          i18n={props.i18n}
+          title={t['Add Annotation']}
           project={props.project}
         />
       )}
@@ -300,7 +310,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                 <FileEarmarkArrowUp />
                 {t['import']}
               </Button>
-              <Button className='primary'>
+              <Button
+                className='primary'
+                onClick={() => setShowAnnoCreateModal(true)}
+              >
                 <PlusIcon />
                 {t['Add']}
               </Button>
