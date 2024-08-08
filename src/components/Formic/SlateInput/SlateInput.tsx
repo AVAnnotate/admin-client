@@ -38,9 +38,8 @@ import {
   LinkButton,
 } from './FormattingComponents.tsx';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import { initialPageValue } from '@lib/pages/index.ts';
-import type { ImageData } from '@ty/slate.ts';
-import { Element, Leaf } from '../../../lib/slate/index.tsx';
+import type { ElementTypes, ImageData } from '@ty/slate.ts';
+import { Element, emptyParagraph, Leaf } from '../../../lib/slate/index.tsx';
 
 // This code is adapted from the rich text example at:
 // https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
@@ -181,6 +180,11 @@ interface Props {
   i18n: Translations;
   children?: ReactElement | ReactElement[];
   project?: ProjectData;
+  // Elements are divided into three categories based on whether they're
+  // a block or inline, along with images as their own category. This
+  // allows us to configure which types of elements we want to allow
+  // on a per-form basis.
+  elementTypes: ElementTypes[];
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
@@ -199,41 +203,53 @@ export const SlateInput: React.FC<Props> = (props) => {
     <div className='slate-form'>
       <Slate
         editor={editor}
-        initialValue={props.initialValue || initialPageValue}
+        initialValue={props.initialValue || emptyParagraph}
         onChange={props.onChange}
       >
         <div className='slate-toolbar'>
           {props.children}
-          <MarkButton format='bold' icon={FontBoldIcon} />
-          <MarkButton format='italic' icon={FontItalicIcon} />
-          <MarkButton format='underline' icon={UnderlineIcon} />
-          <MarkButton format='strikethrough' icon={StrikethroughIcon} />
-          <MarkButton format='code' icon={CodeIcon} />
-          <BlockButton format='block-quote' icon={QuoteIcon} />
-          <div className='toolbar-separator' />
-          <HighlightColorButton format='highlight' icon={PaintBucket} />
-          <ColorButton format='color' icon={Type} />
-          <div className='toolbar-separator' />
-          <BlockButton format='numbered-list' icon={ListOl} />
-          <BlockButton format='bulleted-list' icon={ListUl} />
-          <div className='toolbar-separator' />
-          <BlockButton format='left' icon={JustifyLeft} />
-          <BlockButton format='center' icon={TextCenter} />
-          <BlockButton format='right' icon={JustifyRight} />
-          <BlockButton format='justify' icon={Justify} />
-          <div className='toolbar-separator' />
-          <LinkButton
-            icon={Link1Icon}
-            i18n={props.i18n}
-            title={t['Insert link']}
-            onSubmit={(url) => editor.addMark('link', url)}
-          />
-          <ImageButton
-            icon={Images}
-            i18n={props.i18n}
-            title={t['Insert image']}
-            onSubmit={(image) => insertImage(editor, image)}
-          />
+          {props.elementTypes.includes('marks') && (
+            <>
+              <MarkButton format='bold' icon={FontBoldIcon} />
+              <MarkButton format='italic' icon={FontItalicIcon} />
+              <MarkButton format='underline' icon={UnderlineIcon} />
+              <MarkButton format='strikethrough' icon={StrikethroughIcon} />
+              <MarkButton format='code' icon={CodeIcon} />
+              <BlockButton format='block-quote' icon={QuoteIcon} />
+              <div className='toolbar-separator' />
+              <HighlightColorButton format='highlight' icon={PaintBucket} />
+              <ColorButton format='color' icon={Type} />
+              <div className='toolbar-separator' />
+            </>
+          )}
+          {props.elementTypes.includes('blocks') && (
+            <>
+              <BlockButton format='numbered-list' icon={ListOl} />
+              <BlockButton format='bulleted-list' icon={ListUl} />
+              <div className='toolbar-separator' />
+              <BlockButton format='left' icon={JustifyLeft} />
+              <BlockButton format='center' icon={TextCenter} />
+              <BlockButton format='right' icon={JustifyRight} />
+              <BlockButton format='justify' icon={Justify} />
+              <div className='toolbar-separator' />
+            </>
+          )}
+          {props.elementTypes.includes('marks') && (
+            <LinkButton
+              icon={Link1Icon}
+              i18n={props.i18n}
+              title={t['Insert link']}
+              onSubmit={(url) => editor.addMark('link', url)}
+            />
+          )}
+          {props.elementTypes.includes('images') && (
+            <ImageButton
+              icon={Images}
+              i18n={props.i18n}
+              title={t['Insert image']}
+              onSubmit={(image) => insertImage(editor, image)}
+            />
+          )}
         </div>
         <Editable
           className='formic-form-textarea'

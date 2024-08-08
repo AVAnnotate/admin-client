@@ -9,11 +9,11 @@ import './PageForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
 import { useMemo } from 'react';
-import { initialPageValue } from '@lib/pages/index.ts';
 import { InsertButton } from '@components/InsertEventButton/index.ts';
+import { emptyParagraph } from '@lib/slate/index.tsx';
 
 const defaultPage: FormPage = {
-  content: initialPageValue,
+  content: emptyParagraph,
   title: '',
   parent: undefined,
 };
@@ -66,6 +66,7 @@ const FormContents: React.FC<Props> = (props) => {
         </div>
         <RichTextInput
           className='page-content-editor'
+          elementTypes={['blocks', 'marks', 'images']}
           i18n={props.i18n}
           name='content'
           project={props.project}

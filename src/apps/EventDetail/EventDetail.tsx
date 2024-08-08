@@ -1,4 +1,10 @@
-import type { Event, ProjectData, Translations } from '@ty/Types.ts';
+import type {
+  AnnotationEntry,
+  AnnotationPage,
+  Event,
+  ProjectData,
+  Translations,
+} from '@ty/Types.ts';
 import './EventDetail.css';
 import {
   ChevronDownIcon,
@@ -12,7 +18,7 @@ import {
 import { Button, Table } from '@radix-ui/themes';
 import { Player } from './Player.tsx';
 import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
-import { useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { formatTimestamp } from '@lib/events/index.ts';
 import { serialize } from '@lib/slate/index.tsx';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
@@ -20,6 +26,9 @@ import { Node } from 'slate';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 import * as Select from '@radix-ui/react-select';
+import { AnnotationModal } from '@components/AnnotationModal/index.ts';
+import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
+import type { apiAnnotationPost } from '@ty/api.ts';
 
 const formatTimestamps = (start: number, end: number) =>
   `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
@@ -32,60 +41,131 @@ interface EventDetailProps {
   project: ProjectData;
 }
 
+const getAnnotations = (project: ProjectData, annoFile: string | undefined) => {
+  if (annoFile) {
+    const annos = project.annotations[annoFile].annotations;
+
+    return sortAnnotations(annos);
+  } else {
+    return [];
+  }
+};
+
+const searchAnnotations = (annos: AnnotationEntry[], search: string) =>
+  annos.filter((anno) => {
+    // since annos are rich text, we have to grab the plain text
+    // from them in order to search
+    const plainTextAnno = anno.annotation
+      .map((n) => Node.string(n))
+      .join('\n')
+      .toLowerCase();
+
+    return plainTextAnno.includes(search.toLowerCase());
+  });
+
+// sort by start time and then by end time
+const sortAnnotations = (annos: AnnotationEntry[]) =>
+  annos.sort((a, b) => {
+    if (a.start_time > b.start_time) {
+      return 1;
+    } else if (a.start_time < b.start_time) {
+      return -1;
+    } else {
+      if (a.end_time > b.end_time) {
+        return 1;
+      } else if (a.end_time < b.end_time) {
+        return -1;
+      } else {
+        return 0;
+      }
+    }
+  });
+
+const onSubmitAdd = async (body: apiAnnotationPost, baseUrl: string) => {
+  const res = await fetch(baseUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (res.ok) {
+    return (await res.json()) as AnnotationEntry;
+  }
+};
+
+const onSubmitEdit = async (body: AnnotationEntry, baseUrl: string) => {
+  const res = await fetch(`${baseUrl}/${body.uuid}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (res.ok) {
+    return (await res.json()) as AnnotationEntry;
+  }
+};
+
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
+  // position of the most recently clicked annotation
+  const [annoPosition, setAnnoPosition] = useState(0);
+
   // AV files are required in the Add Event form so we can safely
   // assume that one exists
   const [avFile, setAvFile] = useState(
     Object.keys(props.event.audiovisual_files)[0]
   );
 
-  // annotation search state
-  const [search, setSearch] = useState('');
+  const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
+  const [editUuid, setEditUuid] = useState<null | string>(null);
+  const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
+  const [showAnnoCreateModal, setShowAnnoCreateModal] = useState(false);
 
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const annoFile = useMemo(
+    () =>
+      Object.keys(props.project.annotations).find((uuid) => {
+        const match = props.project.annotations[uuid];
 
-  // position of the most recently clicked annotation
-  const [annoPosition, setAnnoPosition] = useState(0);
+        return match.event_id === props.uuid && match.source_id === avFile;
+      }),
+    [props.project, props.uuid, avFile]
+  );
+
+  const [allAnnotations, setAllAnnotations] = useState(
+    getAnnotations(props.project, annoFile)
+  );
+
+  const [filteredAnnotations, setFilteredAnnotations] =
+    useState(allAnnotations);
+
+  const onSearch = useCallback(
+    (search: string) => {
+      setFilteredAnnotations(searchAnnotations(allAnnotations, search));
+    },
+    [allAnnotations]
+  );
+
+  // reset the annotation list when the user switches AV files
+  useEffect(() => {
+    const newAnnos = getAnnotations(props.project, annoFile);
+    setAllAnnotations(newAnnos);
+  }, [avFile, props.project, annoFile]);
+
+  // reset the filter state when the full anno list changes
+  useEffect(() => {
+    setFilteredAnnotations(allAnnotations);
+  }, [allAnnotations]);
 
   const { lang, t } = props.i18n;
 
-  const annotations = useMemo(() => {
-    const match = Object.keys(props.project.annotations).find((uuid) => {
-      const annoFile = props.project.annotations[uuid];
-
-      return annoFile.event_id === props.uuid && annoFile.source_id === avFile;
-    });
-
-    if (match) {
-      const annos = props.project.annotations[match].annotations;
-
-      annos.sort((a, b) => {
-        if (a.start_time > b.start_time) {
-          return 1;
-        } else if (a.start_time < b.start_time) {
-          return -1;
-        } else {
-          return 0;
-        }
-      });
-
-      if (search) {
-        return annos.filter((anno) => {
-          // since annos are rich text, we have to grab the plain text
-          // from them in order to search
-          const plainTextAnno = anno.annotation
-            .map((n) => Node.string(n))
-            .join('\n')
-            .toLowerCase();
-          return plainTextAnno.includes(search.toLowerCase());
-        });
-      } else {
-        return annos;
-      }
-    } else {
-      return [];
-    }
-  }, [props.project, search, avFile]);
+  const baseUrl = useMemo(
+    () =>
+      `/api/projects/${props.projectSlug}/events/${props.uuid}/annotations/${annoFile}`,
+    [props.projectSlug, props.uuid, annoFile]
+  );
 
   const tagGroups = useMemo(() => {
     const obj: { [key: string]: string } = {};
@@ -99,8 +179,75 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
   return (
     <>
-      {/* todo: edit/delete modals */}
-      {showDeleteModal && (
+      {deleteUuid && (
+        <DeleteModal
+          name={t['Annotation']}
+          i18n={props.i18n}
+          onDelete={async () => {
+            const res = await fetch(
+              `/api/projects/${props.projectSlug}/events/${props.uuid}/annotations/${annoFile}/${deleteUuid}`,
+              {
+                method: 'DELETE',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            if (res.ok) {
+              // remove the annotation from view without reloading
+              const body: AnnotationPage = await res.json();
+
+              setAllAnnotations(sortAnnotations(body.annotations));
+
+              setDeleteUuid(null);
+            }
+          }}
+          onCancel={() => setDeleteUuid(null)}
+        />
+      )}
+      {editUuid && (
+        <AnnotationModal
+          annotation={filteredAnnotations.find((ann) => ann.uuid === editUuid)}
+          onClose={() => setEditUuid(null)}
+          onSubmit={async (body) => {
+            const newAnno = await onSubmitEdit(body, baseUrl);
+
+            if (newAnno) {
+              setAllAnnotations(
+                allAnnotations.map((ann) =>
+                  ann.uuid === newAnno.uuid ? newAnno : ann
+                )
+              );
+            }
+
+            setEditUuid(null);
+          }}
+          i18n={props.i18n}
+          title={t['Edit Annotation']}
+          project={props.project}
+        />
+      )}
+      {showAnnoCreateModal && (
+        <AnnotationModal
+          onClose={() => setShowAnnoCreateModal(false)}
+          onSubmit={async (body) => {
+            const newAnno = await onSubmitAdd(body, baseUrl);
+
+            if (newAnno) {
+              setAllAnnotations(
+                sortAnnotations(allAnnotations.concat(newAnno))
+              );
+            }
+
+            setShowAnnoCreateModal(false);
+          }}
+          i18n={props.i18n}
+          title={t['Add Annotation']}
+          project={props.project}
+        />
+      )}
+      {showEventDeleteModal && (
         <DeleteEventModal
           annotations={props.project.annotations}
           eventUuid={props.uuid}
@@ -108,7 +255,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           onAfterSave={() =>
             (window.location.pathname = `/${lang}/projects/${props.projectSlug}`)
           }
-          onCancel={() => setShowDeleteModal(false)}
+          onCancel={() => setShowEventDeleteModal(false)}
           projectSlug={props.projectSlug}
         />
       )}
@@ -148,7 +295,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               </a>
               <Button
                 className='event-detail-button delete-button'
-                onClick={() => setShowDeleteModal(true)}
+                onClick={() => setShowEventDeleteModal(true)}
                 type='button'
               >
                 <Trash />
@@ -214,7 +361,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               <div className='formic-form-field'>
                 <input
                   className='searchbox formic-form-text'
-                  onChange={(ev) => setSearch(ev.target.value)}
+                  onChange={(ev) => onSearch(ev.target.value)}
                   type='text'
                 />
                 <MagnifyingGlassIcon />
@@ -227,7 +374,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                 <FileEarmarkArrowUp />
                 {t['import']}
               </Button>
-              <Button className='primary'>
+              <Button
+                className='primary'
+                onClick={() => setShowAnnoCreateModal(true)}
+              >
                 <PlusIcon />
                 {t['Add']}
               </Button>
@@ -251,14 +401,14 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               </Table.Row>
             </Table.Header>
             <Table.Body>
-              {annotations.length === 0 && (
+              {filteredAnnotations.length === 0 && (
                 <Table.Row>
                   <Table.Cell colSpan={4} className='empty-annos-note'>
                     <p>{t['No annotations have been added.']}</p>
                   </Table.Cell>
                 </Table.Row>
               )}
-              {annotations.map((an) => (
+              {filteredAnnotations.map((an) => (
                 <Table.Row className='annotation-table-row' key={an.uuid}>
                   <Table.Cell
                     className='annotation-data-cell timestamp-cell'
@@ -300,12 +450,12 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                           {
                             label: t['Edit'],
                             icon: Pencil2Icon,
-                            onClick: () => {},
+                            onClick: () => setEditUuid(an.uuid),
                           },
                           {
                             label: t['Delete'],
                             icon: Trash,
-                            onClick: () => {},
+                            onClick: () => setDeleteUuid(an.uuid),
                           },
                         ]}
                         row={t}

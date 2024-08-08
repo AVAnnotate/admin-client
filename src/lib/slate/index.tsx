@@ -2,7 +2,7 @@ import {
   EmbeddedEvent,
   EmbeddedEventComparison,
 } from '@components/EmbeddedEvent/index.ts';
-import { Node, Text } from 'slate';
+import { Node, Text, type Descendant } from 'slate';
 
 export const Element = ({
   attributes,
@@ -162,3 +162,10 @@ export const serialize = (nodes: Node[]) => {
     return <Element element={node} key={idx} />;
   });
 };
+
+export const emptyParagraph: Descendant[] = [
+  {
+    type: 'paragraph',
+    children: [{ text: '' }],
+  },
+];

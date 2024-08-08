@@ -8,7 +8,12 @@ import type {
   ProviderUser,
   TagGroup,
   Tag,
+  AnnotationEntry,
 } from '@ty/Types.ts';
+
+export type apiAnnotationPost = Omit<AnnotationEntry, 'uuid'>;
+
+export type apiAnnotationPut = Omit<AnnotationEntry, 'uuid'>;
 
 export type apiProjectsProjectNamePost = {
   templateRepo: string;

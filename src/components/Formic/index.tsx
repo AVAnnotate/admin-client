@@ -9,6 +9,7 @@ import { SearchUsers } from '@components/SearchUsers/index.ts';
 import { SlateInput } from './SlateInput/index.ts';
 import * as Switch from '@radix-ui/react-switch';
 import { CheckIcon } from '@radix-ui/react-icons';
+import type { ElementTypes } from '@ty/slate.ts';
 
 export const Required = () => {
   return <div className='formic-form-required'>*</div>;
@@ -64,6 +65,7 @@ export const TextInput = (props: TextInputProps) => {
 };
 
 interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
+  elementTypes: ElementTypes[];
   initialValue?: any;
   name: string;
   i18n: Translations;
@@ -88,6 +90,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
         </div>
       )}
       <SlateInput
+        elementTypes={props.elementTypes}
         onChange={(data) => setFieldValue(props.name, data)}
         i18n={props.i18n}
         initialValue={(values as any)[props.name] || props.initialValue}
@@ -137,7 +140,6 @@ export const TimeInput = (props: TimeInputProps) => {
       if (hours < 24) {
         const totalSeconds = seconds + minutes * 60 + hours * 3600;
         setDisplay(valueToDisplay(totalSeconds));
-        // setDisplay(`${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`)
 
         props.onChange(totalSeconds);
       }
