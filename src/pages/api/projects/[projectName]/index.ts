@@ -27,7 +27,7 @@ export const POST: APIRoute = async ({
   redirect,
 }) => {
   if (request.headers.get('Content-Type') === 'application/json') {
-    const token = cookies.get('access-token')?.json();
+    const token = cookies.get('access-token');
 
     // Get the user info
     const info = await userInfo(cookies);

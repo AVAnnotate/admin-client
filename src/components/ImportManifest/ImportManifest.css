@@ -1,0 +1,24 @@
+.import-mani-container {
+  margin-top: 32px;
+}
+
+.import-mani-url-label {
+  display: flex;
+  flex-direction: row;
+}
+
+.import-mani-required {
+  color: red;
+}
+
+.import-mani-url-input-container {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
+
+.import-mani-url-input {
+  width: 575px;
+  margin-top: 10px;
+  margin-right: 10px;
+}

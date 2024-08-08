@@ -6,13 +6,15 @@ import type { Node } from 'slate';
 // @ts-ignore
 import { JSDOM } from 'jsdom';
 
-export const importIIIFManifest = (manifest: string) => {
+export type ImportManifestResults = {
+  events: { id: string; event: Event }[];
+  annotations: { id: string; annotation: AnnotationPage }[];
+};
+
+export const importIIIFManifest = (manifest: string, userName: string) => {
   const mani: IIIFPresentationManifest = JSON.parse(manifest);
 
-  const result: {
-    events: { id: string; event: Event }[];
-    annotations: { id: string; annotation: AnnotationPage }[];
-  } = {
+  const result: ImportManifestResults = {
     events: [],
     annotations: [],
   };
@@ -30,6 +32,7 @@ export const importIIIFManifest = (manifest: string) => {
     const avFiles: { [key: string]: any } = {};
     const eventId = uuidv4();
     const sourceId = uuidv4();
+    let avType = 'Audio';
     annoPages.forEach((a) => {
       if (a.items) {
         a.items.forEach((i) => {
@@ -40,6 +43,7 @@ export const importIIIFManifest = (manifest: string) => {
           ) {
             if (typeof i.body === 'object') {
               const b: IIIFResource = i.body as IIIFResource;
+              avType = b.type;
               avFiles[sourceId] = {
                 label: '',
                 file_url: b.id,
@@ -48,6 +52,7 @@ export const importIIIFManifest = (manifest: string) => {
             } else {
               const ba: IIIFResource[] = i.body as IIIFResource[];
               ba.forEach((b) => {
+                avType = b.type;
                 avFiles[sourceId] = {
                   label: '',
                   file_url: b.id,
@@ -76,11 +81,11 @@ export const importIIIFManifest = (manifest: string) => {
         ],
         citation: undefined,
         created_at: new Date().toISOString(),
-        created_by: '',
-        item_type: 'Audio',
-        label: 'S1576, T86-243',
+        created_by: userName,
+        item_type: avType === 'Video' ? 'Video' : 'Audio',
+        label: `Imported Event ${result.events.length + 1}`,
         updated_at: new Date().toISOString(),
-        updated_by: '',
+        updated_by: userName,
       },
     });
 

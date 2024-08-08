@@ -7,6 +7,7 @@ import type React from 'react';
 import { useCallback, useState } from 'react';
 import './NewEvent.css';
 import { ImportForm } from '@components/ImportForm/ImportForm.tsx';
+import { ImportManifest } from '@components/ImportManifest/ImportManifest.tsx';
 
 interface Props {
   i18n: Translations;
@@ -76,11 +77,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
             name='auto_generate_web_page'
           />
         </EventForm>
-        <ImportForm
-          i18n={i18n}
-          onSubmit={(data) => console.log(data)}
-          styles={{ display: tab === 1 ? 'initial' : 'none' }}
-        />
+        {tab === 1 && <ImportManifest i18n={i18n} projectSlug={projectSlug} />}
       </div>
     </>
   );

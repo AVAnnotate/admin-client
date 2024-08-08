@@ -10,6 +10,7 @@ import type {
   Tag,
   AnnotationEntry,
 } from '@ty/Types.ts';
+import type { Node } from 'slate';
 
 export type apiAnnotationPost = Omit<AnnotationEntry, 'uuid'>;
 
@@ -80,4 +81,15 @@ export type apiProjectPut = {
   description: string;
   media_player: MediaPlayer;
   title: string;
+};
+
+export type apiAnalyzeManifest = {
+  manifest_url: string;
+};
+
+export type apiImportManifest = {
+  manifest_url: string;
+  description: Node[];
+  auto_generate_web_page: boolean;
+  event_ids?: string[];
 };
