@@ -70,11 +70,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 };
 
 export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
-  const { uuid, projectName } = params;
+  const { eventUuid, projectName } = params;
 
   const { token, info } = await setup(cookies);
 
-  if (!token || !info || !projectName || !uuid) {
+  if (!token || !info || !projectName || !eventUuid) {
     return redirect('/', 307);
   }
 
@@ -87,15 +87,24 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     userInfo: info as UserInfo,
   });
 
-  const filepath = `/data/events/${uuid}.json`;
+  const filepath = `/data/events/${eventUuid}.json`;
 
   const annotationFiles = readDir('/data/annotations');
 
   // we need to delete corresponding annotation files too
   const matchingAnnoFiles = annotationFiles.filter((filepath) => {
     const contents = readFile(`/data/annotations/${filepath}`);
-    const parsed: Annotation = JSON.parse(contents as string);
-    if (parsed.event_id === uuid) {
+    let parsed;
+
+    try {
+      parsed = JSON.parse(contents as string);
+    } catch (e) {
+      console.log(
+        `Error parsing annotation file ${filepath} as JSON. Skipping.`
+      );
+    }
+
+    if (parsed && parsed.event_id === eventUuid) {
       return true;
     }
   });
@@ -106,7 +115,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   await deleteFile(filepath);
 
-  const successCommit = await commitAndPush(`Deleted event ${uuid}`);
+  const successCommit = await commitAndPush(`Deleted event ${eventUuid}`);
 
   if (successCommit.error) {
     console.error('Failed to delete event: ', successCommit.error);
