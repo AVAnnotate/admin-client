@@ -8,6 +8,7 @@ import { ConfirmationDialog } from '@components/ConfirmedAction/index.ts';
 import { useMemo, useState, useEffect } from 'react';
 import { Dialog } from '@radix-ui/react-dialog';
 import { EditTagDialog } from './EditTagDialog/EditTagDialog.tsx';
+import { AddTagGroupDialog } from './AddTagGroupDialog/AddTagGroupDialog.tsx';
 
 export interface TagGroupCardProps {
   i18n: Translations;
@@ -44,6 +45,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
   const [confirmTarget, setConfirmTarget] = useState<Tag | undefined>();
   const [updateTarget, setUpdateTarget] = useState<Tag | undefined>();
   const [editOpen, setEditOpen] = useState(false);
+  const [groupEditOpen, setGroupEditOpen] = useState(false);
   const [group, setGroup] = useState<string | undefined>();
 
   const color = props.tagGroup!.color;
@@ -60,7 +62,14 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
 
   const HandleEditGroup = () => {
     if (props.onUpdateGroup) {
-      setEditOpen(true);
+      setGroupEditOpen(true);
+    }
+  };
+
+  const handleUpdateGroup = (group: TagGroup) => {
+    if (props.onUpdateGroup) {
+      setGroupEditOpen(false);
+      props.onUpdateGroup(group);
     }
   };
 
@@ -223,6 +232,15 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
           }
           availableGroups={availableGroups}
           onChangeGroup={setGroup}
+        />
+      )}
+      {groupEditOpen && props.tags && (
+        <AddTagGroupDialog
+          i18n={props.i18n}
+          open={groupEditOpen}
+          onClose={() => setGroupEditOpen(false)}
+          onSave={handleUpdateGroup}
+          tags={{ tagGroups: props.tagGroup }}
         />
       )}
     </>
