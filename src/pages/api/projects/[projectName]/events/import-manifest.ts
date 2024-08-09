@@ -6,6 +6,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { UserInfo, Event, ProjectData } from '@ty/Types.ts';
+import { emptyParagraph } from '@lib/slate/index.tsx';
 
 // Create a new event
 export const POST: APIRoute = async ({
@@ -75,12 +76,7 @@ export const POST: APIRoute = async ({
           const eventPath = `/data/events/${eventRec.id}.json`;
           const event: Event = {
             ...eventRec.event,
-            description: body.description || [
-              {
-                type: 'paragraph',
-                children: [{ text: '' }],
-              },
-            ],
+            description: body.description || emptyParagraph,
             auto_generate_web_page: body.auto_generate_web_page,
           };
           await writeFile(eventPath, JSON.stringify(event));
