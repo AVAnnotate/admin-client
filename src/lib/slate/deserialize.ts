@@ -1,5 +1,4 @@
 import { jsx } from 'slate-hyperscript';
-// @ts-ignore
 import { JSDOM } from 'jsdom';
 
 const Node = new JSDOM('').window.Node;
