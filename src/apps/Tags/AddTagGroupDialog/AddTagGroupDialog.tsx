@@ -20,6 +20,8 @@ export interface AddTagGroupDialogProps {
 
   onSave(group: TagGroup): void;
 
+  onUpdate(oldGroup: TagGroup, newGroup: TagGroup): void;
+
   onClose(): void;
 }
 
@@ -31,7 +33,9 @@ export const AddTagGroupDialog = (props: AddTagGroupDialogProps) => {
 
   useEffect(() => {
     if (props.name) {
-      setName(props.name);
+      setName(
+        props.name === '_uncategorized_' ? t['Uncategorized'] : props.name
+      );
     } else {
       setName(undefined);
     }
@@ -58,6 +62,16 @@ export const AddTagGroupDialog = (props: AddTagGroupDialogProps) => {
       color: color as string,
       category: name as string,
     });
+  };
+
+  const handleUpdate = () => {
+    props.onUpdate(
+      { color: props.color as string, category: props.name as string },
+      {
+        color: color as string,
+        category: name as string,
+      }
+    );
   };
 
   return (
@@ -111,9 +125,9 @@ export const AddTagGroupDialog = (props: AddTagGroupDialogProps) => {
                 !color ||
                 color.length === 0
               }
-              onClick={handleSave}
+              onClick={props.name ? handleUpdate : handleSave}
             >
-              {t['Create']}
+              {props.name ? t['Update'] : t['Create']}
             </button>
           </div>
           <button
