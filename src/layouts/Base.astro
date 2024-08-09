@@ -66,7 +66,6 @@ const { title } = Astro.props;
     </style>
     <script is:inline>
       document.addEventListener('astro:before-preparation', (ev) => {
-        console.log('Here-');
         const originalLoader = ev.loader;
         ev.loader = async function () {
           const elOverlay = document.getElementById('page-loader-overlay');

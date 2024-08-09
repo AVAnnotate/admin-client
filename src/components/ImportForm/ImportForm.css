@@ -2,6 +2,16 @@
   margin-bottom: 100px;
 }
 
+.import-form-divider {
+  width: 100%;
+  border-top: 1px solid var(--gray-300);
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+
+.import-form-description {
+  margin-bottom: 10px;
+}
 .import-form .bottom-bar-flex {
   width: 100%;
   display: flex;
@@ -20,4 +30,31 @@
 
 .import-form .bottom-bar-flex .cancel-button {
   width: 176px;
+}
+
+.import-form-event-header {
+  display: flex;
+  flex-direction: row;
+}
+
+.import-form-required {
+  color: red;
+}
+
+.import-form-event-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.import-form-event-list-divider {
+  width: 100%;
+  border-top: 1px solid var(--gray-300);
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.import-form-event-list {
+  margin-top: 8px;
 }

@@ -118,7 +118,7 @@ interface TimeInputProps {
 
 export const TimeInput = (props: TimeInputProps) => {
   const valueToDisplay = useCallback((seconds: number) => {
-    return new Date(seconds * 1000).toISOString().slice(11, 19);
+    return new Date((seconds || 0) * 1000).toISOString().slice(11, 19);
   }, []);
 
   const [display, setDisplay] = useState(valueToDisplay(props.initialValue));

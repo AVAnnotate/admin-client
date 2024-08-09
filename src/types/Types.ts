@@ -177,6 +177,7 @@ export type DropdownOption = {
 export type AnnotationPage = {
   event_id: string;
   source_id: string;
+  set: string;
   annotations: AnnotationEntry[];
 };
 

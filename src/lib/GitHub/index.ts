@@ -253,7 +253,6 @@ export const searchUsers = async (
     // `lorin jameson in:name in:login type:user&per_page=10`
   );
   const url = `https://api.github.com/search/users?q=${encode}`;
-  //console.log(url);
   return await fetch(url, {
     method: 'GET',
     headers: {
