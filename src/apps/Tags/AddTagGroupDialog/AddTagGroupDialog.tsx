@@ -120,7 +120,8 @@ export const AddTagGroupDialog = (props: AddTagGroupDialogProps) => {
               disabled={
                 !name ||
                 name.length === 0 ||
-                existingGroups.includes(name.toLocaleLowerCase()) ||
+                (!props.name &&
+                  existingGroups.includes(name.toLocaleLowerCase())) ||
                 name === '_uncategorized_' ||
                 !color ||
                 color.length === 0

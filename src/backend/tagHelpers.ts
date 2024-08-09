@@ -127,31 +127,32 @@ export const updateTagGroup = async (
     return undefined;
   }
 
-  const resultRegroup = await regroupTags(
-    oldGroup.category,
-    newGroup.category,
-    context
-  );
-
-  if (resultRegroup) {
-    const result = await writeFile(
-      '/data/project.json',
-      JSON.stringify(project)
+  // No need to update tags ir only the color changed
+  if (oldGroup.category !== newGroup.category) {
+    const resultRegroup = await regroupTags(
+      oldGroup.category,
+      newGroup.category,
+      context
     );
-
-    if (!result) {
+    if (!resultRegroup) {
       return undefined;
     }
+  }
 
-    buildProjectData(project, context);
+  const result = await writeFile('/data/project.json', JSON.stringify(project));
 
-    const resPush = await commitAndPush(
-      `Updating Tag Group ${oldGroup.category} to ${newGroup.category}`
-    );
+  if (!result) {
+    return undefined;
+  }
 
-    if (resPush.ok) {
-      return project;
-    }
+  buildProjectData(project, context);
+
+  const resPush = await commitAndPush(
+    `Updating Tag Group ${oldGroup.category} to ${newGroup.category}`
+  );
+
+  if (resPush.ok) {
+    return project;
   }
 
   return undefined;
