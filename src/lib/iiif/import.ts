@@ -104,10 +104,6 @@ export const importIIIFManifest = async (
         const annoFileId = uuidv4();
         const annotations: AnnotationEntry[] = [];
         const label = a.label && a.label.en ? a.label.en[0] : 'default';
-        const baseTag = {
-          category: '_annotation_sets_',
-          tag: label,
-        };
         let anno: IIIFAnnotationPage | undefined = undefined;
         if (a.id.endsWith('.json')) {
           const annoResult = await fetch(a.id);
@@ -119,18 +115,8 @@ export const importIIIFManifest = async (
         }
         if (anno) {
           anno.items?.forEach((i) => {
-            let setTags: Tag[] = [baseTag];
-            if (i.type === 'AnnotationPage') {
-              const pageLabel =
-                anno.label && anno.label.en ? anno.label.en[0] : 'default';
-              setTags = [
-                ...setTags,
-                {
-                  category: '_annotation_sets_',
-                  tag: pageLabel,
-                },
-              ];
-            } else if (i.type === 'Annotation') {
+            let setTags: Tag[] = [];
+            if (i.type === 'Annotation') {
               const timesRef =
                 typeof i.target === 'string'
                   ? i.target.split('#t=')

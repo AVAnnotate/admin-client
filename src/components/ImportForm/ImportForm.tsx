@@ -42,7 +42,13 @@ const DescriptionInput = (props: DescriptionInputProps) => {
     setValue(data);
   };
 
-  return <SlateInput onChange={handleChange} i18n={props.i18n} />;
+  return (
+    <SlateInput
+      onChange={handleChange}
+      i18n={props.i18n}
+      elementTypes={['blocks', 'marks']}
+    />
+  );
 };
 
 type EventSelectProps = {
