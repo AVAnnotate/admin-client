@@ -35,7 +35,7 @@ export const POST: APIRoute = async ({
     if (dataResp.ok) {
       const data = await dataResp.json();
 
-      const results = importIIIFManifest(
+      const results = await importIIIFManifest(
         JSON.stringify(data),
         info.profile.gitHubName as string
       );
@@ -52,7 +52,15 @@ export const POST: APIRoute = async ({
 
       for (let i = 0; i < results.events.length; i++) {
         const eventRec = results.events[i];
-        if (!body.event_ids || body.event_ids.includes(eventRec.id)) {
+        console.log(
+          `Event id: ${eventRec.id}, includes: ${body.event_labels?.includes(
+            eventRec.event.label
+          )}`
+        );
+        if (
+          !body.event_labels ||
+          body.event_labels.includes(eventRec.event.label)
+        ) {
           const eventPath = `/data/events/${eventRec.id}.json`;
           const event: Event = {
             ...eventRec.event,

@@ -1,18 +1,19 @@
-import { TextInput, ToggleInput } from '@components/Formic/index.tsx';
+import { ToggleInput } from '@components/Formic/index.tsx';
 import { SlateInput } from '@components/Formic/SlateInput/SlateInput.tsx';
 import type { Event, Translations } from '@ty/Types.ts';
 import { Form, Formik, useField, useFormikContext } from 'formik';
 import type React from 'react';
-import { Button } from '@radix-ui/themes';
-import './ImportForm.css';
+import { Button, Checkbox } from '@radix-ui/themes';
 import { BottomBar } from '@components/BottomBar/index.ts';
+import { Node } from 'slate';
+import './ImportForm.css';
 
 interface Props {
   i18n: Translations;
   styles?: { [key: string]: any };
   onSubmit: (data: any) => any;
   manifestURL: string;
-  events: Event[];
+  events: { id: string; event: Event }[];
 }
 
 export const ImportForm: React.FC<Props> = (props) => {
@@ -20,6 +21,7 @@ export const ImportForm: React.FC<Props> = (props) => {
     manifest_url: props.manifestURL,
     description: null,
     auto_generate_web_page: true,
+    event_labels: [],
   };
   return (
     <Formik initialValues={initialValues} onSubmit={props.onSubmit}>
@@ -41,6 +43,64 @@ const DescriptionInput = (props: DescriptionInputProps) => {
   };
 
   return <SlateInput onChange={handleChange} i18n={props.i18n} />;
+};
+
+type EventSelectProps = {
+  i18n: Translations;
+
+  events: { id: string; event: Event }[];
+};
+const EventSelect = (props: EventSelectProps) => {
+  const [field, meta, helpers] = useField('event_labels');
+  const { value } = meta;
+  const { setValue } = helpers;
+
+  const { t } = props.i18n;
+
+  const handleChange = (label: string, checked: boolean) => {
+    if (label === 'all') {
+      checked ? setValue(props.events.map((e) => e.event.label)) : setValue([]);
+    } else {
+      checked
+        ? setValue([...value, label])
+        : setValue(value.filter((v: string) => v !== label));
+    }
+  };
+
+  return (
+    <>
+      <div className='import-form-event-header'>
+        <div className='av-label-bold'>{t['Events']}</div>
+        <div className='import-form-required' />
+      </div>
+      <div className='av-label'>
+        {t['Select which canvas or canvases you would like to add as events.']}
+      </div>
+      <div className='import-form-event-list'>
+        <div className='import-form-event-row'>
+          <Checkbox
+            checked={value.length === props.events.length}
+            onCheckedChange={(checked) =>
+              handleChange('all', checked as boolean)
+            }
+          />
+          <div className='av-label'>{['Select All']}</div>
+        </div>
+        <div className='import-form-event-list-divider' />
+        {props.events.map((e) => (
+          <div className='import-form-event-row' key={e.event.label}>
+            <Checkbox
+              checked={value.includes(e.event.label)}
+              onCheckedChange={(checked) =>
+                handleChange(e.event.label, checked as boolean)
+              }
+            />
+            <div className='av-label'>{e.event.label}</div>
+          </div>
+        ))}
+      </div>
+    </>
+  );
 };
 
 const FormContents: React.FC<Props> = (props) => {
@@ -66,7 +126,9 @@ const FormContents: React.FC<Props> = (props) => {
             />
           </>
         ) : (
-          <div />
+          <>
+            <EventSelect i18n={props.i18n} events={props.events} />
+          </>
         )}
       </div>
       <BottomBar>

@@ -121,7 +121,7 @@ export const ImportManifest = (props: ImportManifestProps) => {
         {manifestUrl && valid && analysis && (
           <ImportForm
             i18n={props.i18n}
-            events={analysis.events.map((e) => e.event)}
+            events={analysis.events}
             manifestURL={manifestUrl}
             onSubmit={handleSubmit}
           />

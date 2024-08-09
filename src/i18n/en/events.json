@@ -39,5 +39,7 @@
   "Manifest Analysis failed": "Manifest Analysis failed",
   "Analysis complete": "Analysis complete",
   "Manifest import failed": "Manifest import failed",
-  "Import complete": "Import complete"
+  "Import complete": "Import complete",
+  "Select which canvas or canvases you would like to add as events.": "Select which canvas or canvases you would like to add as events.",
+  "Events": "Events"
 }

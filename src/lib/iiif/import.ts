@@ -1,4 +1,9 @@
-import type { IIIFPresentationManifest, IIIFResource } from '@ty/iiif.ts';
+import type {
+  IIIFAnnotationItem,
+  IIIFAnnotationPage,
+  IIIFPresentationManifest,
+  IIIFResource,
+} from '@ty/iiif.ts';
 import type { AnnotationEntry, AnnotationPage, Event, Tag } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { deserialize } from '@lib/slate/deserialize.ts';
@@ -11,7 +16,10 @@ export type ImportManifestResults = {
   annotations: { id: string; annotation: AnnotationPage }[];
 };
 
-export const importIIIFManifest = (manifest: string, userName: string) => {
+export const importIIIFManifest = async (
+  manifest: string,
+  userName: string
+) => {
   const mani: IIIFPresentationManifest = JSON.parse(manifest);
 
   const result: ImportManifestResults = {
@@ -26,21 +34,19 @@ export const importIIIFManifest = (manifest: string, userName: string) => {
   const canvases = items.filter((i) => i.type === 'Canvas');
 
   // For each canvas create an event
-  canvases.forEach((c) => {
+  for (let w = 0; w < canvases.length; w++) {
+    const c = canvases[w];
     const label = c.label && c.label.en ? c.label.en[0] : '';
     const annoPages = c.items.filter((i) => i.type === 'AnnotationPage');
     const avFiles: { [key: string]: any } = {};
     const eventId = uuidv4();
     const sourceId = uuidv4();
     let avType = 'Audio';
-    annoPages.forEach((a) => {
-      if (a.items) {
+    for (let q = 0; q < annoPages.length; q++) {
+      const a = annoPages[q];
+      if (a && a.items) {
         a.items.forEach((i) => {
-          if (
-            i.type === 'Annotation' &&
-            i.motivation === 'painting' &&
-            i.body
-          ) {
+          if (i.type === 'Annotation') {
             if (typeof i.body === 'object') {
               const b: IIIFResource = i.body as IIIFResource;
               avType = b.type;
@@ -63,7 +69,7 @@ export const importIIIFManifest = (manifest: string, userName: string) => {
           }
         });
       }
-    });
+    }
     result.events.push({
       id: eventId,
       event: {
@@ -89,7 +95,8 @@ export const importIIIFManifest = (manifest: string, userName: string) => {
       },
     });
 
-    c.annotations.forEach((a) => {
+    for (let x = 0; x < c.annotations.length; x++) {
+      const a = c.annotations[x];
       if (a.type === 'AnnotationPage') {
         const annoFileId = uuidv4();
         const annotations: AnnotationEntry[] = [];
@@ -98,57 +105,69 @@ export const importIIIFManifest = (manifest: string, userName: string) => {
           category: '_annotation_sets_',
           tag: label,
         };
-        a.items?.forEach((i) => {
-          let setTags: Tag[] = [baseTag];
-          if (i.type === 'AnnotationPage') {
-            const pageLabel = a.label && a.label.en ? a.label.en[0] : 'default';
-            setTags = [
-              ...setTags,
-              {
-                category: '_annotation_sets_',
-                tag: pageLabel,
-              },
-            ];
-          } else if (i.type === 'Annotation') {
-            const timesRef =
-              typeof i.target === 'string'
-                ? i.target.split('#t=')
-                : i.target.source.id.split('#t=');
-            const times = timesRef[1] ? timesRef[1].split(',') : ['0', '0'];
-            const start = parseFloat(times[0]);
-            const end = times[1] ? parseFloat(times[1]) : undefined;
-            let nodes: Node[] = [];
-            let tags: Tag[] = [...setTags];
-            if (!Array.isArray(i.body)) {
-              const document = JSDOM.fragment(
-                `${(i.body as IIIFResource).value as string}`
-              );
-              nodes = deserialize(document);
-            } else {
-              (i.body as IIIFResource[]).forEach((b) => {
-                if (b.purpose === 'tagging') {
-                  tags.push({
-                    category: '_uncategorized_',
-                    tag: b.value as string,
-                  });
-                } else {
-                  const document = JSDOM.fragment(`${b.value as string}`);
-                  const res = deserialize(document);
-                  nodes = [...nodes, ...res];
-                  // console.log('nodes: ', nodes);
-                }
+        let anno: IIIFAnnotationPage | undefined = undefined;
+        if (a.id.endsWith('.json')) {
+          const annoResult = await fetch(a.id);
+          if (annoResult.ok) {
+            anno = await annoResult.json();
+          }
+        } else {
+          anno = a;
+        }
+        if (anno) {
+          anno.items?.forEach((i) => {
+            let setTags: Tag[] = [baseTag];
+            if (i.type === 'AnnotationPage') {
+              const pageLabel =
+                anno.label && anno.label.en ? anno.label.en[0] : 'default';
+              setTags = [
+                ...setTags,
+                {
+                  category: '_annotation_sets_',
+                  tag: pageLabel,
+                },
+              ];
+            } else if (i.type === 'Annotation') {
+              const timesRef =
+                typeof i.target === 'string'
+                  ? i.target.split('#t=')
+                  : i.target.source.id.split('#t=');
+              const times = timesRef[1] ? timesRef[1].split(',') : ['0', '0'];
+              const start = parseFloat(times[0]);
+              const end = times[1] ? parseFloat(times[1]) : undefined;
+              let nodes: Node[] = [];
+              let tags: Tag[] = [...setTags];
+              if (!Array.isArray(i.body)) {
+                const document = JSDOM.fragment(
+                  `${(i.body as IIIFResource).value as string}`
+                );
+                nodes = deserialize(document);
+              } else {
+                (i.body as IIIFResource[]).forEach((b) => {
+                  if (b.purpose === 'tagging') {
+                    tags.push({
+                      category: '_uncategorized_',
+                      tag: b.value as string,
+                    });
+                  } else {
+                    const document = JSDOM.fragment(`${b.value as string}`);
+                    const res = deserialize(document);
+                    nodes = [...nodes, ...res];
+                    // console.log('nodes: ', nodes);
+                  }
+                });
+              }
+              // console.log('Tags: ', tags);
+              annotations.push({
+                start_time: start,
+                end_time: end || start,
+                annotation: nodes,
+                tags: tags,
+                uuid: uuidv4(),
               });
             }
-            // console.log('Tags: ', tags);
-            annotations.push({
-              start_time: start,
-              end_time: end || start,
-              annotation: nodes,
-              tags: tags,
-              uuid: uuidv4(),
-            });
-          }
-        });
+          });
+        }
         result.annotations.push({
           id: annoFileId,
           annotation: {
@@ -158,8 +177,8 @@ export const importIIIFManifest = (manifest: string, userName: string) => {
           },
         });
       }
-    });
-  });
+    }
+  }
 
   return result;
 };

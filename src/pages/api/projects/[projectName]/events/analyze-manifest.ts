@@ -31,7 +31,7 @@ export const POST: APIRoute = async ({
     if (dataResp.ok) {
       const data = await dataResp.json();
 
-      const results = importIIIFManifest(
+      const results = await importIIIFManifest(
         JSON.stringify(data),
         info.profile.gitHubName as string
       );

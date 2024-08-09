@@ -91,5 +91,5 @@ export type apiImportManifest = {
   manifest_url: string;
   description: Node[];
   auto_generate_web_page: boolean;
-  event_ids?: string[];
+  event_labels?: string[];
 };
