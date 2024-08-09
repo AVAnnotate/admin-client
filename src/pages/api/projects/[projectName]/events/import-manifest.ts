@@ -53,9 +53,9 @@ export const POST: APIRoute = async ({
       for (let i = 0; i < results.events.length; i++) {
         const eventRec = results.events[i];
         console.log(
-          `Event id: ${eventRec.id}, includes: ${body.event_labels?.includes(
+          `Event id: ${
             eventRec.event.label
-          )}`
+          }, includes: ${body.event_labels?.includes(eventRec.event.label)}`
         );
         if (
           !body.event_labels ||
@@ -64,7 +64,12 @@ export const POST: APIRoute = async ({
           const eventPath = `/data/events/${eventRec.id}.json`;
           const event: Event = {
             ...eventRec.event,
-            description: body.description,
+            description: body.description || [
+              {
+                type: 'paragraph',
+                children: [{ text: '' }],
+              },
+            ],
             auto_generate_web_page: body.auto_generate_web_page,
           };
           await writeFile(eventPath, JSON.stringify(event));

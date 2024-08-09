@@ -1,6 +1,7 @@
 import type {
   IIIFAnnotationItem,
   IIIFAnnotationPage,
+  IIIFAnnotationTarget,
   IIIFPresentationManifest,
   IIIFResource,
 } from '@ty/iiif.ts';
@@ -47,7 +48,7 @@ export const importIIIFManifest = async (
       if (a && a.items) {
         a.items.forEach((i) => {
           if (i.type === 'Annotation') {
-            if (typeof i.body === 'object') {
+            if (!Array.isArray(i.body)) {
               const b: IIIFResource = i.body as IIIFResource;
               avType = b.type;
               avFiles[sourceId] = {
@@ -132,9 +133,20 @@ export const importIIIFManifest = async (
                 typeof i.target === 'string'
                   ? i.target.split('#t=')
                   : i.target.source.id.split('#t=');
-              const times = timesRef[1] ? timesRef[1].split(',') : ['0', '0'];
-              const start = parseFloat(times[0]);
-              const end = times[1] ? parseFloat(times[1]) : undefined;
+              let times = timesRef[1] ? timesRef[1].split(',') : undefined;
+              if (!times) {
+                // Is there a selector?
+                const selTarget = i.target as IIIFAnnotationTarget;
+                if (selTarget.selector) {
+                  if (selTarget.selector.type === 'PointSelector') {
+                    times = [selTarget.selector.t, selTarget.selector.t];
+                  } else {
+                    times = selTarget.selector.t.split(',');
+                  }
+                }
+              }
+              const start = parseFloat(times && times[0] ? times[0] : '0');
+              const end = times && times[1] ? parseFloat(times[1]) : undefined;
               let nodes: Node[] = [];
               let tags: Tag[] = [...setTags];
               if (!Array.isArray(i.body)) {
@@ -153,11 +165,9 @@ export const importIIIFManifest = async (
                     const document = JSDOM.fragment(`${b.value as string}`);
                     const res = deserialize(document);
                     nodes = [...nodes, ...res];
-                    // console.log('nodes: ', nodes);
                   }
                 });
               }
-              // console.log('Tags: ', tags);
               annotations.push({
                 start_time: start,
                 end_time: end || start,
