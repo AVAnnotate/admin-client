@@ -15,6 +15,7 @@ import { JSDOM } from 'jsdom';
 export type ImportManifestResults = {
   events: { id: string; event: Event }[];
   annotations: { id: string; annotation: AnnotationPage }[];
+  tags: string[];
 };
 
 export const importIIIFManifest = async (
@@ -26,6 +27,7 @@ export const importIIIFManifest = async (
   const result: ImportManifestResults = {
     events: [],
     annotations: [],
+    tags: [],
   };
 
   // Get the items
@@ -161,6 +163,9 @@ export const importIIIFManifest = async (
                       category: '_uncategorized_',
                       tag: b.value as string,
                     });
+                    if (result.tags.findIndex((t) => t === b.value) === -1) {
+                      result.tags.push(b.value as string);
+                    }
                   } else {
                     const document = JSDOM.fragment(`${b.value as string}`);
                     const res = deserialize(document);

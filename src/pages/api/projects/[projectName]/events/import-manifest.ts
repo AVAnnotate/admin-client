@@ -5,7 +5,7 @@ import { importIIIFManifest } from '@lib/iiif/import.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { UserInfo, Event } from '@ty/Types.ts';
+import type { UserInfo, Event, ProjectData } from '@ty/Types.ts';
 
 // Create a new event
 export const POST: APIRoute = async ({
@@ -43,12 +43,23 @@ export const POST: APIRoute = async ({
       // Create new event and annotation records
       const repositoryURL = getRepositoryUrl(projectName);
 
-      const { writeFile, commitAndPush } = await gitRepo({
+      const { writeFile, readFile, commitAndPush } = await gitRepo({
         fs: initFs(),
         repositoryURL,
         branch: 'main',
         userInfo: info as UserInfo,
       });
+
+      const projectStr = readFile('/data/project.json');
+
+      if (!projectStr) {
+        return new Response(null, {
+          status: 400,
+          statusText: 'No project file found',
+        });
+      }
+
+      const project: ProjectData = JSON.parse(projectStr as string);
 
       for (let i = 0; i < results.events.length; i++) {
         const eventRec = results.events[i];
@@ -83,6 +94,33 @@ export const POST: APIRoute = async ({
             }
           }
         }
+      }
+
+      if (results.tags.length > 0) {
+        // Add any new tags
+        if (
+          project.project.tags.tagGroups.findIndex(
+            (g) => g.category === '_uncategorized_'
+          ) === -1
+        ) {
+          project.project.tags?.tagGroups.push({
+            color: '#A3A3A3',
+            category: '_uncategorized_',
+          });
+        }
+
+        results.tags.forEach((t) => {
+          if (
+            project.project.tags.tags.findIndex((tg) => tg.tag === t) === -1
+          ) {
+            project.project.tags.tags.push({
+              category: '_uncategorized_',
+              tag: t,
+            });
+          }
+        });
+
+        await writeFile('/data/project.json', JSON.stringify(project));
       }
 
       const successCommit = await commitAndPush(
