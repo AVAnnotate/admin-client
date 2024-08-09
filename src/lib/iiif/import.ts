@@ -54,7 +54,7 @@ export const importIIIFManifest = async (
               avFiles[sourceId] = {
                 label: '',
                 file_url: b.id,
-                duration: b.duration,
+                duration: b.duration || 0,
               };
             } else {
               const ba: IIIFResource[] = i.body as IIIFResource[];
@@ -63,7 +63,7 @@ export const importIIIFManifest = async (
                 avFiles[sourceId] = {
                   label: '',
                   file_url: b.id,
-                  duration: b.duration,
+                  duration: b.duration || 0,
                 };
               });
             }
