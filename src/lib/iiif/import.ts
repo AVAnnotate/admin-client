@@ -183,6 +183,7 @@ export const importIIIFManifest = async (
           annotation: {
             event_id: eventId,
             source_id: sourceId,
+            set: label,
             annotations: annotations,
           },
         });
