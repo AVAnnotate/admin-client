@@ -13,7 +13,6 @@ import {
   getDirData,
   buildProjectData,
 } from '@backend/projectHelpers.ts';
-import { P } from 'dist/_astro/index.CHLTUZd1.js';
 
 export const createTagGroup = async (
   htmlUrl: string,
