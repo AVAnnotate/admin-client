@@ -71,6 +71,7 @@ export const POST: APIRoute = async ({
         );
         if (
           !body.event_labels ||
+          body.event_labels.length === 0 ||
           body.event_labels.includes(eventRec.event.label)
         ) {
           const eventPath = `/data/events/${eventRec.id}.json`;
