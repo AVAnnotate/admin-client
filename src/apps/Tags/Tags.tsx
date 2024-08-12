@@ -138,6 +138,44 @@ export const Tags = (props: TagsProps) => {
       });
   };
 
+  const handleUpdateTagGroup = async (
+    oldGroup: TagGroup,
+    newGroup: TagGroup
+  ) => {
+    setAddOpen(false);
+    setSaving(true);
+    return fetch(`/api/projects/${props.projectSlug}/tag-groups`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ oldTagGroup: oldGroup, newTagGroup: newGroup }),
+    })
+      .then((data) => {
+        if (data.ok) {
+          setToast({
+            title: t['Success!'],
+            description: t['Tag group saved'],
+            type: 'success',
+          });
+          return data.json();
+        } else {
+          setToast({
+            title: t['Problem!'],
+            description: t['Tag group not saved'],
+            type: 'error',
+          });
+          return undefined;
+        }
+      })
+      .then((p) => {
+        if (p) {
+          setProject(p.project);
+        }
+        setSaving(false);
+      });
+  };
+
   const handleImportTags = async (
     data: any[],
     headerMap: { [key: string]: number }
@@ -347,6 +385,7 @@ export const Tags = (props: TagsProps) => {
           open={addOpen}
           tags={tags as TagsType}
           onSave={handleSaveTagGroup}
+          onUpdate={handleUpdateTagGroup}
           onClose={() => setAddOpen(false)}
         />
       )}

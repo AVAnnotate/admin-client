@@ -58,9 +58,9 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
     return props.tagGroups.map((g) => g.category);
   }, [props.tagGroups]);
 
-  const HandleEditGroup = () => {
+  const handleUpdateGroup = () => {
     if (props.onUpdateGroup) {
-      setEditOpen(true);
+      props.onUpdateGroup(props.tagGroup);
     }
   };
 
@@ -142,7 +142,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
             buttons={[
               {
                 label: t['Edit'],
-                onClick: HandleEditGroup,
+                onClick: handleUpdateGroup,
               },
               {
                 label: t['Delete'],

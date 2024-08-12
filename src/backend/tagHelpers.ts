@@ -74,6 +74,89 @@ export const createTagGroup = async (
   return undefined;
 };
 
+export const updateTagGroup = async (
+  htmlUrl: string,
+  userInfo: UserInfo,
+  oldGroup: TagGroup,
+  newGroup: TagGroup
+): Promise<ProjectData | undefined> => {
+  const fs = initFs();
+
+  const { readFile, writeFile, readDir, exists, commitAndPush, context } =
+    await gitRepo({
+      fs: fs,
+      repositoryURL: htmlUrl,
+      branch: 'main',
+      userInfo: userInfo,
+    });
+
+  const proj = readFile('/data/project.json');
+
+  // Get the project
+  const project: ProjectData = JSON.parse(proj as string);
+
+  // Move all tags in this group to the _uncategorized_ group
+  // Make sure we have an _uncategorized_ group
+  const groupIdx = project.project.tags!.tagGroups.findIndex(
+    (g) => g.category === oldGroup.category
+  );
+
+  if (groupIdx < 0) {
+    console.log('Did not find old group, error');
+    return undefined;
+  }
+
+  // Reassign tags
+  for (let i = 0; i < project.project.tags.tags.length; i++) {
+    let tag = project.project.tags.tags[i];
+
+    if (tag.category === oldGroup.category) {
+      tag.category = newGroup.category;
+    }
+  }
+
+  // delete the tag group
+  const idx = project.project.tags.tagGroups.findIndex(
+    (g) => g.category === oldGroup.category
+  );
+  if (idx > -1) {
+    project.project.tags.tagGroups[idx] = newGroup;
+  } else {
+    console.log('Did not find old group, error');
+    return undefined;
+  }
+
+  // No need to update tags ir only the color changed
+  if (oldGroup.category !== newGroup.category) {
+    const resultRegroup = await regroupTags(
+      oldGroup.category,
+      newGroup.category,
+      context
+    );
+    if (!resultRegroup) {
+      return undefined;
+    }
+  }
+
+  const result = await writeFile('/data/project.json', JSON.stringify(project));
+
+  if (!result) {
+    return undefined;
+  }
+
+  buildProjectData(project, context);
+
+  const resPush = await commitAndPush(
+    `Updating Tag Group ${oldGroup.category} to ${newGroup.category}`
+  );
+
+  if (resPush.ok) {
+    return project;
+  }
+
+  return undefined;
+};
+
 export const deleteTagGroup = async (
   htmlUrl: string,
   userInfo: UserInfo,
@@ -179,7 +262,6 @@ const regroupTags = async (
       for (let j = 0; j < annotation.tags.length; j++) {
         let tag = annotation.tags[j];
         if (tag.category === oldCategory) {
-          console.log('Found Category, replacing');
           tag.category = newCategory;
         }
       }

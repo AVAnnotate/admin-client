@@ -58,6 +58,11 @@ export type apiAddTagGroup = {
   tagGroup: TagGroup;
 };
 
+export type apiUpdateTagGroup = {
+  oldTagGroup: TagGroup;
+  newTagGroup: TagGroup;
+};
+
 export type apiDeleteTagGroup = {
   tagGroup: TagGroup;
 };
