@@ -45,6 +45,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
   const [updateTarget, setUpdateTarget] = useState<Tag | undefined>();
   const [editOpen, setEditOpen] = useState(false);
   const [group, setGroup] = useState<string | undefined>();
+  const [expanded, setExpanded] = useState(false);
 
   const color = props.tagGroup!.color;
 
@@ -116,44 +117,55 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
   if (props.empty) {
     return (
       <div className='tag-group-card-empty'>
-        <button
-          className='primary tag-group-card-footer-button av-label-bold'
+        <div
+          className='tag-group-card-empty-button unstyled av-label-bold'
           onClick={() =>
             props.onAddTagGroup ? props.onAddTagGroup() : () => {}
           }
         >
-          <Plus />
-          {t['Tag Group']}
-        </button>
+          <Plus size='16' />
+          {t['Create group']}
+        </div>
       </div>
     );
   }
+
+  const list = props.tags!.filter(
+    (t: Tag) => t.category === props.tagGroup.category
+  );
   return (
     <>
-      <div className='tag-group-card-container'>
-        <div className='tag-group-card-header'>
-          <h3>
-            {props.tagGroup.category === '_uncategorized_'
-              ? t['Uncategorized']
-              : props.tagGroup.category}
-          </h3>
-          <MeatballMenu
-            row={props}
-            buttons={[
-              {
-                label: t['Edit'],
-                onClick: handleUpdateGroup,
-              },
-              {
-                label: t['Delete'],
-                onClick: handleDeleteGroup,
-              },
-            ]}
-          />
-        </div>
-        {props
-          .tags!.filter((t) => t.category === props.tagGroup.category)
-          .map((t) => (
+      <div
+        className={
+          expanded
+            ? 'tag-group-card-container-expanded'
+            : 'tag-group-card-container'
+        }
+      >
+        <div className='tag-group-card-margins'>
+          <div className='tag-group-card-header'>
+            <h3>
+              {props.tagGroup.category === '_uncategorized_'
+                ? t['Uncategorized']
+                : props.tagGroup.category}
+            </h3>
+            <MeatballMenu
+              row={props}
+              buttons={[
+                {
+                  label: t['Edit'],
+                  icon: Pencil,
+                  onClick: handleUpdateGroup,
+                },
+                {
+                  label: t['Delete'],
+                  icon: Trash,
+                  onClick: handleDeleteGroup,
+                },
+              ]}
+            />
+          </div>
+          {list.slice(0, expanded ? 9999999 : 4).map((t) => (
             <div className='tag-group-card-row' key={t.tag}>
               <div
                 className='tag-group-card-pill'
@@ -184,16 +196,35 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
               </div>
             </div>
           ))}
-        <div className='tag-group-card-footer'>
-          <button
-            className='primary tag-group-card-footer-button av-label-bold'
-            onClick={() => handleAddTag()}
-          >
-            <Plus size='16' color='white' />
-            {t['Tag']}
-          </button>
+        </div>
+        {!expanded && list.length > 4 ? (
+          <div className='tag-group-card-show'>
+            <div
+              className='tag-group-card-show-text av-label-bold'
+              onClick={() => setExpanded(!expanded)}
+            >{`${t['show']} ${list.length - 4} ${t['more']}`}</div>
+          </div>
+        ) : list.length > 4 ? (
+          <div className='tag-group-card-show-less'>
+            <div
+              className='tag-group-card-show-text av-label-bold'
+              onClick={() => setExpanded(!expanded)}
+            >
+              {t['show less']}
+            </div>
+          </div>
+        ) : (
+          <div />
+        )}
+        <div
+          className='tag-group-card-footer-button av-label-bold'
+          onClick={() => handleAddTag()}
+        >
+          <Plus size='16' />
+          {t['Create new tag']}
         </div>
       </div>
+
       <Dialog open={confirmOpen}>
         <ConfirmationDialog
           open={confirmOpen}

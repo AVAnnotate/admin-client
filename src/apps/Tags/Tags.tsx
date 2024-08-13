@@ -190,31 +190,24 @@ export const Tags = (props: TagsProps) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ project: proj }),
-    })
-      .then((data) => {
-        if (data.ok) {
-          setToast({
-            title: t['Success!'],
-            description: t['Tags imported'],
-            type: 'success',
-          });
-          return data.json();
-        } else {
-          setToast({
-            title: t['Problem!'],
-            description: t['Tags failed to import'],
-            type: 'error',
-          });
-          return undefined;
-        }
-      })
-      .then((p) => {
-        if (p) {
-          setProject(p.project);
-        }
-        setSaving(false);
-      });
+      body: JSON.stringify({ ...proj.project }),
+    }).then((data) => {
+      if (data.ok) {
+        setToast({
+          title: t['Success!'],
+          description: t['Tags imported'],
+          type: 'success',
+        });
+        setProject(proj);
+      } else {
+        setToast({
+          title: t['Problem!'],
+          description: t['Tags failed to import'],
+          type: 'error',
+        });
+      }
+      setSaving(false);
+    });
   };
 
   const handleAddTagGroup = () => {
