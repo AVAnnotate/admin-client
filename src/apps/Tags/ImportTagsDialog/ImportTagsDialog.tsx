@@ -10,6 +10,7 @@ import {
   SpreadsheetInputContextComponent,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import type { any } from 'astro/zod';
+import { Button } from '@radix-ui/themes';
 
 export interface ImportTagsDialogProps {
   i18n: Translations;
@@ -99,7 +100,9 @@ export const ImportTagsDialog = (props: ImportTagsDialogProps) => {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>{t['Import File']}</Dialog.Trigger>
+      <Dialog.Trigger>
+        <Button className='primary'>{t['Import File']}</Button>
+      </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className='dialog-overlay' />
         <Dialog.Content className='dialog-content import-tags-dialog-content'>
