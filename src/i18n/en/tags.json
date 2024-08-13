@@ -41,5 +41,10 @@
   "Tag not updated": "Tag not updated",
   "Tag added": "Tag added",
   "Tag not added": "Tag not added",
-  "Update": "Update"
+  "Update": "Update",
+  "Create new tag": "Create new tag",
+  "show": "show",
+  "more": "more",
+  "show less": "show less",
+  "Create group": "Create group"
 }

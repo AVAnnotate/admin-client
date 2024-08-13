@@ -86,6 +86,7 @@ export type apiProjectPut = {
   description: string;
   media_player: MediaPlayer;
   title: string;
+  tags?: Tags;
 };
 
 export type apiAnalyzeManifest = {

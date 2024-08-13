@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: space-around;
-  border: 1px dotted var(--gray-300);
+  border: 1px dotted var(--gray-500);
 }
 
 .tags-no-tags-buttons {
@@ -35,16 +35,27 @@
 }
 
 .tag-group-card-container {
-  width: 300px;
-  height: auto;
+  width: 284px;
+  height: 360px;
+  overflow-y: hidden;
   background-color: var(--white);
   border: 1px solid var(--gray-300);
   box-sizing: border-box;
+  position: relative;
+}
+
+.tag-group-card-container-expanded {
+  width: 284px;
+  background-color: var(--white);
+  border: 1px solid var(--gray-300);
+  box-sizing: border-box;
+  position: relative;
+  padding-bottom: 48px;
 }
 
 .tag-group-card-empty {
-  width: 300px;
-  height: 315px;
+  width: 284px;
+  height: 360px;
   background-color: var(--white);
   border: 1px dotted var(--gray-300);
   box-sizing: border-box;
@@ -52,6 +63,16 @@
   justify-content: center;
   align-items: center;
   background-color: transparent;
+}
+
+.tag-group-card-empty-button {
+  gap: 5px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-items: center;
+  color: var(--gray-500);
+  cursor: pointer;
 }
 
 .tag-group-card-header {
@@ -79,6 +100,10 @@
   justify-content: space-between;
   padding: 6px 24px;
   box-sizing: border-box;
+}
+
+.tag-group-card-row:hover {
+  background-color: var(--gray-100);
 }
 
 .tag-group-card-pill {
@@ -114,6 +139,12 @@
 
 .tag-group-card-row-actions {
   display: flex;
+  visibility: hidden;
+}
+
+.tag-group-card-row:hover .tag-group-card-row-actions {
+  display: flex;
+  visibility: visible;
 }
 
 .tag-group-card-action-button {
@@ -124,16 +155,57 @@
 .tag-group-card-footer {
   width: 100%;
   display: flex;
-  padding: 12px 24px;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: center;
   box-sizing: border-box;
 }
 
 .tag-group-card-footer-button {
+  position: absolute;
+  bottom: 0;
+  left: 0;
   display: flex;
   flex-direction: row;
+  justify-content: center;
   align-items: center;
   gap: 4px;
-  padding: 10px;
+  width: 100%;
+  height: 48px;
+  background-color: var(--gray-200);
+  cursor: pointer;
+}
+
+.tag-group-card-footer-button:hover {
+  background-color: var(--gray-100);
+}
+
+.tag-group-card-show {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  bottom: 48px;
+  left: 0;
+  cursor: pointer;
+}
+
+.tag-group-card-show-less {
+  width: 100%;
+  height: 48px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tag-group-card-show-less:hover {
+  background-color: var(--gray-100);
+}
+
+.tag-group-card-show:hover {
+  background-color: var(--gray-100);
 }
