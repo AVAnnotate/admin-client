@@ -22,11 +22,11 @@ export const POST: APIRoute = async ({
   request,
   redirect,
 }) => {
-  const { projectName, eventUuid, annotationFileUuid } = params;
+  const { projectName, eventUuid, annotationSetUuid } = params;
 
   const { token, info } = await setup(cookies);
 
-  if (!token || !info || !projectName || !eventUuid || !annotationFileUuid) {
+  if (!token || !info || !projectName || !eventUuid || !annotationSetUuid) {
     return redirect('/', 307);
   }
 
@@ -43,7 +43,7 @@ export const POST: APIRoute = async ({
     userInfo: info,
   });
 
-  const filePath = `/data/annotations/${annotationFileUuid}.json`;
+  const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
   if (!exists(filePath)) {
     return new Response(null, {
@@ -70,7 +70,7 @@ export const POST: APIRoute = async ({
 
   writeFile(filePath, JSON.stringify(annos, null, '  '));
 
-  const commitMessage = `Added annotation ${newAnno.uuid} to annotation file ${annotationFileUuid} in event ${eventUuid}`;
+  const commitMessage = `Added annotation ${newAnno.uuid} to annotation file ${annotationSetUuid} in event ${eventUuid}`;
 
   const successCommit = await commitAndPush(commitMessage);
 

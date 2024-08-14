@@ -16,7 +16,7 @@ const setup = async (cookies: AstroCookies) => {
 };
 
 export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
-  const { projectName, eventUuid, annotationFileUuid, annotationUuid } = params;
+  const { projectName, eventUuid, annotationSetUuid, annotationUuid } = params;
 
   const { token, info } = await setup(cookies);
 
@@ -25,7 +25,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     !info ||
     !projectName ||
     !eventUuid ||
-    !annotationFileUuid ||
+    !annotationSetUuid ||
     !annotationUuid
   ) {
     return redirect('/', 307);
@@ -42,7 +42,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     userInfo: info,
   });
 
-  const filePath = `/data/annotations/${annotationFileUuid}.json`;
+  const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
   if (!exists(filePath)) {
     return new Response(null, {
@@ -87,11 +87,11 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     });
   }
 
-  return new Response(JSON.stringify(annos), { status: 200 });
+  return new Response('ok', { status: 200 });
 };
 
 export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
-  const { projectName, eventUuid, annotationFileUuid, annotationUuid } = params;
+  const { projectName, eventUuid, annotationSetUuid, annotationUuid } = params;
 
   const { token, info } = await setup(cookies);
 
@@ -100,7 +100,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     !info ||
     !projectName ||
     !eventUuid ||
-    !annotationFileUuid ||
+    !annotationSetUuid ||
     !annotationUuid
   ) {
     return redirect('/', 307);
@@ -119,7 +119,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     userInfo: info,
   });
 
-  const filePath = `/data/annotations/${annotationFileUuid}.json`;
+  const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
   if (!exists(filePath)) {
     return new Response(null, {
