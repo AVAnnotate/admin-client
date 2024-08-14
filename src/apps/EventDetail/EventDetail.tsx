@@ -82,7 +82,7 @@ const onSubmitAdd = async (newAnno: AnnotationEntry, baseUrl: string) => {
   });
 
   if (res.ok) {
-    return (await res.json()) as AnnotationEntry;
+    return (await res.json()) as AnnotationEntry[];
   }
 };
 
@@ -102,6 +102,27 @@ const onSubmitEdit = async (editAnno: AnnotationEntry, baseUrl: string) => {
 
   if (res.ok) {
     return (await res.json()) as AnnotationEntry;
+  }
+};
+
+const onSubmitImport = async (newAnnos: AnnotationEntry[], baseUrl: string) => {
+  const body = newAnnos.map((na) => ({
+    start_time: na.start_time,
+    end_time: na.end_time,
+    annotation: na.annotation,
+    tags: na.tags,
+  }));
+
+  const res = await fetch(baseUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (res.ok) {
+    return (await res.json()) as AnnotationEntry[];
   }
 };
 
@@ -196,11 +217,11 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const onCreate = async (body: AnnotationEntry) => {
     const newAnno = await onSubmitAdd(body, baseUrl);
 
-    if (newAnno) {
+    if (newAnno && newAnno.length > 0) {
       setAllAnnotations((oldAnnos) => {
         if (currentSetUuid) {
           const updatedEntry = { ...oldAnnos[currentSetUuid] };
-          updatedEntry.annotations.push(newAnno);
+          updatedEntry.annotations.push(newAnno[0]);
           return { ...oldAnnos, [currentSetUuid]: updatedEntry };
         } else {
           return {};
@@ -261,6 +282,26 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     setEditAnnoUuid('');
   };
 
+  const onImport = async (body: { annotations: AnnotationEntry[] }) => {
+    const newAnnos = await onSubmitImport(body.annotations, baseUrl);
+
+    if (newAnnos) {
+      setAllAnnotations((oldAnnos) => {
+        if (currentSetUuid) {
+          const updatedEntry = {
+            ...oldAnnos[currentSetUuid],
+            annotations: oldAnnos[currentSetUuid].annotations.concat(newAnnos),
+          };
+          return { ...oldAnnos, [currentSetUuid]: updatedEntry };
+        } else {
+          return {};
+        }
+      });
+    }
+
+    setShowAnnoImportModal(false);
+  };
+
   return (
     <>
       {deleteAnnoUuid && (
@@ -295,9 +336,8 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
       {showAnnoImportModal && currentSetUuid && (
         <AnnotationImport
           i18n={props.i18n}
-          onImport={() => new Promise(() => console.log('todo'))}
+          onSubmit={onImport}
           onClose={() => setShowAnnoImportModal(false)}
-          set={currentSetUuid}
         />
       )}
       {showEventDeleteModal && (
