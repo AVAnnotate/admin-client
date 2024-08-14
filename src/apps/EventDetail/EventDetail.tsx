@@ -26,6 +26,8 @@ import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
 import { SetSelect } from './SetSelect.tsx';
 import { AvFilePicker } from './AvFilePicker.tsx';
 import { AnnotationTable } from './AnnotationTable.tsx';
+import { exportAnnotations } from '@lib/events/export.ts';
+import { AnnotationImport } from './AnnotationImport.tsx';
 
 interface EventDetailProps {
   event: Event;
@@ -123,6 +125,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
   const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
   const [showAnnoCreateModal, setShowAnnoCreateModal] = useState(false);
+  const [showAnnoImportModal, setShowAnnoImportModal] = useState(false);
   const [search, setSearch] = useState('');
 
   const searchDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(
@@ -289,6 +292,14 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           project={props.project}
         />
       )}
+      {showAnnoImportModal && currentSetUuid && (
+        <AnnotationImport
+          i18n={props.i18n}
+          onImport={() => new Promise(() => console.log('todo'))}
+          onClose={() => setShowAnnoImportModal(false)}
+          set={currentSetUuid}
+        />
+      )}
       {showEventDeleteModal && (
         <DeleteEventModal
           annotations={props.project.annotations}
@@ -407,11 +418,26 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                 />
                 <MagnifyingGlassIcon />
               </div>
-              <Button className='csv-button' type='button'>
-                <DownloadIcon />
-                {t['CSV']}
-              </Button>
-              <Button className='primary'>
+              {currentSetUuid && (
+                <Button
+                  className='csv-button'
+                  onClick={() =>
+                    exportAnnotations(
+                      allAnnotations[currentSetUuid].annotations,
+                      props.event,
+                      avFile
+                    )
+                  }
+                  type='button'
+                >
+                  <DownloadIcon />
+                  {t['CSV']}
+                </Button>
+              )}
+              <Button
+                className='primary'
+                onClick={() => setShowAnnoImportModal(true)}
+              >
                 <FileEarmarkArrowUp />
                 {t['import']}
               </Button>
