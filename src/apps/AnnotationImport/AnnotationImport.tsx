@@ -8,13 +8,17 @@ import {
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { LoadingOverlay } from '@components/LoadingOverlay/index.ts';
 import { Button } from '@radix-ui/themes';
-import type { Event, ProjectData, Translations } from '@ty/Types.ts';
+import type {
+  AnnotationEntry,
+  Event,
+  ProjectData,
+  Translations,
+} from '@ty/Types.ts';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useContext, useMemo } from 'react';
+import { mapAnnotationData } from '@lib/parse/index.ts';
 
 import './AnnotationImport.css';
-import { fromTimestamp } from '@lib/events/index.ts';
-import { mapAnnotationData } from '@lib/parse/index.ts';
 
 interface Props {
   event: Event;
@@ -36,30 +40,23 @@ const initialValues = { annotations: { data: [], headers: [] }, set: '' } as {
 // todo: translate comma-separated tags into tag objects
 const onSubmit = async (
   body: typeof initialValues,
-  headerMap,
-  baseUrl: string
+  headerMap: { [key: string]: number },
+  baseUrl: string,
+  redirectUrl: string
 ) => {
   const annos = mapAnnotationData(body.annotations.data, headerMap);
-  // const annos = body.annotations.map((na) => ({
-  //   start_time: fromTimestamp(na.start_time),
-  //   end_time: fromTimestamp(na.end_time),
-  //   annotation: na.annotation,
-  //   tags: na.tags,
-  // }));
 
-  console.log(annos);
+  const res = await fetch(`${baseUrl}/${body.set}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(annos),
+  });
 
-  // const res = await fetch(`${baseUrl}/${body.set}`, {
-  //   method: 'POST',
-  //   headers: {
-  //     'Content-Type': 'application/json',
-  //   },
-  //   body: JSON.stringify(annos),
-  // });
-
-  // if (res.ok) {
-  //   return (await res.json()) as AnnotationEntry[];
-  // }
+  if (res.ok) {
+    window.location.href = redirectUrl;
+  }
 };
 
 export const AnnotationImport: React.FC<Props> = (props) => {
@@ -73,30 +70,41 @@ export const AnnotationImport: React.FC<Props> = (props) => {
 export const AnnotationImportForm: React.FC<Props> = (props) => {
   const { headerMap } = useContext(SpreadsheetInputContext);
 
+  const { lang } = props.i18n;
+
   const baseUrl = useMemo(
     () =>
       `/api/projects/${props.projectSlug}/events/${props.eventUuid}/annotations`,
     [props.projectSlug, props.eventUuid]
   );
 
+  const redirectUrl = useMemo(
+    () => `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}`,
+    [lang, props.projectSlug, props.eventUuid]
+  );
+
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={async (data) => await onSubmit(data, headerMap, baseUrl)}
+      onSubmit={async (data) =>
+        await onSubmit(data, headerMap, baseUrl, redirectUrl)
+      }
     >
-      <AnnotationImportFormContents {...props} />
+      <AnnotationImportFormContents {...props} redirectUrl={redirectUrl} />
     </Formik>
   );
 };
 
-const AnnotationImportFormContents: React.FC<Props> = (props) => {
+interface FormContentsProps extends Props {
+  redirectUrl: string;
+}
+
+const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
   const { isSubmitting, values } = useFormikContext();
 
   const { lang, t } = props.i18n;
 
   const { requiredFieldsSet } = useContext(SpreadsheetInputContext);
-
-  console.log(values);
 
   const importAsOptions = useMemo(
     () => [
@@ -174,9 +182,7 @@ const AnnotationImportFormContents: React.FC<Props> = (props) => {
         <div className='bottom-bar-flex'>
           <Button
             className='outline cancel-button'
-            onClick={() =>
-              (window.location.href = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}`)
-            }
+            onClick={() => (window.location.href = props.redirectUrl)}
             type='button'
           >
             {t['cancel']}
