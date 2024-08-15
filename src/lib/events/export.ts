@@ -17,7 +17,7 @@ export const exportAnnotations = (annos: AnnotationEntry[], event: Event, avFile
       Number.isInteger(anno.start_time) ? formatTimestamp(anno.start_time, false) : '',
       Number.isInteger(anno.end_time) ? formatTimestamp(anno.end_time, false) : '',
       anno.annotation ? serializeRichText(anno.annotation) : '',
-      anno.tags.map(t => t.tag).join(', ') || '',
+      anno.tags.map(t => t.tag).join(',') || '',
       event.audiovisual_files[avFile].file_url || ''
     ]
 
