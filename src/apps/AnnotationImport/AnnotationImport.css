@@ -1,3 +1,10 @@
+.annotation-import-form .spreadsheet-preview-table {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 5px;
+}
+
 .annotation-import-form .bottom-bar-flex {
   width: 100%;
   display: flex;
