@@ -27,7 +27,6 @@ import { SetSelect } from './SetSelect.tsx';
 import { AvFilePicker } from './AvFilePicker.tsx';
 import { AnnotationTable } from './AnnotationTable.tsx';
 import { exportAnnotations } from '@lib/events/export.ts';
-import { AnnotationImport } from './AnnotationImport.tsx';
 
 interface EventDetailProps {
   event: Event;
@@ -105,27 +104,6 @@ const onSubmitEdit = async (editAnno: AnnotationEntry, baseUrl: string) => {
   }
 };
 
-const onSubmitImport = async (newAnnos: AnnotationEntry[], baseUrl: string) => {
-  const body = newAnnos.map((na) => ({
-    start_time: na.start_time,
-    end_time: na.end_time,
-    annotation: na.annotation,
-    tags: na.tags,
-  }));
-
-  const res = await fetch(baseUrl, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (res.ok) {
-    return (await res.json()) as AnnotationEntry[];
-  }
-};
-
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const { lang, t } = props.i18n;
 
@@ -146,7 +124,6 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
   const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
   const [showAnnoCreateModal, setShowAnnoCreateModal] = useState(false);
-  const [showAnnoImportModal, setShowAnnoImportModal] = useState(false);
   const [search, setSearch] = useState('');
 
   const searchDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(
@@ -282,26 +259,6 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     setEditAnnoUuid('');
   };
 
-  const onImport = async (body: { annotations: AnnotationEntry[] }) => {
-    const newAnnos = await onSubmitImport(body.annotations, baseUrl);
-
-    if (newAnnos) {
-      setAllAnnotations((oldAnnos) => {
-        if (currentSetUuid) {
-          const updatedEntry = {
-            ...oldAnnos[currentSetUuid],
-            annotations: oldAnnos[currentSetUuid].annotations.concat(newAnnos),
-          };
-          return { ...oldAnnos, [currentSetUuid]: updatedEntry };
-        } else {
-          return {};
-        }
-      });
-    }
-
-    setShowAnnoImportModal(false);
-  };
-
   return (
     <>
       {deleteAnnoUuid && (
@@ -331,13 +288,6 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           i18n={props.i18n}
           title={t['Add Annotation']}
           project={props.project}
-        />
-      )}
-      {showAnnoImportModal && currentSetUuid && (
-        <AnnotationImport
-          i18n={props.i18n}
-          onSubmit={onImport}
-          onClose={() => setShowAnnoImportModal(false)}
         />
       )}
       {showEventDeleteModal && (
@@ -476,7 +426,9 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               )}
               <Button
                 className='primary'
-                onClick={() => setShowAnnoImportModal(true)}
+                onClick={() =>
+                  (window.location.pathname = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`)
+                }
               >
                 <FileEarmarkArrowUp />
                 {t['import']}
