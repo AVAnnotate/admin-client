@@ -1,3 +1,18 @@
+.annotation-import-form {
+  padding-bottom: 120px;
+}
+
+.annotation-import-form .set-container {
+  border-top: 1px solid var(--gray-300);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.annotation-import-form .set-container .formic-form-select {
+  width: auto;
+  max-width: 576px;
+}
+
 .annotation-import-form .spreadsheet-preview-table {
   max-height: 300px;
   overflow-y: auto;

@@ -171,12 +171,14 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
             name='annotations'
           />
         </div>
-        <SelectInput
-          label={'Annotation Set'}
-          name='set'
-          options={setOptions}
-          required
-        />
+        <div className='set-container'>
+          <SelectInput
+            label={'Annotation Set'}
+            name='set'
+            options={setOptions}
+            required
+          />
+        </div>
       </div>
       <BottomBar>
         <div className='bottom-bar-flex'>
