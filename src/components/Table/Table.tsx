@@ -15,6 +15,7 @@ interface Row {
     | string
     | ((...args: any) => string | React.ReactElement | React.ReactElement[]);
   sortable?: boolean;
+  width?: number;
 }
 
 interface Props {
@@ -180,7 +181,10 @@ export const Table: React.FC<Props> = ({
           {showHeaderRow && (
             <RadixTable.Row>
               {rows.map((row) => (
-                <RadixTable.ColumnHeaderCell key={row.title}>
+                <RadixTable.ColumnHeaderCell
+                  key={row.title}
+                  style={{ width: row.width }}
+                >
                   {row.title}
                 </RadixTable.ColumnHeaderCell>
               ))}
@@ -193,7 +197,10 @@ export const Table: React.FC<Props> = ({
               {sortedItems.map((item, idx) => (
                 <RadixTable.Row key={idx}>
                   {rows.map((row, rowIndex) => (
-                    <RadixTable.Cell key={rowIndex}>
+                    <RadixTable.Cell
+                      style={{ width: row.width }}
+                      key={rowIndex}
+                    >
                       {getCellValue(item, row)}
                     </RadixTable.Cell>
                   ))}

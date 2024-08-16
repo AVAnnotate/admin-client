@@ -12,6 +12,7 @@ import type React from 'react';
 import {
   BoxArrowUpRight,
   FileEarmarkArrowUp,
+  Sliders2Vertical,
   Tag,
   Trash,
 } from 'react-bootstrap-icons';
@@ -22,6 +23,8 @@ import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
 import { useMemo, useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { Chats } from '@phosphor-icons/react/dist/icons/Chats';
 
 interface Props {
   i18n: Translations;
@@ -48,6 +51,10 @@ export const Project: React.FC<Props> = (props) => {
       })),
     [props.project.events]
   );
+
+  const handleNavToSets = () => {
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}/sets`;
+  };
 
   const handleNavToTags = () => {
     window.location.pathname = `/${lang}/projects/${props.projectSlug}/tags`;
@@ -81,14 +88,40 @@ export const Project: React.FC<Props> = (props) => {
                 {t['Settings']}
               </Button>
             </a>
-            <Button
-              className='outline'
-              variant='outline'
-              onClick={handleNavToTags}
-            >
-              <Tag />
-              {t['Tags']}
-            </Button>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <Button className='outline' variant='outline'>
+                  <Tag />
+                  {t['Tags']}
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className='dropdown-content'>
+                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
+                    {t['Settings']}
+                    <Sliders2Vertical />
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={handleNavToSets}
+                  >
+                    {t['Annotation Sets']}
+                    <Chats />
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={handleNavToTags}
+                  >
+                    {t['View']}
+                    <BoxArrowUpRight />
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
+                    {t['Export']}
+                    <DownloadIcon />
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
             <Button className='primary'>
               <span>{t['View']}</span>
               <OpenInNewWindowIcon color='white' />
