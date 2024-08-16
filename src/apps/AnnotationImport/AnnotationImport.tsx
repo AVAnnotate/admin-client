@@ -28,18 +28,18 @@ interface Props {
   project: ProjectData;
 }
 
-const initialValues = { annotations: { data: [], headers: [] }, set: '' } as {
+interface FormData {
   annotations: {
     data: string[][];
     headers: string[];
   };
   set: string;
-};
+}
 
 // todo: translate 00:00:00 timestamps to number of seconds
 // todo: translate comma-separated tags into tag objects
 const onSubmit = async (
-  body: typeof initialValues,
+  body: FormData,
   headerMap: { [key: string]: number },
   baseUrl: string,
   redirectUrl: string
@@ -83,6 +83,27 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
     [lang, props.projectSlug, props.eventUuid]
   );
 
+  const setOptions = useMemo(
+    () =>
+      Object.keys(props.project.annotations)
+        .filter(
+          (uuid) => props.project.annotations[uuid].event_id === props.eventUuid
+        )
+        .map((uuid) => ({
+          label: props.project.annotations[uuid].set,
+          value: uuid,
+        })),
+    []
+  );
+
+  const initialValues: FormData = useMemo(
+    () => ({
+      annotations: { data: [], headers: [] },
+      set: setOptions[0].value,
+    }),
+    []
+  );
+
   return (
     <Formik
       initialValues={initialValues}
@@ -90,13 +111,18 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
         await onSubmit(data, headerMap, baseUrl, redirectUrl)
       }
     >
-      <AnnotationImportFormContents {...props} redirectUrl={redirectUrl} />
+      <AnnotationImportFormContents
+        {...props}
+        redirectUrl={redirectUrl}
+        setOptions={setOptions}
+      />
     </Formik>
   );
 };
 
 interface FormContentsProps extends Props {
   redirectUrl: string;
+  setOptions: { label: string; value: string }[];
 }
 
 const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
@@ -132,17 +158,6 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
     []
   );
 
-  const setOptions = useMemo(() => {
-    return Object.keys(props.project.annotations)
-      .filter(
-        (uuid) => props.project.annotations[uuid].event_id === props.eventUuid
-      )
-      .map((uuid) => ({
-        label: props.project.annotations[uuid].set,
-        value: uuid,
-      }));
-  }, []);
-
   return (
     <Form className='annotation-import-form'>
       <Breadcrumbs
@@ -175,7 +190,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
           <SelectInput
             label={'Annotation Set'}
             name='set'
-            options={setOptions}
+            options={props.setOptions}
             required
           />
         </div>
