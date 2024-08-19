@@ -4,6 +4,8 @@ import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { useMemo } from 'react';
 import { Button } from '@radix-ui/themes';
 import { Table } from '@components/Table/Table.tsx';
+import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
+import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
 
 interface Props {
   i18n: Translations;
@@ -43,9 +45,18 @@ export const Sets: React.FC<Props> = (props) => {
         <div className='top-bar'>
           <h1>{t['Annotation Sets']}</h1>
           <div>
-            <Button className='outline'>{t['CSV']}</Button>
-            <Button className='primary'>{t['import']}</Button>
-            <Button className='primary'>{t['Add']}</Button>
+            <Button className='outline'>
+              <DownloadIcon />
+              {t['CSV']}
+            </Button>
+            <Button className='primary'>
+              <FileEarmarkArrowUp />
+              {t['import']}
+            </Button>
+            <Button className='primary'>
+              <PlusIcon />
+              {t['Add']}
+            </Button>
           </div>
         </div>
         <div className='set-list'>

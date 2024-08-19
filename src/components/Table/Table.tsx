@@ -15,7 +15,7 @@ interface Row {
     | string
     | ((...args: any) => string | React.ReactElement | React.ReactElement[]);
   sortable?: boolean;
-  width?: number;
+  width?: number | string;
 }
 
 interface Props {
