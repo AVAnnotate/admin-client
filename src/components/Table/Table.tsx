@@ -10,6 +10,7 @@ import type { MeatballMenuItem } from '@ty/ui.ts';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 
 interface Row {
+  className?: string;
   title: string;
   property:
     | string
@@ -198,6 +199,7 @@ export const Table: React.FC<Props> = ({
                 <RadixTable.Row key={idx}>
                   {rows.map((row, rowIndex) => (
                     <RadixTable.Cell
+                      className={row.className || ''}
                       style={{ width: row.width }}
                       key={rowIndex}
                     >

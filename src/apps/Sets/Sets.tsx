@@ -65,8 +65,9 @@ export const Sets: React.FC<Props> = (props) => {
             items={sets}
             rows={[
               {
-                title: t['Title'],
+                className: 'set-name-cell',
                 property: 'set',
+                title: t['Title'],
                 width: '75%',
               },
               {
