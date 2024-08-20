@@ -1,11 +1,13 @@
 import type { AnnotationPage, ProjectData, Translations } from '@ty/Types.ts';
 import './Sets.css';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@radix-ui/themes';
 import { Table } from '@components/Table/Table.tsx';
-import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
-import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
+import { DownloadIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
+import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
+import { DeleteSetModal } from './DeleteSet/DeleteSet.tsx';
 
 interface Props {
   i18n: Translations;
@@ -18,6 +20,9 @@ interface SetWithUuid extends AnnotationPage {
 }
 
 export const Sets: React.FC<Props> = (props) => {
+  const [deleteSet, setDeleteSet] = useState<SetWithUuid | null>(null);
+  const [editSet, setEditSet] = useState<SetWithUuid | null>(null);
+
   const { lang, t } = props.i18n;
 
   const sets: SetWithUuid[] = useMemo(
@@ -29,8 +34,23 @@ export const Sets: React.FC<Props> = (props) => {
     [props.project]
   );
 
+  const getBaseUrl = useCallback(
+    (set: SetWithUuid) =>
+      `/api/projects/${props.projectSlug}/events/${set.event_id}/annotations/${set.uuid}`,
+    []
+  );
+
   return (
     <>
+      {deleteSet && (
+        <DeleteSetModal
+          baseUrl={getBaseUrl(deleteSet)}
+          i18n={props.i18n}
+          onAfterSave={() => window.location.reload()}
+          onCancel={() => setDeleteSet(null)}
+          set={deleteSet}
+        />
+      )}
       <Breadcrumbs
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
@@ -76,7 +96,18 @@ export const Sets: React.FC<Props> = (props) => {
                   `${set.annotations.length} ${t['Annotations']}`,
               },
             ]}
-            rowButtons={[]}
+            rowButtons={[
+              {
+                label: t['Edit'],
+                onClick: (item: SetWithUuid) => setEditSet(item),
+                icon: Pencil2Icon,
+              },
+              {
+                label: t['Delete'],
+                onClick: (item: SetWithUuid) => setDeleteSet(item),
+                icon: Trash,
+              },
+            ]}
             showHeaderRow={false}
           />
         </div>

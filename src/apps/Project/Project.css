@@ -16,6 +16,7 @@
 
 .project-container .project-top-bar .project-top-bar-buttons {
   display: flex;
+  align-items: center;
   gap: 12px;
 }
 
