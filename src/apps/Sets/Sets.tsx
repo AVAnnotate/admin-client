@@ -4,10 +4,10 @@ import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { useCallback, useMemo, useState } from 'react';
 import { Button } from '@radix-ui/themes';
 import { Table } from '@components/Table/Table.tsx';
-import { DownloadIcon, Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
-import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
-import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
-import { DeleteSetModal } from './DeleteSet/DeleteSet.tsx';
+import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { Trash } from 'react-bootstrap-icons';
+import { DeleteSetModal } from './DeleteSetModal.tsx';
+import { SetFormModal } from './SetModal.tsx';
 
 interface Props {
   i18n: Translations;
@@ -20,6 +20,7 @@ interface SetWithUuid extends AnnotationPage {
 }
 
 export const Sets: React.FC<Props> = (props) => {
+  const [createSet, setCreateSet] = useState(false);
   const [deleteSet, setDeleteSet] = useState<SetWithUuid | null>(null);
   const [editSet, setEditSet] = useState<SetWithUuid | null>(null);
 
@@ -42,6 +43,13 @@ export const Sets: React.FC<Props> = (props) => {
 
   return (
     <>
+      {createSet && (
+        <SetFormModal
+          title={t['Create Annotation Set']}
+          i18n={props.i18n}
+          onClose={() => setCreateSet(false)}
+        />
+      )}
       {deleteSet && (
         <DeleteSetModal
           baseUrl={getBaseUrl(deleteSet)}
@@ -49,6 +57,14 @@ export const Sets: React.FC<Props> = (props) => {
           onAfterSave={() => window.location.reload()}
           onCancel={() => setDeleteSet(null)}
           set={deleteSet}
+        />
+      )}
+      {editSet && (
+        <SetFormModal
+          title={t['Edit Annotation Set']}
+          i18n={props.i18n}
+          onClose={() => setEditSet(null)}
+          set={editSet}
         />
       )}
       <Breadcrumbs
@@ -65,15 +81,7 @@ export const Sets: React.FC<Props> = (props) => {
         <div className='top-bar'>
           <h1>{t['Annotation Sets']}</h1>
           <div>
-            <Button className='outline'>
-              <DownloadIcon />
-              {t['CSV']}
-            </Button>
-            <Button className='primary'>
-              <FileEarmarkArrowUp />
-              {t['import']}
-            </Button>
-            <Button className='primary'>
+            <Button className='primary' onClick={() => setCreateSet(true)}>
               <PlusIcon />
               {t['Add']}
             </Button>
