@@ -1,15 +1,15 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import type { AnnotationPage, Translations } from '@ty/Types.ts';
 import { useState } from 'react';
-import './Sets.css';
 import { Button } from '@radix-ui/themes';
+import './SetModal.css';
 
 interface Props {
   i18n: Translations;
   set?: AnnotationPage;
   title: string;
   onClose: () => void;
-  onSave: (set: AnnotationPage) => Promise<void>;
+  onSave: (newName: string) => Promise<void>;
 }
 
 export const SetFormModal: React.FC<Props> = (props) => {
@@ -41,7 +41,9 @@ export const SetFormModal: React.FC<Props> = (props) => {
                 {t['cancel']}
               </Button>
             </Dialog.Close>
-            <Button className='primary'>{t['save']}</Button>
+            <Button className='primary' onClick={() => props.onSave(name)}>
+              {t['save']}
+            </Button>
           </div>
         </Dialog.Content>
       </Dialog.Portal>

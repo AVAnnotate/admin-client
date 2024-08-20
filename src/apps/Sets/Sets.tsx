@@ -2,12 +2,11 @@ import type { AnnotationPage, ProjectData, Translations } from '@ty/Types.ts';
 import './Sets.css';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { useCallback, useMemo, useState } from 'react';
-import { Button } from '@radix-ui/themes';
 import { Table } from '@components/Table/Table.tsx';
-import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
+import { Pencil2Icon } from '@radix-ui/react-icons';
 import { Trash } from 'react-bootstrap-icons';
 import { DeleteSetModal } from './DeleteSetModal.tsx';
-import { SetFormModal } from './SetModal.tsx';
+import { SetFormModal } from '../../components/SetModal/SetModal.tsx';
 
 interface Props {
   i18n: Translations;
@@ -20,7 +19,6 @@ interface SetWithUuid extends AnnotationPage {
 }
 
 export const Sets: React.FC<Props> = (props) => {
-  const [createSet, setCreateSet] = useState(false);
   const [deleteSet, setDeleteSet] = useState<SetWithUuid | null>(null);
   const [editSet, setEditSet] = useState<SetWithUuid | null>(null);
 
@@ -41,15 +39,25 @@ export const Sets: React.FC<Props> = (props) => {
     []
   );
 
+  const onEdit = async (newName: string) => {
+    if (editSet) {
+      const baseUrl = getBaseUrl(editSet);
+      const res = await fetch(baseUrl, {
+        body: JSON.stringify({ set: newName }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        method: 'PUT',
+      });
+
+      if (res.ok) {
+        window.location.reload();
+      }
+    }
+  };
+
   return (
     <>
-      {createSet && (
-        <SetFormModal
-          title={t['Create Annotation Set']}
-          i18n={props.i18n}
-          onClose={() => setCreateSet(false)}
-        />
-      )}
       {deleteSet && (
         <DeleteSetModal
           baseUrl={getBaseUrl(deleteSet)}
@@ -64,6 +72,7 @@ export const Sets: React.FC<Props> = (props) => {
           title={t['Edit Annotation Set']}
           i18n={props.i18n}
           onClose={() => setEditSet(null)}
+          onSave={onEdit}
           set={editSet}
         />
       )}
@@ -78,15 +87,7 @@ export const Sets: React.FC<Props> = (props) => {
         ]}
       />
       <div className='container sets-container'>
-        <div className='top-bar'>
-          <h1>{t['Annotation Sets']}</h1>
-          <div>
-            <Button className='primary' onClick={() => setCreateSet(true)}>
-              <PlusIcon />
-              {t['Add']}
-            </Button>
-          </div>
-        </div>
+        <h1>{t['Annotation Sets']}</h1>
         <div className='set-list'>
           <Table
             emptyText={t['No sets have been added']}

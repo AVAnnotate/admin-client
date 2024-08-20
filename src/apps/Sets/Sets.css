@@ -1,53 +1,6 @@
-.sets-container .top-bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 .sets-container .set-name-cell {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   max-width: 1px;
-}
-
-.set-modal {
-  box-sizing: border-box;
-}
-
-.set-modal {
-  display: flex;
-  flex-flow: column;
-  gap: 20px;
-  background-color: var(--gray-100);
-}
-
-.set-modal .text-field {
-  border: 1px solid var(--gray-200);
-  height: 36px;
-  padding: 0 10px;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.set-modal label {
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.set-modal .dialog-buttons {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.set-modal .dialog-buttons button {
-  border-radius: 4px;
-  font-size: 14px;
-  padding: 8px 16px;
-}
-
-.set-modal .dialog-buttons .cancel-button {
-  color: #000;
 }
