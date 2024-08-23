@@ -11,6 +11,7 @@ import countryOptions from '@lib/language-codes.ts';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
 import { useEffect, useRef, useMemo, useContext } from 'react';
+import * as changeCase from 'change-case';
 
 import './ProjectForm.css';
 import {
@@ -109,7 +110,7 @@ const FormContents = (props: NewProjectFormProps) => {
             setSubmitting(false);
           }}
         >
-          {({ isSubmitting }) => (
+          {({ isSubmitting, values }) => (
             <Form>
               <h2>{t['General']}</h2>
               <div ref={generalRef} />

@@ -29,6 +29,7 @@ interface TextInputProps {
   required?: boolean;
   bottomNote?: string;
   className?: string;
+  suggestedValue?: string;
 }
 
 export const TextInput = (props: TextInputProps) => {
@@ -59,7 +60,11 @@ export const TextInput = (props: TextInputProps) => {
           {props.bottomNote}
         </div>
       )}
-      <ErrorMessage name={props.name} component='div' />
+      <ErrorMessage
+        name={props.name}
+        component='div'
+        className='formic-form-error'
+      />
     </div>
   );
 };

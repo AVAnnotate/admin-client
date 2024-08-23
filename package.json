@@ -31,6 +31,7 @@
     "@types/jsdom": "^21.1.7",
     "accept-language-parser": "^1.5.0",
     "astro": "^4.6.3",
+    "change-case": "^5.4.4",
     "formik": "^2.4.6",
     "globby": "^14.0.1",
     "isomorphic-git": "^1.25.7",
