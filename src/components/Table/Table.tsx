@@ -33,6 +33,7 @@ interface Props {
     onClick?: () => any;
   }[];
   rowButtons?: MeatballMenuItem[];
+  onRowClick?: (row: any) => any;
 }
 
 interface Sort {
@@ -56,6 +57,7 @@ export const Table: React.FC<Props> = ({
   rows,
   searchAttribute,
   rowButtons,
+  onRowClick,
   showHeaderRow = true,
 }) => {
   const [currentSort, setCurrentSort] = useState<Sort>({
@@ -196,12 +198,16 @@ export const Table: React.FC<Props> = ({
           {sortedItems.length > 0 ? (
             <>
               {sortedItems.map((item, idx) => (
-                <RadixTable.Row key={idx}>
+                <RadixTable.Row
+                  key={idx}
+                  className={onRowClick ? 'clickable-row' : undefined}
+                >
                   {rows.map((row, rowIndex) => (
                     <RadixTable.Cell
                       className={row.className || ''}
                       style={{ width: row.width }}
                       key={rowIndex}
+                      onClick={onRowClick ? () => onRowClick(item) : undefined}
                     >
                       {getCellValue(item, row)}
                     </RadixTable.Cell>

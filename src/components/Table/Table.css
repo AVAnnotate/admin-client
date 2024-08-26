@@ -57,6 +57,11 @@
   cursor: pointer;
 }
 
+.clickable-row:hover {
+  cursor: pointer;
+  background-color: var(--gray-200);
+}
+
 .table-empty-text {
   font-size: 18px;
   text-align: center;

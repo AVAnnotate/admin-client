@@ -154,6 +154,9 @@ export const Project: React.FC<Props> = (props) => {
                     },
                   ]}
                   items={eventsWithUuids}
+                  onRowClick={(item) =>
+                    (window.location.pathname = `${window.location.pathname}/events/${item.uuid}`)
+                  }
                   rows={[
                     {
                       title: t['Name'],
@@ -175,13 +178,16 @@ export const Project: React.FC<Props> = (props) => {
                   ]}
                   rowButtons={[
                     {
-                      label: t['Open'],
+                      label: t['Open in new tab'],
                       icon: BoxArrowUpRight,
                       onClick: (item: EventWithUuid) =>
-                        (window.location.href = `${window.location.href}/events/${item.uuid}`),
+                        window.open(
+                          `${window.location.href}/events/${item.uuid}`,
+                          '_blank'
+                        ),
                     },
                     {
-                      label: t['Edit'],
+                      label: t['Edit Settings'],
                       icon: Pencil2Icon,
                       onClick: (item: EventWithUuid) =>
                         (window.location.href = `${window.location.href}/events/${item.uuid}/edit`),
