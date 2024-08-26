@@ -28,6 +28,13 @@ export const POST: APIRoute = async ({
 
   const body: apiEventsPost = await request.json();
 
+  if (!body.event && !body.events) {
+    return new Response(null, {
+      status: 400,
+      statusText: 'Event body not found.',
+    });
+  }
+
   const created_at = new Date().toJSON();
   const created_by = info.profile.gitHubName as string;
   const updated_at = new Date().toJSON();
@@ -46,6 +53,11 @@ export const POST: APIRoute = async ({
 
   let uuids: string[] = [];
 
+  const setTemplate = {
+    annotations: [],
+    set: 'Default',
+  };
+
   // Create the events folder if it doesn't exist
   if (!exists('/data/events')) {
     mkDir('/data/events');
@@ -59,13 +71,33 @@ export const POST: APIRoute = async ({
 
     writeFile(
       filepath,
-      JSON.stringify({
-        ...ev,
-        created_at,
-        created_by,
-        updated_at,
-        updated_by,
-      })
+      JSON.stringify(
+        {
+          ...ev,
+          created_at,
+          created_by,
+          updated_at,
+          updated_by,
+        },
+        null,
+        2
+      )
+    );
+
+    // generate default set
+    const defaultSetUuid = uuidv4();
+
+    writeFile(
+      `/data/annotations/${defaultSetUuid}.json`,
+      JSON.stringify(
+        {
+          ...setTemplate,
+          event_id: uuid,
+          source_id: Object.keys(ev!.audiovisual_files)[0],
+        },
+        null,
+        2
+      )
     );
 
     uuids.push(uuid);
