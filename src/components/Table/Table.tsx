@@ -115,7 +115,7 @@ export const Table: React.FC<Props> = ({
         <div className='right-header'>
           {sortableRows.length > 0 && (
             <Dropdown.Root modal={false}>
-              <Dropdown.Trigger className='sort-button outline'>
+              <Dropdown.Trigger className='sort-button'>
                 {currentSort.direction === 'asc' ? (
                   <SortAlphaUp color='black' />
                 ) : (
