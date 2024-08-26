@@ -4,7 +4,6 @@ import { Button } from '@radix-ui/themes';
 import {
   DownloadIcon,
   GearIcon,
-  OpenInNewWindowIcon,
   Pencil2Icon,
   PlusIcon,
 } from '@radix-ui/react-icons';
@@ -12,9 +11,11 @@ import type React from 'react';
 import {
   BoxArrowUpRight,
   FileEarmarkArrowUp,
+  FileEarmarkText,
   Sliders2Vertical,
   Tag,
   Trash,
+  VolumeUp,
 } from 'react-bootstrap-icons';
 
 import './Project.css';
@@ -82,15 +83,9 @@ export const Project: React.FC<Props> = (props) => {
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
           <div className='project-top-bar-buttons'>
-            <a href={`/${lang}/projects/${props.projectSlug}/settings`}>
-              <Button className='outline' variant='outline'>
-                <GearIcon />
-                {t['Settings']}
-              </Button>
-            </a>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button className='outline' variant='outline'>
+                <Button className='primary'>
                   <Tag />
                   {t['Tags']}
                 </Button>
@@ -122,16 +117,20 @@ export const Project: React.FC<Props> = (props) => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-            <Button className='primary'>
-              <span>{t['View']}</span>
-              <OpenInNewWindowIcon color='white' />
-            </Button>
+            <a
+              className='settings-button'
+              href={`/${lang}/projects/${props.projectSlug}/settings`}
+            >
+              <GearIcon />
+            </a>
           </div>
         </div>
         <p>{props.project.project.description}</p>
         <Tabs
           tabs={[
             {
+              count: Object.keys(props.project.events).length,
+              icon: VolumeUp,
               title: t['Events'],
               component: (
                 <Table
@@ -202,6 +201,8 @@ export const Project: React.FC<Props> = (props) => {
               ),
             },
             {
+              icon: FileEarmarkText,
+              count: Object.keys(props.project.pages).length,
               title: t['Pages'],
               component: (
                 <PageList
