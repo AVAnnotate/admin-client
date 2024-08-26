@@ -57,8 +57,8 @@ export const Project: React.FC<Props> = (props) => {
     window.location.pathname = `/${lang}/projects/${props.projectSlug}/sets`;
   };
 
-  const handleNavToTags = () => {
-    window.location.pathname = `/${lang}/projects/${props.projectSlug}/tags`;
+  const handleNavToSettings = () => {
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}/settings`;
   };
 
   return (
@@ -83,16 +83,24 @@ export const Project: React.FC<Props> = (props) => {
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
           <div className='project-top-bar-buttons'>
+            <a href={`/${lang}/projects/${props.projectSlug}/tags`}>
+              <Button className='primary'>
+                <Tag />
+                {t['Tags']}
+              </Button>
+            </a>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button className='primary'>
-                  <Tag />
-                  {t['Tags']}
+                <Button className='settings-button'>
+                  <GearIcon />
                 </Button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content className='dropdown-content'>
-                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={handleNavToSettings}
+                  >
                     {t['Settings']}
                     <Sliders2Vertical />
                   </DropdownMenu.Item>
@@ -103,10 +111,7 @@ export const Project: React.FC<Props> = (props) => {
                     {t['Annotation Sets']}
                     <Chats />
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item
-                    className='dropdown-item project-dropdown-item'
-                    onClick={handleNavToTags}
-                  >
+                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
                     {t['View']}
                     <BoxArrowUpRight />
                   </DropdownMenu.Item>
@@ -117,12 +122,6 @@ export const Project: React.FC<Props> = (props) => {
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
-            <a
-              className='settings-button'
-              href={`/${lang}/projects/${props.projectSlug}/settings`}
-            >
-              <GearIcon />
-            </a>
           </div>
         </div>
         <p>{props.project.project.description}</p>
