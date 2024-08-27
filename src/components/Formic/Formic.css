@@ -351,3 +351,7 @@
   height: 40px;
   width: 80px;
 }
+
+.formic-form-error {
+  color: red;
+}

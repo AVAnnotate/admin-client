@@ -59,7 +59,11 @@ export const TextInput = (props: TextInputProps) => {
           {props.bottomNote}
         </div>
       )}
-      <ErrorMessage name={props.name} component='div' />
+      <ErrorMessage
+        name={props.name}
+        component='div'
+        className='formic-form-error'
+      />
     </div>
   );
 };

@@ -57,7 +57,7 @@ export const NewProject = (props: NewProjectProps) => {
       body: JSON.stringify(body),
     }).then((result) => {
       setSaving(false);
-      window.location.pathname = `/${lang}/projects`;
+      window.location.pathname = `/${lang}/projects/${project.github_org}+${project.slug}`;
     });
   };
 
