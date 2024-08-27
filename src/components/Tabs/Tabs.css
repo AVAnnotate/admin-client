@@ -12,17 +12,19 @@
   flex-shrink: 0;
   display: flex;
   border-bottom: 2px solid #e5e5e5;
+  gap: 8px;
 }
 
 .tabs .tab-trigger {
   height: 40px;
-  width: 95px;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 8px;
   line-height: 1;
   background-color: transparent !important;
-  color: var(--black) !important;
+  color: var(--gray-500);
+  font-weight: 600;
 }
 
 .tabs .tab-trigger:hover {
@@ -30,10 +32,37 @@
   box-shadow: none;
 }
 
-.tab-trigger[data-state='active'] {
+.tabs .tab-trigger[data-state='active'] {
+  box-shadow: 0 2px 0 0 var(--primary);
+  color: var(--gray-900);
+}
+
+.tabs .tab-trigger[data-state='active']:hover {
   box-shadow: 0 2px 0 0 var(--primary);
 }
 
-.tab-trigger[data-state='active']:hover {
-  box-shadow: 0 2px 0 0 var(--primary);
+.tabs .tab-trigger .tab-count {
+  background-color: var(--gray-200);
+  font-size: 10px;
+  padding: 0 5px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.tabs .tab-trigger[data-state='active'] .tab-count {
+  background-color: var(--primary);
+  color: #fff;
+}
+
+.tabs .tab-trigger .tab-icon svg {
+  height: 20px;
+  width: 20px;
+  color: var(--gray-500);
+}
+.tabs .tab-trigger[data-state='active'] .tab-icon svg {
+  color: var(--gray-900);
 }

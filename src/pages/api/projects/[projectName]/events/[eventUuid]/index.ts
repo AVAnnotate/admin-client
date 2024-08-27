@@ -2,7 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { Annotation, UserInfo } from '@ty/Types.ts';
+import type { UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 

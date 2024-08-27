@@ -10,11 +10,13 @@ import type { MeatballMenuItem } from '@ty/ui.ts';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 
 interface Row {
+  className?: string;
   title: string;
   property:
     | string
     | ((...args: any) => string | React.ReactElement | React.ReactElement[]);
   sortable?: boolean;
+  width?: number | string;
 }
 
 interface Props {
@@ -31,6 +33,7 @@ interface Props {
     onClick?: () => any;
   }[];
   rowButtons?: MeatballMenuItem[];
+  onRowClick?: (row: any) => any;
 }
 
 interface Sort {
@@ -54,6 +57,7 @@ export const Table: React.FC<Props> = ({
   rows,
   searchAttribute,
   rowButtons,
+  onRowClick,
   showHeaderRow = true,
 }) => {
   const [currentSort, setCurrentSort] = useState<Sort>({
@@ -111,7 +115,7 @@ export const Table: React.FC<Props> = ({
         <div className='right-header'>
           {sortableRows.length > 0 && (
             <Dropdown.Root modal={false}>
-              <Dropdown.Trigger className='sort-button outline'>
+              <Dropdown.Trigger className='sort-button'>
                 {currentSort.direction === 'asc' ? (
                   <SortAlphaUp color='black' />
                 ) : (
@@ -180,7 +184,10 @@ export const Table: React.FC<Props> = ({
           {showHeaderRow && (
             <RadixTable.Row>
               {rows.map((row) => (
-                <RadixTable.ColumnHeaderCell key={row.title}>
+                <RadixTable.ColumnHeaderCell
+                  key={row.title}
+                  style={{ width: row.width }}
+                >
                   {row.title}
                 </RadixTable.ColumnHeaderCell>
               ))}
@@ -191,9 +198,17 @@ export const Table: React.FC<Props> = ({
           {sortedItems.length > 0 ? (
             <>
               {sortedItems.map((item, idx) => (
-                <RadixTable.Row key={idx}>
+                <RadixTable.Row
+                  key={idx}
+                  className={onRowClick ? 'clickable-row' : undefined}
+                >
                   {rows.map((row, rowIndex) => (
-                    <RadixTable.Cell key={rowIndex}>
+                    <RadixTable.Cell
+                      className={row.className || ''}
+                      style={{ width: row.width }}
+                      key={rowIndex}
+                      onClick={onRowClick ? () => onRowClick(item) : undefined}
+                    >
                       {getCellValue(item, row)}
                     </RadixTable.Cell>
                   ))}

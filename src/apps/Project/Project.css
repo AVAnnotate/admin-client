@@ -16,5 +16,38 @@
 
 .project-container .project-top-bar .project-top-bar-buttons {
   display: flex;
+  align-items: center;
   gap: 12px;
+}
+
+.project-container .project-top-bar .project-top-bar-buttons .settings-button {
+  padding: 5px;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+}
+
+.project-container
+  .project-top-bar
+  .project-top-bar-buttons
+  .settings-button:hover {
+  background: var(--gray-400);
+}
+
+.project-container
+  .project-top-bar
+  .project-top-bar-buttons
+  .settings-button
+  svg {
+  color: var(--gray-900);
+  height: 24px;
+  width: 24px;
+}
+
+.project-dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
