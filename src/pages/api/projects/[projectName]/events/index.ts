@@ -80,21 +80,23 @@ export const POST: APIRoute = async ({
       )
     );
 
-    // generate default set
-    const defaultSetUuid = uuidv4();
+    // generate default annotation set for each AV file
+    Object.keys(ev!.audiovisual_files).forEach((key) => {
+      const defaultSetUuid = uuidv4();
 
-    writeFile(
-      `/data/annotations/${defaultSetUuid}.json`,
-      JSON.stringify(
-        {
-          ...setTemplate,
-          event_id: uuid,
-          source_id: Object.keys(ev!.audiovisual_files)[0],
-        },
-        null,
-        2
-      )
-    );
+      writeFile(
+        `/data/annotations/${defaultSetUuid}.json`,
+        JSON.stringify(
+          {
+            ...setTemplate,
+            event_id: uuid,
+            source_id: key,
+          },
+          null,
+          2
+        )
+      );
+    });
 
     uuids.push(uuid);
   });

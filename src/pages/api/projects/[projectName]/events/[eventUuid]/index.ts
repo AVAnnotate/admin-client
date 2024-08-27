@@ -1,10 +1,12 @@
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
+import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
+import { v4 as uuidv4 } from 'uuid';
 
 const setup = async (cookies: AstroCookies) => {
   const token = cookies.get('access-token');
@@ -45,7 +47,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { writeFile, commitAndPush } = await gitRepo({
+  const { readFile, writeFile, commitAndPush } = await gitRepo({
     fs: initFs(),
     repositoryURL,
     branch: 'main',
@@ -54,7 +56,32 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const filepath = `/data/events/${eventUuid}.json`;
 
-  writeFile(filepath, JSON.stringify(event));
+  const originalEvent = JSON.parse(readFile(filepath) as string);
+
+  // if any new AV files were added, we need to create a default annotation set
+  const newAvFiles = Object.keys(event.audiovisual_files).filter(
+    (key) => !originalEvent.audiovisual_files[key]
+  );
+
+  newAvFiles.forEach((key) => {
+    const defaultSetUuid = uuidv4();
+
+    writeFile(
+      `/data/annotations/${defaultSetUuid}.json`,
+      JSON.stringify(
+        {
+          ...setTemplate,
+          event_id: eventUuid,
+          source_id: key,
+        },
+        null,
+        2
+      )
+    );
+  });
+
+  // now update the event file
+  writeFile(filepath, JSON.stringify(event, null, 2));
 
   const successCommit = await commitAndPush(`Updated event ${eventUuid}`);
 
