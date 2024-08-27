@@ -4,7 +4,6 @@ import { Button } from '@radix-ui/themes';
 import {
   DownloadIcon,
   GearIcon,
-  OpenInNewWindowIcon,
   Pencil2Icon,
   PlusIcon,
 } from '@radix-ui/react-icons';
@@ -12,8 +11,11 @@ import type React from 'react';
 import {
   BoxArrowUpRight,
   FileEarmarkArrowUp,
+  FileEarmarkText,
+  Sliders2Vertical,
   Tag,
   Trash,
+  VolumeUp,
 } from 'react-bootstrap-icons';
 
 import './Project.css';
@@ -22,6 +24,8 @@ import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
 import { useMemo, useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { Chats } from '@phosphor-icons/react/dist/icons/Chats';
 
 interface Props {
   i18n: Translations;
@@ -49,8 +53,12 @@ export const Project: React.FC<Props> = (props) => {
     [props.project.events]
   );
 
-  const handleNavToTags = () => {
-    window.location.pathname = `/${lang}/projects/${props.projectSlug}/tags`;
+  const handleNavToSets = () => {
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}/sets`;
+  };
+
+  const handleNavToSettings = () => {
+    window.location.pathname = `/${lang}/projects/${props.projectSlug}/settings`;
   };
 
   return (
@@ -75,30 +83,53 @@ export const Project: React.FC<Props> = (props) => {
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
           <div className='project-top-bar-buttons'>
-            <a href={`/${lang}/projects/${props.projectSlug}/settings`}>
-              <Button className='outline' variant='outline'>
-                <GearIcon />
-                {t['Settings']}
+            <a href={`/${lang}/projects/${props.projectSlug}/tags`}>
+              <Button className='primary'>
+                <Tag />
+                {t['Tags']}
               </Button>
             </a>
-            <Button
-              className='outline'
-              variant='outline'
-              onClick={handleNavToTags}
-            >
-              <Tag />
-              {t['Tags']}
-            </Button>
-            <Button className='primary'>
-              <span>{t['View']}</span>
-              <OpenInNewWindowIcon color='white' />
-            </Button>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <Button className='settings-button'>
+                  <GearIcon />
+                </Button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className='dropdown-content'>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={handleNavToSettings}
+                  >
+                    {t['Settings']}
+                    <Sliders2Vertical />
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={handleNavToSets}
+                  >
+                    {t['Annotation Sets']}
+                    <Chats />
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
+                    {t['View']}
+                    <BoxArrowUpRight />
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
+                    {t['Export']}
+                    <DownloadIcon />
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           </div>
         </div>
         <p>{props.project.project.description}</p>
         <Tabs
           tabs={[
             {
+              count: Object.keys(props.project.events).length,
+              icon: VolumeUp,
               title: t['Events'],
               component: (
                 <Table
@@ -123,6 +154,9 @@ export const Project: React.FC<Props> = (props) => {
                     },
                   ]}
                   items={eventsWithUuids}
+                  onRowClick={(item) =>
+                    (window.location.pathname = `${window.location.pathname}/events/${item.uuid}`)
+                  }
                   rows={[
                     {
                       title: t['Name'],
@@ -144,13 +178,16 @@ export const Project: React.FC<Props> = (props) => {
                   ]}
                   rowButtons={[
                     {
-                      label: t['Open'],
+                      label: t['Open in new tab'],
                       icon: BoxArrowUpRight,
                       onClick: (item: EventWithUuid) =>
-                        (window.location.href = `${window.location.href}/events/${item.uuid}`),
+                        window.open(
+                          `${window.location.href}/events/${item.uuid}`,
+                          '_blank'
+                        ),
                     },
                     {
-                      label: t['Edit'],
+                      label: t['Edit Settings'],
                       icon: Pencil2Icon,
                       onClick: (item: EventWithUuid) =>
                         (window.location.href = `${window.location.href}/events/${item.uuid}/edit`),
@@ -169,6 +206,8 @@ export const Project: React.FC<Props> = (props) => {
               ),
             },
             {
+              icon: FileEarmarkText,
+              count: Object.keys(props.project.pages).length,
               title: t['Pages'],
               component: (
                 <PageList

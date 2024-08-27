@@ -2,8 +2,8 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { apiAnnotationPost } from '@ty/api.ts';
 import type { AnnotationEntry, AnnotationPage } from '@ty/Types.ts';
+import type { apiAnnotationPost, apiAnnotationSetPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -14,6 +14,52 @@ const setup = async (cookies: AstroCookies) => {
   const info = await userInfo(cookies);
 
   return { token, info };
+};
+
+export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
+  const { projectName, eventUuid, annotationSetUuid } = params;
+
+  const { token, info } = await setup(cookies);
+
+  if (!token || !info || !projectName || !eventUuid || !annotationSetUuid) {
+    return redirect('/', 307);
+  }
+
+  const repositoryURL = getRepositoryUrl(projectName);
+
+  const fs = initFs();
+
+  const { commitAndPush, exists, deleteFile } = await gitRepo({
+    fs,
+    repositoryURL,
+    branch: 'main',
+    userInfo: info,
+  });
+
+  const filePath = `/data/annotations/${annotationSetUuid}.json`;
+
+  if (!exists(filePath)) {
+    return new Response(null, {
+      status: 400,
+      statusText: "Annotation file doesn't exist.",
+    });
+  }
+
+  deleteFile(filePath);
+
+  const commitMessage = `Deleted annotation set ${annotationSetUuid}`;
+
+  const successCommit = await commitAndPush(commitMessage);
+
+  if (successCommit.error) {
+    console.error('Failed to delete set: ', successCommit.error);
+    return new Response(null, {
+      status: 500,
+      statusText: 'Failed to delete set: ' + successCommit.error,
+    });
+  }
+
+  return new Response('ok', { status: 200 });
 };
 
 export const POST: APIRoute = async ({
@@ -101,4 +147,63 @@ export const POST: APIRoute = async ({
   }
 
   return new Response(JSON.stringify(newAnnos), { status: 200 });
+};
+
+export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
+  const { projectName, eventUuid, annotationSetUuid } = params;
+
+  const { token, info } = await setup(cookies);
+
+  if (!token || !info || !projectName || !eventUuid || !annotationSetUuid) {
+    return redirect('/', 307);
+  }
+
+  const repositoryURL = getRepositoryUrl(projectName);
+
+  const body: apiAnnotationSetPut = await request.json();
+
+  const fs = initFs();
+
+  const { commitAndPush, exists, readFile, writeFile } = await gitRepo({
+    fs,
+    repositoryURL,
+    branch: 'main',
+    userInfo: info,
+  });
+
+  const filePath = `/data/annotations/${annotationSetUuid}.json`;
+
+  if (!exists(filePath)) {
+    return new Response(null, {
+      status: 400,
+      statusText: "Annotation file doesn't exist.",
+    });
+  }
+
+  const annos: AnnotationPage = JSON.parse(readFile(filePath) as string);
+
+  if (annos.event_id !== eventUuid) {
+    return new Response(null, {
+      status: 400,
+      statusText: 'Annotation file is not part of this project.',
+    });
+  }
+
+  annos.set = body.set;
+
+  writeFile(filePath, JSON.stringify(annos, null, '  '));
+
+  const commitMessage = `Updated name of annotation set ${annotationSetUuid} to ${body.set}`;
+
+  const successCommit = await commitAndPush(commitMessage);
+
+  if (successCommit.error) {
+    console.error('Failed to write set data: ', successCommit.error);
+    return new Response(null, {
+      status: 500,
+      statusText: 'Failed to write set data: ' + successCommit.error,
+    });
+  }
+
+  return new Response('ok', { status: 200 });
 };

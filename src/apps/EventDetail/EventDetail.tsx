@@ -1,5 +1,6 @@
 import type {
   AnnotationEntry,
+  AnnotationPage,
   Event,
   ProjectData,
   Translations,
@@ -27,6 +28,8 @@ import { SetSelect } from './SetSelect.tsx';
 import { AvFilePicker } from './AvFilePicker.tsx';
 import { AnnotationTable } from './AnnotationTable.tsx';
 import { exportAnnotations } from '@lib/events/export.ts';
+import { SetFormModal } from '@components/SetModal/SetModal.tsx';
+import type { apiAnnotationSetPost } from '@ty/api.ts';
 
 interface EventDetailProps {
   event: Event;
@@ -85,6 +88,27 @@ const onSubmitAdd = async (newAnno: AnnotationEntry, baseUrl: string) => {
   }
 };
 
+const onSubmitCreateSet = async (
+  newSet: apiAnnotationSetPost,
+  baseUrl: string
+) => {
+  const res = await fetch(baseUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      event_id: newSet.event_id,
+      set: newSet.set,
+      source_id: newSet.source_id,
+    }),
+  });
+
+  if (res.ok) {
+    window.location.reload();
+  }
+};
+
 const onSubmitEdit = async (editAnno: AnnotationEntry, baseUrl: string) => {
   const res = await fetch(`${baseUrl}/${editAnno.uuid}`, {
     method: 'PUT',
@@ -122,6 +146,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   // UUID of the annotation currently selected for editing
   const [editAnnoUuid, setEditAnnoUuid] = useState('');
 
+  const [showAddSetModal, setShowAddSetModal] = useState(false);
   const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
   const [showAnnoCreateModal, setShowAnnoCreateModal] = useState(false);
   const [search, setSearch] = useState('');
@@ -187,12 +212,17 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
   const baseUrl = useMemo(
     () =>
-      `/api/projects/${props.projectSlug}/events/${props.eventUuid}/annotations/${currentSetUuid}`,
+      `/api/projects/${props.projectSlug}/events/${props.eventUuid}/annotations`,
     [props.projectSlug, props.eventUuid, currentSetUuid]
   );
 
+  const setUrl = useMemo(
+    () => `${baseUrl}/${currentSetUuid}`,
+    [baseUrl, currentSetUuid]
+  );
+
   const onCreate = async (body: AnnotationEntry) => {
-    const newAnno = await onSubmitAdd(body, baseUrl);
+    const newAnno = await onSubmitAdd(body, setUrl);
 
     if (newAnno && newAnno.length > 0) {
       setAllAnnotations((oldAnnos) => {
@@ -210,15 +240,12 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   };
 
   const onDelete = async () => {
-    const res = await fetch(
-      `/api/projects/${props.projectSlug}/events/${props.eventUuid}/annotations/${currentSetUuid}/${deleteAnnoUuid}`,
-      {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    const res = await fetch(`${setUrl}/${deleteAnnoUuid}`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
 
     if (res.ok) {
       setAllAnnotations((oldAnnos) => {
@@ -239,7 +266,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   };
 
   const onEdit = async (body: AnnotationEntry) => {
-    const newAnno = await onSubmitEdit(body, baseUrl);
+    const newAnno = await onSubmitEdit(body, setUrl);
 
     if (newAnno) {
       setAllAnnotations((oldAnnos) => {
@@ -257,6 +284,16 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     }
 
     setEditAnnoUuid('');
+  };
+
+  const onCreateSet = async (name: string) => {
+    const newSet = {
+      event_id: props.eventUuid,
+      set: name,
+      source_id: avFile,
+    };
+
+    await onSubmitCreateSet(newSet, baseUrl);
   };
 
   return (
@@ -279,6 +316,14 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           i18n={props.i18n}
           title={t['Edit Annotation']}
           project={props.project}
+        />
+      )}
+      {showAddSetModal && (
+        <SetFormModal
+          i18n={props.i18n}
+          title={t['Create Annotation Set']}
+          onClose={() => setShowAddSetModal(false)}
+          onSave={onCreateSet}
         />
       )}
       {showAnnoCreateModal && (
@@ -377,7 +422,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                   }
                 />
               )}
-              <Button className='primary add-set-button'>
+              <Button
+                className='primary add-set-button'
+                onClick={() => setShowAddSetModal(true)}
+              >
                 {t['Add Set']}
                 <PlusIcon />
               </Button>

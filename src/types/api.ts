@@ -16,6 +16,15 @@ export type apiAnnotationPost = Omit<AnnotationEntry, 'uuid'> | Omit<AnnotationE
 
 export type apiAnnotationPut = Omit<AnnotationEntry, 'uuid'>;
 
+// You can only change the name via a PUT request
+export type apiAnnotationSetPut = { set: string };
+
+export type apiAnnotationSetPost = {
+  event_id: string;
+  set: string;
+  source_id: string;
+};
+
 export type apiProjectsProjectNamePost = {
   templateRepo: string;
   description: string;
