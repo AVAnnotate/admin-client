@@ -8,7 +8,7 @@ import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { UserInfo, Project, ProjectFile } from '@ty/Types.ts';
+import type { UserInfo, Project, ProjectFile, Page } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { delay } from '@lib/utility/index.ts';
 import {
@@ -16,6 +16,7 @@ import {
   addCollaborators,
   parseSlug,
 } from '@backend/projectHelpers.ts';
+import { v4 as uuidv4 } from 'uuid';
 
 // Note: this POST route is the only /api/projects route that expects the
 // `projectName` param to be the bare name instead of the slug version that
@@ -156,7 +157,7 @@ export const POST: APIRoute = async ({
 
     const success = await writeFile(
       '/data/project.json',
-      JSON.stringify(project)
+      JSON.stringify(project, null, 2)
     );
 
     if (!success) {
@@ -164,6 +165,33 @@ export const POST: APIRoute = async ({
       return new Response(null, {
         status: 500,
         statusText: 'Failed to write project data',
+      });
+    }
+
+    // If autogenerate home page is on go ahead and create it
+    const homePage: Page = {
+      content: [],
+      created_at: new Date().toISOString(),
+      created_by: info!.profile.gitHubName || '',
+      title: body.title,
+      updated_at: '',
+      updated_by: '',
+      autogenerate: {
+        enabled: body.autoPopulateHomePage,
+        type: 'home',
+      },
+    };
+
+    const successPage = await writeFile(
+      `/data/pages/${uuidv4()}.json`,
+      JSON.stringify(homePage, null, 2)
+    );
+
+    if (!successPage) {
+      console.error('Failed to write project home page');
+      return new Response(null, {
+        status: 500,
+        statusText: 'Failed to write project home page',
       });
     }
 
