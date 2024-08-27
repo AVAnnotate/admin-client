@@ -36,8 +36,6 @@ interface FormData {
   set: string;
 }
 
-// todo: translate 00:00:00 timestamps to number of seconds
-// todo: translate comma-separated tags into tag objects
 const onSubmit = async (
   body: FormData,
   headerMap: { [key: string]: number },
