@@ -48,6 +48,7 @@
     "slate-react": "^0.105.0",
     "typescript": "^5.4.5",
     "uuid": "^10.0.0",
+    "webvtt-parser": "^2.2.0",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
   },
   "devDependencies": {
