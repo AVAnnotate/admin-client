@@ -1,4 +1,5 @@
-import { annotationsToVtt, vttToAnnotations } from './src/lib/VTT/index';
+// @ts-ignore
+import { annotationsToVtt, vttToAnnotations } from './src/lib/VTT/index.ts';
 // @ts-ignore
 import data from './data/test-annotations.json';
 
