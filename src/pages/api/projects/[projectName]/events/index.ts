@@ -1,6 +1,7 @@
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
+import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { apiEventsPost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
@@ -52,11 +53,6 @@ export const POST: APIRoute = async ({
   });
 
   let uuids: string[] = [];
-
-  const setTemplate = {
-    annotations: [],
-    set: 'Default',
-  };
 
   // Create the events folder if it doesn't exist
   if (!exists('/data/events')) {

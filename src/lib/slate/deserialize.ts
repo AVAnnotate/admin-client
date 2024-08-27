@@ -6,13 +6,12 @@ let Node;
 // So here we check if we're running in a browser, and if so, we use the
 // browser's own Node class. We only import and use JSOM if we're running
 // on the backend.
-if (window) {
+if (typeof window !== 'undefined') {
   Node = window.Node;
 } else {
-  const { JSDOM } = await import('jsdom')
+  const { JSDOM } = await import('jsdom');
   Node = new JSDOM('').window.Node;
 }
-
 
 export const deserialize = (
   el: DocumentFragment | ChildNode,
