@@ -1,9 +1,9 @@
-import type React from 'react'
-import type { MeatballMenuItem } from '@ty/ui.ts'
+import type React from 'react';
+import type { MeatballMenuItem } from '@ty/ui.ts';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { DotsHorizontalIcon } from '@radix-ui/react-icons';
 
-import './MeatballMenu.css'
+import './MeatballMenu.css';
 
 interface Props {
   buttons: MeatballMenuItem[];
@@ -18,18 +18,22 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
       </Dropdown.Trigger>
       <Dropdown.Portal>
         <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
-          {buttons.map(but => (
-            <Dropdown.Item
-              className='dropdown-item'
-              key={but.label}
-              onClick={async () => await but.onClick!(row)}
-            >
-              {but.icon && <but.icon />}
-              {but.label}
-            </Dropdown.Item>
-          ))}
+          {buttons
+            .filter((but) =>
+              but.displayCondition ? but.displayCondition(row) : true
+            )
+            .map((but) => (
+              <Dropdown.Item
+                className='dropdown-item'
+                key={but.label}
+                onClick={async () => await but.onClick!(row)}
+              >
+                {but.icon && <but.icon />}
+                {but.label}
+              </Dropdown.Item>
+            ))}
         </Dropdown.Content>
       </Dropdown.Portal>
     </Dropdown.Root>
-  )
-}
+  );
+};

@@ -27,6 +27,7 @@ import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
 import { SetSelect } from './SetSelect.tsx';
 import { AvFilePicker } from './AvFilePicker.tsx';
 import { AnnotationTable } from './AnnotationTable.tsx';
+import { exportAnnotations } from '@lib/events/export.ts';
 import { SetFormModal } from '@components/SetModal/SetModal.tsx';
 import type { apiAnnotationSetPost } from '@ty/api.ts';
 
@@ -83,7 +84,7 @@ const onSubmitAdd = async (newAnno: AnnotationEntry, baseUrl: string) => {
   });
 
   if (res.ok) {
-    return (await res.json()) as AnnotationEntry;
+    return (await res.json()) as AnnotationEntry[];
   }
 };
 
@@ -223,11 +224,11 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const onCreate = async (body: AnnotationEntry) => {
     const newAnno = await onSubmitAdd(body, setUrl);
 
-    if (newAnno) {
+    if (newAnno && newAnno.length > 0) {
       setAllAnnotations((oldAnnos) => {
         if (currentSetUuid) {
           const updatedEntry = { ...oldAnnos[currentSetUuid] };
-          updatedEntry.annotations.push(newAnno);
+          updatedEntry.annotations.push(newAnno[0]);
           return { ...oldAnnos, [currentSetUuid]: updatedEntry };
         } else {
           return {};
@@ -455,11 +456,28 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                 />
                 <MagnifyingGlassIcon />
               </div>
-              <Button className='csv-button' type='button'>
-                <DownloadIcon />
-                {t['CSV']}
-              </Button>
-              <Button className='primary'>
+              {currentSetUuid && (
+                <Button
+                  className='csv-button'
+                  onClick={() =>
+                    exportAnnotations(
+                      allAnnotations[currentSetUuid].annotations,
+                      props.event,
+                      avFile
+                    )
+                  }
+                  type='button'
+                >
+                  <DownloadIcon />
+                  {t['CSV']}
+                </Button>
+              )}
+              <Button
+                className='primary'
+                onClick={() =>
+                  (window.location.pathname = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`)
+                }
+              >
                 <FileEarmarkArrowUp />
                 {t['import']}
               </Button>

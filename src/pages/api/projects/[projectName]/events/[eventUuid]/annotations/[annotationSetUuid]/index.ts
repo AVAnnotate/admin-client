@@ -2,8 +2,8 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import type { AnnotationEntry, AnnotationPage } from '@ty/Types.ts';
 import type { apiAnnotationPost, apiAnnotationSetPut } from '@ty/api.ts';
-import type { AnnotationPage } from '@ty/Types.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -107,16 +107,34 @@ export const POST: APIRoute = async ({
     });
   }
 
-  const newAnno = {
-    ...body,
-    uuid: uuidv4(),
-  };
+  let count = 0;
+  const newAnnos: AnnotationEntry[] = []
 
-  annos.annotations.push(newAnno);
+  // this endpoint excepts either a single annotation object,
+  // or an array of annotation objects (used by the import feature)
+  if (Array.isArray(body)) {
+    body.forEach(anno => {
+      const newAnno = {
+        ...anno,
+        uuid: uuidv4()
+      }
+
+      newAnnos.push(newAnno)
+      count += 1
+    })
+  } else {
+    newAnnos.push({
+      ...body,
+      uuid: uuidv4(),
+    })
+    count = 1
+  }
+
+  annos.annotations = annos.annotations.concat(newAnnos)
 
   writeFile(filePath, JSON.stringify(annos, null, '  '));
 
-  const commitMessage = `Added annotation ${newAnno.uuid} to annotation file ${annotationSetUuid} in event ${eventUuid}`;
+  const commitMessage = `Added ${count || '1'} annotation${count === 1 ? '' : 's'} to set ${annotationSetUuid} in event ${eventUuid}`;
 
   const successCommit = await commitAndPush(commitMessage);
 
@@ -128,7 +146,7 @@ export const POST: APIRoute = async ({
     });
   }
 
-  return new Response(JSON.stringify(newAnno), { status: 200 });
+  return new Response(JSON.stringify(newAnnos), { status: 200 });
 };
 
 export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {

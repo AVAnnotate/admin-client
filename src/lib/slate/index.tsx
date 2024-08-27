@@ -157,9 +157,9 @@ export const serialize = (nodes: Node[]) => {
           {children}
         </Element>
       );
+    } else {
+      return <Element element={node} key={idx} />;
     }
-
-    return <Element element={node} key={idx} />;
   });
 };
 

@@ -51,6 +51,23 @@ export const formatTimestamp = (seconds: number, includeMs = true) => {
   return str;
 };
 
+export const fromTimestamp = (str: string): number => {
+  const split = str.split(':').map((i) => parseInt(i));
+
+  switch (split.length) {
+    case 1:
+      return split[0];
+    case 2:
+      return split[0] * 60 + split[1];
+    case 3:
+      return split[0] * 3600 + split[1] * 60 + split[2];
+    case 4:
+      return split[0] * 86400 + split[1] * 3600 + split[2] * 60 + split[3];
+    default:
+      return fromTimestamp(split.slice(-3).join(':'));
+  }
+};
+
 // util function for testing tag equality
 export const matchTag = (tag1: Tag, tag2: Tag) =>
   tag1.category.toLowerCase() === tag2.category.toLowerCase() &&

@@ -48,5 +48,8 @@
   "Annotation": "Annotation",
   "Set": "Set",
   "Add Set": "Add Set",
-  "All Annotations": "All Annotations"
+  "All Annotations": "All Annotations",
+  "Import Annotations": "Import Annotations",
+  "Import Annotation File": "Import Annotation File",
+  "Tags (comma separated)": "Tags (comma separated)"
 }

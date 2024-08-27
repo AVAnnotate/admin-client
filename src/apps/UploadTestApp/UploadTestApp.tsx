@@ -2,6 +2,7 @@ import { mapAnnotationData, parseSpreadsheetData } from '@lib/parse/index.ts';
 import './UploadTestApp.css';
 import { useState } from 'react';
 import type { AnnotationEntry, ParseAnnotationResults } from '@ty/Types.ts';
+import { v4 as uuidv4 } from 'uuid';
 
 export const UploadTestApp = (_props: any) => {
   const [output, setOutput] = useState<ParseAnnotationResults | undefined>();
@@ -30,7 +31,7 @@ export const UploadTestApp = (_props: any) => {
         end_time: 1,
         annotation: 2,
         tags: 3,
-      });
+      }).map((anno) => ({ ...anno, uuid: uuidv4() }));
 
       setMap(results);
     }

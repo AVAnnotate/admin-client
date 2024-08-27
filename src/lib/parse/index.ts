@@ -7,6 +7,8 @@ import type {
 import { read, utils } from 'xlsx';
 import { v4 as uuidv4 } from 'uuid';
 import tagColors from '@lib/tag-colors.ts';
+import { fromTimestamp } from '@lib/events/index.ts';
+import { deserialize } from '@lib/slate/deserialize.ts';
 
 export const parseSpreadsheetData = async (
   data: File,
@@ -16,7 +18,7 @@ export const parseSpreadsheetData = async (
 
   const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-  const annotations: any[] = utils.sheet_to_json(firstSheet, { header: 1 });
+  const annotations: any[] = utils.sheet_to_json(firstSheet, { header: 1, raw: false });
 
   let headers: string[] = [];
   if (hasColumnHeaders) {
@@ -33,19 +35,27 @@ export const parseSpreadsheetData = async (
   return ret;
 };
 
+// Prepare the annotations for the POST request.
+// Note that we don't assign UUIDs here. That is handled
+// on the backend.
 export const mapAnnotationData = (
   data: any[],
   map: { [key: string]: number }
-): AnnotationEntry[] => {
-  const ret: AnnotationEntry[] = [];
+): Omit<AnnotationEntry, 'uuid'>[] => {
+  const ret: Omit<AnnotationEntry, 'uuid'>[] = [];
 
   data.forEach((d) => {
+    const template = document.createElement('template')
+    template.innerHTML = d[map['annotation']]
+
     ret.push({
-      uuid: uuidv4(),
-      start_time: d[map['start_time']],
-      end_time: d[map['end_time']],
-      annotation: d[map['annotation']],
-      tags: d[map['tags']],
+      start_time: fromTimestamp(d[map['start_time']]),
+      end_time: fromTimestamp(d[map['end_time']]),
+      annotation: [deserialize(template.content.firstChild!)],
+      tags: d[map['tags']] ? (d[map['tags']] as string).split(',').map(tag => ({
+        category: 'uncategorized',
+        tag
+      })) : [],
     });
   });
 

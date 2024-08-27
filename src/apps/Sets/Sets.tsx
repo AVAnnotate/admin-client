@@ -14,9 +14,9 @@ interface Props {
   projectSlug: string;
 }
 
-interface SetWithUuid extends AnnotationPage {
+type SetWithUuid = AnnotationPage & {
   uuid: string;
-}
+};
 
 export const Sets: React.FC<Props> = (props) => {
   const [deleteSet, setDeleteSet] = useState<SetWithUuid | null>(null);
@@ -55,6 +55,27 @@ export const Sets: React.FC<Props> = (props) => {
       }
     }
   };
+
+  // List of AV files that contain multiple sets. We can't allow deleting the only set
+  // belonging to an AV file because it will lead to weird behavior in Event Detail.
+  const multiSetAvFiles = useMemo(() => {
+    const keys = Object.keys(props.project.annotations);
+
+    const seen: string[] = [];
+    const dupes: string[] = [];
+
+    for (let i = 0; i < keys.length; i++) {
+      const set = props.project.annotations[keys[i]];
+
+      if (seen.includes(set.source_id)) {
+        dupes.push(set.source_id);
+      } else {
+        seen.push(set.source_id);
+      }
+    }
+
+    return dupes;
+  }, [props.project]);
 
   return (
     <>
@@ -115,6 +136,8 @@ export const Sets: React.FC<Props> = (props) => {
                 label: t['Delete'],
                 onClick: (item: SetWithUuid) => setDeleteSet(item),
                 icon: Trash,
+                displayCondition: (item: SetWithUuid) =>
+                  multiSetAvFiles.includes(item.source_id),
               },
             ]}
             showHeaderRow={false}

@@ -1,6 +1,7 @@
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
+import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { apiEventsPost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
@@ -27,6 +28,13 @@ export const POST: APIRoute = async ({
   }
 
   const body: apiEventsPost = await request.json();
+
+  if (!body.event && !body.events) {
+    return new Response(null, {
+      status: 400,
+      statusText: 'Event body not found.',
+    });
+  }
 
   const created_at = new Date().toJSON();
   const created_by = info.profile.gitHubName as string;
@@ -59,14 +67,36 @@ export const POST: APIRoute = async ({
 
     writeFile(
       filepath,
-      JSON.stringify({
-        ...ev,
-        created_at,
-        created_by,
-        updated_at,
-        updated_by,
-      })
+      JSON.stringify(
+        {
+          ...ev,
+          created_at,
+          created_by,
+          updated_at,
+          updated_by,
+        },
+        null,
+        2
+      )
     );
+
+    // generate default annotation set for each AV file
+    Object.keys(ev!.audiovisual_files).forEach((key) => {
+      const defaultSetUuid = uuidv4();
+
+      writeFile(
+        `/data/annotations/${defaultSetUuid}.json`,
+        JSON.stringify(
+          {
+            ...setTemplate,
+            event_id: uuid,
+            source_id: key,
+          },
+          null,
+          2
+        )
+      );
+    });
 
     uuids.push(uuid);
   });

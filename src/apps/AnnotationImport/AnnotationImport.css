@@ -1,0 +1,41 @@
+.annotation-import-form {
+  padding-bottom: 120px;
+}
+
+.annotation-import-form .set-container {
+  border-top: 1px solid var(--gray-300);
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.annotation-import-form .set-container .formic-form-select {
+  width: auto;
+  max-width: 576px;
+}
+
+.annotation-import-form .spreadsheet-preview-table {
+  max-height: 300px;
+  overflow-y: auto;
+  background: #fff;
+  border-radius: 5px;
+}
+
+.annotation-import-form .bottom-bar-flex {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 20px;
+}
+
+.annotation-import-form .bottom-bar-flex button {
+  padding: 16px 18px 16px 18px;
+}
+
+.annotation-import-form .bottom-bar-flex .save-button {
+  width: 276px;
+}
+
+.annotation-import-form .bottom-bar-flex .cancel-button {
+  width: 176px;
+}
