@@ -110,7 +110,7 @@ const FormContents = (props: NewProjectFormProps) => {
             setSubmitting(false);
           }}
         >
-          {({ isSubmitting, values }) => (
+          {({ isSubmitting }) => (
             <Form>
               <h2>{t['General']}</h2>
               <div ref={generalRef} />

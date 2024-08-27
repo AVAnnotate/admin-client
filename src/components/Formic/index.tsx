@@ -29,7 +29,6 @@ interface TextInputProps {
   required?: boolean;
   bottomNote?: string;
   className?: string;
-  suggestedValue?: string;
 }
 
 export const TextInput = (props: TextInputProps) => {
