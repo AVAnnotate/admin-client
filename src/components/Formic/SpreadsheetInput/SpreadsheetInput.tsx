@@ -149,6 +149,7 @@ interface SpreadsheetInputProps {
   name: string;
   importAsOptions: DropdownOption[];
   isValid?(valid: boolean): void;
+  onHeaderMapChange?(headerMap: { [key: string]: number }): void;
 }
 
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
@@ -172,6 +173,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
       requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
         0
     );
+    props.onHeaderMapChange && props.onHeaderMapChange(headerMap);
   }, [values, headerMap]);
 
   const parseData = useCallback(
