@@ -122,7 +122,6 @@ export const PageList: React.FC<Props> = (props) => {
   };
 
   const handleDeletePage = async (uuid: string) => {
-    let copy: ProjectData = JSON.parse(JSON.stringify(project));
     setSaving(true);
     const res = await fetch(
       `/api/projects/${props.projectSlug}/pages/${uuid}`,
