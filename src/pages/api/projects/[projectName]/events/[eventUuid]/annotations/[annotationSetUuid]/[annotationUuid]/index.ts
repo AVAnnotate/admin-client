@@ -73,7 +73,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   annos.annotations.splice(deleteIdx, 1);
 
-  writeFile(filePath, JSON.stringify(annos, null, '  '));
+  writeFile(filePath, JSON.stringify(annos, null, 2));
 
   const commitMessage = `Deleted annotation ${annotationUuid}`;
 
@@ -155,7 +155,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   annos.annotations[matchIdx] = newBody;
 
-  writeFile(filePath, JSON.stringify(annos, null, '  '));
+  writeFile(filePath, JSON.stringify(annos, null, 2));
 
   const commitMessage = `Updated annotation ${annotationUuid}`;
 

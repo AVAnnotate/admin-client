@@ -37,7 +37,7 @@ export const POST: APIRoute = async ({
       const data = await dataResp.json();
 
       const results = await importIIIFManifest(
-        JSON.stringify(data),
+        JSON.stringify(data, null, 2),
         info.profile.gitHubName as string
       );
 
@@ -80,14 +80,17 @@ export const POST: APIRoute = async ({
             description: body.description || emptyParagraph,
             auto_generate_web_page: body.auto_generate_web_page,
           };
-          await writeFile(eventPath, JSON.stringify(event));
+          await writeFile(eventPath, JSON.stringify(event, null, 2));
 
           // Find any matching annotations
           for (let j = 0; j < results.annotations.length; j++) {
             const annoRec = results.annotations[j];
             if (annoRec.annotation.event_id === eventRec.id) {
               const annoPath = `/data/annotations/${annoRec.id}.json`;
-              await writeFile(annoPath, JSON.stringify(annoRec.annotation));
+              await writeFile(
+                annoPath,
+                JSON.stringify(annoRec.annotation, null, 2)
+              );
             }
           }
         }
@@ -117,7 +120,7 @@ export const POST: APIRoute = async ({
           }
         });
 
-        await writeFile('/data/project.json', JSON.stringify(project));
+        await writeFile('/data/project.json', JSON.stringify(project, null, 2));
       }
 
       const successCommit = await commitAndPush(

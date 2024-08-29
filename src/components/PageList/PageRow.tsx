@@ -9,6 +9,7 @@ import {
   BoxArrowUpRight,
   GripVertical,
   Trash,
+  FiletypeHtml,
 } from 'react-bootstrap-icons';
 
 interface Props {
@@ -19,6 +20,9 @@ interface Props {
   setPickedUp: (arg: DraggedPage | null) => void;
   i18n: Translations;
   onDrop: () => Promise<void>;
+  onDisableAutoGeneration(): void;
+  onReEnableAutoGeneration(): void;
+  onDelete(): void;
 }
 
 export const PageRow: React.FC<Props> = (props) => {
@@ -28,6 +32,14 @@ export const PageRow: React.FC<Props> = (props) => {
   );
 
   const { t } = props.i18n;
+
+  const meatballOptionsAutoGen = [
+    {
+      label: t['Disable Auto-Generation'],
+      icon: FiletypeHtml,
+      onClick: () => props.onDisableAutoGeneration(),
+    },
+  ];
 
   const meatballOptions = useMemo(() => {
     const options = [
@@ -44,6 +56,21 @@ export const PageRow: React.FC<Props> = (props) => {
       },
     ];
 
+    // Allow re-enabling autogenerate if the page is
+    // of type home or event
+    if (
+      props.project.pages[props.uuid] &&
+      ['home', 'event'].includes(
+        props.project.pages[props.uuid].autogenerate.type
+      )
+    ) {
+      options.push({
+        label: t['Re-Enable Auto-Generation'],
+        icon: FiletypeHtml,
+        onClick: () => props.onReEnableAutoGeneration(),
+      });
+    }
+
     // only allow deletion in two cases:
     // 1. the page has no children
     // 2. the page is a child
@@ -59,16 +86,7 @@ export const PageRow: React.FC<Props> = (props) => {
       options.push({
         label: t['Delete'],
         icon: Trash,
-        onClick: async () => {
-          await fetch(
-            `/api/projects/${props.project.project.github_org}+${props.project.project.slug}/pages/${props.uuid}`,
-            {
-              method: 'DELETE',
-            }
-          );
-
-          window.location.reload();
-        },
+        onClick: async () => props.onDelete(),
       });
     }
 
@@ -120,8 +138,20 @@ export const PageRow: React.FC<Props> = (props) => {
         {page.parent && <ArrowReturnRight />}
         {page.title}
       </Text>
+      {page.autogenerate.enabled ? (
+        <div className='page-autogen-pill'>{`${t['Auto-Generated']}-${
+          t[page.autogenerate.type]
+        }`}</div>
+      ) : (
+        <div />
+      )}
       <span>{dateString}</span>
-      <MeatballMenu buttons={meatballOptions} row={page} />
+      <MeatballMenu
+        buttons={
+          page.autogenerate.enabled ? meatballOptionsAutoGen : meatballOptions
+        }
+        row={page}
+      />
     </Box>
   );
 };

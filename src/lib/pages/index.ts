@@ -1,5 +1,5 @@
 import type { Page } from '@ty/Types.ts';
-import type { Descendant } from 'slate';
+import type { GitRepoContext } from '@backend/gitRepo.ts';
 
 export const getNewOrder = (
   allPages: { [key: string]: Page },
@@ -40,4 +40,29 @@ export const getNewOrder = (
   return newOrder;
 };
 
+export const findAutoGenHome = async (
+  context: GitRepoContext
+): Promise<string | undefined> => {
+  const { readFile, exists } = context;
 
+  // Get the order file
+  const orderFile = await readFile('/data/pages/order.json');
+
+  const order: string[] = JSON.parse(orderFile.toString());
+
+  for (let i = 0; i < order.length; i++) {
+    if (exists(`/data/pages/${order[i]}.json`)) {
+      const pageFile = await readFile(`/data/pages/${order[i]}.json`);
+
+      const page: Page = JSON.parse(pageFile.toString());
+
+      if (
+        page.autogenerate &&
+        page.autogenerate.enabled &&
+        page.autogenerate.type === 'home'
+      ) {
+        return order[i];
+      }
+    }
+  }
+};

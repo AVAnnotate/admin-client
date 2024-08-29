@@ -108,33 +108,35 @@ export const POST: APIRoute = async ({
   }
 
   let count = 0;
-  const newAnnos: AnnotationEntry[] = []
+  const newAnnos: AnnotationEntry[] = [];
 
   // this endpoint excepts either a single annotation object,
   // or an array of annotation objects (used by the import feature)
   if (Array.isArray(body)) {
-    body.forEach(anno => {
+    body.forEach((anno) => {
       const newAnno = {
         ...anno,
-        uuid: uuidv4()
-      }
+        uuid: uuidv4(),
+      };
 
-      newAnnos.push(newAnno)
-      count += 1
-    })
+      newAnnos.push(newAnno);
+      count += 1;
+    });
   } else {
     newAnnos.push({
       ...body,
       uuid: uuidv4(),
-    })
-    count = 1
+    });
+    count = 1;
   }
 
-  annos.annotations = annos.annotations.concat(newAnnos)
+  annos.annotations = annos.annotations.concat(newAnnos);
 
-  writeFile(filePath, JSON.stringify(annos, null, '  '));
+  writeFile(filePath, JSON.stringify(annos, null, 2));
 
-  const commitMessage = `Added ${count || '1'} annotation${count === 1 ? '' : 's'} to set ${annotationSetUuid} in event ${eventUuid}`;
+  const commitMessage = `Added ${count || '1'} annotation${
+    count === 1 ? '' : 's'
+  } to set ${annotationSetUuid} in event ${eventUuid}`;
 
   const successCommit = await commitAndPush(commitMessage);
 
@@ -191,7 +193,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   annos.set = body.set;
 
-  writeFile(filePath, JSON.stringify(annos, null, '  '));
+  writeFile(filePath, JSON.stringify(annos, null, 2));
 
   const commitMessage = `Updated name of annotation set ${annotationSetUuid} to ${body.set}`;
 

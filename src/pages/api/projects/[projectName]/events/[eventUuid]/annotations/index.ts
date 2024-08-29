@@ -63,7 +63,7 @@ export const POST: APIRoute = async ({
 
   const filepath = `/data/annotations/${uuid}.json`;
 
-  writeFile(filepath, JSON.stringify(newSet, null, '  '));
+  writeFile(filepath, JSON.stringify(newSet, null, 2));
 
   const successCommit = await commitAndPush(
     `Added new annotation set: ${newSet.set}`

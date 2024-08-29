@@ -174,16 +174,17 @@ export const POST: APIRoute = async ({
       created_at: new Date().toISOString(),
       created_by: info!.profile.gitHubName || '',
       title: body.title,
-      updated_at: '',
-      updated_by: '',
+      updated_at: info!.profile.gitHubName || '',
+      updated_by: new Date().toISOString(),
       autogenerate: {
         enabled: body.autoPopulateHomePage,
         type: 'home',
       },
     };
 
+    const pageId = uuidv4();
     const successPage = await writeFile(
-      `/data/pages/${uuidv4()}.json`,
+      `/data/pages/${pageId}.json`,
       JSON.stringify(homePage, null, 2)
     );
 
@@ -192,6 +193,20 @@ export const POST: APIRoute = async ({
       return new Response(null, {
         status: 500,
         statusText: 'Failed to write project home page',
+      });
+    }
+
+    const pageOrder = [pageId];
+    const successOrder = await writeFile(
+      '/data/pages/order.json',
+      JSON.stringify(pageOrder, null, 2)
+    );
+
+    if (!successOrder) {
+      console.error('Failed to write project page order');
+      return new Response(null, {
+        status: 500,
+        statusText: 'Failed to write project page order',
       });
     }
 
@@ -289,7 +304,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     },
   };
 
-  writeFile('/data/project.json', JSON.stringify(newConfig));
+  writeFile('/data/project.json', JSON.stringify(newConfig, null, 2));
 
   const successCommit = await commitAndPush(
     `Updated project file for ${body.title}`

@@ -60,13 +60,17 @@ export const POST: APIRoute = async ({
 
   writeFile(
     `/data/pages/${uuid}.json`,
-    JSON.stringify({
-      ...page,
-      created_at,
-      created_by,
-      updated_at,
-      updated_by,
-    })
+    JSON.stringify(
+      {
+        ...page,
+        created_at,
+        created_by,
+        updated_at,
+        updated_by,
+      },
+      null,
+      2
+    )
   );
 
   const { pages } = getPageData(

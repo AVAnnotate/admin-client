@@ -15,5 +15,10 @@
   "No events have been added": "No events have been added",
   "No sets have been added": "No sets have been added",
   "Edit Annotation Set": "Edit Annotation Set",
-  "Create Annotation Set": "Create Annotation Set"
+  "Create Annotation Set": "Create Annotation Set",
+  "Auto-Generated": "Auto-Generated",
+  "Disable Auto-Generation": "Disable Auto-Generation",
+  "Re-Enable Auto-Generation": "Re-Enable Auto-Generation",
+  "home": "Home",
+  "event": "Event"
 }
