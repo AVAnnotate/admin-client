@@ -145,7 +145,6 @@ export const Leaf = ({ attributes, children, leaf }: any) => {
 };
 
 export const serialize = (nodes: Node[]) => {
-  console.log(nodes);
   return nodes.map((node, idx) => {
     if (Text.isText(node)) {
       return <Leaf leaf={node}>{node.text}</Leaf>;
