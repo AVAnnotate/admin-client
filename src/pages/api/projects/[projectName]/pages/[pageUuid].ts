@@ -46,7 +46,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const fs = initFs()
+  const fs = initFs();
 
   const { readFile, readDir, writeFile, commitAndPush } = await gitRepo({
     fs,
@@ -55,13 +55,21 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     userInfo: info,
   });
 
-  writeFile(`/data/pages/${pageUuid}.json`, JSON.stringify(page));
+  writeFile(`/data/pages/${pageUuid}.json`, JSON.stringify(page, null, 2));
 
-  const { pages } = getPageData(fs, readDir('/data/pages') as unknown as string[], 'pages');
+  const { pages } = getPageData(
+    fs,
+    readDir('/data/pages') as unknown as string[],
+    'pages'
+  );
 
-  const orderFile = readFile('/data/pages/order.json')
+  const orderFile = readFile('/data/pages/order.json');
 
-  const newOrder = getNewOrder(pages, pageUuid, JSON.parse(orderFile.toString()))
+  const newOrder = getNewOrder(
+    pages,
+    pageUuid,
+    JSON.parse(orderFile.toString())
+  );
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
 
@@ -100,9 +108,11 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   await deleteFile(filepath);
 
-  const order: string[] = JSON.parse(readFile('/data/pages/order.json').toString())
+  const order: string[] = JSON.parse(
+    readFile('/data/pages/order.json').toString()
+  );
 
-  const newOrder = order.filter(uuid => uuid !== pageUuid)
+  const newOrder = order.filter((uuid) => uuid !== pageUuid);
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
 

@@ -17,6 +17,7 @@ interface Props {
 export const PageList: React.FC<Props> = (props) => {
   const [saving, setSaving] = useState(false);
   const [pageOrder, setPageOrder] = useState(props.project.pageOrder);
+  const [project, setProject] = useState(props.project);
 
   const { t } = props.i18n;
 
@@ -34,7 +35,7 @@ export const PageList: React.FC<Props> = (props) => {
         return setPickedUp(null);
       }
 
-      const selectedPage = props.project.pages![pickedUp.uuid];
+      const selectedPage = project.pages![pickedUp.uuid];
 
       let newArray = pageOrder!.filter((k) => k !== pickedUp.uuid);
 
@@ -42,7 +43,7 @@ export const PageList: React.FC<Props> = (props) => {
         newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
       } else {
         const children = pageOrder!.filter(
-          (key) => props.project.pages![key].parent === pickedUp.uuid
+          (key) => project.pages![key].parent === pickedUp.uuid
         );
 
         newArray = newArray.filter((k) => !children.includes(k));
@@ -70,6 +71,71 @@ export const PageList: React.FC<Props> = (props) => {
     setSaving(false);
   };
 
+  const handleDisableAutoGeneration = async (uuid: string) => {
+    let copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    const page = copy.pages[uuid];
+    page.autogenerate.enabled = false;
+    setSaving(true);
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
+  const handleReEnableAutoGeneration = async (uuid: string) => {
+    let copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    const page = copy.pages[uuid];
+    if (['home', 'event'].includes(page.autogenerate.type)) {
+      page.autogenerate.enabled = true;
+      setSaving(true);
+      const res = await fetch(
+        `/api/projects/${props.projectSlug}/pages/${uuid}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ page: page }),
+        }
+      );
+
+      if (res.ok) {
+        setProject(copy);
+      }
+    }
+
+    setSaving(false);
+  };
+
+  const handleDeletePage = async (uuid: string) => {
+    setSaving(true);
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'DELETE',
+      }
+    );
+
+    if (res.ok) {
+      window.location.reload();
+    }
+    setSaving(false);
+  };
+
   return (
     <>
       {saving && <LoadingOverlay />}
@@ -89,7 +155,7 @@ export const PageList: React.FC<Props> = (props) => {
         <div className='page-list-box-container'>
           {pageOrder!.map((uuid, idx) => (
             <PageRow
-              project={props.project}
+              project={project}
               uuid={uuid}
               index={idx}
               pickedUp={pickedUp}
@@ -97,6 +163,11 @@ export const PageList: React.FC<Props> = (props) => {
               i18n={props.i18n}
               onDrop={onDrop}
               key={uuid}
+              onDisableAutoGeneration={() => handleDisableAutoGeneration(uuid)}
+              onReEnableAutoGeneration={() =>
+                handleReEnableAutoGeneration(uuid)
+              }
+              onDelete={() => handleDeletePage(uuid)}
             />
           ))}
         </div>

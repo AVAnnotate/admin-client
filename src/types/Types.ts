@@ -99,6 +99,12 @@ export interface FormEvent
   updated_by?: string;
 }
 
+export type AutoGenerate = {
+  enabled: boolean;
+  type: string;
+  type_id?: string;
+};
+
 export type Page = {
   content: Node[];
   created_at: string;
@@ -107,6 +113,7 @@ export type Page = {
   parent?: string;
   updated_at: string;
   updated_by: string;
+  autogenerate: AutoGenerate;
 };
 
 export interface FormPage

@@ -16,6 +16,10 @@ const defaultPage: FormPage = {
   content: emptyParagraph,
   title: '',
   parent: undefined,
+  autogenerate: {
+    enabled: false,
+    type: 'custom',
+  },
 };
 
 interface Props {
