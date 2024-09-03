@@ -1,6 +1,5 @@
-.event-import-form {
-  overflow-y: scroll;
-  margin-bottom: 120px;
+.event-import-container {
+  padding-bottom: 100px;
 }
 
 .event-import-form .bottom-bar-flex {

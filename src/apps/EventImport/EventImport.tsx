@@ -15,6 +15,7 @@ import {
   SpreadsheetInputContextComponent,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
+import { deserialize } from '@lib/slate/deserialize.ts';
 
 interface Props {
   i18n: Translations;
@@ -49,12 +50,9 @@ export const EventImport: React.FC<Props> = (props) => {
 
       events.forEach((ev) => {
         if (ev.description) {
-          ev.description = [
-            {
-              type: 'paragraph',
-              children: [{ text: ev.description as unknown as string }],
-            },
-          ];
+          const template = document.createElement('description');
+          template.innerHTML = ev.description as unknown as string;
+          ev.description = deserialize(template);
         }
       });
 
@@ -80,7 +78,7 @@ export const EventImport: React.FC<Props> = (props) => {
   };
 
   return (
-    <>
+    <div className='event-import-container'>
       {saving && <LoadingOverlay />}
       <Breadcrumbs
         items={[
@@ -103,7 +101,7 @@ export const EventImport: React.FC<Props> = (props) => {
           </SpreadsheetInputContextComponent>
         </Formik>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -121,6 +119,10 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         label: t['Event Label'],
         required: true,
         value: 'label',
+      },
+      {
+        label: t['Event Description'],
+        value: 'description',
       },
       {
         label: t['Event Item Type'],
@@ -141,15 +143,13 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         label: t['Event Citation'],
         value: 'citation',
       },
-      {
-        label: t['Event Description'],
-        value: 'description',
-      },
     ],
     []
   );
 
-  const { requiredFieldsSet, headerMap } = useContext(SpreadsheetInputContext);
+  const { requiredFieldsSet, headerMap, imported } = useContext(
+    SpreadsheetInputContext
+  );
 
   useEffect(() => {
     if (headerMap) {
@@ -192,7 +192,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
             </Button>
             <Button
               className='save-button primary'
-              disabled={props.isSubmitting || !requiredFieldsSet}
+              disabled={props.isSubmitting || !requiredFieldsSet || !imported}
               type='submit'
             >
               {t['save']}

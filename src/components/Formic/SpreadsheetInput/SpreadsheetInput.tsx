@@ -157,8 +157,14 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [containsHeaders, setContainsHeaders] = useState(true);
   const [displayPreview, setDisplayPreview] = useState(false);
 
-  const { headerMap, setHeaderMap, requiredFieldsSet, setRequiredFieldsSet } =
-    useContext(SpreadsheetInputContext);
+  const {
+    headerMap,
+    setHeaderMap,
+    requiredFieldsSet,
+    setRequiredFieldsSet,
+    imported,
+    setImported,
+  } = useContext(SpreadsheetInputContext);
 
   const { t } = props.i18n;
 
@@ -305,7 +311,10 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
             <Button
               className='formic-spreadsheet-display-preview-button primary'
               disabled={!requiredFieldsSet}
-              onClick={() => setDisplayPreview(!displayPreview)}
+              onClick={() => {
+                setDisplayPreview(!displayPreview);
+                setImported(!imported);
+              }}
               type='button'
             >
               {displayPreview ? t['Undo'] : t['import']}

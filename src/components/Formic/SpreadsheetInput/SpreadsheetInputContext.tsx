@@ -5,6 +5,8 @@ type SpreadsheetInputContextObj = {
   setHeaderMap: (arg: { [key: string]: number }) => void;
   requiredFieldsSet: boolean;
   setRequiredFieldsSet: (arg: boolean) => void;
+  imported: boolean;
+  setImported: (arg: boolean) => void;
 };
 
 const initialValue = {
@@ -12,6 +14,8 @@ const initialValue = {
   setHeaderMap: () => {},
   requiredFieldsSet: false,
   setRequiredFieldsSet: () => {},
+  imported: false,
+  setImported: () => {},
 };
 
 export const SpreadsheetInputContext =
@@ -26,6 +30,7 @@ export const SpreadsheetInputContextComponent: React.FC<
 > = ({ children }) => {
   const [headerMap, setHeaderMap] = useState<{ [key: string]: number }>({});
   const [requiredFieldsSet, setRequiredFieldsSet] = useState<boolean>(false);
+  const [imported, setImported] = useState(false);
 
   return (
     <SpreadsheetInputContext.Provider
@@ -34,6 +39,8 @@ export const SpreadsheetInputContextComponent: React.FC<
         setHeaderMap,
         requiredFieldsSet,
         setRequiredFieldsSet,
+        imported,
+        setImported,
       }}
     >
       {children}

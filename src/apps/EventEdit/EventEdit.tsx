@@ -36,7 +36,7 @@ export const EventEdit: React.FC<Props> = ({
   }, []);
 
   return (
-    <>
+    <div className='event-edit-container'>
       <Breadcrumbs
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
@@ -51,6 +51,6 @@ export const EventEdit: React.FC<Props> = ({
         <h1>{t['Edit Event']}</h1>
         <EventForm event={event} i18n={i18n} onSubmit={onSubmit} />
       </div>
-    </>
+    </div>
   );
 };
