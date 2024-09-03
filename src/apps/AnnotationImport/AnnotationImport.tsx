@@ -12,6 +12,7 @@ import type {
   AnnotationEntry,
   Event,
   ProjectData,
+  Tags,
   Translations,
 } from '@ty/Types.ts';
 import { Form, Formik, useFormikContext } from 'formik';
@@ -40,9 +41,10 @@ const onSubmit = async (
   body: FormData,
   headerMap: { [key: string]: number },
   baseUrl: string,
-  redirectUrl: string
+  redirectUrl: string,
+  tags: Tags
 ) => {
-  const annos = mapAnnotationData(body.annotations.data, headerMap);
+  const annos = mapAnnotationData(body.annotations.data, headerMap, tags);
 
   const res = await fetch(`${baseUrl}/${body.set}`, {
     method: 'POST',
@@ -108,7 +110,13 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
     <Formik
       initialValues={initialValues}
       onSubmit={async (data) =>
-        await onSubmit(data, headerMap, baseUrl, redirectUrl)
+        await onSubmit(
+          data,
+          headerMap,
+          baseUrl,
+          redirectUrl,
+          props.project.project.tags
+        )
       }
     >
       <AnnotationImportFormContents

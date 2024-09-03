@@ -2,6 +2,7 @@ import type {
   AnnotationEntry,
   FormEvent,
   ParseAnnotationResults,
+  Tag,
   Tags,
 } from '@ty/Types.ts';
 import { read, utils } from 'xlsx';
@@ -18,7 +19,10 @@ export const parseSpreadsheetData = async (
 
   const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
 
-  const annotations: any[] = utils.sheet_to_json(firstSheet, { header: 1, raw: false });
+  const annotations: any[] = utils.sheet_to_json(firstSheet, {
+    header: 1,
+    raw: false,
+  });
 
   let headers: string[] = [];
   if (hasColumnHeaders) {
@@ -35,27 +39,68 @@ export const parseSpreadsheetData = async (
   return ret;
 };
 
+const getTag = (tag: string, tags: Tags) => {
+  // Find this tag if we have it
+  // If it has a colon then look for that category specifically
+  let ret: Tag | undefined;
+  const catArray = tag.split(';');
+  let category;
+  let searchTag = tag.trim();
+  if (catArray.length > 1) {
+    category = catArray[0];
+    searchTag = catArray[1];
+  }
+
+  if (category) {
+    // Look for this category
+    const findIdx = tags.tagGroups.findIndex((g) => g.category === category);
+    if (findIdx > -1) {
+      const tagIdx = tags.tags.findIndex(
+        (t) => t.category === category && t.tag === searchTag
+      );
+      if (tagIdx > -1) {
+        ret = tags.tags[tagIdx];
+      }
+    }
+  } else {
+    // Look for this tag in any category
+    const tagIdx = tags.tags.findIndex((t) => t.tag === searchTag);
+    if (tagIdx > -1) {
+      ret = tags.tags[tagIdx];
+    }
+  }
+
+  return ret;
+};
+
 // Prepare the annotations for the POST request.
 // Note that we don't assign UUIDs here. That is handled
 // on the backend.
 export const mapAnnotationData = (
   data: any[],
-  map: { [key: string]: number }
+  map: { [key: string]: number },
+  tags: Tags
 ): Omit<AnnotationEntry, 'uuid'>[] => {
   const ret: Omit<AnnotationEntry, 'uuid'>[] = [];
 
   data.forEach((d) => {
-    const template = document.createElement('template')
-    template.innerHTML = d[map['annotation']]
+    const template = document.createElement('template');
+    template.innerHTML = d[map['annotation']];
 
+    const tMap: Tag[] = [];
+    d[map['tags']]
+      ? (d[map['tags']] as string).split(',').forEach((tag) => {
+          const found = getTag(tag, tags);
+          if (found) {
+            tMap.push(found);
+          }
+        })
+      : [];
     ret.push({
       start_time: fromTimestamp(d[map['start_time']]),
       end_time: fromTimestamp(d[map['end_time']]),
       annotation: [deserialize(template.content.firstChild!)],
-      tags: d[map['tags']] ? (d[map['tags']] as string).split(',').map(tag => ({
-        category: 'uncategorized',
-        tag
-      })) : [],
+      tags: tMap,
     });
   });
 
