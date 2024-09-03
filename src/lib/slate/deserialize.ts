@@ -31,6 +31,12 @@ export const deserialize = (
 
   // define attributes for text nodes
   switch (el.nodeName) {
+    case 'B':
+      nodeAttributes.bold = true;
+    case 'EM':
+      nodeAttributes.italic = true;
+    case 'ITALIC':
+      nodeAttributes.italic = true;
     case 'STRONG':
       nodeAttributes.bold = true;
   }
