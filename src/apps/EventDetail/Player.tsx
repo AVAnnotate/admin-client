@@ -17,6 +17,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { formatTimestamp } from '@lib/events/index.ts';
 
 interface Props {
+  type: 'Audio' | 'Video';
   i18n: Translations;
   url: string;
   // optional props for controlling the
@@ -87,7 +88,7 @@ export const Player: React.FC<Props> = (props) => {
   }, []);
 
   return (
-    <div>
+    <div className='player'>
       {/* the player doesn't have any UI when playing audio files, so let's keep it 0x0 */}
       {/* when we add video support, we'll need to conditionally set the width/height */}
       <ReactPlayer
@@ -104,8 +105,8 @@ export const Player: React.FC<Props> = (props) => {
         onReady={(player) => setPlayer(player)}
         progressInterval={50}
         url={props.url}
-        width={0}
-        height={0}
+        width={props.type === 'Video' ? 280 : 0}
+        height={props.type === 'Video' ? 200 : 0}
       />
       <div className='player-control-panel'>
         <div className='content'>

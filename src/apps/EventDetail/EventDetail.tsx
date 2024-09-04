@@ -405,6 +405,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             </div>
           )}
           <Player
+            type={props.event.item_type}
             i18n={props.i18n}
             url={props.event.audiovisual_files[avFile].file_url}
             position={annoPosition}
