@@ -112,6 +112,7 @@ export const mapAnnotationData = (
     ret.push({
       start_time: fromTimestamp(d[map['start_time']]),
       end_time: fromTimestamp(d[map['end_time']]),
+      annotation,
       tags: tMap,
     });
   });
