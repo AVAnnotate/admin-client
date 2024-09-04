@@ -1,4 +1,5 @@
 import {
+  addRepositoryHomepage,
   createRepositoryFromTemplate,
   enablePages,
   replaceRepoTopics,
@@ -128,10 +129,10 @@ export const POST: APIRoute = async ({
       userInfo: info as UserInfo,
     });
 
-    const projs = readFile('/data/project.json');
-    let project: ProjectFile = JSON.parse(projs as string);
+    // const projs = readFile('/data/project.json');
+    // let project: ProjectFile = JSON.parse(projs as string);
 
-    project = {
+    const project = {
       publish: {
         publish_pages_app: true,
         publish_sha: '',
@@ -220,6 +221,19 @@ export const POST: APIRoute = async ({
         status: 500,
         statusText: 'Failed to write project data: ' + successCommit.error,
       });
+    }
+
+    // Finally create the homepage link
+    const respHomepage = await addRepositoryHomepage(
+      body.gitHubOrg,
+      info?.token as string,
+      projectName,
+      `https://${body.gitHubOrg}.github.io/${projectName}`
+    );
+
+    if (!respHomepage.ok) {
+      // Don't fail for this
+      console.log('Failed to create homepage link');
     }
 
     return new Response(

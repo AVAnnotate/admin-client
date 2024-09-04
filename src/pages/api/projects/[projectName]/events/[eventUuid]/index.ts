@@ -3,7 +3,7 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { UserInfo } from '@ty/Types.ts';
+import type { Page, UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -107,12 +107,13 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readDir, readFile, commitAndPush, deleteFile } = await gitRepo({
-    fs: initFs(),
-    repositoryURL,
-    branch: 'main',
-    userInfo: info as UserInfo,
-  });
+  const { readDir, readFile, commitAndPush, deleteFile, writeFile } =
+    await gitRepo({
+      fs: initFs(),
+      repositoryURL,
+      branch: 'main',
+      userInfo: info as UserInfo,
+    });
 
   const filepath = `/data/events/${eventUuid}.json`;
 
@@ -140,6 +141,49 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     await deleteFile(`/data/annotations/${filepath}`);
   });
 
+  // Delete any associated auto-generated event files
+  const pageFiles = readDir('/data/pages', '.json');
+
+  // Keep a list or deleted files to remove from order.json
+  const deleteList: string[] = [];
+  const matchingPageFiles = pageFiles.filter((filepath) => {
+    const contents = readFile(`/data/pages/${filepath}`);
+    const parsed = JSON.parse(contents as string);
+
+    console.log(parsed);
+    if (
+      parsed &&
+      parsed.autogenerate &&
+      parsed.autogenerate.enabled &&
+      parsed.autogenerate.type === 'event' &&
+      parsed.autogenerate.type_id === eventUuid
+    ) {
+      deleteList.push((filepath as string).replace('.json', ''));
+      return true;
+    }
+  });
+
+  matchingPageFiles.forEach(async (filepath) => {
+    await deleteFile(`/data/pages/${filepath}`);
+  });
+
+  if (deleteList.length > 0) {
+    const orderFile = readFile('/data/pages/order.json');
+
+    const order = JSON.parse(orderFile as string);
+
+    console.log('Delete: ', deleteList);
+    const newOrder: string[] = order.filter(
+      (o: string) => !deleteList.includes(o)
+    );
+
+    const orderSuccess = await writeFile(
+      '/data/pages/order.json',
+      JSON.stringify(newOrder, null, 2)
+    );
+  }
+
+  // Delete the event
   await deleteFile(filepath);
 
   const successCommit = await commitAndPush(`Deleted event ${eventUuid}`);

@@ -164,6 +164,27 @@ export const createRepositoryFromTemplate = async (
   );
 };
 
+export const addRepositoryHomepage = async (
+  org: string,
+  token: string,
+  repoName: string,
+  homePageURL: string
+): Promise<Response> => {
+  const body = {
+    homepage: homePageURL,
+  };
+
+  return await fetch(`https://api.github.com/repos/${org}/${repoName}`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify(body),
+  });
+};
+
 export const enablePages = async (
   org: string,
   repo: string,

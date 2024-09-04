@@ -26,12 +26,16 @@ export const UploadTestApp = (_props: any) => {
 
   const handleMap = () => {
     if (output) {
-      const results = mapAnnotationData(output.data, {
-        start_time: 0,
-        end_time: 1,
-        annotation: 2,
-        tags: 3,
-      }).map((anno) => ({ ...anno, uuid: uuidv4() }));
+      const results = mapAnnotationData(
+        output.data,
+        {
+          start_time: 0,
+          end_time: 1,
+          annotation: 2,
+          tags: 3,
+        },
+        { tagGroups: [], tags: [] }
+      ).map((anno) => ({ ...anno, uuid: uuidv4() }));
 
       setMap(results);
     }

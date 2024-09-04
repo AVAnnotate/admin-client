@@ -80,7 +80,7 @@ const FormContents = (props: NewProjectFormProps) => {
       ref.current!.scrollIntoView();
 
     if (props.selection === 'general') {
-      executeScroll(generalRef);
+      scrollTo(0, 0);
     } else if (props.selection === 'users') {
       executeScroll(userRef);
     } else {

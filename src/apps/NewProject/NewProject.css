@@ -7,8 +7,15 @@
 .new-project-panes {
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 .new-project-form-container {
   overflow-y: hidden;
+}
+
+.new-project-sidebar {
+  position: sticky;
+  top: 0;
+  left: 0;
 }

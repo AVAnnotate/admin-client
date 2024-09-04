@@ -26,6 +26,7 @@ import { useMemo, useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Chats } from '@phosphor-icons/react/dist/icons/Chats';
+import { exportEvents } from '@lib/events/export.ts';
 
 interface Props {
   i18n: Translations;
@@ -139,6 +140,14 @@ export const Project: React.FC<Props> = (props) => {
                       label: t['CSV'],
                       icon: DownloadIcon,
                       variant: 'outline',
+                      onClick: () => {
+                        exportEvents(
+                          props.project.project.title,
+                          Object.keys(props.project.events).map(
+                            (k) => props.project.events[k]
+                          )
+                        );
+                      },
                     },
                     {
                       label: t['import'],

@@ -149,6 +149,7 @@ interface SpreadsheetInputProps {
   name: string;
   importAsOptions: DropdownOption[];
   isValid?(valid: boolean): void;
+  onHeaderMapChange?(headerMap: { [key: string]: number }): void;
 }
 
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
@@ -156,8 +157,14 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [containsHeaders, setContainsHeaders] = useState(true);
   const [displayPreview, setDisplayPreview] = useState(false);
 
-  const { headerMap, setHeaderMap, requiredFieldsSet, setRequiredFieldsSet } =
-    useContext(SpreadsheetInputContext);
+  const {
+    headerMap,
+    setHeaderMap,
+    requiredFieldsSet,
+    setRequiredFieldsSet,
+    imported,
+    setImported,
+  } = useContext(SpreadsheetInputContext);
 
   const { t } = props.i18n;
 
@@ -172,6 +179,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
       requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
         0
     );
+    props.onHeaderMapChange && props.onHeaderMapChange(headerMap);
   }, [values, headerMap]);
 
   const parseData = useCallback(
@@ -303,7 +311,10 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
             <Button
               className='formic-spreadsheet-display-preview-button primary'
               disabled={!requiredFieldsSet}
-              onClick={() => setDisplayPreview(!displayPreview)}
+              onClick={() => {
+                setDisplayPreview(!displayPreview);
+                setImported(!imported);
+              }}
               type='button'
             >
               {displayPreview ? t['Undo'] : t['import']}

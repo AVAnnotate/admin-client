@@ -3,7 +3,7 @@ import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/Spreadshee
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import { Form, Formik } from 'formik';
 import type React from 'react';
-import { useCallback, useContext, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './EventImport.css';
 import { ToggleInput } from '@components/Formic/index.tsx';
 import { BottomBar } from '@components/BottomBar/index.ts';
@@ -14,6 +14,8 @@ import {
   SpreadsheetInputContext,
   SpreadsheetInputContextComponent,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
+import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
+import { deserialize } from '@lib/slate/deserialize.ts';
 
 interface Props {
   i18n: Translations;
@@ -31,44 +33,53 @@ const initialValues = {
 
 export const EventImport: React.FC<Props> = (props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [headerMap, setHeaderMap] = useState({});
+  const [saving, setSaving] = useState(false);
 
   const { lang, t } = props.i18n;
 
-  const onSubmit = useCallback(async (data: any) => {
-    setIsSubmitting(true);
+  const onSubmit = useCallback(
+    async (data: any) => {
+      setIsSubmitting(true);
 
-    const events = mapEventData(
-      data.events.data,
-      data.headerMap,
-      data.autogenerate_web_pages
-    );
+      const events = mapEventData(
+        data.events.data,
+        headerMap,
+        data.autogenerate_web_pages
+      );
 
-    events.forEach((ev) => {
-      if (ev.description) {
-        ev.description = [
-          {
-            type: 'paragraph',
-            children: [{ text: ev.description as unknown as string }],
-          },
-        ];
-      }
-    });
+      events.forEach((ev) => {
+        if (ev.description) {
+          const template = document.createElement('description');
+          template.innerHTML = ev.description as unknown as string;
+          ev.description = deserialize(template);
+        }
+      });
 
-    const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ events }),
-    });
+      setSaving(true);
+      const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ events }),
+      });
 
-    setIsSubmitting(false);
+      setIsSubmitting(false);
+      setSaving(false);
 
-    window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
-  }, []);
+      window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
+    },
+    [headerMap]
+  );
+
+  const handleHeaderMapChange = (map: { [key: string]: number }) => {
+    setHeaderMap(map);
+  };
 
   return (
-    <>
+    <div className='event-import-container'>
+      {saving && <LoadingOverlay />}
       <Breadcrumbs
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
@@ -82,16 +93,21 @@ export const EventImport: React.FC<Props> = (props) => {
       <div className='container'>
         <Formik initialValues={initialValues} onSubmit={onSubmit}>
           <SpreadsheetInputContextComponent>
-            <FormContents {...props} isSubmitting={isSubmitting} />
+            <FormContents
+              {...props}
+              isSubmitting={isSubmitting}
+              onHeaderMapChange={handleHeaderMapChange}
+            />
           </SpreadsheetInputContextComponent>
         </Formik>
       </div>
-    </>
+    </div>
   );
 };
 
 interface FormContentsProps extends Props {
   isSubmitting: boolean;
+  onHeaderMapChange(headerMap: { [key: string]: number }): void;
 }
 
 export const FormContents: React.FC<FormContentsProps> = (props) => {
@@ -100,44 +116,46 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
   const importAsOptions = useMemo(
     () => [
       {
-        label: t['Audiovisual file label'],
-        required: true,
-        value: 'audiovisual_file_label',
-      },
-      {
-        label: t['Audiovisual file URL'],
-        required: true,
-        value: 'audiovisual_file_url',
-      },
-      {
-        label: t['Audiovisual file duration'],
-        required: true,
-        value: 'audiovisual_file_duration',
-      },
-      {
-        label: t['Item Type'],
-        required: true,
-        value: 'item_type',
-      },
-      {
-        label: t['Label'],
+        label: t['Event Label'],
         required: true,
         value: 'label',
       },
       {
-        label: t['Description'],
+        label: t['Event Description'],
         value: 'description',
       },
       {
-        label: t['Citation'],
+        label: t['Event Item Type'],
+        required: true,
+        value: 'item_type',
+      },
+      {
+        label: t['AVFile Label'],
+        required: true,
+        value: 'audiovisual_file_label',
+      },
+      {
+        label: t['AVFile URL'],
+        required: true,
+        value: 'audiovisual_file_url',
+      },
+      {
+        label: t['Event Citation'],
         value: 'citation',
       },
     ],
     []
   );
 
-  const { requiredFieldsSet } = useContext(SpreadsheetInputContext);
+  const { requiredFieldsSet, headerMap, imported } = useContext(
+    SpreadsheetInputContext
+  );
 
+  useEffect(() => {
+    if (headerMap) {
+      props.onHeaderMapChange(headerMap);
+    }
+  }, [headerMap]);
   return (
     <>
       <Form className='event-import-form'>
@@ -174,7 +192,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
             </Button>
             <Button
               className='save-button primary'
-              disabled={props.isSubmitting || !requiredFieldsSet}
+              disabled={props.isSubmitting || !requiredFieldsSet || !imported}
               type='submit'
             >
               {t['save']}
