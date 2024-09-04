@@ -57,7 +57,7 @@ const ImportTagsForm = (props: ImportTagsFormProps) => {
         setSubmitting(false);
       }}
     >
-      {({ isSubmitting, values }) => (
+      {() => (
         <Form>
           <div className='import-tags-dialog-import'>
             <SpreadsheetInput

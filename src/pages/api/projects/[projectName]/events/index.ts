@@ -55,7 +55,7 @@ export const POST: APIRoute = async ({
       userInfo: info,
     });
 
-  let uuids: string[] = [];
+  const uuids: string[] = [];
 
   // Create the events folder if it doesn't exist
   if (!exists('/data/events')) {

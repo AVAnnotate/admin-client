@@ -33,10 +33,13 @@ export const deserialize = (
   switch (el.nodeName) {
     case 'B':
       nodeAttributes.bold = true;
+      break;
     case 'EM':
       nodeAttributes.italic = true;
+      break;
     case 'ITALIC':
       nodeAttributes.italic = true;
+      break;
     case 'STRONG':
       nodeAttributes.bold = true;
   }

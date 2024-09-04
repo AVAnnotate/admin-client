@@ -41,9 +41,9 @@ export const Tags = (props: TagsProps) => {
   }, [props.project]);
 
   const counts: AnnotationCounts = useMemo(() => {
-    let ret: AnnotationCounts = {};
+    const ret: AnnotationCounts = {};
     if (project) {
-      for (let key in project.annotations) {
+      for (const key in project.annotations) {
         const annos = project.annotations[key];
         annos.annotations.forEach((annotation) => {
           annotation.tags.forEach((tag) => {

@@ -18,14 +18,14 @@ export const paginate = async (url: string, token: string) => {
 
   results = [...results, ...data];
 
-  let link = response.headers.get('link');
+  const link = response.headers.get('link');
   if (!link) {
     return results;
   }
 
   const parseLink = (linkStr: string) => {
-    let linkArr = linkStr.split(',');
-    let map: { [rel: string]: string } = {};
+    const linkArr = linkStr.split(',');
+    const map: { [rel: string]: string } = {};
     linkArr.forEach((l) => {
       const vals = l.split(';');
       const rel = vals[1].substring(
@@ -63,7 +63,7 @@ export const paginate = async (url: string, token: string) => {
       break;
     }
 
-    let link = response.headers.get('link');
+    const link = response.headers.get('link');
     if (!link) {
       break;
     }

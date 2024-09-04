@@ -63,8 +63,10 @@ const EventSelect = (props: EventSelectProps) => {
 
   const handleChange = (label: string, checked: boolean) => {
     if (label === 'all') {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       checked ? setValue(props.events.map((e) => e.event.label)) : setValue([]);
     } else {
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       checked
         ? setValue([...value, label])
         : setValue(value.filter((v: string) => v !== label));

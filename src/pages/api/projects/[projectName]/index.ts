@@ -3,7 +3,7 @@ import {
   enablePages,
   replaceRepoTopics,
 } from '@lib/GitHub/index.ts';
-import type { APIRoute, AstroCookies } from 'astro';
+import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';

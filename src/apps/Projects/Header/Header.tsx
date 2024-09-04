@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 import type { Translations } from '@ty/Types.ts';
 import { SearchAction } from '@components/SearchAction/index.ts';
 import { SortAction } from '@components/SortAction/index.ts';

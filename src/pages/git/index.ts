@@ -14,7 +14,7 @@ export const GET: APIRoute = async ({ request }) => {
   })
     .then((response) => response.text())
     .then((paramsString) => {
-      let params = new URLSearchParams(paramsString);
+      const params = new URLSearchParams(paramsString);
       const access_token = params.get('access_token');
       return new Response(undefined, {
         status: 302,
