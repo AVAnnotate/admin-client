@@ -16,8 +16,7 @@ export const TopBar = (props: TopBarProps) => {
       <header>
         <a href={`/${props.i18n.lang}/projects`}>
           <div className='top-bar-branding'>
-            <span className='top-bar-highlight'>AV</span>
-            <span className='top-bar-title'>Annotate</span>
+            <img height={22} src='/avannotate_logo.svg' alt='AVAnnotate' />
           </div>
         </a>
         <div className='top-bar-actions'>

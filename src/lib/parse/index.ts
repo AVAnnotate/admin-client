@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid';
 import tagColors from '@lib/tag-colors.ts';
 import { fromTimestamp } from '@lib/events/index.ts';
 import { deserialize } from '@lib/slate/deserialize.ts';
+import { emptyParagraph } from '@lib/slate/index.tsx';
 
 export const parseSpreadsheetData = async (
   data: File,
@@ -87,6 +88,18 @@ export const mapAnnotationData = (
     const template = document.createElement('template');
     template.innerHTML = d[map['annotation']];
 
+    let annotation = deserialize(template.content.firstChild!);
+
+    // handle plan text imports, which need to be in a paragraph node
+    if (!Array.isArray(annotation)) {
+      annotation = [
+        {
+          ...emptyParagraph,
+          children: [annotation],
+        },
+      ];
+    }
+
     const tMap: Tag[] = [];
     d[map['tags']]
       ? (d[map['tags']] as string).split(',').forEach((tag) => {
@@ -99,7 +112,6 @@ export const mapAnnotationData = (
     ret.push({
       start_time: fromTimestamp(d[map['start_time']]),
       end_time: fromTimestamp(d[map['end_time']]),
-      annotation: [deserialize(template.content.firstChild!)],
       tags: tMap,
     });
   });
