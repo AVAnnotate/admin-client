@@ -30,7 +30,7 @@ export const ProjectSettings: React.FC<Props> = (props) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(formData),
-    }).then((res) => {
+    }).then(() => {
       setSaving(false);
       window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
     });

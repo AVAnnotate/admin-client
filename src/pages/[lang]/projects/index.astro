@@ -5,23 +5,22 @@ import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
 import { Projects } from '@apps/Projects';
 import { getProjects } from '@backend/projectHelpers';
-import type { AllProjects } from '@ty/Types.ts';
+import type { AllProjects, UserInfo } from '@ty/Types.ts';
 import '@themes/default/index.css';
 
 const lang = getLangFromUrl(Astro.url);
 
 const i18n = getTranslations(Astro.request, 'projects');
-const accessCookie = Astro.cookies.get('access-token');
 
 const info = await userInfo(Astro.cookies);
 
 if (!info) {
-  return Astro.redirect(`/${lang}/sign-in`);
+  Astro.redirect(`/${lang}/sign-in`);
 }
 
-const allProjects: AllProjects = await getProjects(info);
+const allProjects: AllProjects = await getProjects(info as UserInfo);
 ---
 
-<Layout title='Projects' profile={info.profile}>
+<Layout title='Projects' profile={info!.profile}>
   <Projects projects={allProjects} i18n={i18n} client:only='react' />
 </Layout>

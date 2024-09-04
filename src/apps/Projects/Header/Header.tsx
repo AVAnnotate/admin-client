@@ -2,7 +2,7 @@ import { useState } from 'react';
 
 import type { Translations } from '@ty/Types.ts';
 import { SearchAction } from '@components/SearchAction/index.ts';
-import { SortAction, type SortFunction } from '@components/SortAction/index.ts';
+import { SortAction } from '@components/SortAction/index.ts';
 
 import './Header.css';
 
@@ -22,10 +22,6 @@ interface HeaderProps {
 
 export const Header = (props: HeaderProps) => {
   const { t } = props.i18n;
-
-  // 'Create new project' button state
-  const [creating, setCreating] = useState(false);
-  const [createProjectOpen, setCreateProjectOpen] = useState(false);
 
   return (
     <div className='projects-header'>

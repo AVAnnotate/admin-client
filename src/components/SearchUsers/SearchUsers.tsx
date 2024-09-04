@@ -1,5 +1,5 @@
 import * as Ariakit from '@ariakit/react';
-import { useEffect, useState, type ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
 import '@themes/default/index.css';
 import './SearchUsers.css';

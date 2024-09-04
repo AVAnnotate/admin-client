@@ -1,5 +1,5 @@
 import * as RadixTabs from '@radix-ui/react-tabs';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import './Tabs.css';
 import React from 'react';
 

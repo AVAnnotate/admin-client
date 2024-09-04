@@ -2,7 +2,6 @@ import type {
   TagGroup,
   ProjectData,
   UserInfo,
-  AnnotationEntry,
   AnnotationPage,
   Tag,
 } from '@ty/Types.ts';
@@ -82,13 +81,12 @@ export const updateTagGroup = async (
 ): Promise<ProjectData | undefined> => {
   const fs = initFs();
 
-  const { readFile, writeFile, readDir, exists, commitAndPush, context } =
-    await gitRepo({
-      fs: fs,
-      repositoryURL: htmlUrl,
-      branch: 'main',
-      userInfo: userInfo,
-    });
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
 
   const proj = readFile('/data/project.json');
 
@@ -164,13 +162,12 @@ export const deleteTagGroup = async (
 ): Promise<ProjectData | undefined> => {
   const fs = initFs();
 
-  const { readFile, writeFile, readDir, exists, commitAndPush, context } =
-    await gitRepo({
-      fs: fs,
-      repositoryURL: htmlUrl,
-      branch: 'main',
-      userInfo: userInfo,
-    });
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
 
   const proj = readFile('/data/project.json');
 

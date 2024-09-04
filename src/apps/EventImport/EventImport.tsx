@@ -54,7 +54,7 @@ export const EventImport: React.FC<Props> = (props) => {
       }
     });
 
-    const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
+    await fetch(`/api/projects/${props.projectSlug}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

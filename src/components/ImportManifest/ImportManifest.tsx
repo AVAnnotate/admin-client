@@ -24,11 +24,11 @@ export const ImportManifest = (props: ImportManifestProps) => {
 
   const { t, lang } = props.i18n;
 
-  const handleAnalyze = () => {
+  const handleAnalyze = async () => {
     if (manifestUrl) {
       setBusy(true);
 
-      return fetch(
+      const resp = await fetch(
         `/api/projects/${props.projectSlug}/events/analyze-manifest`,
         {
           method: 'POST',
@@ -37,47 +37,12 @@ export const ImportManifest = (props: ImportManifestProps) => {
           },
           body: JSON.stringify({ manifest_url: manifestUrl }),
         }
-      ).then((resp) => {
-        if (!resp.ok) {
-          setToast({
-            title: t['Problem!'],
-            description: t['Manifest Analysis failed'],
-            type: 'error',
-          });
+      );
 
-          setValid(false);
-          setAnalysis(undefined);
-          setBusy(false);
-        } else {
-          setToast({
-            title: t['Success!'],
-            description: t['Analysis complete'],
-            type: 'success',
-          });
-          setValid(true);
-          resp.json().then((data) => {
-            setAnalysis(data);
-            setBusy(false);
-          });
-        }
-      });
-    }
-  };
-
-  const handleSubmit = (data: any) => {
-    setBusy(true);
-
-    return fetch(`/api/projects/${props.projectSlug}/events/import-manifest`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    }).then((resp) => {
       if (!resp.ok) {
         setToast({
           title: t['Problem!'],
-          description: t['Manifest import failed'],
+          description: t['Manifest Analysis failed'],
           type: 'error',
         });
 
@@ -87,13 +52,50 @@ export const ImportManifest = (props: ImportManifestProps) => {
       } else {
         setToast({
           title: t['Success!'],
-          description: t['Import complete'],
+          description: t['Analysis complete'],
           type: 'success',
         });
         setValid(true);
-        window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
+        resp.json().then((data) => {
+          setAnalysis(data);
+          setBusy(false);
+        });
       }
-    });
+    }
+  };
+
+  const handleSubmit = async (data: any) => {
+    setBusy(true);
+
+    const resp = await fetch(
+      `/api/projects/${props.projectSlug}/events/import-manifest`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }
+    );
+    if (!resp.ok) {
+      setToast({
+        title: t['Problem!'],
+        description: t['Manifest import failed'],
+        type: 'error',
+      });
+
+      setValid(false);
+      setAnalysis(undefined);
+      setBusy(false);
+    } else {
+      setToast({
+        title: t['Success!'],
+        description: t['Import complete'],
+        type: 'success',
+      });
+      setValid(true);
+      window.location.pathname = `/${lang}/projects/${props.projectSlug}`;
+    }
   };
 
   return (

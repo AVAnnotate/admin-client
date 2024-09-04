@@ -55,6 +55,7 @@
     "@types/accept-language-parser": "^1.5.6",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
-    "@types/uuid": "^9.0.8"
+    "@types/uuid": "^9.0.8",
+    "vite-plugin-checker": "^0.7.2"
   }
 }

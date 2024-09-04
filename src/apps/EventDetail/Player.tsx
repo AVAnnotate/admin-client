@@ -1,7 +1,7 @@
 // react-player requires a weird workaround to keep TS from complaining
 import { default as _ReactPlayer } from 'react-player';
 import type { ReactPlayerProps } from 'react-player/types/lib';
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import './Player.css';
 import { Button } from '@radix-ui/themes';
 import {

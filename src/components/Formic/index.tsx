@@ -221,7 +221,7 @@ interface TripleSwitchInputProps {
 }
 
 export const TripleSwitchInput = (props: TripleSwitchInputProps) => {
-  const [field, meta, helpers] = useField(props.name);
+  const [_field, meta, helpers] = useField(props.name);
 
   const { value } = meta;
   const { setValue } = helpers;
@@ -290,7 +290,7 @@ interface ToggleInputProps {
 }
 
 export const ToggleInput = (props: ToggleInputProps) => {
-  const [field, meta, helpers] = useField(props.name);
+  const [_field, meta, helpers] = useField(props.name);
 
   const { value } = meta;
   const { setValue } = helpers;
@@ -334,7 +334,7 @@ interface UserListProps {
 }
 
 export const UserList = (props: UserListProps) => {
-  const [field, meta, helpers] = useField(props.name);
+  const [_field, meta, helpers] = useField(props.name);
 
   const { value } = meta;
   const { setValue } = helpers;

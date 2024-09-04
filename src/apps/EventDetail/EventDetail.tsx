@@ -1,6 +1,5 @@
 import type {
   AnnotationEntry,
-  AnnotationPage,
   Event,
   ProjectData,
   Translations,

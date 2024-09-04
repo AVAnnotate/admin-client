@@ -28,15 +28,6 @@ export const getDisplayName = (user: UserProfile) => {
   return user.name;
 };
 
-const stringToHash = (str: string) => {
-  let hash = 0;
-
-  for (let i = 0; i < str.length; i++)
-    hash = str.charCodeAt(i) + ((hash << 5) - hash);
-
-  return hash;
-};
-
 const getInitials = (name: string): string => {
   const tokens = name.split(/\s+/);
   if (tokens.length === 1) {

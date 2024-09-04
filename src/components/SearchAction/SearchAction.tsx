@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react';
-import { MagnifyingGlass } from '@phosphor-icons/react/MagnifyingGlass';
 import type { Translations } from '@ty/Types.ts';
 import { TextField } from '@radix-ui/themes';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
@@ -13,10 +12,6 @@ interface SearchActionProps {
 }
 
 export const SearchAction = (props: SearchActionProps) => {
-  const { t } = props.i18n;
-
-  const el = useRef<HTMLDivElement>(null);
-
   const [value, setValue] = useState('');
 
   useEffect(() => {

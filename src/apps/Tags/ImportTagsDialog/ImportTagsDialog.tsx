@@ -1,7 +1,7 @@
-import type { Tags, Translations } from '@ty/Types.ts';
+import type { Translations } from '@ty/Types.ts';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from '@phosphor-icons/react/dist/icons/X';
-import { Formik, Form, useFormikContext } from 'formik';
+import { Formik, Form } from 'formik';
 import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/SpreadsheetInput.tsx';
 import { useContext, useMemo, useState } from 'react';
 import './ImportTagsDialog.css';
@@ -9,7 +9,6 @@ import {
   SpreadsheetInputContext,
   SpreadsheetInputContextComponent,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
-import type { any } from 'astro/zod';
 import { Button } from '@radix-ui/themes';
 
 export interface ImportTagsDialogProps {
@@ -49,15 +48,8 @@ const ImportTagsForm = (props: ImportTagsFormProps) => {
   return (
     <Formik
       initialValues={[]}
-      validate={(values) => {
+      validate={(_values) => {
         const errors = {};
-        // if (!values.email) {
-        //   errors.email = 'Required';
-        // } else if (
-        //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-        // ) {
-        //   errors.email = 'Invalid email address';
-        // }
         return errors;
       }}
       onSubmit={(values, { setSubmitting }) => {

@@ -5,7 +5,6 @@ import { Form, Formik, useField, useFormikContext } from 'formik';
 import type React from 'react';
 import { Button, Checkbox } from '@radix-ui/themes';
 import { BottomBar } from '@components/BottomBar/index.ts';
-import { Node } from 'slate';
 import './ImportForm.css';
 
 interface Props {
@@ -34,8 +33,7 @@ type DescriptionInputProps = {
   i18n: Translations;
 };
 const DescriptionInput = (props: DescriptionInputProps) => {
-  const [field, meta, helpers] = useField('description');
-  const { value } = meta;
+  const [_field, _meta, helpers] = useField('description');
   const { setValue } = helpers;
 
   const handleChange = (data: any) => {
@@ -57,7 +55,7 @@ type EventSelectProps = {
   events: { id: string; event: Event }[];
 };
 const EventSelect = (props: EventSelectProps) => {
-  const [field, meta, helpers] = useField('event_labels');
+  const [_field, meta, helpers] = useField('event_labels');
   const { value } = meta;
   const { setValue } = helpers;
 

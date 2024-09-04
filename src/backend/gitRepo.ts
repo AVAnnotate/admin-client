@@ -49,7 +49,7 @@ export const gitRepo = async (options: GitRepoOptions) => {
       singleBranch: options.branch ? true : false,
       depth: 1,
       ref: options.branch ? options.branch : undefined,
-      onProgress: (event) => {
+      onProgress: (_event) => {
         //console.log('Progress: ', event.loaded / event.total);
       },
       onAuth: () => {
@@ -58,11 +58,11 @@ export const gitRepo = async (options: GitRepoOptions) => {
           username: options.userInfo.token,
         };
       },
-      onAuthFailure: (url, auth) => {
+      onAuthFailure: (_url, _auth) => {
         console.log('Auth Failed!');
         return { cancel: true };
       },
-      onAuthSuccess: (url, auth) => console.log('Auth Success!'),
+      onAuthSuccess: (_url, _auth) => console.log('Auth Success!'),
     });
   } catch (err) {
     console.log(err);

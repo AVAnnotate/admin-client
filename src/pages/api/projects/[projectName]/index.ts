@@ -233,15 +233,6 @@ export const POST: APIRoute = async ({
   }
 };
 
-const setup = async (cookies: AstroCookies) => {
-  const token = cookies.get('access-token');
-
-  // Get the user info
-  const info = await userInfo(cookies);
-
-  return { token, info };
-};
-
 export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   const token = cookies.get('access-token');
 

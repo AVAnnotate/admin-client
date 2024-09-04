@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ params, request, redirect, cookies }) => {
+export const GET: APIRoute = async ({ request }) => {
   const code = request.url.split('git?code=')[1];
   const data = new FormData();
   data.append('client_id', import.meta.env.PUBLIC_GITHUB_CLIENT_ID);

@@ -1,11 +1,9 @@
-import { Check } from '@phosphor-icons/react/Check';
 import { CaretDown } from '@phosphor-icons/react/CaretDown';
 import { SortAscending } from '@phosphor-icons/react/SortAscending';
 import { SortDescending } from '@phosphor-icons/react/SortDescending';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { useState } from 'react';
 import type { Translations, ProjectData } from '@ty/Types.ts';
-import type { SortFunction } from './SortFunction.ts';
 
 import './SortAction.css';
 

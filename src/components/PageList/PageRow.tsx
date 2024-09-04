@@ -112,7 +112,7 @@ export const PageRow: React.FC<Props> = (props) => {
       }`}
       draggable
       key={props.uuid}
-      onDragStart={(ev) => {
+      onDragStart={(_ev) => {
         props.setPickedUp({
           uuid: props.uuid,
           originalIndex: props.index,

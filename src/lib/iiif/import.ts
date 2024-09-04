@@ -1,5 +1,4 @@
 import type {
-  IIIFAnnotationItem,
   IIIFAnnotationPage,
   IIIFAnnotationTarget,
   IIIFPresentationManifest,

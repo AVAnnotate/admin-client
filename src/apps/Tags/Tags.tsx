@@ -185,29 +185,29 @@ export const Tags = (props: TagsProps) => {
     proj.project.tags = mapTagData(data, headerMap);
 
     setSaving(true);
-    fetch(`/api/projects/${props.projectSlug}`, {
+    const res = await fetch(`/api/projects/${props.projectSlug}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ ...proj.project }),
-    }).then((data) => {
-      if (data.ok) {
-        setToast({
-          title: t['Success!'],
-          description: t['Tags imported'],
-          type: 'success',
-        });
-        setProject(proj);
-      } else {
-        setToast({
-          title: t['Problem!'],
-          description: t['Tags failed to import'],
-          type: 'error',
-        });
-      }
-      setSaving(false);
     });
+
+    if (res.ok) {
+      setToast({
+        title: t['Success!'],
+        description: t['Tags imported'],
+        type: 'success',
+      });
+      setProject(proj);
+    } else {
+      setToast({
+        title: t['Problem!'],
+        description: t['Tags failed to import'],
+        type: 'error',
+      });
+    }
+    setSaving(false);
   };
 
   const handleAddTagGroup = () => {
@@ -216,106 +216,87 @@ export const Tags = (props: TagsProps) => {
     setGroupColor(undefined);
   };
 
-  const handleDeleteTag = (tag: Tag) => {
+  const handleDeleteTag = async (tag: Tag) => {
     setSaving(true);
-    return fetch(`/api/projects/${props.projectSlug}/tags`, {
+    const res = await fetch(`/api/projects/${props.projectSlug}/tags`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ tag }),
-    })
-      .then((data) => {
-        if (data.ok) {
-          setToast({
-            title: t['Success!'],
-            description: t['Tag deleted'],
-            type: 'success',
-          });
-          return data.json();
-        } else {
-          setToast({
-            title: t['Problem!'],
-            description: t['Tag not deleted'],
-            type: 'error',
-          });
-          return undefined;
-        }
-      })
-      .then((p) => {
-        if (p) {
-          setProject(p.project);
-        }
-        setSaving(false);
+    });
+    if (res.ok) {
+      setToast({
+        title: t['Success!'],
+        description: t['Tag deleted'],
+        type: 'success',
       });
+      const p = await res.json();
+      setProject(p.project);
+    } else {
+      setToast({
+        title: t['Problem!'],
+        description: t['Tag not deleted'],
+        type: 'error',
+      });
+    }
+    setSaving(false);
   };
 
-  const handleUpdateTag = (oldTag: Tag, newTag: Tag) => {
+  const handleUpdateTag = async (oldTag: Tag, newTag: Tag) => {
     setSaving(true);
-    return fetch(`/api/projects/${props.projectSlug}/tags`, {
+    const data = await fetch(`/api/projects/${props.projectSlug}/tags`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ oldTag, newTag }),
-    })
-      .then((data) => {
-        if (data.ok) {
-          setToast({
-            title: t['Success!'],
-            description: t['Tag updated'],
-            type: 'success',
-          });
-          return data.json();
-        } else {
-          setToast({
-            title: t['Problem!'],
-            description: t['Tag not updated'],
-            type: 'error',
-          });
-          return undefined;
-        }
-      })
-      .then((p) => {
-        if (p) {
-          setProject(p.project);
-        }
-        setSaving(false);
+    });
+    if (data.ok) {
+      setToast({
+        title: t['Success!'],
+        description: t['Tag updated'],
+        type: 'success',
       });
+      const p = await data.json();
+      setProject(p.project);
+    } else {
+      setToast({
+        title: t['Problem!'],
+        description: t['Tag not updated'],
+        type: 'error',
+      });
+    }
+
+    setSaving(false);
   };
 
-  const handleAddTag = (tag: Tag) => {
+  const handleAddTag = async (tag: Tag) => {
     setSaving(true);
-    return fetch(`/api/projects/${props.projectSlug}/tags`, {
+    const data = await fetch(`/api/projects/${props.projectSlug}/tags`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ tag: tag }),
-    })
-      .then((data) => {
-        if (data.ok) {
-          setToast({
-            title: t['Success!'],
-            description: t['Tag added'],
-            type: 'success',
-          });
-          return data.json();
-        } else {
-          setToast({
-            title: t['Problem!'],
-            description: t['Tag not added'],
-            type: 'error',
-          });
-          return undefined;
-        }
-      })
-      .then((p) => {
-        if (p) {
-          setProject(p.project);
-        }
-        setSaving(false);
+    });
+    if (data.ok) {
+      setToast({
+        title: t['Success!'],
+        description: t['Tag added'],
+        type: 'success',
       });
+      const p = await data.json();
+      setProject(p.project);
+    } else {
+      setToast({
+        title: t['Problem!'],
+        description: t['Tag not added'],
+        type: 'error',
+      });
+    }
+
+    setSaving(false);
   };
 
   const tags =
