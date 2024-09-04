@@ -73,6 +73,8 @@ const EventSelect = (props: EventSelectProps) => {
     }
   };
 
+  const handleDescriptionChange = ()
+
   return (
     <>
       <div className='import-form-event-header'>
@@ -101,6 +103,13 @@ const EventSelect = (props: EventSelectProps) => {
                 handleChange(e.event.label, checked as boolean)
               }
             />
+            {value.includes(e.event.label) && (
+              <SlateInput
+                onChange={(data) => handleDescriptionChange(e.event.label, data)}
+                i18n={props.i18n}
+                elementTypes={['blocks', 'marks']}
+              />
+            )}
             <div className='av-label'>{e.event.label}</div>
           </div>
         ))}
