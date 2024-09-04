@@ -1,7 +1,7 @@
 import type React from 'react';
 import type { MeatballMenuItem } from '@ty/ui.ts';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
-import { DotsHorizontalIcon } from '@radix-ui/react-icons';
+import { DotsThreeVertical } from '@phosphor-icons/react/DotsThreeVertical';
 
 import './MeatballMenu.css';
 
@@ -14,7 +14,7 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
   return (
     <Dropdown.Root modal={false}>
       <Dropdown.Trigger asChild>
-        <DotsHorizontalIcon className='meatball-menu-icon' />
+        <DotsThreeVertical className='meatball-menu-icon' />
       </Dropdown.Trigger>
       <Dropdown.Portal>
         <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
