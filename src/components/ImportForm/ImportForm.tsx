@@ -73,7 +73,7 @@ const EventSelect = (props: EventSelectProps) => {
     }
   };
 
-  const handleDescriptionChange = ()
+  const handleDescriptionChange = (label: string, description: any) => {};
 
   return (
     <>
@@ -96,21 +96,32 @@ const EventSelect = (props: EventSelectProps) => {
         </div>
         <div className='import-form-event-list-divider' />
         {props.events.map((e) => (
-          <div className='import-form-event-row' key={e.event.label}>
-            <Checkbox
-              checked={value.includes(e.event.label)}
-              onCheckedChange={(checked) =>
-                handleChange(e.event.label, checked as boolean)
-              }
-            />
-            {value.includes(e.event.label) && (
-              <SlateInput
-                onChange={(data) => handleDescriptionChange(e.event.label, data)}
-                i18n={props.i18n}
-                elementTypes={['blocks', 'marks']}
+          <div className='import-form-group' key={e.event.label}>
+            <div className='import-form-event-row'>
+              <Checkbox
+                checked={value.includes(e.event.label)}
+                onCheckedChange={(checked) =>
+                  handleChange(e.event.label, checked as boolean)
+                }
               />
+              <div className='av-label'>{e.event.label}</div>
+            </div>
+            {value.includes(e.event.label) && (
+              <div className='form-event-label-ext'>
+                <div className='form-event-vertical-divider' />
+                <div className='form-event-description-block'>
+                  <div className='av-label-bold'>
+                    {t['Description (Optional)']}
+                  </div>
+                  <div className='av-label'>
+                    {t['A brief paragraph describing your event.']}
+                  </div>
+                  <div className='form-event-description-ext'>
+                    <DescriptionInput i18n={props.i18n} />
+                  </div>
+                </div>
+              </div>
             )}
-            <div className='av-label'>{e.event.label}</div>
           </div>
         ))}
       </div>

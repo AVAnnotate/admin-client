@@ -8,7 +8,7 @@ import {
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { LoadingOverlay } from '@components/LoadingOverlay/index.ts';
 import { Button } from '@radix-ui/themes';
-import type { Event, ProjectData, Translations } from '@ty/Types.ts';
+import type { Event, ProjectData, Translations, Tags } from '@ty/Types.ts';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useContext, useMemo } from 'react';
 import { mapAnnotationData } from '@lib/parse/index.ts';
