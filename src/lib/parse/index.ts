@@ -121,13 +121,13 @@ export const mapTagData = (
     if (d[map['tag_name']]) {
       if (!ret.tagGroups.find((g) => g.category === d[map['tag_category']])) {
         ret.tagGroups.push({
-          category: d[map['tag_category']],
+          category: d[map['tag_category']].trim(),
           color: tagColors[colorIndex++],
         });
       }
       ret.tags.push({
-        tag: d[map['tag_name']],
-        category: d[map['tag_category']],
+        tag: d[map['tag_name']].trim(),
+        category: d[map['tag_category']].trim(),
       });
     }
   });

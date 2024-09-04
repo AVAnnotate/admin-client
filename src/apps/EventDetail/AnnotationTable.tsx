@@ -86,10 +86,12 @@ const TagList: React.FC<TagListProps> = (props) => {
       {/* then display them for real here */}
       <div className='tag-cell-container' ref={tagCellEl}>
         {tagComponents.slice(0, displayIdx + 1)}
-        {displayIdx !== tagComponents.length - 1 && (
+        {tagComponents.length && displayIdx !== tagComponents.length - 1 ? (
           <div className='tag-cell-overflow'>
             &#43;{tagComponents.length - displayIdx - 1}
           </div>
+        ) : (
+          ''
         )}
       </div>
     </>
