@@ -171,7 +171,7 @@ export interface SelectInputProps {
   label: string;
   helperText?: string;
   name: string;
-  options: { label: string; value: string }[];
+  options: { label: string; value: string | undefined }[];
   required?: boolean;
   bottomNote?: string;
 }
