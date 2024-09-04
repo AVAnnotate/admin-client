@@ -180,7 +180,10 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
             </Dropdown.Sub>
             <Dropdown.Item
               className='dropdown-item'
-              onClick={() => insertHorizontalSeparator(editor)}
+              onClick={() => {
+                insertHorizontalSeparator(editor);
+                setOpen(false);
+              }}
             >
               {t['Horizontal Separator']}
             </Dropdown.Item>
