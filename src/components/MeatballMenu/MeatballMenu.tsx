@@ -14,7 +14,9 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
   return (
     <Dropdown.Root modal={false}>
       <Dropdown.Trigger asChild>
-        <DotsThreeVertical className='meatball-menu-icon' />
+        <div className='meatball-menu-icon'>
+          <DotsThreeVertical size={16} />
+        </div>
       </Dropdown.Trigger>
       <Dropdown.Portal>
         <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
