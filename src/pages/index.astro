@@ -9,5 +9,5 @@ const lang = accepts
   ? parser.pick(Object.keys(languages), accepts)
   : defaultLang;
 
-Astro.redirect(`/${lang}/sign-in`);
+return Astro.redirect(`/${lang}/sign-in`);
 ---

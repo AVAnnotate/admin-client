@@ -6,8 +6,8 @@ const lang = getLangFromUrl(Astro.url);
 const user = await userInfo(Astro.cookies);
 
 if (user) {
-  Astro.redirect(`/${lang}/projects`);
+  return Astro.redirect(`/${lang}/projects`);
 }
 
-Astro.redirect(`/${lang}/sign-in`);
+return Astro.redirect(`/${lang}/sign-in`);
 ---
