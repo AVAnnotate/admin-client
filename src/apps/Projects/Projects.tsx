@@ -1,4 +1,4 @@
-import type { AllProjects, Project, Translations } from '@ty/Types.ts';
+import type { AllProjects, Translations } from '@ty/Types.ts';
 import { Plus } from '@phosphor-icons/react/Plus';
 import { Header } from './Header/Header.tsx';
 import './Projects.css';
@@ -6,7 +6,7 @@ import { Button } from '@radix-ui/themes';
 import { useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
 import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
-import { type SortFunction, Sorters } from '@components/SortAction/index.ts';
+import { Sorters } from '@components/SortAction/index.ts';
 
 export interface ProjectsProps {
   projects: AllProjects;

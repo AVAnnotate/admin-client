@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 
-export const GET: APIRoute = async ({ params, request, redirect, cookies }) => {
+export const GET: APIRoute = async ({ request }) => {
   const code = request.url.split('git?code=')[1];
   const data = new FormData();
   data.append('client_id', import.meta.env.PUBLIC_GITHUB_CLIENT_ID);
@@ -14,7 +14,7 @@ export const GET: APIRoute = async ({ params, request, redirect, cookies }) => {
   })
     .then((response) => response.text())
     .then((paramsString) => {
-      let params = new URLSearchParams(paramsString);
+      const params = new URLSearchParams(paramsString);
       const access_token = params.get('access_token');
       return new Response(undefined, {
         status: 302,

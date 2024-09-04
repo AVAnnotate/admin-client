@@ -2,7 +2,6 @@ import type {
   TagGroup,
   ProjectData,
   UserInfo,
-  AnnotationEntry,
   AnnotationPage,
   Tag,
 } from '@ty/Types.ts';
@@ -82,13 +81,12 @@ export const updateTagGroup = async (
 ): Promise<ProjectData | undefined> => {
   const fs = initFs();
 
-  const { readFile, writeFile, readDir, exists, commitAndPush, context } =
-    await gitRepo({
-      fs: fs,
-      repositoryURL: htmlUrl,
-      branch: 'main',
-      userInfo: userInfo,
-    });
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
 
   const proj = readFile('/data/project.json');
 
@@ -108,7 +106,7 @@ export const updateTagGroup = async (
 
   // Reassign tags
   for (let i = 0; i < project.project.tags.tags.length; i++) {
-    let tag = project.project.tags.tags[i];
+    const tag = project.project.tags.tags[i];
 
     if (tag.category === oldGroup.category) {
       tag.category = newGroup.category;
@@ -164,13 +162,12 @@ export const deleteTagGroup = async (
 ): Promise<ProjectData | undefined> => {
   const fs = initFs();
 
-  const { readFile, writeFile, readDir, exists, commitAndPush, context } =
-    await gitRepo({
-      fs: fs,
-      repositoryURL: htmlUrl,
-      branch: 'main',
-      userInfo: userInfo,
-    });
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
 
   const proj = readFile('/data/project.json');
 
@@ -194,7 +191,7 @@ export const deleteTagGroup = async (
 
   // Reassign tags
   for (let i = 0; i < project.project.tags.tags.length; i++) {
-    let tag = project.project.tags.tags[i];
+    const tag = project.project.tags.tags[i];
 
     if (tag.category === group.category) {
       tag.category = '_uncategorized_';
@@ -258,9 +255,9 @@ const regroupTags = async (
     const annoPage: AnnotationPage = annos[key];
 
     for (let i = 0; i < annoPage.annotations.length; i++) {
-      let annotation = annoPage.annotations[i];
+      const annotation = annoPage.annotations[i];
       for (let j = 0; j < annotation.tags.length; j++) {
-        let tag = annotation.tags[j];
+        const tag = annotation.tags[j];
         if (tag.category === oldCategory) {
           tag.category = newCategory;
         }
@@ -393,9 +390,9 @@ const updateAllTags = async (
     const annoPage: AnnotationPage = annos[key];
 
     for (let i = 0; i < annoPage.annotations.length; i++) {
-      let annotation = annoPage.annotations[i];
+      const annotation = annoPage.annotations[i];
       for (let j = 0; j < annotation.tags.length; j++) {
-        let tag = annotation.tags[j];
+        const tag = annotation.tags[j];
         if (tag.category === oldTag.category && tag.tag === oldTag.tag) {
           annotation.tags[j] = newTag;
         }
@@ -485,7 +482,7 @@ const deleteAllTags = async (
     const annoPage: AnnotationPage = annos[key];
 
     for (let i = 0; i < annoPage.annotations.length; i++) {
-      let annotation = annoPage.annotations[i];
+      const annotation = annoPage.annotations[i];
       let j = annotation.tags.length;
       while (j--) {
         const t = annotation.tags[j];

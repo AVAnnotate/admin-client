@@ -3,7 +3,7 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { AnnotationPage, UserInfo } from '@ty/Types.ts';
-import type { apiAnnotationSetPost, apiEventPut } from '@ty/api.ts';
+import type { apiAnnotationSetPost } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuid4 } from 'uuid';
 

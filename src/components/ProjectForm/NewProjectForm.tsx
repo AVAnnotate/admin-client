@@ -93,7 +93,7 @@ const FormContents = (props: NewProjectFormProps) => {
       <div className='project-form-container'>
         <Formik
           initialValues={props.project || emptyProject}
-          validate={(values) => {
+          validate={(_values) => {
             const errors = {};
             // if (!values.email) {
             //   errors.email = 'Required';
@@ -109,7 +109,7 @@ const FormContents = (props: NewProjectFormProps) => {
             setSubmitting(false);
           }}
         >
-          {({ isSubmitting }) => (
+          {() => (
             <Form>
               <h2>{t['General']}</h2>
               <div ref={generalRef} />

@@ -1,5 +1,5 @@
 import { DeleteModal } from '@components/DeleteModal/index.ts';
-import type { AnnotationPage, ProjectData, Translations } from '@ty/Types.ts';
+import type { AnnotationPage, Translations } from '@ty/Types.ts';
 import { useMemo } from 'react';
 
 interface Props {

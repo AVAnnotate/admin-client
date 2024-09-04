@@ -6,7 +6,6 @@ import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
 import { useCallback, useState } from 'react';
 import './NewEvent.css';
-import { ImportForm } from '@components/ImportForm/ImportForm.tsx';
 import { ImportManifest } from '@components/ImportManifest/ImportManifest.tsx';
 
 interface Props {
@@ -21,7 +20,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
   const { t, lang } = i18n;
 
   const onSubmit = useCallback(async (newEvent: FormEvent) => {
-    const res = await fetch(`/api/projects/${projectSlug}/events`, {
+    await fetch(`/api/projects/${projectSlug}/events`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

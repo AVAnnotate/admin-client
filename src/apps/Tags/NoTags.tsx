@@ -1,5 +1,4 @@
-import { Button } from '@radix-ui/themes';
-import type { Tags, Translations } from '@ty/Types.ts';
+import type { Translations } from '@ty/Types.ts';
 import { ImportTagsDialog } from './ImportTagsDialog/ImportTagsDialog.tsx';
 
 import './Tags.css';

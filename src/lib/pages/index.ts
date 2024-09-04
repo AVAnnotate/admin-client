@@ -46,13 +46,13 @@ export const findAutoGenHome = async (
   const { readFile, exists } = context;
 
   // Get the order file
-  const orderFile = await readFile('/data/pages/order.json');
+  const orderFile = readFile('/data/pages/order.json');
 
   const order: string[] = JSON.parse(orderFile.toString());
 
   for (let i = 0; i < order.length; i++) {
     if (exists(`/data/pages/${order[i]}.json`)) {
-      const pageFile = await readFile(`/data/pages/${order[i]}.json`);
+      const pageFile = readFile(`/data/pages/${order[i]}.json`);
 
       const page: Page = JSON.parse(pageFile.toString());
 

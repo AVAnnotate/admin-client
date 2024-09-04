@@ -12,7 +12,7 @@ interface Props {
 }
 
 const onSubmitNew = async (page: Page | FormPage, projectSlug: string) => {
-  const res = await fetch(`/api/projects/${projectSlug}/pages`, {
+  await fetch(`/api/projects/${projectSlug}/pages`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -26,7 +26,7 @@ const onSubmitEdit = async (
   projectSlug: string,
   uuid: string
 ) => {
-  const res = await fetch(`/api/projects/${projectSlug}/pages/${uuid}`, {
+  await fetch(`/api/projects/${projectSlug}/pages/${uuid}`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',

@@ -128,7 +128,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
       parsed = JSON.parse(contents as string);
     } catch (e) {
       console.log(
-        `Error parsing annotation file ${filepath} as JSON. Skipping.`
+        `Error parsing annotation file ${filepath} as JSON. Skipping.${e}`
       );
     }
 

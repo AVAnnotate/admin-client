@@ -1,5 +1,4 @@
 import type {
-  IIIFAnnotationItem,
   IIIFAnnotationPage,
   IIIFAnnotationTarget,
   IIIFPresentationManifest,
@@ -115,7 +114,7 @@ export const importIIIFManifest = async (
         }
         if (anno) {
           anno.items?.forEach((i) => {
-            let setTags: Tag[] = [];
+            const setTags: Tag[] = [];
             if (i.type === 'Annotation') {
               const timesRef =
                 typeof i.target === 'string'
@@ -136,7 +135,7 @@ export const importIIIFManifest = async (
               const start = parseFloat(times && times[0] ? times[0] : '0');
               const end = times && times[1] ? parseFloat(times[1]) : undefined;
               let nodes: Node[] = [];
-              let tags: Tag[] = [...setTags];
+              const tags: Tag[] = [...setTags];
               if (!Array.isArray(i.body)) {
                 const document = JSDOM.fragment(
                   `${(i.body as IIIFResource).value as string}`

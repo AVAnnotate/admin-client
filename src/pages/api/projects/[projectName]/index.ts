@@ -4,7 +4,7 @@ import {
   enablePages,
   replaceRepoTopics,
 } from '@lib/GitHub/index.ts';
-import type { APIRoute, AstroCookies } from 'astro';
+import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
@@ -245,15 +245,6 @@ export const POST: APIRoute = async ({
   } else {
     return new Response(null, { status: 400 });
   }
-};
-
-const setup = async (cookies: AstroCookies) => {
-  const token = cookies.get('access-token');
-
-  // Get the user info
-  const info = await userInfo(cookies);
-
-  return { token, info };
 };
 
 export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {

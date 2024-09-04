@@ -1,7 +1,7 @@
 import type { Translations, Tag } from '@ty/Types.ts';
 import * as Dialog from '@radix-ui/react-dialog';
 import { X } from '@phosphor-icons/react/dist/icons/X';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { SelectGroup } from './SelectGroup.tsx';
 
 import './EditTagDialog.css';

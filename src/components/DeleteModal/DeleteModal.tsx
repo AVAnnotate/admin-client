@@ -2,7 +2,7 @@ import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import type { Translations } from '@ty/Types.ts';
 import { useMemo, useState } from 'react';
-import { ExclamationTriangle, Trash } from 'react-bootstrap-icons';
+import { ExclamationTriangle } from 'react-bootstrap-icons';
 import './DeleteModal.css';
 
 interface Props {

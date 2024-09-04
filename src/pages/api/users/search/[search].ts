@@ -1,8 +1,8 @@
 import type { APIRoute } from 'astro';
 import { userInfo } from '@backend/userInfo.ts';
-import { getUser, searchUsers } from '@lib/GitHub/index.ts';
+import { searchUsers } from '@lib/GitHub/index.ts';
 
-export const GET: APIRoute = async ({ cookies, params, request, redirect }) => {
+export const GET: APIRoute = async ({ cookies, params, redirect }) => {
   const { search } = params;
 
   const token = cookies.get('access-token');
