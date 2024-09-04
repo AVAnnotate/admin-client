@@ -80,7 +80,7 @@ const insertHorizontalSeparator = (editor: BaseEditor & ReactEditor) => {
   const nodes = [
     {
       type: 'horizontal-separator',
-      children: [{ text: '' }],
+      children: [],
     },
     { ...emptyParagraph[0] },
   ];
