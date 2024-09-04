@@ -104,7 +104,7 @@ export const Element = ({
 
 export const Leaf = ({ attributes, children, leaf }: any) => {
   if (leaf.bold) {
-    children = <strong>{children}</strong>;
+    children = <b>{children}</b>;
   }
 
   if (leaf.code) {
@@ -112,7 +112,7 @@ export const Leaf = ({ attributes, children, leaf }: any) => {
   }
 
   if (leaf.italic) {
-    children = <em>{children}</em>;
+    children = <i>{children}</i>;
   }
 
   if (leaf.underline) {
