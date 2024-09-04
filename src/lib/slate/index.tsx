@@ -75,6 +75,8 @@ export const Element = ({
           {children}
         </div>
       );
+    case 'horizontal-separator':
+      return <hr />;
     case 'event':
       return (
         <div {...attributes} contentEditable={false}>

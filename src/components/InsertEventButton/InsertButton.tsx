@@ -17,6 +17,7 @@ import type {
   SlateCompareEventData,
   SlateEventNodeData,
 } from '../../types/slate.ts';
+import { emptyParagraph } from '@lib/slate/index.tsx';
 
 const insertColumns = (
   editor: BaseEditor & ReactEditor,
@@ -73,6 +74,19 @@ const insertEventComparison = (
   const paragraph = { type: 'paragraph', children: [{ text: '' }] };
 
   Transforms.insertNodes(editor, [eventObj, paragraph]);
+};
+
+const insertHorizontalSeparator = (editor: BaseEditor & ReactEditor) => {
+  const nodes = [
+    {
+      type: 'horizontal-separator',
+      children: [{ text: '' }],
+    },
+    { ...emptyParagraph[0] },
+  ];
+
+  // @ts-ignore
+  Transforms.insertNodes(editor, nodes);
 };
 
 interface InsertButtonProps {
@@ -164,6 +178,12 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
                 </Dropdown.SubContent>
               </Dropdown.Portal>
             </Dropdown.Sub>
+            <Dropdown.Item
+              className='dropdown-item'
+              onClick={() => insertHorizontalSeparator(editor)}
+            >
+              {t['Horizontal Separator']}
+            </Dropdown.Item>
             <Dropdown.Item
               className='dropdown-item'
               onClick={() => updateModal('single-event')}
