@@ -25,8 +25,8 @@
   "Import file contains column headers?": "Import file contains column headers?",
   "Preview Data": "Preview Data",
   "Import As": "Import As",
-  "Audiovisual file label": "Audiovisual file label",
-  "Audiovisual file URL": "Audiovisual file URL",
+  "AVFile Label": "AVFile Label",
+  "AVFile URL": "AVFile URL",
   "Audiovisual file duration": "Audiovisual file duration",
   "Ignore this field": "Ignore this field",
   "Provider": "Provider",
@@ -51,5 +51,9 @@
   "All Annotations": "All Annotations",
   "Import Annotations": "Import Annotations",
   "Import Annotation File": "Import Annotation File",
-  "Tags (comma separated)": "Tags (comma separated)"
+  "Tags (comma separated)": "Tags (comma separated)",
+  "Event Item Type": "Event Item Type",
+  "Event Citation": "Event Citation",
+  "Event Label": "Event Label",
+  "Event Description": "Event Description"
 }

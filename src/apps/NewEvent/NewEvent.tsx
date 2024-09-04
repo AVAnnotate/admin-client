@@ -32,7 +32,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
   }, []);
 
   return (
-    <>
+    <div className='new-event-container'>
       <Breadcrumbs
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
@@ -78,6 +78,6 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
         </EventForm>
         {tab === 1 && <ImportManifest i18n={i18n} projectSlug={projectSlug} />}
       </div>
-    </>
+    </div>
   );
 };

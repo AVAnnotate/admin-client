@@ -66,24 +66,26 @@ export const NewProject = (props: NewProjectProps) => {
       {saving && <LoadingOverlay />}
       <h1>{t['Create New Project']}</h1>
       <div className='new-project-panes'>
-        <Sidebar
-          selection={selection}
-          onSelect={setSelection}
-          tabs={[
-            {
-              name: 'general',
-              label: t['General'],
-            },
-            {
-              name: 'users',
-              label: t['Users'],
-            },
-            {
-              name: 'tags',
-              label: t['Tags'],
-            },
-          ]}
-        />
+        <div className='new-project-sidebar'>
+          <Sidebar
+            selection={selection}
+            onSelect={setSelection}
+            tabs={[
+              {
+                name: 'general',
+                label: t['General'],
+              },
+              {
+                name: 'users',
+                label: t['Users'],
+              },
+              {
+                name: 'tags',
+                label: t['Tags'],
+              },
+            ]}
+          />
+        </div>
         <div className='new-project-form-container'>
           <NewProjectForm
             i18n={props.i18n}
