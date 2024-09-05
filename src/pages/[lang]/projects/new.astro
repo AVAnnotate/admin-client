@@ -23,7 +23,7 @@ if (!info) {
 const provider = providers();
 
 if (!provider) {
-  Astro.redirect('/500');
+  return Astro.redirect('/500');
 }
 
 const orgs = await getOrgs(info);

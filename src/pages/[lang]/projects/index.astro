@@ -15,7 +15,7 @@ const i18n = getTranslations(Astro.request, 'projects');
 const info = await userInfo(Astro.cookies);
 
 if (!info) {
-  Astro.redirect(`/${lang}/sign-in`);
+  return Astro.redirect(`/${lang}/sign-in`);
 }
 
 const allProjects: AllProjects = await getProjects(info as UserInfo);

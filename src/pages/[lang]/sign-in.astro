@@ -14,7 +14,7 @@ const cook = Astro.cookies.get('access-token');
 const token = cook ? cook.value : undefined;
 
 if (token) {
-  Astro.redirect(`/${lang}/projects`);
+  return Astro.redirect(`/${lang}/projects`);
 }
 ---
 

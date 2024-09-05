@@ -174,6 +174,21 @@ const insertImage = (editor: BaseEditor & ReactEditor, image: ImageData) => {
   Transforms.insertNodes(editor, nodes);
 };
 
+const withAVAPlugin = (editor: BaseEditor & ReactEditor) => {
+  const { isVoid } = editor;
+
+  editor.isVoid = (el) => {
+    // @ts-ignore
+    if (el.type === 'image' || el.type === 'horizontal-separator') {
+      return true;
+    }
+
+    return isVoid(el);
+  };
+
+  return editor;
+};
+
 interface Props {
   initialValue?: any;
   onChange: (data: any) => any;
@@ -188,7 +203,7 @@ interface Props {
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
-  const editor = useMemo(() => withReact(createEditor()), []);
+  const editor = useMemo(() => withReact(withAVAPlugin(createEditor())), []);
   const renderElement = useCallback(
     (elProps: any) => (
       <Element {...elProps} project={props.project} i18n={props.i18n} />
