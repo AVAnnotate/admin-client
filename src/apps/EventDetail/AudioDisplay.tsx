@@ -1,27 +1,17 @@
-import type {
-  Annotation,
-  AnnotationEntry,
-  Event,
-  ProjectData,
-  Translations,
-} from '@ty/Types.ts';
 import './EventDetail.css';
 import {
   DownloadIcon,
   MagnifyingGlassIcon,
-  Pencil2Icon,
   PlusIcon,
 } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import { Player } from './Player.tsx';
-import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
+import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
 import { useRef, useState } from 'react';
-import { serialize } from '@lib/slate/index.tsx';
 import { SetSelect } from './SetSelect.tsx';
-import { AvFilePicker } from './AvFilePicker.tsx';
 import { AnnotationTable } from './AnnotationTable.tsx';
 import { exportAnnotations } from '@lib/events/export.ts';
-import { EventLabel } from './EventLabel.tsx';
+import { EventHeader } from './EventHeader.tsx';
 import type { EventDisplayProps } from './types.ts';
 
 export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
@@ -38,46 +28,17 @@ export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
     <>
       <div className='event-detail container'>
         <div className='event-detail-floating-header'>
-          <div className='event-detail-top-bar'>
-            <EventLabel event={props.event} />
-            <div className='event-detail-options'>
-              <a
-                href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
-              >
-                <Button
-                  className='event-detail-button edit-button'
-                  type='button'
-                >
-                  <Pencil2Icon />
-                  {t['Edit']}
-                </Button>
-              </a>
-              <Button
-                className='event-detail-button delete-button'
-                onClick={() =>
-                  props.stateHandlers.setShowEventDeleteModal(true)
-                }
-                type='button'
-              >
-                <Trash />
-                {t['Delete']}
-              </Button>
-            </div>
-          </div>
-          {props.event.citation && (
-            <p>{`${t['Provider']}: ${props.event.citation}`}</p>
-          )}
-          <div>{serialize(props.event.description)}</div>
-          {Object.keys(props.event.audiovisual_files).length > 1 && (
-            <div className='av-file-selection'>
-              <span className='av-file-label'>{t['AV File']}</span>
-              <AvFilePicker
-                event={props.event}
-                onChange={(uuid) => props.stateHandlers.setAvFile(uuid)}
-                value={props.avFileUuid}
-              />
-            </div>
-          )}
+          <EventHeader
+            avFileUuid={props.avFileUuid}
+            event={props.event}
+            eventUuid={props.eventUuid}
+            i18n={props.i18n}
+            projectSlug={props.projectSlug}
+            setAvFile={props.stateHandlers.setAvFile}
+            setShowEventDeleteModal={
+              props.stateHandlers.setShowEventDeleteModal
+            }
+          />
           <Player
             type={props.event.item_type}
             i18n={props.i18n}
