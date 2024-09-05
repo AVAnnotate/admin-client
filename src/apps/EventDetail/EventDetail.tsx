@@ -9,11 +9,13 @@ import { AudioDisplay } from './AudioDisplay.tsx';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { Node } from 'slate';
 import type { apiAnnotationSetPost } from '@ty/api.ts';
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AnnotationModal } from '@components/AnnotationModal/index.ts';
 import { SetFormModal } from '@components/SetModal/index.ts';
 import { DeleteEventModal } from '@components/DeleteEventModal/index.ts';
 import { DeleteModal } from '@components/DeleteModal/index.ts';
+import { VideoDisplay } from './VideoDisplay.tsx';
+import { exportAnnotations } from '@lib/events/export.ts';
 
 interface EventDetailProps {
   event: Event;
@@ -263,6 +265,16 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     setEditAnnoUuid('');
   };
 
+  const onExport = useCallback(() => {
+    if (currentSetUuid) {
+      exportAnnotations(
+        allAnnotations[currentSetUuid].annotations,
+        props.event,
+        avFile
+      );
+    }
+  }, [currentSetUuid, allAnnotations, avFile]);
+
   const onCreateSet = async (name: string) => {
     const newSet = {
       event_id: props.eventUuid,
@@ -338,29 +350,54 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           ]}
         />
       </div>
-      {props.event.item_type === 'Audio' ? (
-        <AudioDisplay
-          {...props}
-          allAnnotations={allAnnotations}
-          avFileUuid={avFile}
-          displayAnnotations={displayAnnotations}
-          searchAnnotations={searchAnnotations}
-          sets={sets}
-          setUuid={currentSetUuid}
-          stateHandlers={{
-            setAvFile,
-            setCurrentSetUuid,
-            setDeleteAnnoUuid,
-            setEditAnnoUuid,
-            setShowAddSetModal,
-            setShowEventDeleteModal,
-            setShowAnnoCreateModal,
-            setSearch,
-          }}
-          sortAnnotations={sortAnnotations}
-        />
-      ) : (
-        <p>WIP</p>
+      {currentSetUuid && (
+        <>
+          {props.event.item_type === 'Audio' ? (
+            <AudioDisplay
+              {...props}
+              allAnnotations={allAnnotations}
+              avFileUuid={avFile}
+              displayAnnotations={displayAnnotations}
+              onExport={onExport}
+              searchAnnotations={searchAnnotations}
+              sets={sets}
+              setUuid={currentSetUuid}
+              stateHandlers={{
+                setAvFile,
+                setCurrentSetUuid,
+                setDeleteAnnoUuid,
+                setEditAnnoUuid,
+                setShowAddSetModal,
+                setShowEventDeleteModal,
+                setShowAnnoCreateModal,
+                setSearch,
+              }}
+              sortAnnotations={sortAnnotations}
+            />
+          ) : (
+            <VideoDisplay
+              {...props}
+              allAnnotations={allAnnotations}
+              avFileUuid={avFile}
+              displayAnnotations={displayAnnotations}
+              onExport={onExport}
+              searchAnnotations={searchAnnotations}
+              sets={sets}
+              setUuid={currentSetUuid}
+              stateHandlers={{
+                setAvFile,
+                setCurrentSetUuid,
+                setDeleteAnnoUuid,
+                setEditAnnoUuid,
+                setShowAddSetModal,
+                setShowEventDeleteModal,
+                setShowAnnoCreateModal,
+                setSearch,
+              }}
+              sortAnnotations={sortAnnotations}
+            />
+          )}
+        </>
       )}
     </>
   );

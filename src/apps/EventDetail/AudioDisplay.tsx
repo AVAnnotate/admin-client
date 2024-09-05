@@ -1,28 +1,20 @@
-import './EventDetail.css';
-import {
-  DownloadIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-} from '@radix-ui/react-icons';
+import { PlusIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import { Player } from './Player.tsx';
-import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { SetSelect } from './SetSelect.tsx';
 import { AnnotationTable } from './AnnotationTable.tsx';
-import { exportAnnotations } from '@lib/events/export.ts';
 import { EventHeader } from './EventHeader.tsx';
 import type { EventDisplayProps } from './types.ts';
+import { AnnotationTableHeader } from './AnnotationTableHeader.tsx';
+
+import './EventDetail.css';
 
 export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
-  const { lang, t } = props.i18n;
+  const { t } = props.i18n;
 
   // position of the most recently clicked annotation
   const [annoPosition, setAnnoPosition] = useState(0);
-
-  const searchDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
 
   return (
     <>
@@ -69,67 +61,17 @@ export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
               </Button>
             </div>
           </div>
-          <div className='event-detail-table-header'>
-            <p>
-              {props.sets.length > 1
-                ? props.sets.find((set) => set.uuid === props.setUuid)?.label
-                : t['All Annotations']}
-              ({props.displayAnnotations.length})
-            </p>
-            <div className='header-buttons'>
-              <div className='formic-form-field'>
-                <input
-                  className='searchbox formic-form-text'
-                  onChange={(ev) => {
-                    if (searchDebounceTimer.current) {
-                      clearTimeout(searchDebounceTimer.current);
-                    }
-
-                    searchDebounceTimer.current = setTimeout(
-                      () => props.stateHandlers.setSearch(ev.target.value),
-                      200
-                    );
-                  }}
-                  type='text'
-                />
-                <MagnifyingGlassIcon />
-              </div>
-              {props.setUuid && (
-                <Button
-                  className='csv-button'
-                  onClick={() => {
-                    if (props.setUuid) {
-                      exportAnnotations(
-                        props.allAnnotations[props.setUuid].annotations,
-                        props.event,
-                        props.avFileUuid
-                      );
-                    }
-                  }}
-                  type='button'
-                >
-                  <DownloadIcon />
-                  {t['CSV']}
-                </Button>
-              )}
-              <Button
-                className='primary'
-                onClick={() =>
-                  (window.location.pathname = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`)
-                }
-              >
-                <FileEarmarkArrowUp />
-                {t['import']}
-              </Button>
-              <Button
-                className='primary'
-                onClick={() => props.stateHandlers.setShowAnnoCreateModal(true)}
-              >
-                <PlusIcon />
-                {t['Add']}
-              </Button>
-            </div>
-          </div>
+          <AnnotationTableHeader
+            displayAnnotations={props.displayAnnotations}
+            i18n={props.i18n}
+            onExport={props.onExport}
+            sets={props.sets}
+            setSearch={props.stateHandlers.setSearch}
+            setShowAnnoCreateModal={props.stateHandlers.setShowAnnoCreateModal}
+            setUuid={props.setUuid}
+            eventUuid={props.eventUuid}
+            projectSlug={props.projectSlug}
+          />
         </div>
         <AnnotationTable
           i18n={props.i18n}

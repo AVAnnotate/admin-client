@@ -15,13 +15,14 @@ export interface EventDisplayProps {
   event: Event;
   eventUuid: string;
   i18n: Translations;
+  onExport: () => void;
   projectSlug: string;
   project: ProjectData;
   sets: {
     uuid: string;
     label: string;
   }[];
-  setUuid: string | null;
+  setUuid: string;
   stateHandlers: {
     setAvFile: (uuid: string) => void;
     setCurrentSetUuid: (uuid: string) => void;
