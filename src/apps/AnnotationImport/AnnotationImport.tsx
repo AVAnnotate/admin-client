@@ -181,6 +181,13 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
       <div className='container'>
         {isSubmitting && <LoadingOverlay />}
         <h1>{t['Import Annotations']}</h1>
+        <div className='av-label annotation-import-instructions'>
+          {
+            t[
+              'Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.'
+            ]
+          }
+        </div>
         <div className='spreadsheet-input-container'>
           <SpreadsheetInput
             i18n={props.i18n}

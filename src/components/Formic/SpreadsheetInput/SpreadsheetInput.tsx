@@ -14,6 +14,7 @@ import { Button, ChevronDownIcon, Table } from '@radix-ui/themes';
 import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { SpreadsheetInputContext } from './SpreadsheetInputContext.tsx';
+import { FileBox } from './FileBox.tsx';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -179,6 +180,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
       requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
         0
     );
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     props.onHeaderMapChange && props.onHeaderMapChange(headerMap);
   }, [values, headerMap]);
 
@@ -239,40 +241,127 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     }
   }, [values[props.name], headerMap]);
 
+  const handleReplace = () => {
+    setFile(null);
+  };
+
   if (props.isValid) {
     props.isValid(!!file && displayPreview);
   }
-  return (
-    <div className='formic-spreadsheet-input'>
-      {props.label && (
-        <div className='av-label-bold formic-form-label'>
-          {props.label}
-          <Required />
-        </div>
-      )}
-      {props.helperText && (
-        <div className='av-label formic-form-helper-text'>
-          {props.helperText}
-        </div>
-      )}
-      <div className='file-input-body'>
-        <label className='av-label-bold formic-form-label'>
-          {/* Styling a span like a button because an actual button
-              won't trigger the upload dialog */}
-          <div className='file-input-top-bar'>
-            <span className='choose-file-button'>{t['choose file']}</span>
-            {values[props.name] ? (
-              <div className='file-input-done'>
-                <CheckIcon height={16} width={16} />
-                <span>{t['done']}</span>
-              </div>
-            ) : (
-              <span>{t['No file selected']}</span>
-            )}
+  if (values[props.name]) {
+    return (
+      <div className='formic-spreadsheet-input'>
+        <h2>{t['Select File']}</h2>
+        {props.label && (
+          <div className='av-label-bold formic-form-label'>
+            {props.label}
+            <Required />
           </div>
+        )}
+        {props.helperText && (
+          <div className='av-label formic-form-helper-text'>
+            {props.helperText}
+          </div>
+        )}
+        {file && (
+          <>
+            <FileBox file={file} i18n={props.i18n} onClick={handleReplace} />
+            <Separator.Root className='SeparatorRoot' decorative />
+            <div className='spreadsheet-input-headers-switch'></div>
+            <h2>{t['File configuration']}</h2>
+            <div className='options-row'>
+              <div>
+                <div className='av-label-bold formic-form-label'>
+                  {t['Import file contains column headers?']}
+                </div>
+                {props.helperText && (
+                  <div className='av-label formic-form-helper-text'>
+                    {props.helperText}
+                  </div>
+                )}
+                <Switch.Root
+                  checked={containsHeaders}
+                  onCheckedChange={(checked) => setContainsHeaders(checked)}
+                  className='formic-toggle-switch'
+                >
+                  <CheckIcon className='formic-toggle-switch-icon' />
+                  <Switch.Thumb className='formic-toggle-switch-thumb' />
+                </Switch.Root>
+              </div>
+              <Button
+                className='formic-spreadsheet-display-preview-button primary'
+                disabled={!requiredFieldsSet}
+                onClick={() => {
+                  setDisplayPreview(!displayPreview);
+                  setImported(!imported);
+                }}
+                type='button'
+              >
+                {displayPreview ? t['Undo'] : t['import']}
+              </Button>
+            </div>
+            {displayPreview && (
+              <Table.Root className='spreadsheet-preview-table'>
+                <Table.Header className='spreadsheet-input-table-header'>
+                  <Table.Row className='spreadsheet-input-table-row'>
+                    {props.importAsOptions.map((opt) => (
+                      <Table.ColumnHeaderCell key={opt.value}>
+                        {opt.label}
+                      </Table.ColumnHeaderCell>
+                    ))}
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>
+                  {(values as any)[props.name].data.map(
+                    (item: any, idx: number) => (
+                      <Table.Row key={idx}>
+                        {props.importAsOptions.map((opt) => (
+                          <Table.Cell key={opt.value}>
+                            {item[headerMap[opt.value]]}
+                          </Table.Cell>
+                        ))}
+                      </Table.Row>
+                    )
+                  )}
+                </Table.Body>
+              </Table.Root>
+            )}
+            {!displayPreview && (
+              <Table.Root className='spreadsheet-input-table'>
+                <Table.Header className='spreadsheet-input-table-header'>
+                  <Table.Row className='spreadsheet-input-table-row'>
+                    <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+                      {t['Column']}
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+                      {t['Preview Data']}
+                    </Table.ColumnHeaderCell>
+                    <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
+                      {t['Import As']}
+                    </Table.ColumnHeaderCell>
+                  </Table.Row>
+                </Table.Header>
+                <Table.Body>{tableRows}</Table.Body>
+              </Table.Root>
+            )}
+          </>
+        )}
+      </div>
+    );
+  } else {
+    return (
+      <>
+        <h2>{t['Select File']}</h2>
+        <div className='formic-form-spreadsheet-no-file'>
+          <label
+            htmlFor='formic-form-file-input'
+            className='choose-file-button'
+          >
+            {t['Choose File']}
+          </label>
           <input
+            id='formic-form-file-input'
             accept={props.accept}
-            className='formic-spreadsheet-input-el'
             onChange={(ev) =>
               setFile(
                 ev.target.files && ev.target.files.length > 0
@@ -282,90 +371,9 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
             }
             type='file'
           />
-        </label>
-      </div>
-      {file && (
-        <>
-          <Separator.Root className='SeparatorRoot' decorative />
-          <div className='spreadsheet-input-headers-switch'></div>
-          <h2>{t['File configuration']}</h2>
-          <div className='options-row'>
-            <div>
-              <div className='av-label-bold formic-form-label'>
-                {t['Import file contains column headers?']}
-              </div>
-              {props.helperText && (
-                <div className='av-label formic-form-helper-text'>
-                  {props.helperText}
-                </div>
-              )}
-              <Switch.Root
-                checked={containsHeaders}
-                onCheckedChange={(checked) => setContainsHeaders(checked)}
-                className='formic-toggle-switch'
-              >
-                <CheckIcon className='formic-toggle-switch-icon' />
-                <Switch.Thumb className='formic-toggle-switch-thumb' />
-              </Switch.Root>
-            </div>
-            <Button
-              className='formic-spreadsheet-display-preview-button primary'
-              disabled={!requiredFieldsSet}
-              onClick={() => {
-                setDisplayPreview(!displayPreview);
-                setImported(!imported);
-              }}
-              type='button'
-            >
-              {displayPreview ? t['Undo'] : t['import']}
-            </Button>
-          </div>
-          {displayPreview && (
-            <Table.Root className='spreadsheet-preview-table'>
-              <Table.Header className='spreadsheet-input-table-header'>
-                <Table.Row className='spreadsheet-input-table-row'>
-                  {props.importAsOptions.map((opt) => (
-                    <Table.ColumnHeaderCell key={opt.value}>
-                      {opt.label}
-                    </Table.ColumnHeaderCell>
-                  ))}
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>
-                {(values as any)[props.name].data.map(
-                  (item: any, idx: number) => (
-                    <Table.Row key={idx}>
-                      {props.importAsOptions.map((opt) => (
-                        <Table.Cell key={opt.value}>
-                          {item[headerMap[opt.value]]}
-                        </Table.Cell>
-                      ))}
-                    </Table.Row>
-                  )
-                )}
-              </Table.Body>
-            </Table.Root>
-          )}
-          {!displayPreview && (
-            <Table.Root className='spreadsheet-input-table'>
-              <Table.Header className='spreadsheet-input-table-header'>
-                <Table.Row className='spreadsheet-input-table-row'>
-                  <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
-                    {t['Column']}
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
-                    {t['Preview Data']}
-                  </Table.ColumnHeaderCell>
-                  <Table.ColumnHeaderCell className='spreadsheet-input-table-column'>
-                    {t['Import As']}
-                  </Table.ColumnHeaderCell>
-                </Table.Row>
-              </Table.Header>
-              <Table.Body>{tableRows}</Table.Body>
-            </Table.Root>
-          )}
-        </>
-      )}
-    </div>
-  );
+          <div className='av-label'>{t['No file selected']}</div>
+        </div>
+      </>
+    );
+  }
 };
