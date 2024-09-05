@@ -36,22 +36,28 @@ const FormContents: React.FC<Props> = (props) => {
 
   const hasTitle = useMemo(() => !!(values as FormPage).title, [values]);
 
-  const parentPageOptions = useMemo(
-    () =>
-      // @ts-ignore
-      Object.keys(props.project.pages)
-        .filter(
-          (uuid) => uuid !== props.uuid && !props.project.pages![uuid].parent
-        )
-        .map((uuid) => {
-          const page = props.project.pages![uuid];
-          return {
-            label: page.title,
-            value: uuid,
-          };
-        }),
-    [props.uuid, props.project.pages]
-  );
+  const parentPageOptions: { label: string; value: string | undefined }[] =
+    useMemo(
+      () =>
+        // @ts-ignore
+        Object.keys(props.project.pages)
+          .filter(
+            (uuid) => uuid !== props.uuid && !props.project.pages![uuid].parent
+          )
+          .map((uuid) => {
+            const page = props.project.pages![uuid];
+            return {
+              label: page.title,
+              value: uuid,
+            };
+          }),
+      [props.uuid, props.project.pages]
+    );
+
+  parentPageOptions.unshift({
+    label: t['No Parent'],
+    value: undefined,
+  });
 
   return (
     <Form className='page-form'>
@@ -65,6 +71,7 @@ const FormContents: React.FC<Props> = (props) => {
               label={t['Parent Page']}
               name='parent'
               options={parentPageOptions}
+              required
             />
           </div>
         </div>

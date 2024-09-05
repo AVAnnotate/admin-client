@@ -17,6 +17,9 @@ import { ToastProvider, Toast } from '@components/Toast/Toast.tsx';
 
 import './Tags.css';
 import type { ToastContent } from '@components/Toast/ToastContent.ts';
+import { PlusIcon, DownloadIcon } from '@radix-ui/react-icons';
+import { Button } from '@radix-ui/themes';
+import { exportTags } from '@lib/tags/index.ts';
 
 export interface TagsProps {
   i18n: Translations;
@@ -299,6 +302,10 @@ export const Tags = (props: TagsProps) => {
     setSaving(false);
   };
 
+  const handleDownloadTags = () => {
+    exportTags(props.project.project.tags, props.project.project.slug);
+  };
+
   const tags =
     project && project.project.tags ? project.project.tags : undefined;
 
@@ -316,7 +323,23 @@ export const Tags = (props: TagsProps) => {
         ]}
       />
       <div className='tags-container'>
-        <h1>{t['Tags']}</h1>
+        <div className='tags-header-row'>
+          <h1>{t['Tags']}</h1>
+          <div className='tags-header buttons'>
+            <Button className='primary' onClick={() => handleAddTagGroup()}>
+              <PlusIcon />
+              {t['Tag Group']}
+            </Button>
+            <Button
+              className='outline'
+              onClick={() => handleDownloadTags()}
+              type='button'
+            >
+              <DownloadIcon />
+              {t['CSV']}
+            </Button>
+          </div>
+        </div>
         {!tags || tags?.tagGroups.length === 0 ? (
           <NoTags
             i18n={props.i18n}

@@ -58,3 +58,28 @@
 .import-form-event-list {
   margin-top: 8px;
 }
+
+.form-event-label-ext {
+  padding-top: 8px;
+  display: flex;
+  flex-direction: row;
+}
+
+.form-event-description-ext {
+  padding-top: 16px;
+  padding-bottom: 16px;
+  display: flex;
+  flex-direction: row;
+}
+
+.form-event-description-block {
+  width: 100%;
+}
+
+.form-event-vertical-divider {
+  height: 250px;
+  width: 1px;
+  border-left: 1px solid var(--gray-300);
+  margin-right: 10px;
+  margin-left: 5px;
+}
