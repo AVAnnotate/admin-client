@@ -55,5 +55,7 @@
   "Event Item Type": "Event Item Type",
   "Event Citation": "Event Citation",
   "Event Label": "Event Label",
-  "Event Description": "Event Description"
+  "Event Description": "Event Description",
+  "Offline": "Offline",
+  "File": "File"
 }

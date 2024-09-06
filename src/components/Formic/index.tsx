@@ -168,17 +168,20 @@ export const TimeInput = (props: TimeInputProps) => {
 };
 
 export interface SelectInputProps {
-  label: string;
+  label?: string;
   helperText?: string;
   name: string;
   options: { label: string; value: string | undefined }[];
   required?: boolean;
   bottomNote?: string;
+  className?: string;
+  width?: string;
+  backgroundColor?: string;
 }
 
 export const SelectInput = (props: SelectInputProps) => {
   return (
-    <>
+    <div className={`formic-form-field ${props.className || ''}'`}>
       <div className='av-label-bold formic-form-label'>
         {props.label}
         {props.required && <Required />}
@@ -188,7 +191,12 @@ export const SelectInput = (props: SelectInputProps) => {
           {props.helperText}
         </div>
       )}
-      <Field as='select' name={props.name} className='formic-form-select'>
+      <Field
+        as='select'
+        name={props.name}
+        className='formic-form-select'
+        style={{ width: props.width, backgroundColor: props.backgroundColor }}
+      >
         {/* empty option to allow the user to leave the input blank */}
         {!props.required && <option />}
         {props.options.map((option) => {
@@ -205,7 +213,7 @@ export const SelectInput = (props: SelectInputProps) => {
         </div>
       )}
       <ErrorMessage name={props.name} component='div' />
-    </>
+    </div>
   );
 };
 

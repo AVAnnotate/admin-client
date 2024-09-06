@@ -55,3 +55,14 @@
 .event-form .bottom-bar-flex .cancel-button {
   width: 176px;
 }
+
+.event-form .av-files-fields .av-url-group {
+  display: flex;
+  flex-direction: row;
+  width: 730px;
+}
+
+.event-form .av-files-fields .av-url-group .av-select-type select {
+  border-top-right-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+}

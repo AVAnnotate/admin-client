@@ -25,7 +25,7 @@ interface Props {
 
 const initialAvFile = {
   label: '',
-  is_offline: false,
+  is_offline: 'false',
   file_url: '',
   duration: 0,
 };
@@ -78,11 +78,24 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                       label={idx === 0 ? t['Label'] : undefined}
                       name={`audiovisual_files.${key}.label`}
                     />
-                    <TextInput
-                      className='av-file-url-input'
-                      label={idx === 0 ? t['File URL'] : undefined}
-                      name={`audiovisual_files.${key}.file_url`}
-                    />
+                    <div className='av-url-group'>
+                      <SelectInput
+                        className='av-select-type'
+                        width='100px'
+                        backgroundColor='var(--gray-200)'
+                        label={idx === 0 ? t['File'] : undefined}
+                        name={`audiovisual_files.${key}.is_offline`}
+                        options={[
+                          { value: 'false', label: t['URL'] },
+                          { value: 'true', label: t['Offline'] },
+                        ]}
+                      />
+                      <TextInput
+                        className='av-file-url-input'
+                        label={idx === 0 ? t['File URL'] : undefined}
+                        name={`audiovisual_files.${key}.file_url`}
+                      />
+                    </div>
                     <TimeInput
                       className='av-duration-input'
                       label={idx === 0 ? t['Duration'] : undefined}
