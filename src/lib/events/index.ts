@@ -14,6 +14,7 @@ export const generateDefaultEvent = (): FormEvent => ({
   audiovisual_files: {
     [uuidv4()]: {
       label: '',
+      is_offline: false,
       file_url: '',
       duration: 90,
     },

@@ -157,6 +157,7 @@ export const mapEventData = (
     audiovisual_files: {
       [uuidv4()]: {
         label: item[map['audiovisual_file_label']],
+        is_offline: false,
         file_url: item[map['audiovisual_file_url']],
         duration: item[map['audiovisual_file_duration']],
       },

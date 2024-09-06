@@ -71,6 +71,7 @@ export type Publish = {
 
 export type AudiovisualFile = {
   label: string;
+  is_offline: boolean;
   file_url: string;
   duration: number;
 };

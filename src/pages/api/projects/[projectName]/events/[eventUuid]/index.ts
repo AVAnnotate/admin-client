@@ -3,7 +3,7 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { Page, UserInfo } from '@ty/Types.ts';
+import type { UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -177,7 +177,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
       (o: string) => !deleteList.includes(o)
     );
 
-    const orderSuccess = await writeFile(
+    await writeFile(
       '/data/pages/order.json',
       JSON.stringify(newOrder, null, 2)
     );

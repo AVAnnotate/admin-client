@@ -56,5 +56,7 @@
   "Event Citation": "Event Citation",
   "Event Label": "Event Label",
   "Event Description": "Event Description",
+  "Offline": "Offline",
+  "File": "File",
   "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.": "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually."
 }
