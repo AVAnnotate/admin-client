@@ -25,6 +25,7 @@ interface Props {
 
 const initialAvFile = {
   label: '',
+  is_offline: false,
   file_url: '',
   duration: 0,
 };
