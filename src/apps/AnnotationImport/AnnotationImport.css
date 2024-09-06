@@ -39,3 +39,7 @@
 .annotation-import-form .bottom-bar-flex .cancel-button {
   width: 176px;
 }
+
+.annotation-import-instructions {
+  color: var(--gray-600);
+}

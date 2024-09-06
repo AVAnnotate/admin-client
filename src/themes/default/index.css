@@ -173,6 +173,11 @@ h3 {
   font-weight: 400;
 }
 
+.av-caption {
+  font-family: Inter;
+  font-size: 10px;
+}
+
 p {
   margin: 0.8em 0;
   padding: 0;
