@@ -132,15 +132,16 @@ export const mapTagData = (
   let colorIndex = 0;
   data.forEach((d) => {
     if (d[map['tag_name']]) {
-      if (!ret.tagGroups.find((g) => g.category === d[map['tag_category']])) {
+      const category = d[map['tag_category']] || '_uncategorized_'
+      if (!ret.tagGroups.find((g) => g.category === category)) {
         ret.tagGroups.push({
-          category: d[map['tag_category']].trim(),
+          category: category.trim(),
           color: tagColors[colorIndex++],
         });
       }
       ret.tags.push({
         tag: d[map['tag_name']].trim(),
-        category: d[map['tag_category']].trim(),
+        category: category.trim(),
       });
     }
   });
