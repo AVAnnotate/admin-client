@@ -89,9 +89,8 @@ export const Player: React.FC<Props> = (props) => {
 
   return (
     <div className='player'>
-      {/* the player doesn't have any UI when playing audio files, so let's keep it 0x0 */}
-      {/* when we add video support, we'll need to conditionally set the width/height */}
       <ReactPlayer
+        controls={props.type === 'Video'}
         playing={playing}
         played={position / duration || 0}
         muted={muted}
@@ -105,71 +104,77 @@ export const Player: React.FC<Props> = (props) => {
         onReady={(player) => setPlayer(player)}
         progressInterval={50}
         url={props.url}
-        width={props.type === 'Video' ? 280 : 0}
-        height={props.type === 'Video' ? 200 : 0}
+        width={props.type === 'Video' ? '100%' : 0}
+        height={props.type === 'Video' ? '100%' : 0}
       />
-      <div className='player-control-panel'>
-        <div className='content'>
-          <Button
-            className='audio-button unstyled'
-            onClick={() => setPlaying(!playing)}
-          >
-            {playing ? <PauseFill color='black' /> : <PlayFill color='black' />}
-          </Button>
-          <div className='position-label'>
-            <span className='timestamp position'>{formattedPosition}</span>
-            <span>&nbsp;/&nbsp;</span>
-            <span className='timestamp duration'>{formattedDuration}</span>
-          </div>
-          <div className='seek-bar'>
-            <Slider.Root
-              className='seek-bar-slider'
-              defaultValue={[0]}
-              min={0}
-              max={0.999999999}
-              onValueChange={(val) => {
-                setSeeking(true);
-                setPosition(val[0] * duration);
-              }}
-              onValueCommit={onSeek}
-              step={0.0001}
-              value={[position / duration]}
+      {props.type === 'Audio' && (
+        <div className='player-control-panel'>
+          <div className='content'>
+            <Button
+              className='audio-button unstyled'
+              onClick={() => setPlaying(!playing)}
             >
-              <Slider.Track className='seek-bar-slider-track'>
-                <Slider.Range className='seek-bar-slider-range' />
-              </Slider.Track>
-              <Slider.Thumb className='seek-bar-slider-thumb' />
-            </Slider.Root>
+              {playing ? (
+                <PauseFill color='black' />
+              ) : (
+                <PlayFill color='black' />
+              )}
+            </Button>
+            <div className='position-label'>
+              <span className='timestamp position'>{formattedPosition}</span>
+              <span>&nbsp;/&nbsp;</span>
+              <span className='timestamp duration'>{formattedDuration}</span>
+            </div>
+            <div className='seek-bar'>
+              <Slider.Root
+                className='seek-bar-slider'
+                defaultValue={[0]}
+                min={0}
+                max={0.999999999}
+                onValueChange={(val) => {
+                  setSeeking(true);
+                  setPosition(val[0] * duration);
+                }}
+                onValueCommit={onSeek}
+                step={0.0001}
+                value={[position / duration]}
+              >
+                <Slider.Track className='seek-bar-slider-track'>
+                  <Slider.Range className='seek-bar-slider-range' />
+                </Slider.Track>
+                <Slider.Thumb className='seek-bar-slider-thumb' />
+              </Slider.Root>
+            </div>
+            <div>
+              <Tooltip.Provider>
+                <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                    <Button
+                      className='unstyled copy-button'
+                      onClick={() => handleCopy(formattedPosition)}
+                    >
+                      <CopyIcon />
+                    </Button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Content className='tooltip-content' side='bottom'>
+                    {t['Copy timestamp']}
+                  </Tooltip.Content>
+                </Tooltip.Root>
+              </Tooltip.Provider>
+            </div>
+            <Button
+              className='audio-button unstyled'
+              onClick={() => setMuted(!muted)}
+            >
+              {muted ? (
+                <VolumeMuteFill color='black' />
+              ) : (
+                <VolumeUpFill color='black' />
+              )}
+            </Button>
           </div>
-          <div>
-            <Tooltip.Provider>
-              <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                  <Button
-                    className='unstyled copy-button'
-                    onClick={() => handleCopy(formattedPosition)}
-                  >
-                    <CopyIcon />
-                  </Button>
-                </Tooltip.Trigger>
-                <Tooltip.Content className='tooltip-content' side='bottom'>
-                  {t['Copy timestamp']}
-                </Tooltip.Content>
-              </Tooltip.Root>
-            </Tooltip.Provider>
-          </div>
-          <Button
-            className='audio-button unstyled'
-            onClick={() => setMuted(!muted)}
-          >
-            {muted ? (
-              <VolumeMuteFill color='black' />
-            ) : (
-              <VolumeUpFill color='black' />
-            )}
-          </Button>
         </div>
-      </div>
+      )}
     </div>
   );
 };

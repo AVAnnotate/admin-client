@@ -262,3 +262,17 @@
   z-index: -1;
   opacity: 0;
 }
+
+.video-event-detail {
+  display: grid;
+  grid-template-columns: 4fr 2fr;
+}
+
+.video-event-detail .video-pane {
+  margin: 26px;
+}
+
+.video-event-detail .table-container {
+  max-height: 600px;
+  overflow-y: auto;
+}
