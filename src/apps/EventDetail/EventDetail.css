@@ -148,16 +148,16 @@
   cursor: pointer;
 }
 
-.event-detail .timestamp-column {
+.audio-event-detail .timestamp-column {
   width: 180px;
 }
 
-.event-detail .text-column {
+.audio-event-detail .text-column {
   width: 50%;
 }
 
 .event-detail .options-column {
-  width: 40px;
+  width: 30px;
 }
 
 .event-detail .meatball-cell {
@@ -172,7 +172,7 @@
   width: 100%;
 }
 
-.event-detail .event-detail-table-header .header-buttons {
+.audio-event-detail .event-detail-table-header .header-buttons {
   display: flex;
   gap: 12px;
 }
@@ -200,19 +200,19 @@
   font-size: 14px;
 }
 
-.event-detail .event-detail-table-header .formic-form-field {
+.event-detail .formic-form-field {
   display: flex;
   align-items: center;
 }
 
-.event-detail .event-detail-table-header .searchbox {
+.event-detail .searchbox {
   margin: 0;
-  height: 100%;
+  height: 32px;
   padding: 0 8px;
   width: auto;
 }
 
-.event-detail .event-detail-table-header .formic-form-field svg {
+.event-detail .formic-form-field svg {
   position: relative;
   left: -30px;
   height: 16px;
@@ -253,10 +253,6 @@
   margin: 0;
 }
 
-.event-detail .timestamp-cell {
-  white-space: nowrap;
-}
-
 .invisible-tag-holder {
   position: absolute;
   z-index: -1;
@@ -266,6 +262,16 @@
 .video-event-detail {
   display: grid;
   grid-template-columns: 4fr 2fr;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.video-event-detail .formic-form-field {
+  width: 100%;
+}
+
+.video-event-detail .formic-form-field input {
+  width: 100%;
 }
 
 .video-event-detail .video-pane {
@@ -275,4 +281,42 @@
 .video-event-detail .table-container {
   max-height: 600px;
   overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.video-event-detail .searchbox {
+  width: 100%;
+  margin: 10px 0;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.video-event-detail .annotations-pane {
+  background: var(--gray-100);
+  padding: 0 26px;
+}
+
+.video-event-detail .timestamp-column {
+  width: 100px;
+}
+
+.video-event-detail .timestamp-cell {
+  text-wrap: wrap;
+}
+
+.video-event-detail .event-detail-table-header {
+  box-shadow: 0px 1px 2px 0px #00000026;
+}
+
+.video-event-detail .event-detail-table-header .header-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.video-event-detail .event-detail-table-header .header-buttons button {
+  margin: 0;
+}
+
+.video-event-detail .tag-cell-container {
+  margin: 10px 0;
 }

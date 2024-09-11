@@ -7,6 +7,7 @@ import type { EventDisplayProps } from './types.ts';
 import { Button } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { SetSelect } from './SetSelect.tsx';
+import { AnnotationSearchBox } from './AnnotationSearchBox.tsx';
 
 export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
   const { t } = props.i18n;
@@ -36,7 +37,7 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
             position={annoPosition}
           />
         </div>
-        <div>
+        <div className='annotations-pane'>
           <div>
             <h3>{t['Annotations']}</h3>
             <div>
@@ -72,6 +73,7 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
             eventUuid={props.eventUuid}
             projectSlug={props.projectSlug}
           />
+          <AnnotationSearchBox setSearch={props.stateHandlers.setSearch} />
           <div className='table-container'>
             <AnnotationTable
               i18n={props.i18n}
@@ -80,6 +82,8 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
               setDeleteAnnoUuid={props.stateHandlers.setDeleteAnnoUuid}
               setEditAnnoUuid={props.stateHandlers.setEditAnnoUuid}
               setAnnoPosition={setAnnoPosition}
+              tagPosition='below'
+              tagRows={2}
             />
           </div>
         </div>

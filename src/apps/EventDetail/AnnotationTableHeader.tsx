@@ -1,15 +1,11 @@
-import { exportAnnotations } from '@lib/events/export.ts';
-import {
-  DownloadIcon,
-  MagnifyingGlassIcon,
-  PlusIcon,
-} from '@radix-ui/react-icons';
+import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import type { AnnotationEntry, Translations } from '@ty/Types.ts';
-import { useRef } from 'react';
+import type { ReactElement } from 'react';
 import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
 
 interface Props {
+  children?: ReactElement | ReactElement[];
   eventUuid: string;
   displayAnnotations: AnnotationEntry[];
   i18n: Translations;
@@ -26,9 +22,6 @@ interface Props {
 
 export const AnnotationTableHeader: React.FC<Props> = (props) => {
   const { lang, t } = props.i18n;
-  const searchDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
 
   return (
     <div className='event-detail-table-header'>
@@ -39,23 +32,7 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
         ({props.displayAnnotations.length})
       </p>
       <div className='header-buttons'>
-        <div className='formic-form-field'>
-          <input
-            className='searchbox formic-form-text'
-            onChange={(ev) => {
-              if (searchDebounceTimer.current) {
-                clearTimeout(searchDebounceTimer.current);
-              }
-
-              searchDebounceTimer.current = setTimeout(
-                () => props.setSearch(ev.target.value),
-                200
-              );
-            }}
-            type='text'
-          />
-          <MagnifyingGlassIcon />
-        </div>
+        {props.children}
         {props.setUuid && (
           <Button className='csv-button' onClick={props.onExport} type='button'>
             <DownloadIcon />

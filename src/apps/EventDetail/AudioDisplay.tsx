@@ -9,6 +9,7 @@ import type { EventDisplayProps } from './types.ts';
 import { AnnotationTableHeader } from './AnnotationTableHeader.tsx';
 
 import './EventDetail.css';
+import { AnnotationSearchBox } from './AnnotationSearchBox.tsx';
 
 export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
   const { t } = props.i18n;
@@ -18,7 +19,7 @@ export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
 
   return (
     <>
-      <div className='event-detail container'>
+      <div className='event-detail audio-event-detail container'>
         <div className='event-detail-floating-header'>
           <EventHeader
             avFileUuid={props.avFileUuid}
@@ -71,7 +72,9 @@ export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
             setUuid={props.setUuid}
             eventUuid={props.eventUuid}
             projectSlug={props.projectSlug}
-          />
+          >
+            <AnnotationSearchBox setSearch={props.stateHandlers.setSearch} />
+          </AnnotationTableHeader>
         </div>
         <AnnotationTable
           i18n={props.i18n}
