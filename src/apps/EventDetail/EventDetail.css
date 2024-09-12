@@ -6,7 +6,6 @@
 
 .event-detail {
   box-sizing: border-box;
-  padding-bottom: 60px;
 }
 
 .event-detail .set-info-bar {
@@ -51,7 +50,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 32px;
+}
+
+.event-detail .event-detail-label h2 {
+  font-size: 24px;
+  margin: 0;
 }
 
 .event-detail .event-detail-label svg {
@@ -130,14 +133,21 @@
   table-layout: fixed;
 }
 
+.audio-event-detail {
+  padding-bottom: 60px;
+}
+
+.audio-event-detail .event-detail-table-header {
+  background: #fff;
+  border: 1px solid var(--gray-200);
+  padding: 0 16px;
+}
+
 .event-detail .event-detail-table-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 58px;
-  padding: 0 16px;
-  background: #fff;
-  border: 1px solid var(--gray-200);
 }
 
 .event-detail .annotation-table-row:hover {
@@ -162,6 +172,7 @@
 
 .event-detail .meatball-cell {
   padding: 0;
+  width: 30px;
 }
 
 .event-detail .meatball-cell .meatball-container {
@@ -203,6 +214,11 @@
 .event-detail .formic-form-field {
   display: flex;
   align-items: center;
+  position: relative;
+}
+
+.event-detail .formic-form-text {
+  width: 260px;
 }
 
 .event-detail .searchbox {
@@ -213,8 +229,8 @@
 }
 
 .event-detail .formic-form-field svg {
-  position: relative;
-  left: -30px;
+  position: absolute;
+  right: 10px;
   height: 16px;
   width: 16px;
 }
@@ -275,28 +291,39 @@
 }
 
 .video-event-detail .video-pane {
-  margin: 26px;
+  max-height: calc(100vh - 172px);
+  overflow-y: scroll;
+  padding: 26px;
 }
 
 .video-event-detail .table-container {
-  max-height: 600px;
+  max-height: calc(100% - 182px);
   overflow-y: auto;
   box-sizing: border-box;
+  padding: 0 26px;
+}
+
+.video-event-detail .event-detail-table-container {
+  margin: 20px 0;
 }
 
 .video-event-detail .searchbox {
   width: 100%;
   margin: 10px 0;
   box-sizing: border-box;
-  padding: 0;
 }
 
 .video-event-detail .annotations-pane {
   background: var(--gray-100);
-  padding: 0 26px;
+  max-height: calc(100vh - 120px);
 }
 
-.video-event-detail .timestamp-column {
+.video-event-detail .annotations-pane .annotations-pane-header {
+  padding: 0 26px;
+  box-shadow: 0px 1px 2px 0px #00000026;
+}
+
+.video-event-detail .timestamp-cell {
   width: 100px;
 }
 
@@ -304,13 +331,10 @@
   text-wrap: wrap;
 }
 
-.video-event-detail .event-detail-table-header {
-  box-shadow: 0px 1px 2px 0px #00000026;
-}
-
 .video-event-detail .event-detail-table-header .header-buttons {
   display: flex;
   gap: 12px;
+  padding: 0;
 }
 
 .video-event-detail .event-detail-table-header .header-buttons button {
@@ -319,4 +343,40 @@
 
 .video-event-detail .tag-cell-container {
   margin: 10px 0;
+}
+
+.video-event-detail .set-picker {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  margin: 20px 0;
+}
+
+.video-event-detail .set-picker .select-trigger {
+  margin-top: 10px;
+}
+
+.video-event-detail .set-picker h3 {
+  margin: 0;
+  height: 32px;
+  align-content: center;
+}
+
+.video-event-detail .add-set-button {
+  box-shadow: none;
+  color: var(--gray-900) !important;
+  border-color: var(--gray-900);
+}
+
+.video-event-detail .select-trigger {
+  height: 32px;
+}
+
+.video-event-detail .player {
+  height: 480px;
+}
+
+.video-event-detail .empty-table-replacement {
+  width: 100%;
+  text-align: center;
 }

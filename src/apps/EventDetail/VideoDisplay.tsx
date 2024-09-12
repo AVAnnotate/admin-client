@@ -36,44 +36,49 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
             url={props.event.audiovisual_files[props.avFileUuid].file_url}
             position={annoPosition}
           />
+          <p>{props.event.citation}</p>
         </div>
         <div className='annotations-pane'>
-          <div>
-            <h3>{t['Annotations']}</h3>
-            <div>
-              {props.sets.length > 1 && (
-                <SetSelect
-                  onChange={(uuid) =>
-                    props.stateHandlers.setCurrentSetUuid(uuid)
-                  }
-                  sets={props.sets}
-                  value={
-                    props.sets.find((set) => set.uuid === props.setUuid) ||
-                    props.sets[0]
-                  }
-                />
-              )}
+          <div className='annotations-pane-header'>
+            <div className='set-picker'>
+              <div className='select-container'>
+                <h3>{t['Annotations']}</h3>
+                {props.sets.length > 1 && (
+                  <SetSelect
+                    onChange={(uuid) =>
+                      props.stateHandlers.setCurrentSetUuid(uuid)
+                    }
+                    sets={props.sets}
+                    value={
+                      props.sets.find((set) => set.uuid === props.setUuid) ||
+                      props.sets[0]
+                    }
+                  />
+                )}
+              </div>
               <Button
-                className='primary add-set-button'
+                className='outline add-set-button'
                 onClick={() => props.stateHandlers.setShowAddSetModal(true)}
               >
                 {t['Add Set']}
                 <PlusIcon />
               </Button>
             </div>
+            <AnnotationTableHeader
+              displayAnnotations={props.displayAnnotations}
+              i18n={props.i18n}
+              onExport={props.onExport}
+              sets={props.sets}
+              setSearch={props.stateHandlers.setSearch}
+              setShowAnnoCreateModal={
+                props.stateHandlers.setShowAnnoCreateModal
+              }
+              setUuid={props.setUuid}
+              eventUuid={props.eventUuid}
+              projectSlug={props.projectSlug}
+            />
+            <AnnotationSearchBox setSearch={props.stateHandlers.setSearch} />
           </div>
-          <AnnotationTableHeader
-            displayAnnotations={props.displayAnnotations}
-            i18n={props.i18n}
-            onExport={props.onExport}
-            sets={props.sets}
-            setSearch={props.stateHandlers.setSearch}
-            setShowAnnoCreateModal={props.stateHandlers.setShowAnnoCreateModal}
-            setUuid={props.setUuid}
-            eventUuid={props.eventUuid}
-            projectSlug={props.projectSlug}
-          />
-          <AnnotationSearchBox setSearch={props.stateHandlers.setSearch} />
           <div className='table-container'>
             <AnnotationTable
               i18n={props.i18n}
@@ -82,6 +87,7 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
               setDeleteAnnoUuid={props.stateHandlers.setDeleteAnnoUuid}
               setEditAnnoUuid={props.stateHandlers.setEditAnnoUuid}
               setAnnoPosition={setAnnoPosition}
+              hideHeader
               tagPosition='below'
               tagRows={2}
             />

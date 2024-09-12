@@ -102,6 +102,7 @@ const TagList: React.FC<TagListProps> = (props) => {
 interface AnnotationTableProps {
   i18n: Translations;
   displayAnnotations: AnnotationEntry[];
+  hideHeader?: boolean;
   project: ProjectData;
   setDeleteAnnoUuid: (uuid: string) => void;
   setEditAnnoUuid: (uuid: string) => void;
@@ -142,30 +143,32 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
   return (
     <div className='event-detail-table-container'>
       <Table.Root>
-        <Table.Header>
-          <Table.Row className='header-row'>
-            <Table.ColumnHeaderCell className='timestamp-column'>
-              <div className='header-cell-container'>{t['Timestamp']}</div>
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell
-              className='text-column'
-              ref={props.tagPosition === 'below' ? tagHeaderCell : undefined}
-            >
-              <div className='header-cell-container'>{t['Text']}</div>
-            </Table.ColumnHeaderCell>
-            {tagPosition === 'column' && (
-              <Table.ColumnHeaderCell
-                className='tags-header-cell tags-column'
-                ref={props.tagPosition === 'column' ? tagHeaderCell : undefined}
-              >
-                <div className='header-cell-container'>{t['Tags']}</div>
+        {!props.hideHeader && (
+          <Table.Header>
+            <Table.Row className='header-row'>
+              <Table.ColumnHeaderCell className='timestamp-column'>
+                <div className='header-cell-container'>{t['Timestamp']}</div>
               </Table.ColumnHeaderCell>
-            )}
-            <Table.ColumnHeaderCell className='options-column'></Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
+              <Table.ColumnHeaderCell
+                className='text-column'
+                ref={tagPosition === 'below' ? tagHeaderCell : undefined}
+              >
+                <div className='header-cell-container'>{t['Text']}</div>
+              </Table.ColumnHeaderCell>
+              {tagPosition === 'column' && (
+                <Table.ColumnHeaderCell
+                  className='tags-header-cell tags-column'
+                  ref={tagPosition === 'column' ? tagHeaderCell : undefined}
+                >
+                  <div className='header-cell-container'>{t['Tags']}</div>
+                </Table.ColumnHeaderCell>
+              )}
+              <Table.ColumnHeaderCell className='options-column'></Table.ColumnHeaderCell>
+            </Table.Row>
+          </Table.Header>
+        )}
         <Table.Body>
-          {props.displayAnnotations.length === 0 && (
+          {props.displayAnnotations.length === 0 && !props.hideHeader && (
             <Table.Row>
               <Table.Cell colSpan={4} className='empty-annos-note'>
                 <p>{t['No annotations have been added.']}</p>
@@ -235,6 +238,11 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
           ))}
         </Table.Body>
       </Table.Root>
+      {props.displayAnnotations.length === 0 && props.hideHeader && (
+        <div className='empty-table-replacement'>
+          <p>{t['No annotations have been added.']}</p>
+        </div>
+      )}
     </div>
   );
 };

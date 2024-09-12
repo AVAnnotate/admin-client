@@ -29,7 +29,7 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
         {props.sets.length > 1
           ? props.sets.find((set) => set.uuid === props.setUuid)?.label
           : t['All Annotations']}
-        ({props.displayAnnotations.length})
+        &nbsp;({props.displayAnnotations.length})
       </p>
       <div className='header-buttons'>
         {props.children}
