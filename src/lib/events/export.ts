@@ -45,7 +45,7 @@ export const exportAnnotations = (
 
 export const exportEvents = (projectName: string, events: Event[]) => {
   let str =
-    'Event Label,Event Item Type (Audio or Visual),AVFile Label (might be the same as event label),AV File URL,Event Citation (optional),Event Description (optional)\n';
+    'Event Label,Event Item Type (Audio or Video),AVFile Label (might be the same as event label),AV File URL,Event Citation (optional),Event Description (optional)\n';
 
   events.forEach((event) => {
     Object.keys(event.audiovisual_files).forEach((uuid) => {
