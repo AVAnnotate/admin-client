@@ -72,16 +72,13 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
             <div className='av-files-list'>
               {Object.keys((values as FormEvent).audiovisual_files).map(
                 (key, idx) => {
-                  console.log(
-                    (values as FormEvent).audiovisual_files[key].is_offline
-                  );
                   return (
                     <div key={key} className='av-files-fields'>
                       <TextInput
                         className='av-label-input'
                         label={idx === 0 ? t['Label'] : undefined}
                         name={`audiovisual_files.${key}.label`}
-                        required
+                        required={idx === 0}
                       />
                       <div className='av-url-group'>
                         <SelectInput
@@ -90,6 +87,7 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                           backgroundColor='var(--gray-200)'
                           label={idx === 0 ? t['File'] : undefined}
                           name={`audiovisual_files.${key}.is_offline`}
+                          required={idx === 0}
                           options={[
                             { value: 'false', label: t['URL'] },
                             { value: 'true', label: t['Offline'] },
@@ -97,12 +95,18 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                         />
                         <TextInput
                           className='av-file-url-input'
-                          label={idx === 0 ? t['File URL'] : undefined}
                           name={`audiovisual_files.${key}.file_url`}
-                          required={
-                            // @ts-ignore
+                          disabled={
                             (values as FormEvent).audiovisual_files[key]
-                              .is_offline === false
+                              .is_offline
+                              ? true
+                              : false
+                          }
+                          placeholder={
+                            (values as FormEvent).audiovisual_files[key]
+                              .is_offline
+                              ? t['File Available Offline']
+                              : undefined
                           }
                         />
                       </div>
@@ -115,6 +119,7 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                             input
                           )
                         }
+                        required
                         initialValue={
                           (values as FormEvent).audiovisual_files[key].duration
                         }

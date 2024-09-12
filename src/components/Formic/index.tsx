@@ -22,6 +22,7 @@ const validateRequiredField = (name: string, value: any) => {
 };
 
 interface TextInputProps {
+  disabled?: boolean;
   label?: string;
   helperText?: string;
   name: string;
@@ -29,6 +30,7 @@ interface TextInputProps {
   required?: boolean;
   bottomNote?: string;
   className?: string;
+  placeholder?: string;
 }
 
 export const TextInput = (props: TextInputProps) => {
@@ -46,6 +48,7 @@ export const TextInput = (props: TextInputProps) => {
         </div>
       )}
       <Field
+        disabled={props.disabled}
         type='text'
         name={props.name}
         className={props.isLarge ? 'formic-form-textarea' : 'formic-form-text'}
@@ -53,6 +56,7 @@ export const TextInput = (props: TextInputProps) => {
         validate={(val: any) =>
           props.required ? validateRequiredField(props.name, val) : undefined
         }
+        placeholder={props.placeholder}
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
@@ -168,7 +172,7 @@ export const TimeInput = (props: TimeInputProps) => {
 };
 
 export interface SelectInputProps {
-  label?: string;
+  label?: string | undefined;
   helperText?: string;
   name: string;
   options: { label: string; value: string | undefined }[];
