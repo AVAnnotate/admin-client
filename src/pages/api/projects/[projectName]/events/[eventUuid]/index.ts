@@ -87,21 +87,25 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   if (event.auto_generate_web_page) {
     const pages = readDir('/data/pages');
 
-    pages.forEach((filename) => {
-      const content = readFile(`/data/pages/${filename}`);
-      const parsedContent = JSON.parse(content as string) as Page;
+    pages
+      .filter(
+        (filename) => filename !== '.gitkeep' && filename !== 'order.json'
+      )
+      .forEach((filename) => {
+        const content = readFile(`/data/pages/${filename}`);
+        const parsedContent = JSON.parse(content as string) as Page;
 
-      if (
-        parsedContent.autogenerate.enabled &&
-        parsedContent.autogenerate.type_id === eventUuid
-      ) {
-        parsedContent.title = event.label;
-        writeFile(
-          `/data/pages/${filename}`,
-          JSON.stringify(parsedContent, null, 2)
-        );
-      }
-    });
+        if (
+          parsedContent.autogenerate.enabled &&
+          parsedContent.autogenerate.type_id === eventUuid
+        ) {
+          parsedContent.title = event.label;
+          writeFile(
+            `/data/pages/${filename}`,
+            JSON.stringify(parsedContent, null, 2)
+          );
+        }
+      });
   }
 
   const successCommit = await commitAndPush(`Updated event ${eventUuid}`);
