@@ -1,3 +1,7 @@
+.player div {
+  margin: auto;
+}
+
 .player-control-panel {
   height: 48px;
   width: 100%;

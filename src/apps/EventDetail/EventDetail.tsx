@@ -5,30 +5,17 @@ import type {
   Translations,
 } from '@ty/Types.ts';
 import './EventDetail.css';
-import {
-  DownloadIcon,
-  MagnifyingGlassIcon,
-  Pencil2Icon,
-  PlusIcon,
-  SpeakerLoudIcon,
-  VideoIcon,
-} from '@radix-ui/react-icons';
-import { Button } from '@radix-ui/themes';
-import { Player } from './Player.tsx';
-import { FileEarmarkArrowUp, Trash } from 'react-bootstrap-icons';
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { serialize } from '@lib/slate/index.tsx';
-import { Node } from 'slate';
+import { AudioDisplay } from './AudioDisplay.tsx';
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
-import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
-import { AnnotationModal } from '@components/AnnotationModal/index.ts';
-import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
-import { SetSelect } from './SetSelect.tsx';
-import { AvFilePicker } from './AvFilePicker.tsx';
-import { AnnotationTable } from './AnnotationTable.tsx';
-import { exportAnnotations } from '@lib/events/export.ts';
-import { SetFormModal } from '@components/SetModal/SetModal.tsx';
+import { Node } from 'slate';
 import type { apiAnnotationSetPost } from '@ty/api.ts';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { AnnotationModal } from '@components/AnnotationModal/index.ts';
+import { SetFormModal } from '@components/SetModal/index.ts';
+import { DeleteEventModal } from '@components/DeleteEventModal/index.ts';
+import { DeleteModal } from '@components/DeleteModal/index.ts';
+import { VideoDisplay } from './VideoDisplay.tsx';
+import { exportAnnotations } from '@lib/events/export.ts';
 
 interface EventDetailProps {
   event: Event;
@@ -68,7 +55,7 @@ const sortAnnotations = (annos: AnnotationEntry[]) =>
     }
   });
 
-const onSubmitAdd = async (newAnno: AnnotationEntry, baseUrl: string) => {
+const onSubmitAddAnno = async (newAnno: AnnotationEntry, baseUrl: string) => {
   const res = await fetch(baseUrl, {
     method: 'POST',
     headers: {
@@ -108,7 +95,7 @@ const onSubmitCreateSet = async (
   }
 };
 
-const onSubmitEdit = async (editAnno: AnnotationEntry, baseUrl: string) => {
+const onSubmitEditAnno = async (editAnno: AnnotationEntry, baseUrl: string) => {
   const res = await fetch(`${baseUrl}/${editAnno.uuid}`, {
     method: 'PUT',
     headers: {
@@ -128,16 +115,7 @@ const onSubmitEdit = async (editAnno: AnnotationEntry, baseUrl: string) => {
 };
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
-  const { lang, t } = props.i18n;
-
-  // position of the most recently clicked annotation
-  const [annoPosition, setAnnoPosition] = useState(0);
-
-  // AV files are required in the Add Event form so we can
-  // safely assume that one exists
-  const [avFile, setAvFile] = useState(
-    Object.keys(props.event.audiovisual_files)[0]
-  );
+  const { t, lang } = props.i18n;
 
   // UUID of the annotation currently selected for deletion
   const [deleteAnnoUuid, setDeleteAnnoUuid] = useState('');
@@ -150,19 +128,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const [showAnnoCreateModal, setShowAnnoCreateModal] = useState(false);
   const [search, setSearch] = useState('');
 
-  const searchDebounceTimer = useRef<ReturnType<typeof setTimeout> | null>(
-    null
-  );
-
-  // all annotation sets from this project
-  const [allAnnotations, setAllAnnotations] = useState(
-    Object.fromEntries(
-      Object.entries(props.project.annotations).filter((ent) => {
-        const anno = props.project.annotations[ent[0]];
-
-        return anno.event_id === props.eventUuid;
-      })
-    )
+  // AV files are required in the Add Event form so we can
+  // safely assume that one exists
+  const [avFile, setAvFile] = useState(
+    Object.keys(props.event.audiovisual_files)[0]
   );
 
   // get all annotation sets that belong to this AV file
@@ -186,6 +155,17 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   // the set that's currently selected for viewing
   const [currentSetUuid, setCurrentSetUuid] = useState<string | null>(
     sets.length > 0 ? sets[0].uuid : null
+  );
+
+  // all annotation sets from this project
+  const [allAnnotations, setAllAnnotations] = useState(
+    Object.fromEntries(
+      Object.entries(props.project.annotations).filter((ent) => {
+        const anno = props.project.annotations[ent[0]];
+
+        return anno.event_id === props.eventUuid;
+      })
+    )
   );
 
   // default to the current set whenever the list of sets changes,
@@ -221,7 +201,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   );
 
   const onCreate = async (body: AnnotationEntry) => {
-    const newAnno = await onSubmitAdd(body, setUrl);
+    const newAnno = await onSubmitAddAnno(body, setUrl);
 
     if (newAnno && newAnno.length > 0) {
       setAllAnnotations((oldAnnos) => {
@@ -265,7 +245,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   };
 
   const onEdit = async (body: AnnotationEntry) => {
-    const newAnno = await onSubmitEdit(body, setUrl);
+    const newAnno = await onSubmitEditAnno(body, setUrl);
 
     if (newAnno) {
       setAllAnnotations((oldAnnos) => {
@@ -284,6 +264,16 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
 
     setEditAnnoUuid('');
   };
+
+  const onExport = useCallback(() => {
+    if (currentSetUuid) {
+      exportAnnotations(
+        allAnnotations[currentSetUuid].annotations,
+        props.event,
+        avFile
+      );
+    }
+  }, [currentSetUuid, allAnnotations, avFile]);
 
   const onCreateSet = async (name: string) => {
     const newSet = {
@@ -360,145 +350,55 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           ]}
         />
       </div>
-      <div className='event-detail container'>
-        <div className='event-detail-floating-header'>
-          <div className='event-detail-top-bar'>
-            <div className='event-detail-label'>
-              {props.event.item_type === 'Audio' && <SpeakerLoudIcon />}
-              {props.event.item_type === 'Video' && <VideoIcon />}
-              <h2>{props.event.label}</h2>
-            </div>
-            <div className='event-detail-options'>
-              <a
-                href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
-              >
-                <Button
-                  className='event-detail-button edit-button'
-                  type='button'
-                >
-                  <Pencil2Icon />
-                  {t['Edit']}
-                </Button>
-              </a>
-              <Button
-                className='event-detail-button delete-button'
-                onClick={() => setShowEventDeleteModal(true)}
-                type='button'
-              >
-                <Trash />
-                {t['Delete']}
-              </Button>
-            </div>
-          </div>
-          {props.event.citation && (
-            <p>{`${t['Provider']}: ${props.event.citation}`}</p>
+      {currentSetUuid && (
+        <>
+          {props.event.item_type === 'Audio' ? (
+            <AudioDisplay
+              {...props}
+              allAnnotations={allAnnotations}
+              avFileUuid={avFile}
+              displayAnnotations={displayAnnotations}
+              onExport={onExport}
+              searchAnnotations={searchAnnotations}
+              sets={sets}
+              setUuid={currentSetUuid}
+              stateHandlers={{
+                setAvFile,
+                setCurrentSetUuid,
+                setDeleteAnnoUuid,
+                setEditAnnoUuid,
+                setShowAddSetModal,
+                setShowEventDeleteModal,
+                setShowAnnoCreateModal,
+                setSearch,
+              }}
+              sortAnnotations={sortAnnotations}
+            />
+          ) : (
+            <VideoDisplay
+              {...props}
+              allAnnotations={allAnnotations}
+              avFileUuid={avFile}
+              displayAnnotations={displayAnnotations}
+              onExport={onExport}
+              searchAnnotations={searchAnnotations}
+              sets={sets}
+              setUuid={currentSetUuid}
+              stateHandlers={{
+                setAvFile,
+                setCurrentSetUuid,
+                setDeleteAnnoUuid,
+                setEditAnnoUuid,
+                setShowAddSetModal,
+                setShowEventDeleteModal,
+                setShowAnnoCreateModal,
+                setSearch,
+              }}
+              sortAnnotations={sortAnnotations}
+            />
           )}
-          <div>{serialize(props.event.description)}</div>
-          {Object.keys(props.event.audiovisual_files).length > 1 && (
-            <div className='av-file-selection'>
-              <span className='av-file-label'>{t['AV File']}</span>
-              <AvFilePicker
-                event={props.event}
-                onChange={(uuid) => setAvFile(uuid)}
-                value={avFile}
-              />
-            </div>
-          )}
-          <Player
-            i18n={props.i18n}
-            url={props.event.audiovisual_files[avFile].file_url}
-            position={annoPosition}
-          />
-          <div className='set-info-bar'>
-            <h3>{t['Annotations']}</h3>
-            <div className='set-info-bar-right'>
-              {sets.length > 1 && (
-                <SetSelect
-                  onChange={(uuid) => setCurrentSetUuid(uuid)}
-                  sets={sets}
-                  value={
-                    sets.find((set) => set.uuid === currentSetUuid) || sets[0]
-                  }
-                />
-              )}
-              <Button
-                className='primary add-set-button'
-                onClick={() => setShowAddSetModal(true)}
-              >
-                {t['Add Set']}
-                <PlusIcon />
-              </Button>
-            </div>
-          </div>
-          <div className='event-detail-table-header'>
-            <p>
-              {sets.length > 1
-                ? sets.find((set) => set.uuid === currentSetUuid)?.label
-                : t['All Annotations']}
-              ({displayAnnotations.length})
-            </p>
-            <div className='header-buttons'>
-              <div className='formic-form-field'>
-                <input
-                  className='searchbox formic-form-text'
-                  onChange={(ev) => {
-                    if (searchDebounceTimer.current) {
-                      clearTimeout(searchDebounceTimer.current);
-                    }
-
-                    searchDebounceTimer.current = setTimeout(
-                      () => setSearch(ev.target.value),
-                      200
-                    );
-                  }}
-                  type='text'
-                />
-                <MagnifyingGlassIcon />
-              </div>
-              {currentSetUuid && (
-                <Button
-                  className='csv-button'
-                  onClick={() =>
-                    exportAnnotations(
-                      allAnnotations[currentSetUuid].annotations,
-                      props.event,
-                      avFile
-                    )
-                  }
-                  type='button'
-                >
-                  <DownloadIcon />
-                  {t['CSV']}
-                </Button>
-              )}
-              <Button
-                className='primary'
-                onClick={() =>
-                  (window.location.pathname = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`)
-                }
-              >
-                <FileEarmarkArrowUp />
-                {t['import']}
-              </Button>
-              <Button
-                className='primary'
-                onClick={() => setShowAnnoCreateModal(true)}
-              >
-                <PlusIcon />
-                {t['Add']}
-              </Button>
-            </div>
-          </div>
-        </div>
-        <AnnotationTable
-          i18n={props.i18n}
-          displayAnnotations={displayAnnotations}
-          project={props.project}
-          setDeleteAnnoUuid={setDeleteAnnoUuid}
-          setEditAnnoUuid={setEditAnnoUuid}
-          setAnnoPosition={setAnnoPosition}
-        />
-      </div>
+        </>
+      )}
     </>
   );
 };

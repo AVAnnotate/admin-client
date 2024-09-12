@@ -12,15 +12,14 @@ import type {
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Trash } from 'react-bootstrap-icons';
 
-const formatTimestamps = (start: number, end: number) =>
-  `${formatTimestamp(start, false)} - ${formatTimestamp(end, false)}`;
-
 interface TagListProps {
   groups: {
     [key: string]: string;
   };
   maxWidth: number;
   tags: Tag[];
+  // number of rows to allow the tags to wrap before truncating
+  rows?: number;
 }
 
 const TagList: React.FC<TagListProps> = (props) => {
@@ -29,6 +28,8 @@ const TagList: React.FC<TagListProps> = (props) => {
 
   const tagCellEl = useRef<HTMLDivElement>(null);
   const tagHolderEl = useRef<HTMLDivElement>(null);
+
+  const rows = props.rows || 1;
 
   const tagComponents = useMemo(
     () =>
@@ -67,7 +68,7 @@ const TagList: React.FC<TagListProps> = (props) => {
         setDisplayIdx(i);
         break;
         // stop if the current tag would overflow the cell
-      } else if (widthTracker + tagEls[i].clientWidth > props.maxWidth) {
+      } else if (widthTracker + tagEls[i].clientWidth > props.maxWidth * rows) {
         setDisplayIdx(i);
         break;
       } else {
@@ -75,7 +76,7 @@ const TagList: React.FC<TagListProps> = (props) => {
         widthTracker += tagEls[i].clientWidth + 30;
       }
     }
-  }, [tagCellEl.current, tagHolderEl.current, props.maxWidth]);
+  }, [tagCellEl.current, tagHolderEl.current, props.maxWidth, rows]);
 
   return (
     <>
@@ -101,16 +102,21 @@ const TagList: React.FC<TagListProps> = (props) => {
 interface AnnotationTableProps {
   i18n: Translations;
   displayAnnotations: AnnotationEntry[];
+  hideHeader?: boolean;
   project: ProjectData;
   setDeleteAnnoUuid: (uuid: string) => void;
   setEditAnnoUuid: (uuid: string) => void;
   setAnnoPosition: (pos: number) => void;
+  tagPosition?: 'below' | 'column';
+  tagRows?: number;
 }
 
 export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
   const [tagCellWidth, setTagCellWidth] = useState(0);
 
   const { t } = props.i18n;
+
+  const tagPosition = props.tagPosition || 'column';
 
   const tagGroups = useMemo(() => {
     const obj: { [key: string]: string } = {};
@@ -137,25 +143,32 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
   return (
     <div className='event-detail-table-container'>
       <Table.Root>
-        <Table.Header>
-          <Table.Row className='header-row'>
-            <Table.ColumnHeaderCell className='timestamp-column'>
-              <div className='header-cell-container'>{t['Timestamp']}</div>
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='text-column'>
-              <div className='header-cell-container'>{t['Text']}</div>
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell
-              className='tags-header-cell tags-column'
-              ref={tagHeaderCell}
-            >
-              <div className='header-cell-container'>{t['Tags']}</div>
-            </Table.ColumnHeaderCell>
-            <Table.ColumnHeaderCell className='options-header-cell options-column'></Table.ColumnHeaderCell>
-          </Table.Row>
-        </Table.Header>
+        {!props.hideHeader && (
+          <Table.Header>
+            <Table.Row className='header-row'>
+              <Table.ColumnHeaderCell className='timestamp-column'>
+                <div className='header-cell-container'>{t['Timestamp']}</div>
+              </Table.ColumnHeaderCell>
+              <Table.ColumnHeaderCell
+                className='text-column'
+                ref={tagPosition === 'below' ? tagHeaderCell : undefined}
+              >
+                <div className='header-cell-container'>{t['Text']}</div>
+              </Table.ColumnHeaderCell>
+              {tagPosition === 'column' && (
+                <Table.ColumnHeaderCell
+                  className='tags-header-cell tags-column'
+                  ref={tagPosition === 'column' ? tagHeaderCell : undefined}
+                >
+                  <div className='header-cell-container'>{t['Tags']}</div>
+                </Table.ColumnHeaderCell>
+              )}
+              <Table.ColumnHeaderCell className='options-column'></Table.ColumnHeaderCell>
+            </Table.Row>
+          </Table.Header>
+        )}
         <Table.Body>
-          {props.displayAnnotations.length === 0 && (
+          {props.displayAnnotations.length === 0 && !props.hideHeader && (
             <Table.Row>
               <Table.Cell colSpan={4} className='empty-annos-note'>
                 <p>{t['No annotations have been added.']}</p>
@@ -168,26 +181,40 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
                 className='annotation-data-cell timestamp-cell'
                 onClick={() => props.setAnnoPosition(an.start_time)}
               >
-                <p>{formatTimestamps(an.start_time, an.end_time)}</p>
+                <p>
+                  {formatTimestamp(an.start_time, false)}&nbsp;-{' '}
+                  {formatTimestamp(an.end_time, false)}
+                </p>
               </Table.Cell>
               <Table.Cell
                 className='annotation-data-cell annotation-cell'
                 onClick={() => props.setAnnoPosition(an.start_time)}
               >
                 {serialize(an.annotation)}
-              </Table.Cell>
-              <Table.Cell
-                className='annotation-data-cell tag-cell'
-                onClick={() => props.setAnnoPosition(an.start_time)}
-              >
-                {tagCellWidth && (
+                {tagPosition === 'below' && (
                   <TagList
                     groups={tagGroups}
                     maxWidth={tagCellWidth}
+                    rows={props.tagRows}
                     tags={an.tags}
                   />
                 )}
               </Table.Cell>
+              {tagPosition === 'column' && (
+                <Table.Cell
+                  className='annotation-data-cell tag-cell'
+                  onClick={() => props.setAnnoPosition(an.start_time)}
+                >
+                  {tagCellWidth && (
+                    <TagList
+                      groups={tagGroups}
+                      maxWidth={tagCellWidth}
+                      rows={props.tagRows}
+                      tags={an.tags}
+                    />
+                  )}
+                </Table.Cell>
+              )}
               <Table.Cell className='meatball-cell'>
                 <div className='meatball-container'>
                   <MeatballMenu
@@ -211,6 +238,11 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
           ))}
         </Table.Body>
       </Table.Root>
+      {props.displayAnnotations.length === 0 && props.hideHeader && (
+        <div className='empty-table-replacement'>
+          <p>{t['No annotations have been added.']}</p>
+        </div>
+      )}
     </div>
   );
 };
