@@ -76,6 +76,11 @@ export type AudiovisualFile = {
   duration: number;
 };
 
+// is_offline is stored as a string on the form
+export type FormAudiovisualFile = Omit<AudiovisualFile, 'is_offline'> & {
+  is_offline: 'true' | 'false' | boolean;
+};
+
 export type Event = {
   audiovisual_files: { [key: string]: AudiovisualFile };
   auto_generate_web_page: boolean;
@@ -92,8 +97,13 @@ export type Event = {
 export interface FormEvent
   extends Omit<
     Event,
-    'created_at' | 'created_by' | 'updated_at' | 'updated_by'
+    | 'created_at'
+    | 'created_by'
+    | 'updated_at'
+    | 'updated_by'
+    | 'audiovisual_files'
   > {
+  audiovisual_files: { [key: string]: FormAudiovisualFile };
   created_at?: string;
   created_by?: string;
   updated_at?: string;
