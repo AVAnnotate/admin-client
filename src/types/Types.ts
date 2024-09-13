@@ -78,7 +78,7 @@ export type AudiovisualFile = {
 
 // is_offline is stored as a string on the form
 export type FormAudiovisualFile = Omit<AudiovisualFile, 'is_offline'> & {
-  is_offline: 'true' | 'false';
+  is_offline: 'true' | 'false' | boolean;
 };
 
 export type Event = {

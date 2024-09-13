@@ -20,10 +20,6 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
   const { t, lang } = i18n;
 
   const onSubmit = useCallback(async (newEvent: FormEvent) => {
-    for (const key in newEvent.audiovisual_files) {
-      newEvent.audiovisual_files[key].is_offline =
-        (newEvent.audiovisual_files[key].is_offline as unknown) === 'true';
-    }
     await fetch(`/api/projects/${projectSlug}/events`, {
       method: 'POST',
       headers: {

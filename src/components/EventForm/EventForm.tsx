@@ -19,7 +19,7 @@ interface Props {
   children?: React.ReactNode;
   event?: FormEvent;
   i18n: Translations;
-  onSubmit: (data: Event | FormEvent) => any;
+  onSubmit: (data: Event | FormEvent) => any | Promise<any>;
   styles?: { [key: string]: any };
 }
 
@@ -31,7 +31,7 @@ const initialAvFile = {
 };
 
 export const EventForm: React.FC<Props> = (props) => {
-  const onSubmit = async (data: FormEvent) => {
+  const onSubmit = async (data: FormEvent | Event) => {
     // convert the AV files' string values to boolean
     Object.keys(data.audiovisual_files).forEach((key) => {
       if (data.audiovisual_files[key].is_offline === 'true') {

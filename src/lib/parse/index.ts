@@ -1,5 +1,6 @@
 import type {
   AnnotationEntry,
+  Event,
   FormEvent,
   ParseAnnotationResults,
   Tag,
@@ -132,7 +133,9 @@ export const mapTagData = (
   let colorIndex = 0;
   data.forEach((d) => {
     if (d[map['tag_name']]) {
-      const category = d[map['tag_category']] ? d[map['tag_category']].trim() : '_uncategorized_'
+      const category = d[map['tag_category']]
+        ? d[map['tag_category']].trim()
+        : '_uncategorized_';
       if (!ret.tagGroups.find((g) => g.category === category)) {
         ret.tagGroups.push({
           category,
