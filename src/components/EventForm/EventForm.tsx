@@ -30,14 +30,31 @@ const initialAvFile = {
   duration: 0,
 };
 
-export const EventForm: React.FC<Props> = (props) => (
-  <Formik
-    initialValues={props.event || generateDefaultEvent()}
-    onSubmit={props.onSubmit}
-  >
-    <FormContents {...props} />
-  </Formik>
-);
+export const EventForm: React.FC<Props> = (props) => {
+  const onSubmit = async (data: FormEvent) => {
+    // convert the AV files' string values to boolean
+    Object.keys(data.audiovisual_files).forEach((key) => {
+      if (data.audiovisual_files[key].is_offline === 'true') {
+        // @ts-ignore
+        data.audiovisual_files[key].is_offline = true;
+      } else if (data.audiovisual_files[key].is_offline === 'false') {
+        // @ts-ignore
+        data.audiovisual_files[key].is_offline = false;
+      }
+    });
+
+    await props.onSubmit(data);
+  };
+
+  return (
+    <Formik
+      initialValues={props.event || generateDefaultEvent()}
+      onSubmit={onSubmit}
+    >
+      <FormContents {...props} />
+    </Formik>
+  );
+};
 
 const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
   const { t } = i18n;
@@ -98,13 +115,13 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                           name={`audiovisual_files.${key}.file_url`}
                           disabled={
                             (values as FormEvent).audiovisual_files[key]
-                              .is_offline
+                              .is_offline === 'true'
                               ? true
                               : false
                           }
                           placeholder={
                             (values as FormEvent).audiovisual_files[key]
-                              .is_offline
+                              .is_offline === 'true'
                               ? t['File Available Offline']
                               : undefined
                           }
