@@ -7,6 +7,7 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { UserInfo, Event, ProjectData } from '@ty/Types.ts';
 import { emptyParagraph } from '@lib/slate/index.tsx';
+import { autoGenerateEventPage } from '@lib/pages/autogenerate.ts';
 
 // Create a new event
 export const POST: APIRoute = async ({
@@ -44,7 +45,7 @@ export const POST: APIRoute = async ({
       // Create new event and annotation records
       const repositoryURL = getRepositoryUrl(projectName);
 
-      const { writeFile, readFile, commitAndPush } = await gitRepo({
+      const { writeFile, readFile, commitAndPush, context } = await gitRepo({
         fs: initFs(),
         repositoryURL,
         branch: 'main',
@@ -81,6 +82,10 @@ export const POST: APIRoute = async ({
             auto_generate_web_page: body.auto_generate_web_page,
           };
           await writeFile(eventPath, JSON.stringify(event, null, 2));
+
+          if (body.auto_generate_web_page) {
+            await autoGenerateEventPage(context, info, event, eventRec.id);
+          }
 
           // Find any matching annotations
           for (let j = 0; j < results.annotations.length; j++) {
