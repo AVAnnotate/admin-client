@@ -3,11 +3,10 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { autoGenerateEventPage } from '@lib/pages/autogenerate.ts';
 import type { apiEventsPost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
-import type { Page } from '@ty/Types.ts';
-import { findAutoGenHome } from '@lib/pages/index.ts';
 
 // Create a new event
 export const POST: APIRoute = async ({
@@ -47,13 +46,12 @@ export const POST: APIRoute = async ({
 
   const fs = initFs();
 
-  const { exists, writeFile, readFile, commitAndPush, mkDir, context } =
-    await gitRepo({
-      fs,
-      repositoryURL,
-      branch: 'main',
-      userInfo: info,
-    });
+  const { exists, writeFile, commitAndPush, mkDir, context } = await gitRepo({
+    fs,
+    repositoryURL,
+    branch: 'main',
+    userInfo: info,
+  });
 
   const uuids: string[] = [];
 
@@ -122,56 +120,9 @@ export const POST: APIRoute = async ({
     }
 
     if (ev?.auto_generate_web_page) {
-      const homePageId = await findAutoGenHome(context);
-
-      const eventPage: Page = {
-        content: [],
-        created_at: new Date().toISOString(),
-        created_by: info!.profile.gitHubName || '',
-        title: ev.label,
-        updated_at: new Date().toISOString(),
-        updated_by: info!.profile.gitHubName || '',
-        parent: homePageId,
-        autogenerate: {
-          enabled: ev.auto_generate_web_page,
-          type: 'event',
-          type_id: uuid,
-        },
-      };
-
-      const pageId = uuidv4();
-      const successPage = await writeFile(
-        `/data/pages/${pageId}.json`,
-        JSON.stringify(eventPage, null, 2)
-      );
-
-      if (!successPage) {
-        console.error('Failed to write event page');
-        return new Response(null, {
-          status: 500,
-          statusText: 'Failed to write event page',
-        });
-      }
-
-      const orderFile = readFile('/data/pages/order.json');
-
-      const order = JSON.parse(orderFile as string);
-
-      order.push(pageId);
-
-      const successOrder = await writeFile(
-        '/data/pages/order.json',
-        JSON.stringify(order, null, 2)
-      );
-
-      if (!successOrder) {
-        console.error('Failed to write page order');
-        return new Response(null, {
-          status: 500,
-          statusText: 'Failed to write page order',
-        });
-      }
+      await autoGenerateEventPage(context, info, ev, uuid);
     }
+
     uuids.push(uuid);
   }
 

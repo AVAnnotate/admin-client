@@ -150,7 +150,6 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     const contents = readFile(`/data/pages/${filepath}`);
     const parsed = JSON.parse(contents as string);
 
-    console.log(parsed);
     if (
       parsed &&
       parsed.autogenerate &&
