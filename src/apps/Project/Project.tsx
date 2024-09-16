@@ -112,7 +112,15 @@ export const Project: React.FC<Props> = (props) => {
                     {t['Annotation Sets']}
                     <Chats />
                   </DropdownMenu.Item>
-                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={() =>
+                      window.open(
+                        `https://${props.project.project.github_org}.github.io/${props.project.project.slug}`,
+                        '_blank'
+                      )
+                    }
+                  >
                     {t['View']}
                     <BoxArrowUpRight />
                   </DropdownMenu.Item>
