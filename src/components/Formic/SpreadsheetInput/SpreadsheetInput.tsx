@@ -158,11 +158,6 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [containsHeaders, setContainsHeaders] = useState(true);
   const [displayPreview, setDisplayPreview] = useState(false);
 
-  // Whether the headers have been automatically set yet. We don't
-  // want to do it twice for one file because we might be overriding
-  // the user's changes
-  const [touchedHeaders, setTouchedHeaders] = useState(false);
-
   const {
     headerMap,
     setHeaderMap,
@@ -217,7 +212,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   }, [file, containsHeaders]);
 
   useEffect(() => {
-    if (tableHeaders && !touchedHeaders) {
+    if (tableHeaders) {
       const defaultHeaderMap: any = {};
       props.importAsOptions.forEach((opt) => {
         const matchIdx = tableHeaders.findIndex(
