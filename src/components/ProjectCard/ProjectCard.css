@@ -23,6 +23,14 @@
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
   box-shadow: 0 2px 2px 0 var(--gray-300);
+  position: relative;
+}
+
+.project-card-last-edited {
+  position: absolute;
+  bottom: 0;
+  right: 8px;
+  padding-bottom: 3px;
 }
 
 .project-card-footer {
@@ -44,6 +52,7 @@
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   display: -webkit-box;
 }
 
