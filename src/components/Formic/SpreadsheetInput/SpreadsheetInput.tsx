@@ -153,6 +153,11 @@ interface SpreadsheetInputProps {
   onHeaderMapChange?(headerMap: { [key: string]: number }): void;
 }
 
+// the regex removes everything inside parentheses so something like
+// "Event Citation (optional)" will match "Event Citation"
+const truncateParentheses = (str: string) =>
+  str.replace(/ *\([^)]*\) */g, '').trim();
+
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [containsHeaders, setContainsHeaders] = useState(true);
@@ -184,6 +189,11 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     props.onHeaderMapChange && props.onHeaderMapChange(headerMap);
   }, [values, headerMap]);
 
+  const tableHeaders = useMemo(
+    () => (values[props.name] as ParseAnnotationResults)?.headers,
+    [values]
+  );
+
   const parseData = useCallback(
     async (file: File) => {
       const parsed = await parseSpreadsheetData(file, containsHeaders);
@@ -206,14 +216,30 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
     handleFile();
   }, [file, containsHeaders]);
 
+  useEffect(() => {
+    if (tableHeaders) {
+      const defaultHeaderMap: any = {};
+      props.importAsOptions.forEach((opt) => {
+        const matchIdx = tableHeaders.findIndex(
+          (th) => truncateParentheses(th) === truncateParentheses(opt.label)
+        );
+
+        if (matchIdx !== -1) {
+          defaultHeaderMap[opt.value] = matchIdx;
+        }
+
+        setHeaderMap(defaultHeaderMap);
+      });
+    }
+  }, [file, tableHeaders]);
+
   const tableRows = useMemo(() => {
-    const headers = (values[props.name] as ParseAnnotationResults)?.headers;
     const data = (values[props.name] as ParseAnnotationResults)?.data;
     const firstItem =
       Array.isArray(data) && data.length > 0 ? (data[0] as string[]) : null;
 
-    if (Array.isArray(headers) && headers.length > 0 && firstItem) {
-      return headers.map((fieldName, idx) => (
+    if (Array.isArray(tableHeaders) && tableHeaders.length > 0 && firstItem) {
+      return tableHeaders.map((fieldName, idx) => (
         <TableRow
           header={fieldName}
           example={firstItem[idx]}

@@ -130,12 +130,12 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         value: 'item_type',
       },
       {
-        label: t['AVFile Label'],
+        label: t['AV File Label'],
         required: true,
         value: 'audiovisual_file_label',
       },
       {
-        label: t['AVFile URL'],
+        label: t['AV File URL'],
         required: true,
         value: 'audiovisual_file_url',
       },
