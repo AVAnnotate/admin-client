@@ -201,7 +201,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
       setDisplayPreview(false);
       setFieldValue(props.name, parsed);
     },
-    [containsHeaders, props.importAsOptions, tableHeaders]
+    [containsHeaders]
   );
 
   useEffect(() => {
