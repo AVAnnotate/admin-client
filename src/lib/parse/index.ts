@@ -24,6 +24,7 @@ export const parseSpreadsheetData = async (
   const annotations: any[] = utils.sheet_to_json(firstSheet, {
     header: 1,
     raw: false,
+    blankrows: false,
   });
 
   let headers: string[] = [];
