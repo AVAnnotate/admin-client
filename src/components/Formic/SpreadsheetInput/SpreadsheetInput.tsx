@@ -153,6 +153,11 @@ interface SpreadsheetInputProps {
   onHeaderMapChange?(headerMap: { [key: string]: number }): void;
 }
 
+// the regex removes everything inside parentheses so something like
+// "Event Citation (optional)" will match "Event Citation"
+const truncateParentheses = (str: string) =>
+  str.replace(/ *\([^)]*\) */g, '').trim();
+
 export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [containsHeaders, setContainsHeaders] = useState(true);
@@ -216,9 +221,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
       const defaultHeaderMap: any = {};
       props.importAsOptions.forEach((opt) => {
         const matchIdx = tableHeaders.findIndex(
-          // the regex removes everything inside parentheses so something like
-          // "Event Citation (optional)" will match "Event Citation"
-          (th) => th.replace(/ *\([^)]*\) */g, '').trim() === opt.label
+          (th) => truncateParentheses(th) === truncateParentheses(opt.label)
         );
 
         if (matchIdx !== -1) {
