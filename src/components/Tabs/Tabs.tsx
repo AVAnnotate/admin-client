@@ -9,6 +9,8 @@ interface Props {
     count?: number;
     component: React.JSX.Element;
     icon?: React.FC<any>;
+    // if this is true, the tab is always mounted
+    keepMounted?: boolean;
   }[];
 }
 
@@ -38,7 +40,14 @@ export const Tabs: React.FC<Props> = (props) => {
         ))}
       </RadixTabs.List>
       {props.tabs.map((tab, idx) => (
-        <RadixTabs.Content key={idx} value={`tab${idx}`}>
+        <RadixTabs.Content
+          key={idx}
+          value={`tab${idx}`}
+          forceMount={tab.keepMounted || undefined}
+          hidden={
+            tab.keepMounted && `tab${idx}` !== activeTab ? true : undefined
+          }
+        >
           {tab.component}
         </RadixTabs.Content>
       ))}

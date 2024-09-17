@@ -223,6 +223,7 @@ export const Project: React.FC<Props> = (props) => {
               ),
             },
             {
+              keepMounted: true,
               icon: FileEarmarkText,
               count: Object.keys(props.project.pages).length,
               title: t['Pages'],
