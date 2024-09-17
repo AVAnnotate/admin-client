@@ -269,8 +269,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     if (currentSetUuid) {
       exportAnnotations(
         allAnnotations[currentSetUuid].annotations,
-        props.event,
-        avFile
+        props.event
       );
     }
   }, [currentSetUuid, allAnnotations, avFile]);

@@ -10,13 +10,8 @@ const formatField = (str: string) => `"${str.replaceAll('"', '\\"')}"`;
 const serializeRichText = (nodes: Node[]) =>
   ReactDOMServer.renderToString(serialize(nodes));
 
-export const exportAnnotations = (
-  annos: AnnotationEntry[],
-  event: Event,
-  avFile: string
-) => {
-  let str =
-    'Start Time,End Time,Annotation,Tags (comma separated),AV Label (optional for single-file events)\n';
+export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
+  let str = 'Start Time,End Time,Annotation,Tags (comma separated)\n';
 
   annos.forEach((anno) => {
     const fields = [
@@ -28,7 +23,6 @@ export const exportAnnotations = (
         : '',
       anno.annotation ? serializeRichText(anno.annotation) : '',
       anno.tags.map((t) => t.tag).join(',') || '',
-      event.audiovisual_files[avFile].label || '',
     ];
 
     str += fields.map(formatField).join(',');
