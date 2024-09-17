@@ -26,7 +26,7 @@ export const UploadTestApp = (_props: any) => {
 
   const handleMap = () => {
     if (output) {
-      const results = mapAnnotationData(
+      const results = await mapAnnotationData(
         output.data,
         {
           start_time: 0,

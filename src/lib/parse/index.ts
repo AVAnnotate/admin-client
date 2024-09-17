@@ -1,6 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 import type {
   AnnotationEntry,
-  Event,
   FormEvent,
   ParseAnnotationResults,
   Tag,
@@ -56,10 +56,14 @@ const getTag = (tag: string, tags: Tags) => {
 
   if (category) {
     // Look for this category
-    const findIdx = tags.tagGroups.findIndex((g) => g.category === category);
+    const findIdx = tags.tagGroups.findIndex(
+      (g) => g.category.toLowerCase() === category.toLowerCase()
+    );
     if (findIdx > -1) {
       const tagIdx = tags.tags.findIndex(
-        (t) => t.category === category && t.tag === searchTag
+        (t) =>
+          t.category.toLowerCase() === category.toLowerCase() &&
+          t.tag.toLowerCase() === searchTag.toLowerCase()
       );
       if (tagIdx > -1) {
         ret = tags.tags[tagIdx];
@@ -79,12 +83,18 @@ const getTag = (tag: string, tags: Tags) => {
 // Prepare the annotations for the POST request.
 // Note that we don't assign UUIDs here. That is handled
 // on the backend.
-export const mapAnnotationData = (
+export const mapAnnotationData = async (
   data: any[],
   map: { [key: string]: number },
-  tags: Tags
-): Omit<AnnotationEntry, 'uuid'>[] => {
+  tagsIn: Tags,
+  projectSlug: string
+): Promise<Omit<AnnotationEntry, 'uuid'>[]> => {
   const ret: Omit<AnnotationEntry, 'uuid'>[] = [];
+  const tags: Tags = JSON.parse(JSON.stringify(tagsIn));
+  const availableColors = tagColors.filter(
+    (c) => tags.tagGroups.findIndex((g) => g.color === c) === -1
+  );
+  let tagsUpdated = false;
 
   data.forEach((d) => {
     const template = document.createElement('template');
@@ -108,6 +118,47 @@ export const mapAnnotationData = (
           const found = getTag(tag, tags);
           if (found) {
             tMap.push(found);
+          } else {
+            // Either the tag or category was not found
+            let category: string | undefined;
+            let name: string | undefined;
+            const catArr = tag.split(':');
+            if (catArr.length > 1) {
+              category = catArr[0];
+              name = catArr[1];
+            } else {
+              category = '_uncategorized_';
+              name = tag;
+            }
+
+            // Do we have the category?
+            const catIndex = tags.tagGroups.findIndex(
+              (g) => g.category.toLowerCase() === category.toLowerCase()
+            );
+            if (catIndex === -1) {
+              // Not found. Add new category
+              tags.tagGroups.push({
+                category: category,
+                color:
+                  category === '_uncategorized_'
+                    ? '#A3A3A3'
+                    : availableColors.length > 0
+                    ? availableColors[0]
+                    : '#0A0A0A',
+              });
+
+              availableColors.shift();
+            }
+            tags.tags.push({
+              category: category,
+              tag: name,
+            });
+
+            tagsUpdated = true;
+            tMap.push({
+              category,
+              tag: name,
+            });
           }
         })
       : [];
@@ -119,7 +170,57 @@ export const mapAnnotationData = (
     });
   });
 
+  if (tagsUpdated) {
+    await updateTags(tagsIn, tags, projectSlug);
+  }
+
   return ret;
+};
+
+const updateTags = async (
+  originalTags: Tags,
+  newTags: Tags,
+  projectSlug: string
+) => {
+  // First check for new tag groups
+  for (let i = 0; i < newTags.tagGroups.length; i++) {
+    const group = newTags.tagGroups[i];
+    const found =
+      originalTags.tagGroups.findIndex(
+        (g) => g.category.toLowerCase() === group.category.toLowerCase()
+      ) > -1;
+
+    if (!found) {
+      await fetch(`/api/projects/${projectSlug}/tag-groups`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tagGroup: group }),
+      });
+    }
+  }
+
+  // Now check for new tags
+  for (let i = 0; i < newTags.tags.length; i++) {
+    const tag = newTags.tags[i];
+    const found =
+      originalTags.tags.findIndex(
+        (t) =>
+          t.tag.toLowerCase() === tag.tag.toLowerCase() &&
+          t.category.toLowerCase() === tag.category.toLowerCase()
+      ) > -1;
+
+    if (!found) {
+      await fetch(`/api/projects/${projectSlug}/tags`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tag: tag }),
+      });
+    }
+  }
 };
 
 export const mapTagData = (

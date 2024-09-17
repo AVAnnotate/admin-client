@@ -36,9 +36,15 @@ const onSubmit = async (
   headerMap: { [key: string]: number },
   baseUrl: string,
   redirectUrl: string,
-  tags: Tags
+  tags: Tags,
+  projectSlug: string
 ) => {
-  const annos = mapAnnotationData(body.annotations.data, headerMap, tags);
+  const annos = await mapAnnotationData(
+    body.annotations.data,
+    headerMap,
+    tags,
+    projectSlug
+  );
 
   const res = await fetch(`${baseUrl}/${body.set}`, {
     method: 'POST',
@@ -109,7 +115,8 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
           headerMap,
           baseUrl,
           redirectUrl,
-          props.project.project.tags
+          props.project.project.tags,
+          props.projectSlug
         )
       }
     >
