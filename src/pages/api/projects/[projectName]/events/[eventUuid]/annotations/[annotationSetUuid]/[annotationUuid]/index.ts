@@ -2,6 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { apiAnnotationPut } from '@ty/api.ts';
 import type { AnnotationPage } from '@ty/Types.ts';
 import type { APIRoute, AstroCookies } from 'astro';
@@ -35,12 +36,14 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const fs = initFs();
 
-  const { commitAndPush, exists, readFile, writeFile } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { commitAndPush, exists, readFile, writeFile, context } = await gitRepo(
+    {
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    }
+  );
 
   const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
@@ -74,6 +77,8 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   annos.annotations.splice(deleteIdx, 1);
 
   writeFile(filePath, JSON.stringify(annos, null, 2));
+
+  await updateProjectLastUpdated(context);
 
   const commitMessage = `Deleted annotation ${annotationUuid}`;
 
@@ -112,12 +117,14 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const body: apiAnnotationPut = await request.json();
 
-  const { commitAndPush, exists, readFile, writeFile } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { commitAndPush, exists, readFile, writeFile, context } = await gitRepo(
+    {
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    }
+  );
 
   const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
@@ -156,6 +163,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   annos.annotations[matchIdx] = newBody;
 
   writeFile(filePath, JSON.stringify(annos, null, 2));
+
+  await updateProjectLastUpdated(context);
 
   const commitMessage = `Updated annotation ${annotationUuid}`;
 

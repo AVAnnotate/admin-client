@@ -1,4 +1,4 @@
-import type { Page } from '@ty/Types.ts';
+import type { Page, ProjectFile } from '@ty/Types.ts';
 import type { GitRepoContext } from '@backend/gitRepo.ts';
 
 export const getNewOrder = (
@@ -65,4 +65,29 @@ export const findAutoGenHome = async (
       }
     }
   }
+};
+
+export const updateProjectLastUpdated = async (
+  context: GitRepoContext
+): Promise<boolean> => {
+  const { readFile, writeFile, exists } = context;
+
+  if (exists('/data/project.json')) {
+    const project: ProjectFile = JSON.parse(
+      readFile('/data/project.json') as string
+    );
+
+    project.project.updated_at = new Date().toISOString();
+
+    const res = await writeFile(
+      '/data/project.json',
+      JSON.stringify(project, null, 2)
+    );
+
+    if (res) {
+      return true;
+    }
+  }
+
+  return false;
 };

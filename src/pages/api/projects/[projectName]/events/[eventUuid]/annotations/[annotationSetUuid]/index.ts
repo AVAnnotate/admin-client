@@ -2,6 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { AnnotationEntry, AnnotationPage } from '@ty/Types.ts';
 import type { apiAnnotationPost, apiAnnotationSetPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
@@ -29,7 +30,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const fs = initFs();
 
-  const { commitAndPush, exists, deleteFile } = await gitRepo({
+  const { commitAndPush, exists, deleteFile, context } = await gitRepo({
     fs,
     repositoryURL,
     branch: 'main',
@@ -46,6 +47,8 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   }
 
   deleteFile(filePath);
+
+  await updateProjectLastUpdated(context);
 
   const commitMessage = `Deleted annotation set ${annotationSetUuid}`;
 
@@ -82,12 +85,14 @@ export const POST: APIRoute = async ({
 
   const fs = initFs();
 
-  const { commitAndPush, exists, readFile, writeFile } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { commitAndPush, exists, readFile, writeFile, context } = await gitRepo(
+    {
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    }
+  );
 
   const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
@@ -134,6 +139,8 @@ export const POST: APIRoute = async ({
 
   writeFile(filePath, JSON.stringify(annos, null, 2));
 
+  await updateProjectLastUpdated(context);
+
   const commitMessage = `Added ${count || '1'} annotation${
     count === 1 ? '' : 's'
   } to set ${annotationSetUuid} in event ${eventUuid}`;
@@ -166,12 +173,14 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const fs = initFs();
 
-  const { commitAndPush, exists, readFile, writeFile } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { commitAndPush, exists, readFile, writeFile, context } = await gitRepo(
+    {
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    }
+  );
 
   const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
@@ -194,6 +203,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   annos.set = body.set;
 
   writeFile(filePath, JSON.stringify(annos, null, 2));
+
+  await updateProjectLastUpdated(context);
 
   const commitMessage = `Updated name of annotation set ${annotationSetUuid} to ${body.set}`;
 
