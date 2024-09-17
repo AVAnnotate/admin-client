@@ -9,7 +9,8 @@ interface Props {
     count?: number;
     component: React.JSX.Element;
     icon?: React.FC<any>;
-    // if this is true, the tab is always mounted
+    // if this is true, the tab is always mounted.
+    // otherwise, it will unmount when the user changes tabs
     keepMounted?: boolean;
   }[];
 }
