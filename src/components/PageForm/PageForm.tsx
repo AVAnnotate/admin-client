@@ -38,9 +38,9 @@ const FormContents: React.FC<Props> = (props) => {
 
   const parentPageOptions: { label: string; value: string | undefined }[] =
     useMemo(
-      () =>
-        // @ts-ignore
-        Object.keys(props.project.pages)
+      () => [
+        { label: t['No Parent'], value: undefined },
+        ...Object.keys(props.project.pages)
           .filter(
             (uuid) => uuid !== props.uuid && !props.project.pages![uuid].parent
           )
@@ -51,13 +51,9 @@ const FormContents: React.FC<Props> = (props) => {
               value: uuid,
             };
           }),
+      ],
       [props.uuid, props.project.pages]
     );
-
-  parentPageOptions.unshift({
-    label: t['No Parent'],
-    value: undefined,
-  });
 
   return (
     <Form className='page-form'>
