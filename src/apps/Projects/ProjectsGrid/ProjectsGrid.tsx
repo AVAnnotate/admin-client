@@ -12,7 +12,7 @@ export const ProjectsGrid = (props: ProjectsGridProps) => {
   return (
     <div className='projects-grid-container' id='grid'>
       {props.projects.map((p) => (
-        <ProjectCard project={p} lang={props.i18n.lang} key={p.project.slug} />
+        <ProjectCard project={p} i18n={props.i18n} key={p.project.slug} />
       ))}
     </div>
   );

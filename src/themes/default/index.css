@@ -178,6 +178,13 @@ h3 {
   font-size: 10px;
 }
 
+.av-body-small-italic {
+  font-family: Inter;
+  font-size: 14px;
+  font-weight: 400;
+  font-style: italic;
+}
+
 p {
   margin: 0.8em 0;
   padding: 0;
