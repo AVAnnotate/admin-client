@@ -37,6 +37,10 @@
   width: 16px;
 }
 
+.event-form .formic-form-textarea {
+  overflow-y: auto;
+}
+
 .event-form .bottom-bar-flex {
   width: 100%;
   display: flex;
