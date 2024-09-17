@@ -4,6 +4,7 @@ import { userInfo } from '@backend/userInfo.ts';
 import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import { autoGenerateEventPage } from '@lib/pages/autogenerate.ts';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { apiEventsPost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -125,6 +126,8 @@ export const POST: APIRoute = async ({
 
     uuids.push(uuid);
   }
+
+  await updateProjectLastUpdated(context);
 
   // If autogenerate home page is on go ahead and create it
 

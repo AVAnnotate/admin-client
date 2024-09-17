@@ -3,6 +3,7 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { Page, UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
@@ -132,7 +133,7 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readDir, readFile, commitAndPush, deleteFile, writeFile } =
+  const { readDir, readFile, commitAndPush, deleteFile, writeFile, context } =
     await gitRepo({
       fs: initFs(),
       repositoryURL,
@@ -209,6 +210,8 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   // Delete the event
   await deleteFile(filepath);
+
+  await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(`Deleted event ${eventUuid}`);
 

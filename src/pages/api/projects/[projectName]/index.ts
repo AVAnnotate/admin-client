@@ -9,7 +9,7 @@ import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { UserInfo, Project, ProjectFile, Page } from '@ty/Types.ts';
+import type { UserInfo, Project, Page } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { delay } from '@lib/utility/index.ts';
 import {
@@ -18,6 +18,7 @@ import {
   parseSlug,
 } from '@backend/projectHelpers.ts';
 import { v4 as uuidv4 } from 'uuid';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 
 // Note: this POST route is the only /api/projects route that expects the
 // `projectName` param to be the bare name instead of the slug version that
@@ -123,7 +124,7 @@ export const POST: APIRoute = async ({
     const fs = initFs();
 
     // Update the admin project.json file
-    const { readFile, writeFile, commitAndPush } = await gitRepo({
+    const { writeFile, commitAndPush } = await gitRepo({
       fs: fs,
       repositoryURL: repo.html_url,
       userInfo: info as UserInfo,
@@ -268,11 +269,13 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   const slugContents = parseSlug(projectName);
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readFile, exists, writeFile, commitAndPush } = await gitRepo({
-    fs: initFs(),
-    repositoryURL,
-    userInfo: info as UserInfo,
-  });
+  const { readFile, exists, writeFile, commitAndPush, context } = await gitRepo(
+    {
+      fs: initFs(),
+      repositoryURL,
+      userInfo: info as UserInfo,
+    }
+  );
 
   if (!exists('/data/project.json')) {
     return new Response('Missing project.json file in repository.', {
@@ -310,6 +313,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   };
 
   writeFile('/data/project.json', JSON.stringify(newConfig, null, 2));
+
+  await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(
     `Updated project file for ${body.title}`

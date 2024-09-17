@@ -2,7 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getPageData, getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import { getNewOrder } from '@lib/pages/index.ts';
+import { getNewOrder, updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { apiPagePost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -43,13 +43,20 @@ export const POST: APIRoute = async ({
 
   const fs = initFs();
 
-  const { readDir, readFile, writeFile, commitAndPush, exists, mkDir } =
-    await gitRepo({
-      fs,
-      repositoryURL,
-      branch: 'main',
-      userInfo: info,
-    });
+  const {
+    readDir,
+    readFile,
+    writeFile,
+    commitAndPush,
+    exists,
+    mkDir,
+    context,
+  } = await gitRepo({
+    fs,
+    repositoryURL,
+    branch: 'main',
+    userInfo: info,
+  });
 
   // Create the events folder if it doesn't exist
   if (!exists('/data/events')) {
@@ -84,6 +91,8 @@ export const POST: APIRoute = async ({
   const newOrder = getNewOrder(pages, uuid, JSON.parse(orderFile.toString()));
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
+
+  await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(`Added page "${page.title}"`);
 

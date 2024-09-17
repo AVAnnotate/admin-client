@@ -2,7 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getPageData, getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import { getNewOrder } from '@lib/pages/index.ts';
+import { getNewOrder, updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { apiPagePut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 
@@ -48,12 +48,13 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const fs = initFs();
 
-  const { readFile, readDir, writeFile, commitAndPush } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { readFile, readDir, writeFile, commitAndPush, context } =
+    await gitRepo({
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    });
 
   writeFile(`/data/pages/${pageUuid}.json`, JSON.stringify(page, null, 2));
 
@@ -72,6 +73,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   );
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
+
+  await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(`Updated page ${body.page.title}`);
 
@@ -97,12 +100,13 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { commitAndPush, readFile, deleteFile, writeFile } = await gitRepo({
-    fs: initFs(),
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { commitAndPush, readFile, deleteFile, writeFile, context } =
+    await gitRepo({
+      fs: initFs(),
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    });
 
   const filepath = `/data/pages/${pageUuid}.json`;
 
@@ -115,6 +119,8 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   const newOrder = order.filter((uuid) => uuid !== pageUuid);
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
+
+  await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(`Deleted page ${pageUuid}`);
 

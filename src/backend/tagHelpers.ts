@@ -12,6 +12,7 @@ import {
   getDirData,
   buildProjectData,
 } from '@backend/projectHelpers.ts';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 
 export const createTagGroup = async (
   htmlUrl: string,
@@ -34,6 +35,7 @@ export const createTagGroup = async (
   const project: ProjectData = JSON.parse(proj as string);
 
   project.project.tags?.tagGroups.push(group);
+  project.project.updated_at = new Date().toISOString();
 
   const result = await writeFile('/data/project.json', JSON.stringify(project));
 
@@ -136,6 +138,8 @@ export const updateTagGroup = async (
     }
   }
 
+  project.project.updated_at = new Date().toISOString();
+
   const result = await writeFile('/data/project.json', JSON.stringify(project));
 
   if (!result) {
@@ -213,6 +217,7 @@ export const deleteTagGroup = async (
   );
 
   if (resultRegroup) {
+    project.project.updated_at = new Date().toISOString();
     const result = await writeFile(
       '/data/project.json',
       JSON.stringify(project)
@@ -295,6 +300,8 @@ export const addTag = async (htmlUrl: string, userInfo: UserInfo, tag: Tag) => {
   // Add the tag
   project.project.tags.tags.push(tag);
 
+  project.project.updated_at = new Date().toISOString();
+
   // Write, commit, save
   const writeResult = await writeFile(
     '/data/project.json',
@@ -332,6 +339,8 @@ export const updateTag = async (
 
   // Get the project
   const project: ProjectData = JSON.parse(proj as string);
+
+  project.project.updated_at = new Date().toISOString();
 
   // Remove old tag
   const idx = project.project.tags.tags.findIndex(
@@ -438,6 +447,8 @@ export const deleteTag = async (
   if (idx > -1) {
     project.project.tags.tags.splice(idx, 1);
 
+    project.project.updated_at = new Date().toISOString();
+
     // Write project file
     const writeResult = await writeFile(
       '/data/project.json',
@@ -502,5 +513,6 @@ const deleteAllTags = async (
     }
   }
 
+  await updateProjectLastUpdated(repoContext);
   return true;
 };

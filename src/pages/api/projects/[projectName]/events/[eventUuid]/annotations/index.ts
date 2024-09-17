@@ -2,6 +2,7 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
+import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { AnnotationPage, UserInfo } from '@ty/Types.ts';
 import type { apiAnnotationSetPost } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
@@ -46,7 +47,7 @@ export const POST: APIRoute = async ({
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { writeFile, commitAndPush } = await gitRepo({
+  const { writeFile, commitAndPush, context } = await gitRepo({
     fs: initFs(),
     repositoryURL,
     branch: 'main',
@@ -64,6 +65,8 @@ export const POST: APIRoute = async ({
   const filepath = `/data/annotations/${uuid}.json`;
 
   writeFile(filepath, JSON.stringify(newSet, null, 2));
+
+  await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(
     `Added new annotation set: ${newSet.set}`

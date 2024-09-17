@@ -125,6 +125,8 @@ export const POST: APIRoute = async ({
           }
         });
 
+        project.project.updated_at = new Date().toISOString();
+
         await writeFile('/data/project.json', JSON.stringify(project, null, 2));
       }
 
