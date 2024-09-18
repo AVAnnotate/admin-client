@@ -117,11 +117,12 @@ export const RichTextInput = (props: RichTextInputProps) => {
 };
 
 interface TimeInputProps {
+  className?: string;
+  disabled?: boolean;
   initialValue: number;
   label?: string;
   onChange: (input: number) => any;
   required?: boolean;
-  className?: string;
 }
 
 export const TimeInput = (props: TimeInputProps) => {
@@ -164,6 +165,7 @@ export const TimeInput = (props: TimeInputProps) => {
       )}
       <input
         className='formic-form-text formic-time-input'
+        disabled={props.disabled}
         onChange={onChange}
         value={display}
       />
