@@ -376,9 +376,19 @@ export const UserList = (props: UserListProps) => {
         {value.map((user: ProviderUser) => (
           <div className='formic-user-list-row' key={user.login_name}>
             <div className='formnic-user-list-user-box'>
-              <Avatar name={user.name} avatar={user.avatar_url} />
+              <Avatar
+                name={user.name}
+                avatar={user.avatar_url}
+                disabled={user.not_accepted}
+              />
               <div className='formic-user-list-names'>
-                <div className='av-label-bold'>{user.name}</div>
+                <div className='av-label-bold'>
+                  {user.not_accepted
+                    ? `${user.name || user.login_name} (${
+                        props.i18n.t['Invited']
+                      })`
+                    : user.name}
+                </div>
                 <div className='av-label'>{user.login_name}</div>
               </div>
             </div>
