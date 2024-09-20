@@ -12,8 +12,9 @@ import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import './EventForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { RichTextInput } from '@components/Formic/index.tsx';
-import { generateDefaultEvent } from '@lib/events/index.ts';
+import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
+import { useEffect, useState } from 'react';
 
 interface Props {
   children?: React.ReactNode;
@@ -57,9 +58,51 @@ export const EventForm: React.FC<Props> = (props) => {
 };
 
 const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
+  // map URLs to durations (in seconds)
+  const [durationVals, setDurationVals] = useState<{ [key: string]: number }>(
+    {}
+  );
+
   const { t } = i18n;
 
   const { setFieldValue, values, isSubmitting } = useFormikContext();
+
+  useEffect(() => {
+    const updateDurations = async () => {
+      const vals = values as FormEvent;
+
+      const fileUrls = Object.keys(vals.audiovisual_files)
+        .map((uuid) => vals.audiovisual_files[uuid].file_url)
+        .filter(Boolean);
+
+      const newDurationVals: { [key: string]: number } = { ...durationVals };
+
+      // fill in durations for any URLs found
+      for await (const url of fileUrls) {
+        if (!newDurationVals[url]) {
+          const duration = await getFileDuration(url);
+
+          if (duration) {
+            newDurationVals[url] = duration;
+          }
+        }
+      }
+
+      // set the duration for any AV files whose durations we've stored above
+      Object.keys(vals.audiovisual_files).forEach((uuid) => {
+        if (newDurationVals[vals.audiovisual_files[uuid].file_url]) {
+          setFieldValue(
+            `audiovisual_files.${uuid}.duration`,
+            newDurationVals[vals.audiovisual_files[uuid].file_url]
+          );
+        }
+      });
+
+      setDurationVals(newDurationVals);
+    };
+
+    updateDurations();
+  }, [(values as FormEvent).audiovisual_files]);
 
   return (
     <Form className='event-form' style={styles}>
@@ -129,7 +172,21 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                       </div>
                       <TimeInput
                         className='av-duration-input'
+                        // disable input if we were able to automatically set the duration
+                        disabled={
+                          !!durationVals[
+                            (values as FormEvent).audiovisual_files[key]
+                              .file_url
+                          ]
+                        }
                         label={idx === 0 ? t['Duration'] : undefined}
+                        // force this to re-render when the auto-duration thing picks up a value
+                        key={
+                          durationVals[
+                            (values as FormEvent).audiovisual_files[key]
+                              .file_url
+                          ]
+                        }
                         onChange={(input: number) =>
                           setFieldValue(
                             `audiovisual_files.${key}.duration`,
@@ -138,6 +195,10 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                         }
                         required
                         initialValue={
+                          durationVals[
+                            (values as FormEvent).audiovisual_files[key]
+                              .file_url
+                          ] ||
                           (values as FormEvent).audiovisual_files[key].duration
                         }
                       />
