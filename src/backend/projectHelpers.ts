@@ -1,11 +1,11 @@
 import {
   getUserOrgs,
-  getUserMemberReposInOrg,
-  getUserMemberRepos,
   getCollaborators,
+  getInvitedCollaborators,
   addCollaborator,
   getUser,
   removeCollaborator,
+  getUserRepos,
 } from '@lib/GitHub/index.ts';
 import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
@@ -42,10 +42,7 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   let repos: any[] = [];
 
   // Get the user's repos
-  const myRepos = await getUserMemberRepos(
-    userInfo.token,
-    userInfo.profile.gitHubName as string
-  );
+  const myRepos = await getUserRepos(userInfo.token);
 
   repos = myRepos.filter((r) => r.topics.includes('avannotate-project'));
 
@@ -53,21 +50,6 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
   const myOrgs = await getUserOrgs(userInfo.token);
 
   myOrgs.unshift({ orgName: userInfo.profile.gitHubName });
-
-  // For each org, retrieve the repos and filter for the avannotate-project topic
-  for await (const org of myOrgs) {
-    const reps = await getUserMemberReposInOrg(userInfo.token, org.login);
-
-    repos = repos.concat(
-      reps.filter((r) => {
-        return r.topics.includes('avannotate-project');
-      })
-    );
-    // repos = [
-    //   ...repos,
-    //   ...reps.filter((r) => r.topics.includes('avannotate-project')),
-    // ];
-  }
 
   return repos;
 };
@@ -150,6 +132,28 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
         admin: u.role_name === 'admin',
       };
     });
+  }
+
+  const invites = await getInvitedCollaborators(
+    project.project.slug,
+    project.project.github_org,
+    userInfo.token
+  );
+
+  if (invites.ok) {
+    const invitesData: any[] = await invites.json();
+
+    project.users = [
+      ...project.users,
+      ...invitesData.map((i: any) => {
+        return {
+          login_name: i.invitee.login,
+          avatar_url: i.invitee.avatar_url,
+          admin: false,
+          not_accepted: true,
+        };
+      }),
+    ];
   }
 
   const eventFiles = exists('/data/events')
@@ -289,11 +293,30 @@ export const addCollaborators = async (
     }
   }
 
+  const invites = await getInvitedCollaborators(projectName, org, token);
+
+  if (invites.ok) {
+    const inviteData = await invites.json();
+
+    currentUsers = [
+      ...currentUsers,
+      ...inviteData.map((i: any) => {
+        return {
+          login_name: i.invitee.login,
+          avatar_url: i.invitee.avatar_url,
+          admin: i.invitee.site_admin,
+          not_accepted: true,
+        };
+      }),
+    ];
+  }
+
   // Look for new users to add
   for (let i = 0; i < additionalUsers.length; i++) {
     const findIdx = currentUsers.findIndex((u) => {
       return u.login_name === additionalUsers[i];
     });
+
     if (findIdx === -1) {
       console.log('Did not find user, adding: ', additionalUsers[i]);
       const respCollabs: Response = await addCollaborator(

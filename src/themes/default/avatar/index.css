@@ -20,6 +20,7 @@
 }
 
 .avatar-image,
+.avatar-image-disabled,
 .avatar-fallback {
   align-items: center;
   background-size: cover;
@@ -40,4 +41,9 @@
 
 .avatar-image {
   object-fit: cover;
+}
+
+.avatar-image-disabled {
+  object-fit: cover;
+  opacity: 0.4;
 }
