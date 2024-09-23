@@ -73,8 +73,6 @@ const EventSelect = (props: EventSelectProps) => {
     }
   };
 
-  const handleDescriptionChange = (label: string, description: any) => {};
-
   return (
     <>
       <div className='import-form-event-header'>
@@ -146,7 +144,11 @@ const FormContents: React.FC<Props> = (props) => {
             </div>
             <DescriptionInput i18n={props.i18n} />
             <ToggleInput
-              helperText={t['lorem']}
+              helperText={
+                t[
+                  'Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.'
+                ]
+              }
               label={t['Auto-generate web page for these events?']}
               name='auto_generate_web_page'
             />
