@@ -4,6 +4,7 @@ import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import { getNewOrder, updateProjectLastUpdated } from '@lib/pages/index.ts';
 import type { apiPagePut } from '@ty/api.ts';
+import type { Page } from '@ty/Types.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 
 const setup = async (cookies: AstroCookies) => {
@@ -56,6 +57,10 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       userInfo: info,
     });
 
+  const oldPage = JSON.parse(
+    readFile(`/data/pages/${pageUuid}.json`) as string
+  ) as Page;
+
   writeFile(`/data/pages/${pageUuid}.json`, JSON.stringify(page, null, 2));
 
   const { pages } = getPageData(
@@ -66,11 +71,27 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const orderFile = readFile('/data/pages/order.json');
 
-  const newOrder = getNewOrder(
+  let newOrder = getNewOrder(
     pages,
     pageUuid,
-    JSON.parse(orderFile.toString())
+    JSON.parse(orderFile.toString()),
+    oldPage
   );
+
+  // if the current page used to have children and we've made it into a child,
+  // we move those children to the page's new parent and update the order for each.
+  if (!oldPage.parent && page.parent) {
+    Object.keys(pages).forEach((key) => {
+      if (pages[key].parent === pageUuid) {
+        pages[key].parent = page.parent;
+        newOrder = getNewOrder(pages, key, newOrder, pages[key]);
+        writeFile(
+          `/data/pages/${key}.json`,
+          JSON.stringify(pages[key], null, 2)
+        );
+      }
+    });
+  }
 
   writeFile('/data/pages/order.json', JSON.stringify(newOrder));
 
