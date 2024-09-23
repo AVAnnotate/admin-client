@@ -146,7 +146,7 @@ const FormContents: React.FC<Props> = (props) => {
             <ToggleInput
               helperText={
                 t[
-                  'Selecting this will create a webpage for your events. You can edit or delete this page at any point in the Pages tab.'
+                  'Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab.'
                 ]
               }
               label={t['Auto-generate web page for these events?']}
