@@ -90,6 +90,20 @@ export const getCollaborators = async (
     }
   );
 
+export const getInvitedCollaborators = async (
+  repoName: string,
+  owner: string,
+  token: string
+): Promise<Response> =>
+  await fetch(`https://api.github.com/repos/${owner}/${repoName}/invitations`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+
 export const addCollaborator = async (
   repoName: string,
   org: string,
@@ -229,6 +243,13 @@ export const getUserMemberReposInOrg = async (
 ): Promise<any[]> => {
   return await paginate(
     `https://api.github.com/orgs/${org}/repos?per_page=100`,
+    token
+  );
+};
+
+export const getUserRepos = async (token: string): Promise<any[]> => {
+  return await paginate(
+    `https://api.github.com/user/repos?per_page=100`,
     token
   );
 };

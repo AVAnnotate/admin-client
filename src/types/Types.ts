@@ -61,6 +61,7 @@ export type ProviderUser = {
   avatar_url?: string;
   admin: boolean;
   name?: string;
+  not_accepted?: boolean;
 };
 
 export type Publish = {

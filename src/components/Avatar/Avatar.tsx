@@ -10,6 +10,8 @@ interface AvatarProps {
   avatar?: string;
 
   showBorder?: boolean;
+
+  disabled?: boolean;
 }
 
 export const formatName = (user: UserProfile) => {
@@ -40,7 +42,7 @@ const getInitials = (name: string): string => {
 };
 
 export const Avatar = (props: AvatarProps) => {
-  const { name, color, avatar } = props;
+  const { name, color, avatar, disabled } = props;
 
   return (
     <RadixAvatar.Root className='avatar'>
@@ -50,7 +52,7 @@ export const Avatar = (props: AvatarProps) => {
       >
         {avatar && (
           <RadixAvatar.Image
-            className='avatar-image'
+            className={disabled ? 'avatar-image-disabled' : 'avatar-image'}
             title={`${name} avatar`}
             src={avatar}
           />
