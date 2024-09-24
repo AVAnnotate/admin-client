@@ -59,5 +59,7 @@
   "Offline": "Offline",
   "File": "File",
   "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.": "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.",
-  "File Available Offline": "File Available Offline"
+  "File Available Offline": "File Available Offline",
+  "Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.": "Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.",
+  "Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab.": "Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab."
 }

@@ -197,7 +197,13 @@ const FormContents = (props: NewProjectFormProps) => {
 
               <div ref={tagRef} />
               <h2>{t['Tags (optional)']}</h2>
-              <div className='av-label'>{t['lorem']}</div>
+              <div className='av-label'>
+                {
+                  t[
+                    'Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.'
+                  ]
+                }
+              </div>
               <SpreadsheetInput
                 accept='.tsv, .csv, .xlsx, .txt'
                 i18n={props.i18n}

@@ -176,7 +176,11 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         />
         <Separator.Root className='SeparatorRoot' decorative />
         <ToggleInput
-          helperText={t['lorem']}
+          helperText={
+            t[
+              'Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.'
+            ]
+          }
           label={t['Auto-generate web page for this event?']}
           name='autogenerate_web_pages'
         />
