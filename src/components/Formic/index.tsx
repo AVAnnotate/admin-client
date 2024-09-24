@@ -205,9 +205,9 @@ export const SelectInput = (props: SelectInputProps) => {
       >
         {/* empty option to allow the user to leave the input blank */}
         {!props.required && <option />}
-        {props.options.map((option) => {
+        {props.options.map((option, idx) => {
           return (
-            <option key={option.value} value={option.value}>
+            <option key={option.value || idx} value={option.value}>
               {option.label}
             </option>
           );

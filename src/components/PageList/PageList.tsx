@@ -72,7 +72,7 @@ export const PageList: React.FC<Props> = (props) => {
   };
 
   const handleDisableAutoGeneration = async (uuid: string) => {
-    let copy: ProjectData = JSON.parse(JSON.stringify(project));
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
 
     const page = copy.pages[uuid];
     page.autogenerate.enabled = false;
@@ -96,7 +96,7 @@ export const PageList: React.FC<Props> = (props) => {
   };
 
   const handleReEnableAutoGeneration = async (uuid: string) => {
-    let copy: ProjectData = JSON.parse(JSON.stringify(project));
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
 
     const page = copy.pages[uuid];
     if (['home', 'event'].includes(page.autogenerate.type)) {
