@@ -116,26 +116,7 @@ export const importIIIFManifest = async (
           anno.items?.forEach((i) => {
             const setTags: Tag[] = [];
             if (i.type === 'Annotation') {
-              const timesRef =
-                typeof i.target === 'string'
-                  ? i.target.split('#t=')
-                  : typeof i.target === 'object'
-                  ? []
-                  : i.target.source.id.split('#t=');
-              let times = timesRef[1] ? timesRef[1].split(',') : undefined;
-              if (!times) {
-                // Is there a selector?
-                const selTarget = i.target as IIIFAnnotationTarget;
-                if (selTarget.selector) {
-                  if (selTarget.selector.type === 'PointSelector') {
-                    times = [selTarget.selector.t, selTarget.selector.t];
-                  } else {
-                    times = selTarget.selector.t.split(',');
-                  }
-                }
-              }
-              const start = parseFloat(times && times[0] ? times[0] : '0');
-              const end = times && times[1] ? parseFloat(times[1]) : undefined;
+              const { start, end } = getTime(i.target);
               let nodes: Node[] = [];
               const tags: Tag[] = [...setTags];
               if (!Array.isArray(i.body)) {
@@ -196,4 +177,30 @@ const getLabel = (label: any) => {
   }
 
   return 'default';
+};
+
+const getTime = (target: IIIFAnnotationTarget | string) => {
+  const ret = { start: 0, end: 0 };
+  if (typeof target === 'string') {
+    const timesRef = target.split('#t=');
+    const times = timesRef[1] ? timesRef[1].split(',') : [];
+
+    if (times.length > 0) {
+      ret.start = parseFloat(times[0]);
+      ret.end = parseFloat(times[1]);
+    }
+  } else {
+    const selTarget = target as IIIFAnnotationTarget;
+    if (selTarget.selector) {
+      if (selTarget.selector.type === 'PointSelector') {
+        ret.start = ret.end = parseFloat(selTarget.selector.t);
+      } else {
+        const times = selTarget.selector.t.split(',');
+        ret.start = parseFloat(times[0]);
+        ret.end = parseFloat(times[1]);
+      }
+    }
+  }
+
+  return ret;
 };
