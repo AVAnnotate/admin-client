@@ -45,7 +45,9 @@ export const EventHeader: React.FC<Props> = (props) => {
           </Button>
         </div>
       </div>
-      <div>{serialize(props.event.description)}</div>
+      <div>
+        {props.event.description ? serialize(props.event.description) : ''}
+      </div>
       {Object.keys(props.event.audiovisual_files).length > 1 && (
         <div className='av-file-selection'>
           <span className='av-file-label'>{t['AV File']}</span>
