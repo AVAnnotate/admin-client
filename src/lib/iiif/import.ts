@@ -102,7 +102,7 @@ export const importIIIFManifest = async (
       if (a.type === 'AnnotationPage') {
         const annoFileId = uuidv4();
         const annotations: AnnotationEntry[] = [];
-        const label = a.label && a.label.en ? a.label.en[0] : 'default';
+        const label = getLabel(a.label);
         let anno: IIIFAnnotationPage | undefined = undefined;
         if (a.id.endsWith('.json')) {
           const annoResult = await fetch(a.id);
@@ -119,6 +119,8 @@ export const importIIIFManifest = async (
               const timesRef =
                 typeof i.target === 'string'
                   ? i.target.split('#t=')
+                  : typeof i.target === 'object'
+                  ? []
                   : i.target.source.id.split('#t=');
               let times = timesRef[1] ? timesRef[1].split(',') : undefined;
               if (!times) {
@@ -182,4 +184,16 @@ export const importIIIFManifest = async (
   }
 
   return result;
+};
+
+const getLabel = (label: any) => {
+  if (label) {
+    if (label.en) {
+      return label.en[0];
+    } else if (label.none) {
+      return label.none[0];
+    }
+  }
+
+  return 'default';
 };
