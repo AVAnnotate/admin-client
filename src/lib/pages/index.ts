@@ -24,6 +24,12 @@ export const getNewOrder = (
     return newOrder;
   }
 
+  // if it's a new page with no parent, add it straight to the bottom
+  if (!oldPage && !newPage.parent) {
+    newOrder.push(uuid);
+    return newOrder;
+  }
+
   // all parent pages, sorted by their order file index
   const parentPages = (
     Object.keys(allPages)
