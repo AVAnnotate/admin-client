@@ -51,7 +51,7 @@
   "All Annotations": "All Annotations",
   "Import Annotations": "Import Annotations",
   "Import Annotation File": "Import Annotation File",
-  "Tags (comma separated)": "Tags (comma separated)",
+  "Tags (vertical bar separated)": "Tags (vertical bar separated)",
   "Event Item Type": "Event Item Type",
   "Event Citation": "Event Citation",
   "Event Label": "Event Label",

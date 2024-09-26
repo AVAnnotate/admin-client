@@ -1,5 +1,5 @@
 import { serialize } from '@lib/slate/index.tsx';
-import type { AnnotationEntry, Event } from '@ty/Types.ts';
+import { AnnotationEntry, Event, Tags } from '@ty/Types.ts';
 import { formatTimestamp } from './index.ts';
 import ReactDOMServer from 'react-dom/server';
 import type { Node } from 'slate';
@@ -11,7 +11,7 @@ const serializeRichText = (nodes: Node[]) =>
   ReactDOMServer.renderToString(serialize(nodes));
 
 export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
-  let str = 'Start Time,End Time,Annotation,Tags (comma separated)\n';
+  let str = 'Start Time,End Time,Annotation,Tags (vertical bar separated)\n';
 
   annos.forEach((anno) => {
     const fields = [
