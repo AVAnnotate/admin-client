@@ -3,7 +3,7 @@ import { Plus } from '@phosphor-icons/react/Plus';
 import { Header } from './Header/Header.tsx';
 import './Projects.css';
 import { Button } from '@radix-ui/themes';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
 import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
 import { Sorters } from '@components/SortAction/index.ts';
@@ -20,6 +20,7 @@ export const Projects = (props: ProjectsProps) => {
   const [filter, setFilter] = useState(ProjectFilter.MINE);
   const [search, setSearch] = useState<string | undefined>();
   const [sort, setSort] = useState<'Name' | 'Oldest' | 'Newest'>('Name');
+  const [projects, setProjects] = useState<AllProjects | undefined>();
 
   const handleChangeFilter = (filter: ProjectFilter) => {
     setFilter(filter);
@@ -32,6 +33,25 @@ export const Projects = (props: ProjectsProps) => {
   const handleChangeSort = (sortFn: 'Name' | 'Oldest' | 'Newest') => {
     setSort(sortFn);
   };
+
+  useEffect(() => {
+    const projs: AllProjects = JSON.parse(JSON.stringify(props.projects));
+
+    if (sort === 'Name') {
+      projs.myProjects.sort(Sorters['Name']);
+      projs.sharedProjects.sort(Sorters['Name']);
+      console.log(projs.myProjects);
+      setProjects(projs);
+    } else if (sort === 'Oldest') {
+      projs.myProjects.sort(Sorters['Oldest']);
+      projs.sharedProjects.sort(Sorters['Oldest']);
+      setProjects(projs);
+    } else {
+      projs.myProjects.sort(Sorters['Newest']);
+      projs.sharedProjects.sort(Sorters['Newest']);
+      setProjects(projs);
+    }
+  }, [sort]);
 
   return (
     <div className='projects-container'>
@@ -52,25 +72,22 @@ export const Projects = (props: ProjectsProps) => {
         onChangeSearch={handleChangeSearch}
         onChangeSort={handleChangeSort}
       />
-      {props.projects && (
+      {projects && (
         <ProjectsGrid
           projects={
             filter === ProjectFilter.MINE
-              ? props.projects.myProjects
-                  .filter((p) =>
-                    search
-                      ? p.project.title.includes(search) ||
-                        p.project.description.includes(search)
-                      : true
-                  )
-                  .sort(Sorters[sort])
-              : props.projects.sharedProjects.filter((p) =>
+              ? projects.myProjects.filter((p) =>
                   search
                     ? p.project.title.includes(search) ||
                       p.project.description.includes(search)
                     : true
                 )
-            // .sort(sort)
+              : projects.sharedProjects.filter((p) =>
+                  search
+                    ? p.project.title.includes(search) ||
+                      p.project.description.includes(search)
+                    : true
+                )
           }
           i18n={props.i18n}
         />
