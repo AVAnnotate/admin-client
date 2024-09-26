@@ -1,5 +1,5 @@
 import { serialize } from '@lib/slate/index.tsx';
-import { AnnotationEntry, Event, Tags } from '@ty/Types.ts';
+import type { AnnotationEntry, Event } from '@ty/Types.ts';
 import { formatTimestamp } from './index.ts';
 import ReactDOMServer from 'react-dom/server';
 import type { Node } from 'slate';
