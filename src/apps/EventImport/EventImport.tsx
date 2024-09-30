@@ -16,6 +16,7 @@ import {
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { deserialize } from '@lib/slate/deserialize.ts';
+import { getFileDuration } from '@lib/events/index.ts';
 
 interface Props {
   i18n: Translations;
@@ -48,13 +49,27 @@ export const EventImport: React.FC<Props> = (props) => {
         data.autogenerate_web_pages
       );
 
-      events.forEach((ev) => {
+      for await (const ev of events) {
         if (ev.description) {
           const template = document.createElement('description');
           template.innerHTML = ev.description as unknown as string;
           ev.description = deserialize(template);
         }
-      });
+
+        for await (const afUuid of Object.keys(ev.audiovisual_files)) {
+          const file = ev.audiovisual_files[afUuid];
+
+          if (!file.duration) {
+            const duration = await getFileDuration(file.file_url);
+
+            if (!duration) {
+              throw new Error(`Unable to determine duration for ${file.label}`);
+            }
+
+            file.duration = duration;
+          }
+        }
+      }
 
       setSaving(true);
       const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
