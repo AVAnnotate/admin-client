@@ -22,7 +22,7 @@ export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
         ? formatTimestamp(anno.end_time, false)
         : '',
       anno.annotation ? serializeRichText(anno.annotation) : '',
-      anno.tags.map((t) => t.tag).join(',') || '',
+      anno.tags.map((t) => t.tag).join('|') || '',
     ];
 
     str += fields.map(formatField).join(',');
