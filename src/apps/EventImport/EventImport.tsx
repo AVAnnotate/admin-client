@@ -43,12 +43,13 @@ export const EventImport: React.FC<Props> = (props) => {
 
   const onSubmit = useCallback(
     async (data: typeof initialValues) => {
-      const body = JSON.stringify(data.body);
+      const body = JSON.stringify({ events: data.body });
 
       setIsSubmitting(true);
 
       setSaving(true);
-      const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
+
+      const _res = await fetch(`/api/projects/${props.projectSlug}/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -105,20 +106,26 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
   // array of indexes of events whose AV files we failed to fetch durations for
   const [failedDurations, setFailedDurations] = useState<number[]>([]);
 
+  // whether all the durations are auto-populated
+  const [goodDurations, setGoodDurations] = useState(false);
+
+  const [saving, setSaving] = useState(false);
+
   const { t } = props.i18n;
 
   const { setFieldValue, submitForm, values } = useFormikContext();
 
-  const onSubmit = async (data: any) => {
+  // returns whether the durations are all set to be saved or not
+  const transformData = async (data: any) => {
+    setSaving(true);
+
     const events = mapEventData(
       data.events.data,
       headerMap,
       data.autogenerate_web_pages
     );
 
-    let failed: number[] = [];
-
-    console.log(events.entries());
+    const failed: number[] = [];
 
     for await (const [idx, ev] of events.entries()) {
       if (ev.description) {
@@ -141,14 +148,27 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
       }
     }
 
-    setFieldValue('body', events);
+    await setFieldValue('body', events);
+
+    setSaving(false);
 
     if (failed.length > 0) {
       setFailedDurations(failed);
+      setGoodDurations(false);
     } else {
-      await submitForm();
+      setGoodDurations(true);
+      return true;
     }
   };
+
+  // submitForm will submit the previous state of the form if we call it within
+  // the same function that we updated the body value in, so we need to make sure
+  // another render happens before submitting :/
+  useEffect(() => {
+    if (goodDurations) {
+      submitForm();
+    }
+  }, [goodDurations]);
 
   const importAsOptions = useMemo(
     () => [
@@ -194,16 +214,15 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
     }
   }, [headerMap]);
 
-  console.log(failedDurations);
-
   return (
     <>
+      {saving && <LoadingOverlay />}
       <Form className='event-import-form'>
         {failedDurations.length > 0 && (
           <Dialog.Root open>
             <Dialog.Portal>
               <Dialog.Overlay className='dialog-overlay' />
-              <Dialog.Content className='dialog-content'>
+              <Dialog.Content className='dialog-content event-import-duration-dialog-content'>
                 <Dialog.Title className='dialog-title'>
                   {t['Duration']}
                 </Dialog.Title>
@@ -214,27 +233,45 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
                     ]
                   }
                 </Dialog.Description>
-                <fieldset>
-                  {failedDurations.map((idx) => {
-                    const event = (values as typeof initialValues).body[idx];
-                    const avFileUuid = Object.keys(event.audiovisual_files)[0];
+                {failedDurations.map((idx) => {
+                  const event = (values as typeof initialValues).body[idx];
+                  const avFileUuid = Object.keys(event.audiovisual_files)[0];
 
-                    return (
-                      <React.Fragment key={idx}>
-                        <label>{event.label}</label>
-                        <TimeInput
-                          initialValue={0}
-                          onChange={(val) =>
-                            setFieldValue(
-                              `body[${idx}].audiovisual_files.${avFileUuid}.duration`,
-                              val
-                            )
-                          }
-                        />
-                      </React.Fragment>
-                    );
-                  })}
-                </fieldset>
+                  return (
+                    <React.Fragment key={idx}>
+                      <label>{event.label}</label>
+                      <TimeInput
+                        initialValue={0}
+                        onChange={async (val) =>
+                          await setFieldValue(
+                            `body[${idx}].audiovisual_files.${avFileUuid}.duration`,
+                            val
+                          )
+                        }
+                      />
+                    </React.Fragment>
+                  );
+                })}
+                <div className='dialog-close-bar'>
+                  <Dialog.Close asChild>
+                    <Button
+                      className='unstyled'
+                      onClick={() => setFailedDurations([])}
+                      role='button'
+                    >
+                      {t['cancel']}
+                    </Button>
+                  </Dialog.Close>
+                  <Dialog.Close asChild>
+                    <Button
+                      className='primary'
+                      role='button'
+                      onClick={submitForm}
+                    >
+                      {t['save']}
+                    </Button>
+                  </Dialog.Close>
+                </div>
               </Dialog.Content>
             </Dialog.Portal>
           </Dialog.Root>
@@ -277,7 +314,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
             <Button
               className='save-button primary'
               disabled={props.isSubmitting || !requiredFieldsSet || !imported}
-              onClick={() => onSubmit(values)}
+              onClick={async () => await transformData(values)}
               type='button'
             >
               {t['save']}
