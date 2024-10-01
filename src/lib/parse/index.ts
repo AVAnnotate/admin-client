@@ -50,8 +50,8 @@ const getTag = (tag: string, tags: Tags) => {
   let category;
   let searchTag = tag.trim();
   if (catArray.length > 1) {
-    category = catArray[0];
-    searchTag = catArray[1];
+    category = catArray[0].trim();
+    searchTag = catArray[1].trim();
   }
 
   if (category) {
@@ -114,7 +114,7 @@ export const mapAnnotationData = async (
 
     const tMap: Tag[] = [];
     d[map['tags']]
-      ? (d[map['tags']] as string).split(',').forEach((tag) => {
+      ? (d[map['tags']] as string).split('|').forEach((tag) => {
           const found = getTag(tag, tags);
           if (found) {
             tMap.push(found);
@@ -124,11 +124,11 @@ export const mapAnnotationData = async (
             let name: string | undefined;
             const catArr = tag.split(':');
             if (catArr.length > 1) {
-              category = catArr[0];
-              name = catArr[1];
+              category = catArr[0].trim();
+              name = catArr[1].trim();
             } else {
               category = '_uncategorized_';
-              name = tag;
+              name = tag.trim();
             }
 
             // Do we have the category?

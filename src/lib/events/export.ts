@@ -11,7 +11,7 @@ const serializeRichText = (nodes: Node[]) =>
   ReactDOMServer.renderToString(serialize(nodes));
 
 export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
-  let str = 'Start Time,End Time,Annotation,Tags (comma separated)\n';
+  let str = 'Start Time,End Time,Annotation,Tags (vertical bar separated)\n';
 
   annos.forEach((anno) => {
     const fields = [
