@@ -5,9 +5,7 @@ import { getLangFromUrl } from '@i18n';
 const lang = getLangFromUrl(Astro.url);
 const user = await userInfo(Astro.cookies);
 
-if (user) {
-  return Astro.redirect(`/${lang}/projects`);
+if (!user) {
+  return Astro.redirect(`/${lang}/sign-in`);
 }
-
-return Astro.redirect(`/${lang}/sign-in`);
 ---

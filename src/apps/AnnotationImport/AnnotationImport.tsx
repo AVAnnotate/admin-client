@@ -159,7 +159,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
         value: 'annotation',
       },
       {
-        label: t['Tags (comma separated)'],
+        label: t['Tags (vertical bar separated)'],
         required: true,
         value: 'tags',
       },
