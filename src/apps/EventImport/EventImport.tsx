@@ -136,7 +136,6 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
       for await (const afUuid of Object.keys(ev.audiovisual_files)) {
         const file = ev.audiovisual_files[afUuid];
 
-        console.log('hello');
         const duration = await getFileDuration(file.file_url);
 
         if (duration) {
