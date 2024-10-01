@@ -84,6 +84,9 @@ export const getFileDuration = async (url: string): Promise<number | null> => {
       audio.onloadeddata = () => {
         resolve(Math.floor(audio.duration));
       };
+      audio.onerror = () => {
+        resolve(null);
+      };
       audio.src = url;
     });
   }

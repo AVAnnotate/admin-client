@@ -1,11 +1,11 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import { SpreadsheetInput } from '@components/Formic/SpreadsheetInput/SpreadsheetInput.tsx';
-import type { ProjectData, Translations } from '@ty/Types.ts';
-import { Form, Formik } from 'formik';
-import type React from 'react';
+import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
+import { Form, Formik, useFormikContext } from 'formik';
+import React from 'react';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import './EventImport.css';
-import { ToggleInput } from '@components/Formic/index.tsx';
+import { TimeInput, ToggleInput } from '@components/Formic/index.tsx';
 import { BottomBar } from '@components/BottomBar/index.ts';
 import { Button } from '@radix-ui/themes';
 import { mapEventData } from '@lib/parse/index.ts';
@@ -17,6 +17,7 @@ import {
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { deserialize } from '@lib/slate/deserialize.ts';
 import { getFileDuration } from '@lib/events/index.ts';
+import * as Dialog from '@radix-ui/react-dialog';
 
 interface Props {
   i18n: Translations;
@@ -27,9 +28,10 @@ interface Props {
 const initialValues = {
   autogenerate_web_pages: true,
   events: {
-    data: [],
-    headers: [],
+    data: [] as string[][],
+    headers: [] as string[],
   },
+  body: [] as FormEvent[],
 };
 
 export const EventImport: React.FC<Props> = (props) => {
@@ -40,36 +42,10 @@ export const EventImport: React.FC<Props> = (props) => {
   const { lang, t } = props.i18n;
 
   const onSubmit = useCallback(
-    async (data: any) => {
+    async (data: typeof initialValues) => {
+      const body = JSON.stringify(data.body);
+
       setIsSubmitting(true);
-
-      const events = mapEventData(
-        data.events.data,
-        headerMap,
-        data.autogenerate_web_pages
-      );
-
-      for await (const ev of events) {
-        if (ev.description) {
-          const template = document.createElement('description');
-          template.innerHTML = ev.description as unknown as string;
-          ev.description = deserialize(template);
-        }
-
-        for await (const afUuid of Object.keys(ev.audiovisual_files)) {
-          const file = ev.audiovisual_files[afUuid];
-
-          if (!file.duration) {
-            const duration = await getFileDuration(file.file_url);
-
-            if (!duration) {
-              throw new Error(`Unable to determine duration for ${file.label}`);
-            }
-
-            file.duration = duration;
-          }
-        }
-      }
 
       setSaving(true);
       const res = await fetch(`/api/projects/${props.projectSlug}/events`, {
@@ -77,7 +53,7 @@ export const EventImport: React.FC<Props> = (props) => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ events }),
+        body,
       });
 
       setIsSubmitting(false);
@@ -126,7 +102,53 @@ interface FormContentsProps extends Props {
 }
 
 export const FormContents: React.FC<FormContentsProps> = (props) => {
+  // array of indexes of events whose AV files we failed to fetch durations for
+  const [failedDurations, setFailedDurations] = useState<number[]>([]);
+
   const { t } = props.i18n;
+
+  const { setFieldValue, submitForm, values } = useFormikContext();
+
+  const onSubmit = async (data: any) => {
+    const events = mapEventData(
+      data.events.data,
+      headerMap,
+      data.autogenerate_web_pages
+    );
+
+    let failed: number[] = [];
+
+    console.log(events.entries());
+
+    for await (const [idx, ev] of events.entries()) {
+      if (ev.description) {
+        const template = document.createElement('description');
+        template.innerHTML = ev.description as unknown as string;
+        ev.description = deserialize(template);
+      }
+
+      for await (const afUuid of Object.keys(ev.audiovisual_files)) {
+        const file = ev.audiovisual_files[afUuid];
+
+        console.log('hello');
+        const duration = await getFileDuration(file.file_url);
+
+        if (duration) {
+          file.duration = duration;
+        } else {
+          failed.push(idx);
+        }
+      }
+    }
+
+    setFieldValue('body', events);
+
+    if (failed.length > 0) {
+      setFailedDurations(failed);
+    } else {
+      await submitForm();
+    }
+  };
 
   const importAsOptions = useMemo(
     () => [
@@ -171,9 +193,52 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
       props.onHeaderMapChange(headerMap);
     }
   }, [headerMap]);
+
+  console.log(failedDurations);
+
   return (
     <>
       <Form className='event-import-form'>
+        {failedDurations.length > 0 && (
+          <Dialog.Root open>
+            <Dialog.Portal>
+              <Dialog.Overlay className='dialog-overlay' />
+              <Dialog.Content className='dialog-content'>
+                <Dialog.Title className='dialog-title'>
+                  {t['Duration']}
+                </Dialog.Title>
+                <Dialog.Description className='dialog-description'>
+                  {
+                    t[
+                      'We were unable to fetch the duration of the following file(s). Please enter them below.'
+                    ]
+                  }
+                </Dialog.Description>
+                <fieldset>
+                  {failedDurations.map((idx) => {
+                    const event = (values as typeof initialValues).body[idx];
+                    const avFileUuid = Object.keys(event.audiovisual_files)[0];
+
+                    return (
+                      <React.Fragment key={idx}>
+                        <label>{event.label}</label>
+                        <TimeInput
+                          initialValue={0}
+                          onChange={(val) =>
+                            setFieldValue(
+                              `body[${idx}].audiovisual_files.${avFileUuid}.duration`,
+                              val
+                            )
+                          }
+                        />
+                      </React.Fragment>
+                    );
+                  })}
+                </fieldset>
+              </Dialog.Content>
+            </Dialog.Portal>
+          </Dialog.Root>
+        )}
         <h1>{t['Import events file']}</h1>
         <p>
           {
@@ -212,7 +277,8 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
             <Button
               className='save-button primary'
               disabled={props.isSubmitting || !requiredFieldsSet || !imported}
-              type='submit'
+              onClick={() => onSubmit(values)}
+              type='button'
             >
               {t['save']}
             </Button>
