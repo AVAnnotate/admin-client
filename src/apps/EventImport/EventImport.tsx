@@ -115,7 +115,6 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
 
   const { setFieldValue, submitForm, values } = useFormikContext();
 
-  // returns whether the durations are all set to be saved or not
   const transformData = async (data: any) => {
     setSaving(true);
 
