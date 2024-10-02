@@ -18,6 +18,7 @@ import {
   SpreadsheetInputContext,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { MediaPlayerField } from './Fields.tsx';
+import { string } from 'slate';
 
 export interface NewProjectFormProps {
   project?: Project;
@@ -93,8 +94,8 @@ const FormContents = (props: NewProjectFormProps) => {
       <div className='project-form-container'>
         <Formik
           initialValues={props.project || emptyProject}
-          validate={(_values) => {
-            const errors = {};
+          validate={(values) => {
+            const errors: any = {};
             // if (!values.email) {
             //   errors.email = 'Required';
             // } else if (
@@ -102,6 +103,12 @@ const FormContents = (props: NewProjectFormProps) => {
             // ) {
             //   errors.email = 'Invalid email address';
             // }
+            if (!/^[a-zA-Z0-9-]+$/i.test(values.slug)) {
+              errors.slug =
+                t[
+                  'Project Slug should only contain alphanumeric characters and hyphens.'
+                ];
+            }
             return errors;
           }}
           onSubmit={(values, { setSubmitting }) => {
@@ -109,7 +116,7 @@ const FormContents = (props: NewProjectFormProps) => {
             setSubmitting(false);
           }}
         >
-          {() => (
+          {({ isValid }) => (
             <Form>
               <h2>{t['General']}</h2>
               <div ref={generalRef} />
@@ -214,7 +221,7 @@ const FormContents = (props: NewProjectFormProps) => {
 
               <BottomBar>
                 <div className='project-form-actions-container'>
-                  <Button className='primary' type='submit'>
+                  <Button className='primary' type='submit' disabled={!isValid}>
                     {t['Create Project']}
                   </Button>
                   <a href={`/${props.i18n.lang}/projects`}>
