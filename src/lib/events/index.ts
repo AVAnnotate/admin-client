@@ -73,3 +73,23 @@ export const fromTimestamp = (str: string): number => {
 export const matchTag = (tag1: Tag, tag2: Tag) =>
   tag1.category.toLowerCase() === tag2.category.toLowerCase() &&
   tag1.tag === tag2.tag;
+
+const fetchableFileTypes = ['mp3', 'mp4', 'ogg', 'm4a'];
+
+export const getFileDuration = async (url: string): Promise<number | null> => {
+  if (fetchableFileTypes.includes(url.slice(-3))) {
+    // note: the Audio constructor can handle videos for this purpose too
+    return new Promise((resolve) => {
+      const audio = new Audio();
+      audio.onloadeddata = () => {
+        resolve(Math.floor(audio.duration));
+      };
+      audio.onerror = () => {
+        resolve(null);
+      };
+      audio.src = url;
+    });
+  }
+
+  return null;
+};

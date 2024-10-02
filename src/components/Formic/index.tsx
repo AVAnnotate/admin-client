@@ -117,11 +117,12 @@ export const RichTextInput = (props: RichTextInputProps) => {
 };
 
 interface TimeInputProps {
+  className?: string;
+  disabled?: boolean;
   initialValue: number;
   label?: string;
   onChange: (input: number) => any;
   required?: boolean;
-  className?: string;
 }
 
 export const TimeInput = (props: TimeInputProps) => {
@@ -164,6 +165,7 @@ export const TimeInput = (props: TimeInputProps) => {
       )}
       <input
         className='formic-form-text formic-time-input'
+        disabled={props.disabled}
         onChange={onChange}
         value={display}
       />
@@ -203,9 +205,9 @@ export const SelectInput = (props: SelectInputProps) => {
       >
         {/* empty option to allow the user to leave the input blank */}
         {!props.required && <option />}
-        {props.options.map((option) => {
+        {props.options.map((option, idx) => {
           return (
-            <option key={option.value} value={option.value}>
+            <option key={option.value || idx} value={option.value}>
               {option.label}
             </option>
           );
@@ -374,9 +376,19 @@ export const UserList = (props: UserListProps) => {
         {value.map((user: ProviderUser) => (
           <div className='formic-user-list-row' key={user.login_name}>
             <div className='formnic-user-list-user-box'>
-              <Avatar name={user.name} avatar={user.avatar_url} />
+              <Avatar
+                name={user.name}
+                avatar={user.avatar_url}
+                disabled={user.not_accepted}
+              />
               <div className='formic-user-list-names'>
-                <div className='av-label-bold'>{user.name}</div>
+                <div className='av-label-bold'>
+                  {user.not_accepted
+                    ? `${user.name || user.login_name} (${
+                        props.i18n.t['Invited']
+                      })`
+                    : user.name}
+                </div>
                 <div className='av-label'>{user.login_name}</div>
               </div>
             </div>

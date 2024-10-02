@@ -44,6 +44,7 @@ export const ProjectCard = (props: ProjectCardProps) => {
                         color={'--gray-300'}
                         avatar={u.avatar_url}
                         showBorder={true}
+                        disabled={u.not_accepted}
                       />
                     </div>
                   </Tooltip.Trigger>

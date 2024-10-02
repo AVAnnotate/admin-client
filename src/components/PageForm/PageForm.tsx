@@ -8,7 +8,7 @@ import { Form, Formik, useFormikContext } from 'formik';
 import './PageForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { Button } from '@radix-ui/themes';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { InsertButton } from '@components/InsertEventButton/index.ts';
 import { emptyParagraph } from '@lib/slate/index.tsx';
 
@@ -32,7 +32,7 @@ interface Props {
 
 const FormContents: React.FC<Props> = (props) => {
   const { t } = props.i18n;
-  const { isSubmitting, values } = useFormikContext();
+  const { isSubmitting, setFieldValue, values } = useFormikContext();
 
   const hasTitle = useMemo(() => !!(values as FormPage).title, [values]);
 
@@ -54,6 +54,16 @@ const FormContents: React.FC<Props> = (props) => {
       ],
       [props.uuid, props.project.pages]
     );
+
+  // Radix UI seems to use the label as the value when an undefined value
+  // is provided. We have to get around this by watching the "No Parent"
+  // value and returning the form state to undefined when it's found.
+  useEffect(() => {
+    const parentValue = (values as FormPage).parent;
+    if (parentValue && parentValue === 'No Parent') {
+      setFieldValue('parent', undefined);
+    }
+  }, [(values as FormPage).parent]);
 
   return (
     <Form className='page-form'>

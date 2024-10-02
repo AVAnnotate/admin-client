@@ -31,5 +31,7 @@
   "Create Project": "Create Project",
   "Tag Name": "Tag Name",
   "Tag Category": "Tag Category",
-  "Import file contains column headers?": "Import file contains column headers?"
+  "Import file contains column headers?": "Import file contains column headers?",
+  "Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.": "Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.",
+  "Project Slug should only contain alphanumeric characters and hyphens.": "Project Slug should only contain alphanumeric characters and hyphens."
 }

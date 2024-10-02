@@ -14,8 +14,15 @@ interface SortActionProps {
 }
 
 export const Sorters = {
-  Name: (a: ProjectData, b: ProjectData) =>
-    a.project.title > b.project.title ? 1 : -1,
+  Name: (a: ProjectData, b: ProjectData) => {
+    if (a.project.title > b.project.title) {
+      return 1;
+    } else if (a.project.title < b.project.title) {
+      return -1;
+    }
+
+    return 0;
+  },
 
   Newest: (a: ProjectData, b: ProjectData) =>
     a.project.created_at < b.project.created_at ? 1 : -1,

@@ -53,7 +53,7 @@ export const POST: APIRoute = async ({
       body.gitHubOrg,
       token?.value as string,
       projectName as string,
-      body.description,
+      body.title,
       body.visibility
     );
 

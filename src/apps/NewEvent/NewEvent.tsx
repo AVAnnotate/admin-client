@@ -71,7 +71,11 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
           styles={{ display: tab === 0 ? 'initial' : 'none' }}
         >
           <ToggleInput
-            helperText={t['lorem']}
+            helperText={
+              t[
+                'Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.'
+              ]
+            }
             label={t['Auto-generate web page for this event?']}
             name='auto_generate_web_page'
           />
