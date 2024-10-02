@@ -2,6 +2,7 @@ import {
   EmbeddedEvent,
   EmbeddedEventComparison,
 } from '@components/EmbeddedEvent/index.ts';
+import { getTranslationsFromUrl } from '@i18n';
 import { Node, Text, type Descendant } from 'slate';
 
 export const Element = ({
@@ -167,6 +168,8 @@ export const Leaf = ({ attributes, children, leaf }: any) => {
 };
 
 export const serialize = (nodes: Node[]) => {
+  const i18n = getTranslationsFromUrl(window.location.href, 'pages');
+
   return nodes.map((node, idx) => {
     if (Text.isText(node)) {
       return (
@@ -180,7 +183,9 @@ export const serialize = (nodes: Node[]) => {
       const children = node.children.map((node) => serialize([node]));
       return (
         <Leaf leaf={node} key={idx}>
-          <Element element={node}>{children}</Element>
+          <Element element={node} i18n={i18n}>
+            {children}
+          </Element>
         </Leaf>
       );
     } else {
