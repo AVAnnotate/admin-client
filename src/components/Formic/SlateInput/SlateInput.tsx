@@ -163,7 +163,7 @@ const MarkButton = (props: SlateButtonProps) => {
   );
 };
 
-const insertTableofContents = (editor: BaseEditor & ReactEditor) => {
+const insertTableOfContents = (editor: BaseEditor & ReactEditor) => {
   const nodes = [
     {
       type: 'table-of-contents',
@@ -237,8 +237,6 @@ export const SlateInput: React.FC<Props> = (props) => {
 
   const { t } = props.i18n;
 
-  console.log(editor);
-
   return (
     <div className='slate-form'>
       <Slate
@@ -269,7 +267,7 @@ export const SlateInput: React.FC<Props> = (props) => {
               <BlockButton
                 format='table-of-contents'
                 icon={BookmarkIcon}
-                onInsert={insertTableofContents}
+                onInsert={insertTableOfContents}
               />
               <div className='toolbar-separator' />
               <BlockButton format='left' icon={JustifyLeft} />
