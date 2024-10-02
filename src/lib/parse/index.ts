@@ -100,7 +100,7 @@ export const mapAnnotationData = async (
     const template = document.createElement('template');
     template.innerHTML = d[map['annotation']];
 
-    let annotation = deserialize(template.content.firstChild!);
+    let annotation = deserialize(template.content);
 
     // handle plan text imports, which need to be in a paragraph node
     if (!Array.isArray(annotation)) {

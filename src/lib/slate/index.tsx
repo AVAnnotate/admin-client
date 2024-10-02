@@ -100,11 +100,17 @@ export const Element = ({
           {children}
         </div>
       );
-    default:
+    case 'paragraph':
       return (
         <p style={style} {...attributes}>
           {children}
         </p>
+      );
+    default:
+      return (
+        <div style={style} {...attributes}>
+          {children}
+        </div>
       );
   }
 };
