@@ -12,6 +12,9 @@ export const Element = ({
   i18n,
 }: any) => {
   const style = { textAlign: element.align };
+
+  const { t } = i18n;
+
   switch (element.type) {
     case 'block-quote':
       return (
@@ -53,6 +56,18 @@ export const Element = ({
       return (
         <div {...attributes} style={style} contentEditable={false}>
           <img src={element.url} className={`slate-img-${element.size}`} />
+          {children}
+        </div>
+      );
+    case 'table-of-contents':
+      return (
+        <div
+          {...attributes}
+          className='table-of-contents'
+          style={style}
+          contentEditable={false}
+        >
+          <p contentEditable={false}>{t['Table of Contents']}</p>
           {children}
         </div>
       );
