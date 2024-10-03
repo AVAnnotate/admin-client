@@ -197,7 +197,7 @@ export const serialize = (nodes: Node[]) => {
     } else {
       return (
         <Leaf leaf={node} key={idx}>
-          <Element element={node} />
+          <Element element={node} i18n={i18n} />
         </Leaf>
       );
     }
