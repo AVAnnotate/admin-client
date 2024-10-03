@@ -2,6 +2,7 @@ import {
   EmbeddedEvent,
   EmbeddedEventComparison,
 } from '@components/EmbeddedEvent/index.ts';
+import { getTranslationsFromUrl } from '@i18n';
 import { Node, Text, type Descendant } from 'slate';
 
 export const Element = ({
@@ -12,6 +13,9 @@ export const Element = ({
   i18n,
 }: any) => {
   const style = { textAlign: element.align };
+
+  const { t } = i18n;
+
   switch (element.type) {
     case 'block-quote':
       return (
@@ -53,6 +57,18 @@ export const Element = ({
       return (
         <div {...attributes} style={style} contentEditable={false}>
           <img src={element.url} className={`slate-img-${element.size}`} />
+          {children}
+        </div>
+      );
+    case 'table-of-contents':
+      return (
+        <div
+          {...attributes}
+          className='table-of-contents'
+          style={style}
+          contentEditable={false}
+        >
+          <p contentEditable={false}>{t['Table of Contents']}</p>
           {children}
         </div>
       );
@@ -158,6 +174,8 @@ export const Leaf = ({ attributes, children, leaf }: any) => {
 };
 
 export const serialize = (nodes: Node[]) => {
+  const i18n = getTranslationsFromUrl(window.location.href, 'pages');
+
   return nodes.map((node, idx) => {
     if (Text.isText(node)) {
       return (
@@ -171,7 +189,9 @@ export const serialize = (nodes: Node[]) => {
       const children = node.children.map((node) => serialize([node]));
       return (
         <Leaf leaf={node} key={idx}>
-          <Element element={node}>{children}</Element>
+          <Element element={node} i18n={i18n}>
+            {children}
+          </Element>
         </Leaf>
       );
     } else {

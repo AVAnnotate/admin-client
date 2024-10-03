@@ -9,6 +9,7 @@ import {
 } from 'slate';
 import { Button } from '@radix-ui/themes';
 import {
+  BookmarkIcon,
   CodeIcon,
   FontBoldIcon,
   FontItalicIcon,
@@ -122,6 +123,7 @@ const isMarkActive = (editor: ReactEditor, format: string) => {
 
 const BlockButton = (props: SlateButtonProps) => {
   const editor = useSlate();
+
   return (
     <Button
       className={`block-button unstyled ${
@@ -129,7 +131,11 @@ const BlockButton = (props: SlateButtonProps) => {
       }`}
       onMouseDown={(event) => {
         event.preventDefault();
-        toggleBlock(editor, props.format);
+        if (props.onInsert) {
+          props.onInsert(editor);
+        } else {
+          toggleBlock(editor, props.format);
+        }
       }}
       type='button'
     >
@@ -157,6 +163,22 @@ const MarkButton = (props: SlateButtonProps) => {
   );
 };
 
+const insertTableOfContents = (editor: BaseEditor & ReactEditor) => {
+  const nodes = [
+    {
+      type: 'table-of-contents',
+      children: [{ text: '' }],
+    },
+    {
+      type: 'paragraph',
+      children: [{ text: '' }],
+    },
+  ];
+
+  // @ts-ignore
+  Transforms.insertNodes(editor, nodes);
+};
+
 const insertImage = (editor: BaseEditor & ReactEditor, image: ImageData) => {
   const nodes = [
     {
@@ -178,8 +200,9 @@ const withAVAPlugin = (editor: BaseEditor & ReactEditor) => {
   const { isVoid } = editor;
 
   editor.isVoid = (el) => {
-    // @ts-ignore
-    if (el.type === 'image' || el.type === 'horizontal-separator') {
+    if (
+      ['image', 'horizontal-separator', 'table-of-contents'].includes(el.type)
+    ) {
       return true;
     }
 
@@ -241,6 +264,11 @@ export const SlateInput: React.FC<Props> = (props) => {
             <>
               <BlockButton format='numbered-list' icon={ListOl} />
               <BlockButton format='bulleted-list' icon={ListUl} />
+              <BlockButton
+                format='table-of-contents'
+                icon={BookmarkIcon}
+                onInsert={insertTableOfContents}
+              />
               <div className='toolbar-separator' />
               <BlockButton format='left' icon={JustifyLeft} />
               <BlockButton format='center' icon={TextCenter} />
