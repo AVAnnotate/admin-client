@@ -11,5 +11,28 @@
 
 .bottom-bar-container .bottom-bar {
   display: flex;
-  padding: 20px 0;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  padding-left: 100px;
+  padding-right: 100px;
+}
+
+.bottom-bar-container .bottom-bar-error {
+  margin-left: 32px;
+  padding-top: 12px;
+  display: flex;
+  flex-direction: row;
+  color: red;
+  align-items: center;
+  gap: 5px;
+  width: 40%;
+}
+
+.bottom-bar-container .bottom-bar-error .av-label {
+  color: red;
+}
+
+.bottom-bar-error-spacer {
+  height: 45px;
+  width: 40%;
 }
