@@ -37,19 +37,21 @@ export const Projects = (props: ProjectsProps) => {
   useEffect(() => {
     const projs: AllProjects = JSON.parse(JSON.stringify(props.projects));
 
-    if (sort === 'Name') {
-      projs.myProjects.sort(Sorters['Name']);
-      projs.sharedProjects.sort(Sorters['Name']);
-      console.log(projs.myProjects);
-      setProjects(projs);
-    } else if (sort === 'Oldest') {
-      projs.myProjects.sort(Sorters['Oldest']);
-      projs.sharedProjects.sort(Sorters['Oldest']);
-      setProjects(projs);
-    } else {
-      projs.myProjects.sort(Sorters['Newest']);
-      projs.sharedProjects.sort(Sorters['Newest']);
-      setProjects(projs);
+    if (props.projects) {
+      if (sort === 'Name') {
+        projs.myProjects.sort(Sorters['Name']);
+        projs.sharedProjects.sort(Sorters['Name']);
+        console.log(projs.myProjects);
+        setProjects(projs);
+      } else if (sort === 'Oldest') {
+        projs.myProjects.sort(Sorters['Oldest']);
+        projs.sharedProjects.sort(Sorters['Oldest']);
+        setProjects(projs);
+      } else {
+        projs.myProjects.sort(Sorters['Newest']);
+        projs.sharedProjects.sort(Sorters['Newest']);
+        setProjects(projs);
+      }
     }
   }, [sort]);
 

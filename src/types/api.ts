@@ -12,7 +12,9 @@ import type {
 } from '@ty/Types.ts';
 import type { Node } from 'slate';
 
-export type apiAnnotationPost = Omit<AnnotationEntry, 'uuid'> | Omit<AnnotationEntry, 'uuid'>[]
+export type apiAnnotationPost =
+  | Omit<AnnotationEntry, 'uuid'>
+  | Omit<AnnotationEntry, 'uuid'>[];
 
 export type apiAnnotationPut = Omit<AnnotationEntry, 'uuid'>;
 
@@ -108,3 +110,5 @@ export type apiImportManifest = {
   auto_generate_web_page: boolean;
   event_labels?: string[];
 };
+
+export type apiValidateSlug = { org: string; slug: string };

@@ -18,7 +18,7 @@
 }
 
 .project-form-actions-container {
-  width: 100%;
+  width: 60%;
   display: flex;
   flex-direction: row-reverse;
   align-items: center;

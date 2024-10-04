@@ -18,7 +18,7 @@ import {
   SpreadsheetInputContext,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { MediaPlayerField } from './Fields.tsx';
-import { string } from 'slate';
+import { avaError } from 'src/nanos/error.ts';
 
 export interface NewProjectFormProps {
   project?: Project;
@@ -95,14 +95,8 @@ const FormContents = (props: NewProjectFormProps) => {
         <Formik
           initialValues={props.project || emptyProject}
           validate={(values) => {
+            avaError.set('');
             const errors: any = {};
-            // if (!values.email) {
-            //   errors.email = 'Required';
-            // } else if (
-            //   !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
-            // ) {
-            //   errors.email = 'Invalid email address';
-            // }
             if (!/^[a-zA-Z0-9-]+$/i.test(values.slug)) {
               errors.slug =
                 t[
