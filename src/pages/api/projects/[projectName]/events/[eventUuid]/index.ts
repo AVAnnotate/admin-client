@@ -3,7 +3,11 @@ import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { setTemplate } from '@lib/annotations/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import { updateProjectLastUpdated } from '@lib/pages/index.ts';
+import {
+  updateProjectLastUpdated,
+  ensureUniqueSlug,
+  trimStringToMaxLength,
+} from '@lib/pages/index.ts';
 import type { Page, UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
@@ -48,12 +52,13 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readDir, readFile, writeFile, commitAndPush } = await gitRepo({
-    fs: initFs(),
-    repositoryURL,
-    branch: 'main',
-    userInfo: info as UserInfo,
-  });
+  const { readDir, readFile, writeFile, commitAndPush, context } =
+    await gitRepo({
+      fs: initFs(),
+      repositoryURL,
+      branch: 'main',
+      userInfo: info as UserInfo,
+    });
 
   const filepath = `/data/events/${eventUuid}.json`;
 
@@ -101,6 +106,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
           parsedContent.autogenerate.type_id === eventUuid
         ) {
           parsedContent.title = event.label;
+          if (originalEvent.label !== event.label) {
+            // rename the slug
+            const maxTitle = trimStringToMaxLength(event.label, 20);
+            parsedContent.slug = ensureUniqueSlug(maxTitle, context);
+          }
           writeFile(
             `/data/pages/${filename}`,
             JSON.stringify(parsedContent, null, 2)
