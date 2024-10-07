@@ -46,5 +46,10 @@
   "show": "show",
   "more": "more",
   "show less": "show less",
-  "Create group": "Create group"
+  "Create group": "Create group",
+  "Delete All Tags": "Delete All Tags",
+  "All tags and tag groups deleted": "All tags and tag groups deleted",
+  "Failed to delete tags": "Failed to delete tags",
+  "Confirm Delete All": "Confirm Delete All",
+  "_delete_all_message_": "This will delete all tag groups and tags. This cannot be undone, and is not possible after any annotation in the project has a tag applied."
 }
