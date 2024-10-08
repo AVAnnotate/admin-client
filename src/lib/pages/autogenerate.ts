@@ -1,5 +1,9 @@
 import type { GitRepoContext } from '@backend/gitRepo.ts';
-import { findAutoGenHome } from './index.ts';
+import {
+  findAutoGenHome,
+  trimStringToMaxLength,
+  ensureUniqueSlug,
+} from './index.ts';
 import type { FormEvent, Page, UserInfo } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,11 +15,14 @@ export const autoGenerateEventPage = async (
 ) => {
   const homePageId = await findAutoGenHome(context);
 
+  const slug = ensureUniqueSlug(ev.label, context);
+
   const eventPage: Page = {
     content: [],
     created_at: new Date().toISOString(),
     created_by: info!.profile.gitHubName || '',
     title: ev.label,
+    slug: slug,
     updated_at: new Date().toISOString(),
     updated_by: info!.profile.gitHubName || '',
     parent: homePageId,

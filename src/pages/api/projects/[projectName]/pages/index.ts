@@ -2,7 +2,12 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getPageData, getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import { getNewOrder, updateProjectLastUpdated } from '@lib/pages/index.ts';
+import {
+  ensureUniqueSlug,
+  getNewOrder,
+  trimStringToMaxLength,
+  updateProjectLastUpdated,
+} from '@lib/pages/index.ts';
 import type { apiPagePost } from '@ty/api.ts';
 import type { APIRoute } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -65,20 +70,17 @@ export const POST: APIRoute = async ({
 
   const uuid = uuidv4();
 
-  writeFile(
-    `/data/pages/${uuid}.json`,
-    JSON.stringify(
-      {
-        ...page,
-        created_at,
-        created_by,
-        updated_at,
-        updated_by,
-      },
-      null,
-      2
-    )
-  );
+  const pageSlug = ensureUniqueSlug(body.page?.title as string, context);
+
+  const newPage = {
+    ...page,
+    slug: pageSlug,
+    created_at,
+    created_by,
+    updated_at,
+    updated_by,
+  };
+  writeFile(`/data/pages/${uuid}.json`, JSON.stringify(newPage, null, 2));
 
   const { pages } = getPageData(
     fs,
@@ -104,5 +106,5 @@ export const POST: APIRoute = async ({
     });
   }
 
-  return new Response(JSON.stringify(body), { status: 200 });
+  return new Response(JSON.stringify({ page: newPage }), { status: 200 });
 };

@@ -2,7 +2,12 @@ import { gitRepo } from '@backend/gitRepo.ts';
 import { getPageData, getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import { getNewOrder, updateProjectLastUpdated } from '@lib/pages/index.ts';
+import {
+  getNewOrder,
+  updateProjectLastUpdated,
+  ensureUniqueSlug,
+  trimStringToMaxLength,
+} from '@lib/pages/index.ts';
 import type { apiPagePut } from '@ty/api.ts';
 import type { Page } from '@ty/Types.ts';
 import type { APIRoute, AstroCookies } from 'astro';
@@ -60,6 +65,12 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   const oldPage = JSON.parse(
     readFile(`/data/pages/${pageUuid}.json`) as string
   ) as Page;
+
+  if (oldPage.title !== page.title) {
+    const pageSlug = ensureUniqueSlug(body.page?.title, context);
+
+    page.slug = pageSlug;
+  }
 
   writeFile(`/data/pages/${pageUuid}.json`, JSON.stringify(page, null, 2));
 

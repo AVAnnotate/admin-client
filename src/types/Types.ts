@@ -122,6 +122,7 @@ export type Page = {
   created_at: string;
   created_by: string;
   title: string;
+  slug?: string;
   parent?: string;
   updated_at: string;
   updated_by: string;
