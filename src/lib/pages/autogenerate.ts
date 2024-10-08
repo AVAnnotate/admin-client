@@ -6,7 +6,6 @@ import {
 } from './index.ts';
 import type { FormEvent, Page, UserInfo } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
-import slugify from 'slugify';
 
 export const autoGenerateEventPage = async (
   context: GitRepoContext,
@@ -16,8 +15,7 @@ export const autoGenerateEventPage = async (
 ) => {
   const homePageId = await findAutoGenHome(context);
 
-  const maxTitle = trimStringToMaxLength(ev.label, 20);
-  const slug = ensureUniqueSlug(maxTitle, context);
+  const slug = ensureUniqueSlug(ev.label, context);
 
   const eventPage: Page = {
     content: [],

@@ -67,8 +67,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   ) as Page;
 
   if (oldPage.title !== page.title) {
-    const maxTitle = trimStringToMaxLength(body.page?.title as string, 20);
-    const pageSlug = ensureUniqueSlug(maxTitle, context);
+    const pageSlug = ensureUniqueSlug(body.page?.title, context);
 
     page.slug = pageSlug;
   }

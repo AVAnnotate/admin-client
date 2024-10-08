@@ -108,8 +108,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
           parsedContent.title = event.label;
           if (originalEvent.label !== event.label) {
             // rename the slug
-            const maxTitle = trimStringToMaxLength(event.label, 20);
-            parsedContent.slug = ensureUniqueSlug(maxTitle, context);
+            parsedContent.slug = ensureUniqueSlug(event.label, context);
           }
           writeFile(
             `/data/pages/${filename}`,

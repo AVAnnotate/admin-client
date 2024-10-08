@@ -70,8 +70,7 @@ export const POST: APIRoute = async ({
 
   const uuid = uuidv4();
 
-  const maxTitle = trimStringToMaxLength(body.page?.title as string, 20);
-  const pageSlug = ensureUniqueSlug(maxTitle, context);
+  const pageSlug = ensureUniqueSlug(body.page?.title as string, context);
 
   const newPage = {
     ...page,
