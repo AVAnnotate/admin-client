@@ -9,7 +9,7 @@ import {
   ensureUniqueSlug,
   trimStringToMaxLength,
 } from '@lib/pages/index.ts';
-import type { Page, UserInfo } from '@ty/Types.ts';
+import type { Event, Page, UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -53,17 +53,24 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readDir, readFile, writeFile, commitAndPush, context } =
-    await gitRepo({
-      fs: initFs(),
-      repositoryURL,
-      branch: 'main',
-      userInfo: info as UserInfo,
-    });
+  const {
+    readDir,
+    readFile,
+    writeFile,
+    commitAndPush,
+    deleteFile,
+    exists,
+    context,
+  } = await gitRepo({
+    fs: initFs(),
+    repositoryURL,
+    branch: 'main',
+    userInfo: info as UserInfo,
+  });
 
   const filepath = `/data/events/${eventUuid}.json`;
 
-  const originalEvent = JSON.parse(readFile(filepath) as string);
+  const originalEvent: Event = JSON.parse(readFile(filepath) as string);
 
   // if any new AV files were added, we need to create a default annotation set
   const newAvFiles = Object.keys(event.audiovisual_files).filter(
@@ -121,7 +128,19 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   // If a set is specified, go ahead and generate
   for (let key of Object.keys(event.audiovisual_files)) {
+    const oldAVFile = originalEvent.audiovisual_files[key];
     const avFile = event.audiovisual_files[key];
+    if (
+      (oldAVFile.caption_set &&
+        avFile.caption_set &&
+        oldAVFile.caption_set !== avFile.caption_set) ||
+      (oldAVFile.caption_set && !avFile.caption_set)
+    ) {
+      // Delete the old VTT file
+      if (exists(`/data/vtt/${oldAVFile.caption_set}.vtt`)) {
+        deleteFile(`/data/vtt/${oldAVFile.caption_set}.vtt`);
+      }
+    }
     if (avFile.caption_set && avFile.caption_set.length > 0) {
       generateVTTFile(avFile.caption_set, context);
     }
@@ -224,6 +243,16 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
       '/data/pages/order.json',
       JSON.stringify(newOrder, null, 2)
     );
+  }
+
+  const eventFile = readFile(filepath);
+  const event = JSON.parse(eventFile as string);
+  // Delete any associated caption sets
+  for (let key of Object.keys(event.audiovisual_files)) {
+    const avFile = event.audiovisual_files[key];
+    if (avFile.caption_set && avFile.caption_set.length > 0) {
+      deleteFile(`/data/vtt/${avFile.caption_set}.vtt`);
+    }
   }
 
   // Delete the event
