@@ -4,8 +4,9 @@ import { formatTimestamp } from './index.ts';
 import ReactDOMServer from 'react-dom/server';
 import type { Node } from 'slate';
 
-// add a \ to escape any quotes, and surround the value in quotes
-const formatField = (str: string) => `"${str.replaceAll('"', '\\"')}"`;
+// add another quote to escape any quotes, and surround the value in quotes
+// (see https://stackoverflow.com/a/17808731)
+const formatField = (str: string) => `"${str.replaceAll('"', '""')}"`;
 
 const serializeRichText = (nodes: Node[]) =>
   ReactDOMServer.renderToString(serialize(nodes));

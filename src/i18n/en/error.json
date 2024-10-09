@@ -1,4 +1,11 @@
 {
   "Nothing to see here.": "Nothing to see here.",
-  "Something went wrong.": "Something went wrong."
+  "Something went wrong.": "Something went wrong.",
+  "_repo_exists_": "The repository name already exists in the GitHub Organization.",
+  "_repo_create_failed_": "The repository was not successfully created",
+  "_failed_pages_enable_": "Failed to enable GitHub Pages for this repository",
+  "_failed_adding_topic_": "Failed to add the AVAnnotate-Project topis to repository",
+  "_failed_adding_collaborators_": "Failed to add the additional collaborators to the project.",
+  "_failed_file_write_": "Failed to write a file to the project.",
+  "_failed_to_commit_": "Failed to commit the files to the project."
 }

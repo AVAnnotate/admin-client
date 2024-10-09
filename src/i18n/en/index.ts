@@ -26,7 +26,7 @@ export default {
     ...all,
   },
   pages: { ...buttons, ...pages, ...all },
-  'new-project': { ...newProject, ...buttons, ...all },
+  'new-project': { ...newProject, ...buttons, ...error, ...all },
   events: { ...events, ...projects, ...pages, ...buttons, ...all },
   tags: { ...all, ...tags, ...buttons },
 };

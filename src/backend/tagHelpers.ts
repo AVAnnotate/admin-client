@@ -473,6 +473,36 @@ export const deleteTag = async (
   return undefined;
 };
 
+// This function assumes that there are no tags being used in annotations
+export const deleteAll = async (htmlUrl: string, userInfo: UserInfo) => {
+  const fs = initFs();
+
+  const { readFile, writeFile, commitAndPush } = await gitRepo({
+    fs: fs,
+    repositoryURL: htmlUrl,
+    branch: 'main',
+    userInfo: userInfo,
+  });
+
+  const proj = readFile('/data/project.json');
+
+  const project: ProjectData = JSON.parse(proj as string);
+
+  project.project.tags = { tagGroups: [], tags: [] };
+
+  await writeFile('/data/project.json', JSON.stringify(project));
+
+  const commitResult = await commitAndPush(
+    'Removed all tags and tag categories'
+  );
+
+  if (commitResult.ok) {
+    return project;
+  }
+
+  return undefined;
+};
+
 const deleteAllTags = async (
   tag: Tag,
   repoContext: GitRepoContext

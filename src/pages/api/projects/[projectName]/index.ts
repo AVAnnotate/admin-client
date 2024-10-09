@@ -3,6 +3,7 @@ import {
   createRepositoryFromTemplate,
   enablePages,
   replaceRepoTopics,
+  getRepo,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -47,6 +48,25 @@ export const POST: APIRoute = async ({
 
     const body: apiProjectsProjectNamePost = await request.json();
 
+    // First see if we can create this repo
+    const check: Response = await getRepo(
+      token?.value as string,
+      body.gitHubOrg,
+      projectName as string
+    );
+
+    if (check.ok) {
+      // If we got a repo, then one already exists. Fail.
+      console.error('Repo already exists!');
+      return new Response(
+        JSON.stringify({
+          avaError: '_repo_exists_',
+        }),
+        {
+          status: 400,
+        }
+      );
+    }
     // Create the new repo from template
     const resp: Response = await createRepositoryFromTemplate(
       body.templateRepo,
@@ -60,7 +80,12 @@ export const POST: APIRoute = async ({
     if (!resp.ok) {
       console.error('Failed to create project repo: ', resp.statusText);
       console.error('Body: ', body);
-      return new Response(null, { status: 500, statusText: resp.statusText });
+      return new Response(
+        JSON.stringify({
+          avaError: '_repo_create_failed_',
+        }),
+        { status: 500, statusText: resp.statusText }
+      );
     }
 
     const repo: FullRepository = await resp.json();
@@ -75,10 +100,15 @@ export const POST: APIRoute = async ({
     if (!respPages.ok) {
       console.error('Status: ', respPages.status);
       console.error('Failed to enable GitHub pages: ', respPages.statusText);
-      return new Response(null, {
-        status: 500,
-        statusText: respPages.statusText,
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_pages_enable_',
+        }),
+        {
+          status: 500,
+          statusText: respPages.statusText,
+        }
+      );
     }
 
     console.info('GitHub Pages enabled!');
@@ -94,10 +124,15 @@ export const POST: APIRoute = async ({
     if (!respTopics.ok) {
       console.error('Status: ', respTopics.status);
       console.error('Failed to add topic: ', respTopics.statusText);
-      return new Response(null, {
-        status: 500,
-        statusText: respTopics.statusText,
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_adding_topic_',
+        }),
+        {
+          status: 500,
+          statusText: respTopics.statusText,
+        }
+      );
     }
 
     // Add Collaborators
@@ -111,10 +146,15 @@ export const POST: APIRoute = async ({
         token
       );
     } catch (e) {
-      return new Response(null, {
-        status: 500,
-        statusText: e as string,
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_adding_collaborators_',
+        }),
+        {
+          status: 500,
+          statusText: e as string,
+        }
+      );
     }
 
     // Delay before continuing as generating a repo from a template is not instantaneous
@@ -164,10 +204,15 @@ export const POST: APIRoute = async ({
 
     if (!success) {
       console.error('Failed to write project data');
-      return new Response(null, {
-        status: 500,
-        statusText: 'Failed to write project data',
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_file_write_',
+        }),
+        {
+          status: 500,
+          statusText: 'Failed to write project data',
+        }
+      );
     }
 
     // If autogenerate home page is on go ahead and create it
@@ -192,10 +237,15 @@ export const POST: APIRoute = async ({
 
     if (!successPage) {
       console.error('Failed to write project home page');
-      return new Response(null, {
-        status: 500,
-        statusText: 'Failed to write project home page',
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_file_write_',
+        }),
+        {
+          status: 500,
+          statusText: 'Failed to write project home page',
+        }
+      );
     }
 
     const pageOrder = [pageId];
@@ -206,10 +256,15 @@ export const POST: APIRoute = async ({
 
     if (!successOrder) {
       console.error('Failed to write project page order');
-      return new Response(null, {
-        status: 500,
-        statusText: 'Failed to write project page order',
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_file_write_',
+        }),
+        {
+          status: 500,
+          statusText: 'Failed to write project page order',
+        }
+      );
     }
 
     const successCommit = await commitAndPush(
@@ -218,10 +273,15 @@ export const POST: APIRoute = async ({
 
     if (successCommit.error) {
       console.error('Failed to write project data: ', successCommit.error);
-      return new Response(null, {
-        status: 500,
-        statusText: 'Failed to write project data: ' + successCommit.error,
-      });
+      return new Response(
+        JSON.stringify({
+          avaError: '_failed_to_commit_',
+        }),
+        {
+          status: 500,
+          statusText: 'Failed to write project data: ' + successCommit.error,
+        }
+      );
     }
 
     // Finally create the homepage link

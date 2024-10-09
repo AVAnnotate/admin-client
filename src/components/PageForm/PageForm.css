@@ -50,3 +50,13 @@
 .page-form .slate-column:last-child {
   border-left: none;
 }
+
+.page-form .table-of-contents {
+  height: 120px;
+  width: 360px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+}

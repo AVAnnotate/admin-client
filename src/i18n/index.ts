@@ -19,11 +19,11 @@ export const getLangFromUrl = (url: URL) => {
   return defaultLang;
 };
 
-export const getTranslations = (
-  request: Request,
+export const getTranslationsFromUrl = (
+  url: string,
   dictionary: keyof typeof defaultLabels
 ): Translations => {
-  const lang = getLangFromUrl(new URL(request.url));
+  const lang = getLangFromUrl(new URL(url));
 
   return {
     lang,
@@ -33,3 +33,8 @@ export const getTranslations = (
     },
   };
 };
+
+export const getTranslations = (
+  request: Request,
+  dictionary: keyof typeof defaultLabels
+): Translations => getTranslationsFromUrl(request.url, dictionary);

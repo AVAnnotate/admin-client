@@ -5,7 +5,6 @@ import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
 
 import '@themes/default/index.css';
-import { providers } from 'src/lib/providers';
 import { NewProject } from '@apps/NewProject';
 import { getOrgs } from '@backend/projectHelpers';
 
@@ -18,12 +17,6 @@ const info = await userInfo(Astro.cookies);
 if (!info) {
   console.log('Redirecting: ', lang);
   return Astro.redirect(`/${lang}/sign-in`);
-}
-
-const provider = providers();
-
-if (!provider) {
-  return Astro.redirect('/500');
 }
 
 const orgs = await getOrgs(info);

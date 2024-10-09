@@ -14,10 +14,11 @@ import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { TagGroupCard } from './TagGroupCard.tsx';
 import { AddTagGroupDialog } from './AddTagGroupDialog/AddTagGroupDialog.tsx';
 import { ToastProvider, Toast } from '@components/Toast/Toast.tsx';
+import { ConfirmationDialog } from '@components/ConfirmedAction/ConfirmedAction.tsx';
 
 import './Tags.css';
 import type { ToastContent } from '@components/Toast/ToastContent.ts';
-import { PlusIcon, DownloadIcon } from '@radix-ui/react-icons';
+import { PlusIcon, DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import { exportTags } from '@lib/tags/index.ts';
 
@@ -36,6 +37,8 @@ export const Tags = (props: TagsProps) => {
   const [groupName, setGroupName] = useState<string | undefined>();
   const [groupColor, setGroupColor] = useState<string | undefined>();
   const [toast, setToast] = useState<ToastContent | undefined>();
+  const [totalTagsUsed, setTotalTagsUsed] = useState<number | undefined>();
+  const [deleteAllOpen, setDeleteAllOpen] = useState(false);
 
   useEffect(() => {
     if (props.project) {
@@ -46,6 +49,7 @@ export const Tags = (props: TagsProps) => {
   const counts: AnnotationCounts = useMemo(() => {
     const ret: AnnotationCounts = {};
     if (project) {
+      let cnt = 0;
       for (const key in project.annotations) {
         const annos = project.annotations[key];
         annos.annotations.forEach((annotation) => {
@@ -58,9 +62,12 @@ export const Tags = (props: TagsProps) => {
             }
 
             ret[tag.category][tag.tag]++;
+            cnt++;
           });
         });
       }
+
+      setTotalTagsUsed(cnt);
     }
 
     return ret;
@@ -302,6 +309,38 @@ export const Tags = (props: TagsProps) => {
     setSaving(false);
   };
 
+  const handleRequestDeleteTags = () => {
+    setDeleteAllOpen(true);
+  };
+
+  const handleDeleteAllTags = async () => {
+    setSaving(true);
+    setDeleteAllOpen(false);
+    const data = await fetch(`/api/projects/${props.projectSlug}/all-tags`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    if (data.ok) {
+      setToast({
+        title: t['Success!'],
+        description: t['All tags and tag categories deleted'],
+        type: 'success',
+      });
+      const p = await data.json();
+      setProject(p.project);
+    } else {
+      setToast({
+        title: t['Problem!'],
+        description: t['Failed to delete tags'],
+        type: 'error',
+      });
+    }
+
+    setSaving(false);
+  };
+
   const handleDownloadTags = () => {
     exportTags(props.project.project.tags, props.project.project.slug);
   };
@@ -326,6 +365,17 @@ export const Tags = (props: TagsProps) => {
         <div className='tags-header-row'>
           <h1>{t['Tags']}</h1>
           <div className='tags-header buttons'>
+            {project &&
+              project.project.tags.tags.length > 0 &&
+              totalTagsUsed === 0 && (
+                <Button
+                  className='primary'
+                  onClick={() => handleRequestDeleteTags()}
+                >
+                  <TrashIcon />
+                  {t['Delete All Tags']}
+                </Button>
+              )}
             <Button className='primary' onClick={() => handleAddTagGroup()}>
               <PlusIcon />
               {t['Tag Group']}
@@ -384,6 +434,18 @@ export const Tags = (props: TagsProps) => {
           onSave={handleSaveTagGroup}
           onUpdate={handleUpdateTagGroup}
           onClose={() => setAddOpen(false)}
+        />
+      )}
+      {deleteAllOpen && (
+        <ConfirmationDialog
+          i18n={props.i18n}
+          open={deleteAllOpen}
+          title={t['Confirm Delete All']}
+          description={t['_delete_all_message_']}
+          cancelLabel={t['cancel']}
+          confirmLabel={t['Delete All Tags']}
+          onClose={() => setDeleteAllOpen(false)}
+          onConfirm={handleDeleteAllTags}
         />
       )}
       <Toast

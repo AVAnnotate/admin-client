@@ -264,7 +264,18 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
                     <Button
                       className='primary'
                       role='button'
-                      onClick={submitForm}
+                      onClick={() => {
+                        setFailedDurations([]);
+                        submitForm();
+                      }}
+                      disabled={
+                        !!(values as typeof initialValues).body.find(
+                          (ev) =>
+                            !ev.audiovisual_files[
+                              Object.keys(ev.audiovisual_files)[0]
+                            ].duration
+                        )
+                      }
                     >
                       {t['save']}
                     </Button>

@@ -1,5 +1,8 @@
 import type { Page, ProjectFile } from '@ty/Types.ts';
 import type { GitRepoContext } from '@backend/gitRepo.ts';
+import slugify from 'slugify';
+
+const MAX_SLUG_LENGTH = 20;
 
 export const getNewOrder = (
   allPages: { [key: string]: Page },
@@ -120,4 +123,51 @@ export const updateProjectLastUpdated = async (
   }
 
   return false;
+};
+
+export const trimStringToMaxLength = (str: string, maxLength: number) => {
+  if (str.length <= maxLength) {
+    return str;
+  } else {
+    return str.slice(0, maxLength);
+  }
+};
+
+export const ensureUniqueSlug = (slugIn: string, context: GitRepoContext) => {
+  const slug = trimStringToMaxLength(slugIn, MAX_SLUG_LENGTH);
+
+  // @ts-ignore
+  let ret = slugify(slug, { lower: true, strict: true });
+
+  const { readDir, readFile } = context;
+
+  const pages = readDir('/data/pages');
+  let num = 2;
+  let repeat = true;
+  while (repeat) {
+    const start = num;
+    pages
+      .filter(
+        (filename) => filename !== '.gitkeep' && filename !== 'order.json'
+      )
+      .forEach((filename) => {
+        const page: Page = JSON.parse(
+          readFile(`/data/pages/${filename}`) as string
+        );
+
+        if (page.slug === ret) {
+          if (slug.length >= MAX_SLUG_LENGTH - 1) {
+            ret = ret.slice(0, -1) + `-${num++}`;
+          } else {
+            ret = ret + `-${num++}`;
+          }
+        }
+      });
+
+    if (num === start) {
+      repeat = false;
+    }
+  }
+
+  return ret;
 };

@@ -318,3 +318,18 @@ export const getUser = async (
     },
   });
 };
+
+export const getRepo = async (
+  token: string,
+  org: string,
+  slug: string
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/repos/${org}/${slug}`, {
+    method: 'GET',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+  });
+};

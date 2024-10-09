@@ -5,6 +5,7 @@ import { NewProjectForm } from '../../components/ProjectForm/index.ts';
 import type { apiProjectsProjectNamePost } from '@ty/api.ts';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { mapTagData } from '@lib/parse/index.ts';
+import { avaError } from '../../nanos/error.ts';
 
 import './NewProject.css';
 
@@ -29,6 +30,7 @@ export const NewProject = (props: NewProjectProps) => {
     map: { [key: string]: number }
   ) => {
     setSaving(true);
+    avaError.set('');
 
     const body: apiProjectsProjectNamePost = {
       templateRepo: import.meta.env.PUBLIC_GIT_REPO_PROJECT_TEMPLATE,
@@ -55,9 +57,13 @@ export const NewProject = (props: NewProjectProps) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(body),
-    }).then(() => {
+    }).then((resp: Response) => {
       setSaving(false);
-      window.location.pathname = `/${lang}/projects/${project.github_org}+${project.slug}`;
+      if (resp.ok) {
+        window.location.pathname = `/${lang}/projects/${project.github_org}+${project.slug}`;
+      } else {
+        resp.json().then((body) => avaError.set(t[body.avaError]));
+      }
     });
   };
 
