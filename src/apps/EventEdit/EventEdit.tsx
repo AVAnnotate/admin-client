@@ -1,10 +1,16 @@
 import { EventForm } from '@components/EventForm/index.ts';
-import type { Event, FormEvent, ProjectData, Translations } from '@ty/Types.ts';
+import type {
+  Annotation,
+  Event,
+  FormEvent,
+  ProjectData,
+  Translations,
+} from '@ty/Types.ts';
 import type React from 'react';
 
 import './EventEdit.css';
 import { Breadcrumbs } from '@components/Breadcrumbs/Breadcrumbs.tsx';
-import { useCallback } from 'react';
+import { useCallback, useMemo } from 'react';
 
 interface Props {
   event: Event;
@@ -22,6 +28,22 @@ export const EventEdit: React.FC<Props> = ({
   projectSlug,
 }) => {
   const { t, lang } = i18n;
+
+  const annotationSets = useMemo(() => {
+    const ret: { value: string; label: string }[] = [];
+    if (project && project.annotations) {
+      for (let key of Object.keys(project.annotations)) {
+        const anno = project.annotations[key];
+        for (let key2 of Object.keys(event.audiovisual_files)) {
+          if (anno.source_id === key2) {
+            ret.push({ value: key, label: anno.set });
+          }
+        }
+      }
+    }
+
+    return ret;
+  }, [project]);
 
   const onSubmit = useCallback(async (newEvent: Event | FormEvent) => {
     await fetch(`/api/projects/${projectSlug}/events/${uuid}`, {
@@ -49,7 +71,12 @@ export const EventEdit: React.FC<Props> = ({
       />
       <div className='container'>
         <h1>{t['Edit Event']}</h1>
-        <EventForm event={event} i18n={i18n} onSubmit={onSubmit} />
+        <EventForm
+          event={event}
+          i18n={i18n}
+          onSubmit={onSubmit}
+          annotationSetList={annotationSets}
+        />
       </div>
     </div>
   );

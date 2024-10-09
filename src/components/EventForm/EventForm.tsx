@@ -3,7 +3,12 @@ import {
   TextInput,
   TimeInput,
 } from '@components/Formic/index.tsx';
-import type { Event, FormEvent, Translations } from '@ty/Types.ts';
+import type {
+  AnnotationPage,
+  Event,
+  FormEvent,
+  Translations,
+} from '@ty/Types.ts';
 import { FieldArray, Form, Formik, useFormikContext } from 'formik';
 import * as Separator from '@radix-ui/react-separator';
 import type React from 'react';
@@ -22,6 +27,7 @@ interface Props {
   i18n: Translations;
   onSubmit: (data: Event | FormEvent) => any | Promise<any>;
   styles?: { [key: string]: any };
+  annotationSetList: { value: string; label: string }[];
 }
 
 const initialAvFile = {
@@ -29,6 +35,7 @@ const initialAvFile = {
   is_offline: 'false',
   file_url: '',
   duration: 0,
+  caption_set: '',
 };
 
 export const EventForm: React.FC<Props> = (props) => {
@@ -57,7 +64,8 @@ export const EventForm: React.FC<Props> = (props) => {
   );
 };
 
-const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
+const FormContents: React.FC<Props> = (props) => {
+  const { children, i18n, styles, annotationSetList } = props;
   // map URLs to durations (in seconds)
   const [durationVals, setDurationVals] = useState<{ [key: string]: number }>(
     {}
@@ -134,91 +142,108 @@ const FormContents: React.FC<Props> = ({ children, i18n, styles }) => {
                 (key, idx) => {
                   return (
                     <div key={key} className='av-files-fields'>
-                      <TextInput
-                        className='av-label-input'
-                        label={idx === 0 ? t['Label'] : undefined}
-                        name={`audiovisual_files.${key}.label`}
-                        required={idx === 0}
-                      />
-                      <div className='av-url-group'>
-                        <SelectInput
-                          className='av-select-type'
-                          width='100px'
-                          backgroundColor='var(--gray-200)'
-                          label={idx === 0 ? t['File'] : undefined}
-                          name={`audiovisual_files.${key}.is_offline`}
-                          required={idx === 0}
-                          options={[
-                            { value: 'false', label: t['URL'] },
-                            { value: 'true', label: t['Offline'] },
-                          ]}
-                        />
+                      <div className='av-files-fields-line'>
                         <TextInput
-                          className='av-file-url-input'
-                          name={`audiovisual_files.${key}.file_url`}
+                          className='av-label-input'
+                          label={idx === 0 ? t['Label'] : undefined}
+                          name={`audiovisual_files.${key}.label`}
+                          required={idx === 0}
+                        />
+                        <div className='av-url-group'>
+                          <SelectInput
+                            className='av-select-type'
+                            width='100px'
+                            backgroundColor='var(--gray-200)'
+                            label={idx === 0 ? t['File'] : undefined}
+                            name={`audiovisual_files.${key}.is_offline`}
+                            required={idx === 0}
+                            options={[
+                              { value: 'false', label: t['URL'] },
+                              { value: 'true', label: t['Offline'] },
+                            ]}
+                          />
+                          <TextInput
+                            className='av-file-url-input'
+                            name={`audiovisual_files.${key}.file_url`}
+                            disabled={
+                              (values as FormEvent).audiovisual_files[key]
+                                .is_offline === 'true'
+                                ? true
+                                : false
+                            }
+                            placeholder={
+                              (values as FormEvent).audiovisual_files[key]
+                                .is_offline === 'true'
+                                ? t['File Available Offline']
+                                : undefined
+                            }
+                          />
+                        </div>
+                        <TimeInput
+                          className='av-duration-input'
+                          // disable input if we were able to automatically set the duration
                           disabled={
-                            (values as FormEvent).audiovisual_files[key]
-                              .is_offline === 'true'
-                              ? true
-                              : false
+                            !!durationVals[
+                              (values as FormEvent).audiovisual_files[key]
+                                .file_url
+                            ]
                           }
-                          placeholder={
+                          label={idx === 0 ? t['Duration'] : undefined}
+                          // force this to re-render when the auto-duration thing picks up a value
+                          key={
+                            durationVals[
+                              (values as FormEvent).audiovisual_files[key]
+                                .file_url
+                            ]
+                          }
+                          onChange={(input: number) =>
+                            setFieldValue(
+                              `audiovisual_files.${key}.duration`,
+                              input
+                            )
+                          }
+                          required
+                          initialValue={
+                            durationVals[
+                              (values as FormEvent).audiovisual_files[key]
+                                .file_url
+                            ] ||
                             (values as FormEvent).audiovisual_files[key]
-                              .is_offline === 'true'
-                              ? t['File Available Offline']
-                              : undefined
+                              .duration
                           }
                         />
+                        {idx !== 0 ? (
+                          <Button
+                            className='av-trash-button'
+                            onClick={() => {
+                              setFieldValue(
+                                `audiovisual_files.${key}`,
+                                undefined
+                              );
+                            }}
+                            type='button'
+                            variant='ghost'
+                          >
+                            <TrashIcon />
+                          </Button>
+                        ) : (
+                          // show an empty div so the spacing stays consistent
+                          <div className='av-trash-button'></div>
+                        )}
                       </div>
-                      <TimeInput
-                        className='av-duration-input'
-                        // disable input if we were able to automatically set the duration
-                        disabled={
-                          !!durationVals[
-                            (values as FormEvent).audiovisual_files[key]
-                              .file_url
-                          ]
-                        }
-                        label={idx === 0 ? t['Duration'] : undefined}
-                        // force this to re-render when the auto-duration thing picks up a value
-                        key={
-                          durationVals[
-                            (values as FormEvent).audiovisual_files[key]
-                              .file_url
-                          ]
-                        }
-                        onChange={(input: number) =>
-                          setFieldValue(
-                            `audiovisual_files.${key}.duration`,
-                            input
-                          )
-                        }
-                        required
-                        initialValue={
-                          durationVals[
-                            (values as FormEvent).audiovisual_files[key]
-                              .file_url
-                          ] ||
-                          (values as FormEvent).audiovisual_files[key].duration
-                        }
-                      />
-                      {idx !== 0 ? (
-                        <Button
-                          className='av-trash-button'
-                          onClick={() => {
-                            setFieldValue(
-                              `audiovisual_files.${key}`,
-                              undefined
-                            );
-                          }}
-                          type='button'
-                          variant='ghost'
-                        >
-                          <TrashIcon />
-                        </Button>
-                      ) : (
-                        // show an empty div so the spacing stays consistent
-                        <div className='av-trash-button'></div>
+                      {props.event?.item_type === 'Video' && (
+                        <div className='av-files-fields-line-2'>
+                          <div className='av-label-bold'>
+                            {t['Caption Set']}
+                          </div>
+                          <SelectInput
+                            className='av-select-type'
+                            label={undefined}
+                            name={`audiovisual_files.${key}.caption_set`}
+                            options={props.annotationSetList}
+                          />
+                          <div className='av-label-input' />
+                        </div>
                       )}
                     </div>
                   );

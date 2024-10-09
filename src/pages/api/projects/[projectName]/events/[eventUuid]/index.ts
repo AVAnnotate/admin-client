@@ -1,3 +1,4 @@
+import { generateVTTFile } from '@backend/captionHelper.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
@@ -116,6 +117,14 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
           );
         }
       });
+  }
+
+  // If a set is specified, go ahead and generate
+  for (let key of Object.keys(event.audiovisual_files)) {
+    const avFile = event.audiovisual_files[key];
+    if (avFile.caption_set && avFile.caption_set.length > 0) {
+      generateVTTFile(avFile.caption_set, context);
+    }
   }
 
   const successCommit = await commitAndPush(`Updated event ${eventUuid}`);

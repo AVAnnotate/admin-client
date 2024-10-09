@@ -62,5 +62,7 @@
   "File Available Offline": "File Available Offline",
   "Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.": "Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.",
   "Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab.": "Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab.",
-  "We were unable to fetch the duration of the following file(s). Please enter them below.": "We were unable to fetch the duration of the following file(s). Please enter them below."
+  "We were unable to fetch the duration of the following file(s). Please enter them below.": "We were unable to fetch the duration of the following file(s). Please enter them below.",
+  "None": "None",
+  "Caption Set": "Caption Set"
 }

@@ -75,6 +75,7 @@ export type AudiovisualFile = {
   is_offline: boolean;
   file_url: string;
   duration: number;
+  caption_set?: string;
 };
 
 // is_offline is stored as a string on the form
