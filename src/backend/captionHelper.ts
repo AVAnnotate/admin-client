@@ -1,17 +1,22 @@
-import type { Annotation } from '@ty/Types.ts';
+import type { Annotation, CaptionSet } from '@ty/Types.ts';
 import type { GitRepoContext } from './gitRepo.ts';
 import { annotationsToVtt } from '@lib/VTT/index.ts';
 
 export const generateVTTFile = (
-  annotationUUID: string,
+  captionSet: CaptionSet,
   context: GitRepoContext
 ) => {
   // Read the annotation file
-  const anno = context.readFile(`/data/annotations/${annotationUUID}.json`);
+  const anno = context.readFile(
+    `/data/annotations/${captionSet.annotation_page_id}.json`
+  );
 
   if (anno) {
     const page: Annotation = JSON.parse(anno as string);
-    const vttFile = annotationsToVtt(page.annotations, 'speaker');
+    const vttFile = annotationsToVtt(
+      page.annotations,
+      captionSet.speaker_category || ''
+    );
 
     // ensure we have a vtt directory
     if (!context.exists('/data/vtt')) {
@@ -19,6 +24,9 @@ export const generateVTTFile = (
     }
 
     // Write the file
-    context.writeFile(`/data/vtt/${annotationUUID}.vtt`, vttFile);
+    context.writeFile(
+      `/data/vtt/${captionSet.annotation_page_id}.vtt`,
+      vttFile
+    );
   }
 };

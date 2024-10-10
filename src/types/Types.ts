@@ -1,3 +1,4 @@
+import type { C } from 'node_modules/nanostores/computed/index.js';
 import type { Node } from 'slate';
 
 export interface Translations {
@@ -70,12 +71,17 @@ export type Publish = {
   publish_iso_date: string;
 };
 
+export type CaptionSet = {
+  annotation_page_id: string;
+  speaker_category: string | undefined;
+};
+
 export type AudiovisualFile = {
   label: string;
   is_offline: boolean;
   file_url: string;
   duration: number;
-  caption_set?: string;
+  caption_set?: CaptionSet[];
 };
 
 // is_offline is stored as a string on the form

@@ -64,5 +64,9 @@
   "Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab.": "Selecting this will create webpages for your events. You can edit or delete these pages at any point in the Pages tab.",
   "We were unable to fetch the duration of the following file(s). Please enter them below.": "We were unable to fetch the duration of the following file(s). Please enter them below.",
   "None": "None",
-  "Caption Set": "Caption Set"
+  "Caption Set": "Caption Set",
+  "Name": "Name",
+  "Number of Annotations": "Number of Annotations",
+  "Captions": "Captions",
+  "Use for Captions": "Use for Captions"
 }

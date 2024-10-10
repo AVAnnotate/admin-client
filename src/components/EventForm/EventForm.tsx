@@ -5,8 +5,10 @@ import {
 } from '@components/Formic/index.tsx';
 import type {
   AnnotationPage,
+  AudiovisualFile,
   Event,
   FormEvent,
+  ProjectData,
   Translations,
 } from '@ty/Types.ts';
 import { FieldArray, Form, Formik, useFormikContext } from 'formik';
@@ -20,6 +22,7 @@ import { RichTextInput } from '@components/Formic/index.tsx';
 import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState } from 'react';
+import { SetsTable } from './SetsTable.tsx';
 
 interface Props {
   children?: React.ReactNode;
@@ -27,7 +30,9 @@ interface Props {
   i18n: Translations;
   onSubmit: (data: Event | FormEvent) => any | Promise<any>;
   styles?: { [key: string]: any };
-  annotationSetList: { value: string; label: string }[];
+  project: ProjectData;
+  projectSlug: string;
+  uuid: string;
 }
 
 const initialAvFile = {
@@ -65,11 +70,13 @@ export const EventForm: React.FC<Props> = (props) => {
 };
 
 const FormContents: React.FC<Props> = (props) => {
-  const { children, i18n, styles, annotationSetList } = props;
+  const { children, i18n, styles } = props;
   // map URLs to durations (in seconds)
   const [durationVals, setDurationVals] = useState<{ [key: string]: number }>(
     {}
   );
+
+  const [project, setProject] = useState(props.project);
 
   const { t } = i18n;
 
@@ -111,6 +118,17 @@ const FormContents: React.FC<Props> = (props) => {
 
     updateDurations();
   }, [(values as FormEvent).audiovisual_files]);
+
+  const handleUpdateAVFile = (avUUID: string, avFile: AudiovisualFile) => {
+    setFieldValue(
+      `audiovisual_files.${avUUID}.caption_set`,
+      avFile.caption_set
+    );
+
+    let p: ProjectData = JSON.parse(JSON.stringify(props.project));
+    p.events[props.uuid].audiovisual_files[avUUID] = avFile;
+    setProject(p);
+  };
 
   return (
     <Form className='event-form' style={styles}>
@@ -231,20 +249,6 @@ const FormContents: React.FC<Props> = (props) => {
                           <div className='av-trash-button'></div>
                         )}
                       </div>
-                      {props.event?.item_type === 'Video' && (
-                        <div className='av-files-fields-line-2'>
-                          <div className='av-label-bold'>
-                            {t['Caption Set']}
-                          </div>
-                          <SelectInput
-                            className='av-select-type'
-                            label={undefined}
-                            name={`audiovisual_files.${key}.caption_set`}
-                            options={props.annotationSetList}
-                          />
-                          <div className='av-label-input' />
-                        </div>
-                      )}
                     </div>
                   );
                 }
@@ -259,6 +263,17 @@ const FormContents: React.FC<Props> = (props) => {
                 <PlusIcon color='white' />
                 {t['Add']}
               </Button>
+              <Separator.Root className='SeparatorRoot' decorative />
+              <div className='sets-table'>
+                <h2>{t['Annotation Sets']}</h2>
+                <SetsTable
+                  project={project}
+                  i18n={i18n}
+                  projectSlug={props.projectSlug}
+                  eventId={props.uuid}
+                  onUpdateAVFile={handleUpdateAVFile}
+                />
+              </div>
             </div>
           )}
         />

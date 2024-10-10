@@ -142,7 +142,9 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       }
     }
     if (avFile.caption_set && avFile.caption_set.length > 0) {
-      generateVTTFile(avFile.caption_set, context);
+      for (let i = 0; i < avFile.caption_set.length; i++) {
+        generateVTTFile(avFile.caption_set[i], context);
+      }
     }
   }
 

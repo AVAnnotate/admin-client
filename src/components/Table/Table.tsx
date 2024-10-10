@@ -191,6 +191,7 @@ export const Table: React.FC<Props> = ({
                   {row.title}
                 </RadixTable.ColumnHeaderCell>
               ))}
+              {rowButtons && <RadixTable.ColumnHeaderCell key='buttons' />}
             </RadixTable.Row>
           )}
         </RadixTable.Header>

@@ -85,3 +85,7 @@
   gap: 4px;
   margin-top: -10px;
 }
+
+.event-form .sets-table {
+  width: 100%;
+}

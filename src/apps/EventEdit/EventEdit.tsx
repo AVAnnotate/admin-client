@@ -75,7 +75,9 @@ export const EventEdit: React.FC<Props> = ({
           event={event}
           i18n={i18n}
           onSubmit={onSubmit}
-          annotationSetList={annotationSets}
+          project={project}
+          projectSlug={projectSlug}
+          uuid={uuid}
         />
       </div>
     </div>

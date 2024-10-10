@@ -69,7 +69,9 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
           i18n={i18n}
           onSubmit={onSubmit}
           styles={{ display: tab === 0 ? 'initial' : 'none' }}
-          annotationSetList={[]}
+          project={project}
+          projectSlug={projectSlug}
+          uuid={''}
         >
           <ToggleInput
             helperText={
