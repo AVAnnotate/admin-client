@@ -76,14 +76,16 @@ export const SetFormModal: React.FC<Props> = (props) => {
                   <Switch.Thumb className='switch-thumb' />
                 </Switch.Root>
               </label>
-              <label>
-                {t['Category']}
-                <AvFilePicker
-                  options={props.speakerCategoryOptions || []}
-                  value={props.speakerCategory || ''}
-                  onChange={setSpeakerCategory}
-                />
-              </label>
+              {useForCaptions && (
+                <label>
+                  {t['Tag Category for Speaker (optional)']}
+                  <AvFilePicker
+                    options={props.speakerCategoryOptions || []}
+                    value={props.speakerCategory || ''}
+                    onChange={setSpeakerCategory}
+                  />
+                </label>
+              )}
             </>
           )}
           <div className='dialog-buttons'>

@@ -75,20 +75,18 @@ export const SetsTable: React.FC<Props> = (props) => {
             }
           }
           if (!found) {
-            if (file.caption_set) {
-              file.caption_set.push({
-                annotation_page_id: editSet.uuid,
-                speaker_category: speakerCategory,
-              });
-            } else {
-              file.caption_set = [
-                {
-                  annotation_page_id: editSet.uuid,
-                  speaker_category: speakerCategory,
-                },
-              ];
-            }
+            file.caption_set.push({
+              annotation_page_id: editSet.uuid,
+              speaker_category: speakerCategory,
+            });
           }
+        } else {
+          file.caption_set = [
+            {
+              annotation_page_id: editSet.uuid,
+              speaker_category: speakerCategory,
+            },
+          ];
         }
 
         props.onUpdateAVFile(avFile, file);

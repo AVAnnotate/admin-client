@@ -130,18 +130,32 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   for (let key of Object.keys(event.audiovisual_files)) {
     const oldAVFile = originalEvent.audiovisual_files[key];
     const avFile = event.audiovisual_files[key];
-    if (
-      (oldAVFile.caption_set &&
-        avFile.caption_set &&
-        oldAVFile.caption_set !== avFile.caption_set) ||
-      (oldAVFile.caption_set && !avFile.caption_set)
-    ) {
-      // Delete the old VTT file
-      if (exists(`/data/vtt/${oldAVFile.caption_set}.vtt`)) {
-        deleteFile(`/data/vtt/${oldAVFile.caption_set}.vtt`);
+    if (oldAVFile.caption_set) {
+      for (let i = 0; i < oldAVFile.caption_set.length; i++) {
+        // Delete the old VTT file if it has been removed
+        if (oldAVFile.caption_set) {
+          if (
+            avFile.caption_set?.find(
+              (s) =>
+                s.annotation_page_id ===
+                // @ts-ignore
+                oldAVFile.caption_set[i].annotation_page_id
+            ) !== undefined &&
+            exists(
+              `/data/vtt/${oldAVFile.caption_set[i].annotation_page_id}.vtt`
+            )
+          ) {
+            await deleteFile(
+              `/data/vtt/${oldAVFile.caption_set[i].annotation_page_id}.vtt`
+            );
+          }
+        }
       }
     }
-    if (avFile.caption_set && avFile.caption_set.length > 0) {
+
+    if (!avFile.caption_set) {
+      avFile.caption_set = [];
+    } else {
       for (let i = 0; i < avFile.caption_set.length; i++) {
         generateVTTFile(avFile.caption_set[i], context);
       }

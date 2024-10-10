@@ -2,7 +2,7 @@ import type { Annotation, CaptionSet } from '@ty/Types.ts';
 import type { GitRepoContext } from './gitRepo.ts';
 import { annotationsToVtt } from '@lib/VTT/index.ts';
 
-export const generateVTTFile = (
+export const generateVTTFile = async (
   captionSet: CaptionSet,
   context: GitRepoContext
 ) => {
@@ -24,7 +24,7 @@ export const generateVTTFile = (
     }
 
     // Write the file
-    context.writeFile(
+    await context.writeFile(
       `/data/vtt/${captionSet.annotation_page_id}.vtt`,
       vttFile
     );
