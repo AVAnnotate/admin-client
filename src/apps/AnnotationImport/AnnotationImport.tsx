@@ -209,7 +209,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
             i18n={props.i18n}
             importAsOptions={importAsOptions}
             name='annotations'
-            onIsVTT={props.setIsVTT(true)}
+            onIsVTT={() => props.setIsVTT(true)}
           />
         </div>
         <div className='set-container'>

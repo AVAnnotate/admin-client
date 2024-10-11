@@ -1,4 +1,3 @@
-import type { C } from 'node_modules/nanostores/computed/index.js';
 import type { Node } from 'slate';
 
 export interface Translations {

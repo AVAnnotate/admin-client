@@ -293,11 +293,11 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     }
   }, [currentSetUuid, allAnnotations, avFile]);
 
-  const onCreateSet = async (name: string, avFile: string) => {
+  const onCreateSet = async (name: string, avFileIn: string) => {
     const newSet = {
       event_id: props.eventUuid,
       set: name,
-      source_id: avFile,
+      source_id: avFileIn,
     };
 
     await onSubmitCreateSet(newSet, baseUrl);

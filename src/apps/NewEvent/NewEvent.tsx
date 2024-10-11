@@ -4,7 +4,7 @@ import { ToggleInput } from '@components/Formic/index.tsx';
 import { Button } from '@radix-ui/themes';
 import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useState } from 'react';
 import './NewEvent.css';
 import { ImportManifest } from '@components/ImportManifest/ImportManifest.tsx';
 
