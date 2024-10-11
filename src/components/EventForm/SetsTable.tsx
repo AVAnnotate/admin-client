@@ -34,10 +34,12 @@ export const SetsTable: React.FC<Props> = (props) => {
 
   const sets: SetWithUuid[] = useMemo(
     () =>
-      Object.keys(props.project.annotations).map((uuid) => ({
-        ...props.project.annotations[uuid],
-        uuid,
-      })),
+      Object.keys(props.project.annotations)
+        .filter((k) => props.project.annotations[k].event_id === props.eventId)
+        .map((uuid) => ({
+          ...props.project.annotations[uuid],
+          uuid,
+        })),
     [props.project]
   );
 
@@ -224,7 +226,7 @@ export const SetsTable: React.FC<Props> = (props) => {
       <div className='sets-container'>
         <div className='set-list'>
           <Table
-            emptyText={t['No sets have been added']}
+            emptyText={t['_no_sets_message_']}
             items={sets}
             rows={[
               {

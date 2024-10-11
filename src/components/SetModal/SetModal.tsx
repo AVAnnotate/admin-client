@@ -102,6 +102,7 @@ export const SetFormModal: React.FC<Props> = (props) => {
               onClick={() =>
                 props.onSave(name, avFile, useForCaptions, speakerCategory)
               }
+              disabled={!name || !avFile}
             >
               {t['save']}
             </Button>

@@ -21,8 +21,9 @@ import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { RichTextInput } from '@components/Formic/index.tsx';
 import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { SetsTable } from './SetsTable.tsx';
+import { SetFormModal } from '@components/SetModal/index.ts';
 
 interface Props {
   children?: React.ReactNode;
@@ -77,6 +78,7 @@ const FormContents: React.FC<Props> = (props) => {
   );
 
   const [project, setProject] = useState(props.project);
+  const [addSetOpen, setAddSetOpen] = useState(false);
 
   const { t } = i18n;
 
@@ -130,8 +132,64 @@ const FormContents: React.FC<Props> = (props) => {
     setProject(p);
   };
 
+  const avFileOptions = useMemo(() => {
+    const ret: { value: string; label: string }[] = [];
+    if (values) {
+      Object.keys((values as FormEvent).audiovisual_files).forEach((avKey) => {
+        ret.push({
+          value: avKey,
+          // @ts-ignore
+          label: (values as FormEvent).audiovisual_files[avKey].label,
+        });
+      });
+    }
+
+    return ret;
+  }, [values]);
+
+  const handleAddSet = () => {
+    setAddSetOpen(true);
+  };
+
+  const handleCreateSet = async (
+    newName: string,
+    avFile: string,
+    useForCaptions: boolean | undefined,
+    speakerCategory: string | undefined
+  ) => {
+    if (props.event) {
+      const res = await fetch(
+        `/api/projects/${props.projectSlug}/events/${props.uuid}/annotations`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            event_id: props.uuid,
+            set: newName,
+            source_id: avFile,
+            caption_set: [],
+          }),
+        }
+      ).then((res) => {
+        setAddSetOpen(false);
+        window.location.reload();
+      });
+    }
+  };
+
   return (
     <Form className='event-form' style={styles}>
+      {addSetOpen && (
+        <SetFormModal
+          i18n={props.i18n}
+          title={t['Create Annotation Set']}
+          onClose={() => setAddSetOpen(false)}
+          onSave={handleCreateSet}
+          avFileOptions={avFileOptions}
+        />
+      )}
       <div className='form-body'>
         <h2>{t['Event Information']}</h2>
         <TextInput label={t['Label']} name='label' required />
@@ -273,6 +331,15 @@ const FormContents: React.FC<Props> = (props) => {
                   eventId={props.uuid}
                   onUpdateAVFile={handleUpdateAVFile}
                 />
+                <Button
+                  className='primary add-av-button'
+                  onClick={handleAddSet}
+                  type='button'
+                  disabled={!props.event}
+                >
+                  <PlusIcon color='white' />
+                  {t['Add']}
+                </Button>
               </div>
             </div>
           )}

@@ -1,3 +1,4 @@
+import { checkVTTUpdate } from '@backend/captionHelper.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
@@ -79,6 +80,8 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   writeFile(filePath, JSON.stringify(annos, null, 2));
 
   await updateProjectLastUpdated(context);
+
+  await checkVTTUpdate(annos, annotationSetUuid, context);
 
   const commitMessage = `Deleted annotation ${annotationUuid}`;
 
@@ -165,6 +168,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   writeFile(filePath, JSON.stringify(annos, null, 2));
 
   await updateProjectLastUpdated(context);
+
+  await checkVTTUpdate(annos, annotationSetUuid, context);
 
   const commitMessage = `Updated annotation ${annotationUuid}`;
 

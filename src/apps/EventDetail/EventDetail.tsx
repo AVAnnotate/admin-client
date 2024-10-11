@@ -87,6 +87,7 @@ const onSubmitCreateSet = async (
       event_id: newSet.event_id,
       set: newSet.set,
       source_id: newSet.source_id,
+      caption_set: [],
     }),
   });
 
