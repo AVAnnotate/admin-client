@@ -87,6 +87,7 @@ const onSubmitCreateSet = async (
       event_id: newSet.event_id,
       set: newSet.set,
       source_id: newSet.source_id,
+      caption_set: [],
     }),
   });
 
@@ -200,6 +201,24 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     [baseUrl, currentSetUuid]
   );
 
+  const avFileOptions = useMemo(() => {
+    const ret: { value: string; label: string }[] = [];
+
+    Object.keys(props.project.events).forEach((key) => {
+      const event = props.project.events[key];
+      if (key === props.eventUuid) {
+        Object.keys(event.audiovisual_files).forEach((avKey) => {
+          ret.push({
+            value: avKey,
+            label: event.audiovisual_files[avKey].label,
+          });
+        });
+      }
+    });
+
+    return ret;
+  }, [props.project, props.eventUuid]);
+
   const onCreate = async (body: AnnotationEntry) => {
     const newAnno = await onSubmitAddAnno(body, setUrl);
 
@@ -274,11 +293,11 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     }
   }, [currentSetUuid, allAnnotations, avFile]);
 
-  const onCreateSet = async (name: string) => {
+  const onCreateSet = async (name: string, avFileIn: string) => {
     const newSet = {
       event_id: props.eventUuid,
       set: name,
-      source_id: avFile,
+      source_id: avFileIn,
     };
 
     await onSubmitCreateSet(newSet, baseUrl);
@@ -312,6 +331,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           title={t['Create Annotation Set']}
           onClose={() => setShowAddSetModal(false)}
           onSave={onCreateSet}
+          avFileOptions={avFileOptions}
         />
       )}
       {showAnnoCreateModal && (

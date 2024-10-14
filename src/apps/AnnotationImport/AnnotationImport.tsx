@@ -10,7 +10,7 @@ import { LoadingOverlay } from '@components/LoadingOverlay/index.ts';
 import { Button } from '@radix-ui/themes';
 import type { Event, ProjectData, Translations, Tags } from '@ty/Types.ts';
 import { Form, Formik, useFormikContext } from 'formik';
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import { mapAnnotationData } from '@lib/parse/index.ts';
 
 import './AnnotationImport.css';
@@ -31,34 +31,6 @@ interface FormData {
   set: string;
 }
 
-const onSubmit = async (
-  body: FormData,
-  headerMap: { [key: string]: number },
-  baseUrl: string,
-  redirectUrl: string,
-  tags: Tags,
-  projectSlug: string
-) => {
-  const annos = await mapAnnotationData(
-    body.annotations.data,
-    headerMap,
-    tags,
-    projectSlug
-  );
-
-  const res = await fetch(`${baseUrl}/${body.set}`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(annos),
-  });
-
-  if (res.ok) {
-    window.location.href = redirectUrl;
-  }
-};
-
 export const AnnotationImport: React.FC<Props> = (props) => {
   return (
     <SpreadsheetInputContextComponent>
@@ -70,7 +42,42 @@ export const AnnotationImport: React.FC<Props> = (props) => {
 export const AnnotationImportForm: React.FC<Props> = (props) => {
   const { headerMap } = useContext(SpreadsheetInputContext);
 
+  const [isVTT, setIsVTT] = useState(false);
+
   const { lang } = props.i18n;
+
+  const onSubmit = async (
+    body: FormData,
+    headerMap: { [key: string]: number },
+    baseUrl: string,
+    redirectUrl: string,
+    tags: Tags,
+    projectSlug: string
+  ) => {
+    let annos;
+    if (isVTT) {
+      annos = body.annotations;
+    } else {
+      annos = await mapAnnotationData(
+        body.annotations.data,
+        headerMap,
+        tags,
+        projectSlug
+      );
+    }
+
+    const res = await fetch(`${baseUrl}/${body.set}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(annos),
+    });
+
+    if (res.ok) {
+      window.location.href = redirectUrl;
+    }
+  };
 
   const baseUrl = useMemo(
     () =>
@@ -122,6 +129,7 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
     >
       <AnnotationImportFormContents
         {...props}
+        setIsVTT={setIsVTT}
         redirectUrl={redirectUrl}
         setOptions={setOptions}
       />
@@ -132,6 +140,7 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
 interface FormContentsProps extends Props {
   redirectUrl: string;
   setOptions: { label: string; value: string }[];
+  setIsVTT(isVTT: boolean): any;
 }
 
 const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
@@ -191,7 +200,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
         <div className='av-label annotation-import-instructions'>
           {
             t[
-              'Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.'
+              'Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations or a WebVTT (.vtt) files that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.": "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.'
             ]
           }
         </div>
@@ -200,6 +209,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
             i18n={props.i18n}
             importAsOptions={importAsOptions}
             name='annotations'
+            onIsVTT={() => props.setIsVTT(true)}
           />
         </div>
         <div className='set-container'>

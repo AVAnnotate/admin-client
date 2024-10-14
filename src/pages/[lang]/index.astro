@@ -8,4 +8,5 @@ const user = await userInfo(Astro.cookies);
 if (!user) {
   return Astro.redirect(`/${lang}/sign-in`);
 }
+return Astro.redirect(`/${lang}/projects`);
 ---

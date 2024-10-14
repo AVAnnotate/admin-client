@@ -1,0 +1,23 @@
+.sets-table-root {
+  width: 100%;
+}
+.sets-container .set-name-cell {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 1px;
+}
+
+.sets-table-captions-pill {
+  width: 75px;
+  height: 24px;
+  border-radius: 12px;
+  background-color: var(--primary-light);
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}

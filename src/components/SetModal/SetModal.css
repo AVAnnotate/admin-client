@@ -35,3 +35,10 @@
 .set-modal .dialog-buttons .cancel-button {
   color: #000;
 }
+
+.set-modal-caption-switch {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+}
