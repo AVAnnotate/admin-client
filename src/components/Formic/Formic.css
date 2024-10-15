@@ -52,6 +52,11 @@
   margin-left: 0 !important;
 }
 
+.formic-form-switch-button:disabled,
+.formic-form-switch-button[disabled] {
+  color: var(--gray-300) !important;
+}
+
 .formic-form-switch-button-left {
   border-top-left-radius: 4px !important;
   border-bottom-left-radius: 4px !important;

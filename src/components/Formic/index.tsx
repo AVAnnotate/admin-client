@@ -227,9 +227,9 @@ interface TripleSwitchInputProps {
   label: string;
   helperText?: string;
   name: string;
-  optionLeft: { label: string; value: string };
-  optionMiddle: { label: string; value: string };
-  optionRight: { label: string; value: string };
+  optionLeft: { label: string; value: string; disabled?: boolean };
+  optionMiddle: { label: string; value: string; disabled?: boolean };
+  optionRight: { label: string; value: string; disabled?: boolean };
   required?: boolean;
   bottomNote?: string;
 }
@@ -259,6 +259,7 @@ export const TripleSwitchInput = (props: TripleSwitchInputProps) => {
               : 'unstyled formic-form-switch-button formic-form-switch-button-left'
           }
           onClick={() => setValue(props.optionLeft.value)}
+          disabled={props.optionLeft.disabled}
         >
           {props.optionLeft.label}
         </Button>
@@ -270,6 +271,7 @@ export const TripleSwitchInput = (props: TripleSwitchInputProps) => {
               : 'unstyled formic-form-switch-button formic-form-switch-button-middle'
           }
           onClick={() => setValue(props.optionMiddle.value)}
+          disabled={props.optionMiddle.disabled}
         >
           {props.optionMiddle.label}
         </Button>
@@ -281,6 +283,7 @@ export const TripleSwitchInput = (props: TripleSwitchInputProps) => {
               : 'unstyled formic-form-switch-button formic-form-switch-button-right'
           }
           onClick={() => setValue(props.optionRight.value)}
+          disabled={props.optionRight.disabled}
         >
           {props.optionRight.label}
         </Button>
