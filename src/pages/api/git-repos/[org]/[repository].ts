@@ -15,7 +15,8 @@ export const GET: APIRoute = async ({ cookies, params, redirect }) => {
 
   const data = await getProject(
     info,
-    `https://github.com/${org}/${repository}`
+    `https://github.com/${org}/${repository}`,
+    true
   );
 
   if (!data) {

@@ -94,7 +94,11 @@ export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   return { pages, order };
 };
 
-export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
+export const getProject = async (
+  userInfo: UserInfo,
+  htmlUrl: string,
+  skipDataFiles?: boolean
+) => {
   const fs = initFs();
 
   const { exists, readDir, readFile } = await gitRepo({
@@ -151,34 +155,40 @@ export const getProject = async (userInfo: UserInfo, htmlUrl: string) => {
     ];
   }
 
-  const eventFiles = exists('/data/events')
-    ? readDir('/data/events', '.json')
-    : [];
-  const pageFiles = exists('/data/pages')
-    ? readDir('/data/pages', '.json')
-    : [];
+  if (!skipDataFiles) {
+    const eventFiles = exists('/data/events')
+      ? readDir('/data/events', '.json')
+      : [];
+    const pageFiles = exists('/data/pages')
+      ? readDir('/data/pages', '.json')
+      : [];
 
-  const annotationFiles = exists('/data/annotations')
-    ? readDir('/data/annotations')
-    : [];
+    const annotationFiles = exists('/data/annotations')
+      ? readDir('/data/annotations')
+      : [];
 
-  project.annotations = getDirData(
-    fs,
-    annotationFiles as unknown as string[],
-    'annotations'
-  );
-  project.events = getDirData(fs, eventFiles as unknown as string[], 'events');
+    project.annotations = getDirData(
+      fs,
+      annotationFiles as unknown as string[],
+      'annotations'
+    );
+    project.events = getDirData(
+      fs,
+      eventFiles as unknown as string[],
+      'events'
+    );
 
-  project.annotations = getDirData(
-    fs,
-    annotationFiles as unknown as string[],
-    'annotations'
-  );
+    project.annotations = getDirData(
+      fs,
+      annotationFiles as unknown as string[],
+      'annotations'
+    );
 
-  const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
+    const pageData = getPageData(fs, pageFiles as unknown as string[], 'pages');
 
-  project.pages = pageData.pages;
-  project.pageOrder = pageData.order;
+    project.pages = pageData.pages;
+    project.pageOrder = pageData.order;
+  }
 
   return project;
 };
