@@ -19,17 +19,12 @@ if (!info) {
 }
 
 const repos = await getRepos(info as UserInfo);
-if (!repos.ok) {
-  return Astro.redirect(`/${lang}/sign-in`);
-}
 
-const reposData = await repos.json();
-
-const userRepos = reposData.map((d: any) => {
+const userRepos = repos.map((d: any) => {
   return { org: d.owner.login, repo: d.name };
 });
 ---
 
 <Layout title='Projects' profile={info!.profile}>
-  <Projects repos={userRepos} i18n={i18n} client:only='react' />
+  <Projects repos={userRepos} i18n={i18n} userInfo={info} client:only='react' />
 </Layout>
