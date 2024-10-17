@@ -46,11 +46,6 @@ export const getRepos = async (userInfo: UserInfo): Promise<any> => {
 
   repos = myRepos.filter((r) => r.topics.includes('avannotate-project'));
 
-  // Get the users orgs
-  const myOrgs = await getUserOrgs(userInfo.token);
-
-  myOrgs.unshift({ orgName: userInfo.profile.gitHubName });
-
   return repos;
 };
 

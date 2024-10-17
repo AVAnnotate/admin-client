@@ -9,7 +9,7 @@ import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
 import { Sorters } from '@components/SortAction/index.ts';
 
 export interface ProjectsProps {
-  projects: AllProjects;
+  repos: { org: string; repo: string }[];
 
   i18n: Translations;
 }
@@ -35,6 +35,13 @@ export const Projects = (props: ProjectsProps) => {
   };
 
   useEffect(() => {
+    if (props.repos) {
+      const allProjects: AllProjects = [];
+
+      for (let i = 0; i < props.repos.length; i++) {
+        await;
+      }
+    }
     const projs: AllProjects = JSON.parse(JSON.stringify(props.projects));
 
     if (props.projects) {
