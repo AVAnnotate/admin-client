@@ -4,8 +4,8 @@ import { getLangFromUrl } from '@i18n';
 import { userInfo } from '@backend/userInfo';
 import { getTranslations } from '@i18n';
 import { Projects } from '@apps/Projects';
-import { getProjects } from '@backend/projectHelpers';
-import type { AllProjects, UserInfo } from '@ty/Types.ts';
+import { getRepos } from '@backend/projectHelpers';
+import type { UserInfo } from '@ty/Types.ts';
 import '@themes/default/index.css';
 
 const lang = getLangFromUrl(Astro.url);
@@ -18,9 +18,13 @@ if (!info) {
   return Astro.redirect(`/${lang}/sign-in`);
 }
 
-const allProjects: AllProjects = await getProjects(info as UserInfo);
+const repos = await getRepos(info as UserInfo);
+
+const userRepos = repos.map((d: any) => {
+  return { org: d.owner.login, repo: d.name };
+});
 ---
 
 <Layout title='Projects' profile={info!.profile}>
-  <Projects projects={allProjects} i18n={i18n} client:only='react' />
+  <Projects repos={userRepos} i18n={i18n} userInfo={info} client:only='react' />
 </Layout>
