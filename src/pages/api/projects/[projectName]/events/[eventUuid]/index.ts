@@ -130,7 +130,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   for (let key of Object.keys(event.audiovisual_files)) {
     const oldAVFile = originalEvent.audiovisual_files[key];
     const avFile = event.audiovisual_files[key];
-    if (oldAVFile.caption_set) {
+    if (oldAVFile && oldAVFile.caption_set) {
       for (let i = 0; i < oldAVFile.caption_set.length; i++) {
         // Delete the old VTT file if it has been removed
         if (
@@ -161,7 +161,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   for (let key of Object.keys(originalEvent.audiovisual_files)) {
     const oldAVFile = originalEvent.audiovisual_files[key];
 
-    if (oldAVFile.caption_set && oldAVFile.caption_set.length > 0) {
+    if (
+      oldAVFile &&
+      oldAVFile.caption_set &&
+      oldAVFile.caption_set.length > 0
+    ) {
       for (let i = 0; i < oldAVFile.caption_set.length; i++) {
         if (event.audiovisual_files[key]) {
           const avFile = event.audiovisual_files[key];
