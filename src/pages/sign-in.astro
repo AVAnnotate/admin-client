@@ -1,0 +1,14 @@
+---
+import { defaultLang, languages } from '@i18n';
+// @ts-ignore
+import parser from 'accept-language-parser';
+
+const accepts = Astro.request.headers.get('accept-language');
+
+const lang = accepts
+  ? parser.pick(Object.keys(languages), accepts)
+  : defaultLang;
+
+console.log('Lang: ', `/${lang}/sign-in`);
+return Astro.redirect(`/${lang}/sign-in`);
+---
