@@ -16,6 +16,7 @@ export const MediaPlayerField: React.FC<MediaPlayerFieldProps> = (props) => (
     optionMiddle={{
       value: 'universal',
       label: props.i18n.t['Universal Viewer'],
+      disabled: true,
     }}
     optionRight={{ value: 'aviary', label: props.i18n.t['Aviary Player'] }}
     required

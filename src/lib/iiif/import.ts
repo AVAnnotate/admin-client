@@ -35,6 +35,9 @@ export const importIIIFManifest = async (
   // Look for canvases
   const canvases = items.filter((i) => i.type === 'Canvas');
 
+  // Label count
+  let avLabelCount: number = 1;
+
   // For each canvas create an event
   for (let w = 0; w < canvases.length; w++) {
     const c = canvases[w];
@@ -53,7 +56,7 @@ export const importIIIFManifest = async (
               const b: IIIFResource = i.body as IIIFResource;
               avType = b.type;
               avFiles[sourceId] = {
-                label: '',
+                label: `AV File ${avLabelCount++}`,
                 file_url: b.id,
                 duration: b.duration || 0,
               };
@@ -62,7 +65,7 @@ export const importIIIFManifest = async (
               ba.forEach((b) => {
                 avType = b.type;
                 avFiles[sourceId] = {
-                  label: '',
+                  label: `AV File ${avLabelCount++}`,
                   file_url: b.id,
                   duration: b.duration || 0,
                 };

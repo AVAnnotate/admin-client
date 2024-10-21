@@ -74,18 +74,12 @@ export const gitRepo = async (options: GitRepoOptions) => {
     writeOptions?: any
   ): Promise<boolean> => {
     fs.writeFileSync(absoluteFileName, data, writeOptions);
-    console.log('File written!');
     await git.add({
       fs,
       dir: '/',
       filepath: absoluteFileName.slice(1),
     });
 
-    const status = await git.statusMatrix({
-      fs,
-      dir: '/',
-    });
-    console.log(status);
     return true;
   };
 
@@ -148,9 +142,6 @@ export const gitRepo = async (options: GitRepoOptions) => {
     if (!sha) {
       return { ok: false, error: 'Failed to commit changes', refs: {} };
     }
-
-    const commits = await git.log({ fs, dir: '/', depth: 1 });
-    console.log('After commit log: ', commits[0]);
 
     return git.push({
       fs: fs,

@@ -6,6 +6,7 @@
 @import './dialog/index.css';
 @import './select/index.css';
 @import './toast/index.css';
+@import './switch/index.css';
 @import '@radix-ui/themes/styles.css';
 
 @font-face {

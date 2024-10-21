@@ -17,6 +17,7 @@ export const generateDefaultEvent = (): FormEvent => ({
       is_offline: false,
       file_url: '',
       duration: 90,
+      caption_set: undefined,
     },
   },
   auto_generate_web_page: true,

@@ -2,7 +2,7 @@ import type { Page, ProjectFile } from '@ty/Types.ts';
 import type { GitRepoContext } from '@backend/gitRepo.ts';
 import slugify from 'slugify';
 
-const MAX_SLUG_LENGTH = 20;
+const MAX_SLUG_LENGTH = 45;
 
 export const getNewOrder = (
   allPages: { [key: string]: Page },

@@ -1,4 +1,5 @@
 import type {
+  AnnotationEntry,
   DropdownOption,
   ParseAnnotationResults,
   Translations,
@@ -15,6 +16,9 @@ import * as Select from '@radix-ui/react-select';
 import * as Switch from '@radix-ui/react-switch';
 import { SpreadsheetInputContext } from './SpreadsheetInputContext.tsx';
 import { FileBox } from './FileBox.tsx';
+import { vttToAnnotations } from '@lib/VTT/index.ts';
+import { formatTimestamp } from '@lib/VTT/index.ts';
+import { serialize } from '@lib/slate/index.tsx';
 
 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
 
@@ -142,6 +146,28 @@ const TableRow: React.FC<TableRowProps> = (props) => {
   );
 };
 
+interface VTTCellProps {
+  option: { value: any; label: string };
+  value: any;
+}
+
+const VTTCell = (props: VTTCellProps) => {
+  const { option, value } = props;
+
+  if (['start_time', 'end_time'].includes(option.value)) {
+    return (
+      <Table.Cell key={option.value}>
+        {formatTimestamp(value, false)}
+      </Table.Cell>
+    );
+  } else if (option.value === 'annotation') {
+    const text = serialize(value);
+    return <Table.Cell key={option.value}>{text}</Table.Cell>;
+  } else {
+    return <Table.Cell key={option.value}>{value.join('|')}</Table.Cell>;
+  }
+};
+
 interface SpreadsheetInputProps {
   accept?: string;
   label?: string;
@@ -151,6 +177,7 @@ interface SpreadsheetInputProps {
   importAsOptions: DropdownOption[];
   isValid?(valid: boolean): void;
   onHeaderMapChange?(headerMap: { [key: string]: number }): void;
+  onIsVTT?(isVTT: boolean): void;
 }
 
 // the regex removes everything inside parentheses so something like
@@ -162,6 +189,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   const [file, setFile] = useState<File | null>(null);
   const [containsHeaders, setContainsHeaders] = useState(true);
   const [displayPreview, setDisplayPreview] = useState(false);
+  const [isVTT, setIsVTT] = useState(false);
 
   const {
     headerMap,
@@ -174,19 +202,30 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
 
   const { t } = props.i18n;
 
+  // Headers for VTT imports
+  const vttOptions = [
+    { value: 'start_time', label: t['Start Time'] },
+    { value: 'end_time', label: t['End Time'] },
+    { value: 'annotation', label: t['Annotation'] },
+    { value: 'tags', label: t['Tags (vertical bar separated)'] },
+  ];
   const { setFieldValue, values }: { [key: string]: any; values: any } =
     useFormikContext();
 
   useEffect(() => {
-    const requiredFields = props.importAsOptions.filter((f) => f.required);
-    const selectedFields = Object.keys(headerMap);
+    if (isVTT) {
+      setRequiredFieldsSet(true);
+    } else {
+      const requiredFields = props.importAsOptions.filter((f) => f.required);
+      const selectedFields = Object.keys(headerMap);
 
-    setRequiredFieldsSet(
-      requiredFields.filter((f) => !selectedFields.includes(f.value)).length ===
-        0
-    );
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    props.onHeaderMapChange && props.onHeaderMapChange(headerMap);
+      setRequiredFieldsSet(
+        requiredFields.filter((f) => !selectedFields.includes(f.value))
+          .length === 0
+      );
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      props.onHeaderMapChange && props.onHeaderMapChange(headerMap);
+    }
   }, [values, headerMap]);
 
   const tableHeaders = useMemo(
@@ -207,7 +246,24 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   useEffect(() => {
     const handleFile = async () => {
       if (file) {
-        await parseData(file);
+        if (file.name.endsWith('.vtt')) {
+          const fileText = await file.text();
+          const annos: AnnotationEntry[] = vttToAnnotations(
+            fileText,
+            'Speaker'
+          );
+
+          setIsVTT(true);
+          setDisplayPreview(true);
+          setFieldValue(props.name, annos);
+          setRequiredFieldsSet(true);
+          if (props.onIsVTT) {
+            props.onIsVTT(true);
+          }
+        } else {
+          setIsVTT(false);
+          await parseData(file);
+        }
       } else {
         setFieldValue(props.name, null);
       }
@@ -234,36 +290,39 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
   }, [file, tableHeaders]);
 
   const tableRows = useMemo(() => {
-    const data = (values[props.name] as ParseAnnotationResults)?.data;
-    const firstItem =
-      Array.isArray(data) && data.length > 0 ? (data[0] as string[]) : null;
+    if (isVTT) {
+    } else {
+      const data = (values[props.name] as ParseAnnotationResults)?.data;
+      const firstItem =
+        Array.isArray(data) && data.length > 0 ? (data[0] as string[]) : null;
 
-    if (Array.isArray(tableHeaders) && tableHeaders.length > 0 && firstItem) {
-      return tableHeaders.map((fieldName, idx) => (
-        <TableRow
-          header={fieldName}
-          example={firstItem[idx]}
-          index={idx}
-          key={idx}
-          headerMap={headerMap}
-          setHeaderMap={setHeaderMap}
-          importAsOptions={props.importAsOptions}
-          i18n={props.i18n}
-        />
-      ));
-    } else if (firstItem) {
-      return firstItem.map((value, idx) => (
-        <TableRow
-          header={alphabet[idx]}
-          example={value}
-          index={idx}
-          key={idx}
-          headerMap={headerMap}
-          setHeaderMap={setHeaderMap}
-          importAsOptions={props.importAsOptions}
-          i18n={props.i18n}
-        />
-      ));
+      if (Array.isArray(tableHeaders) && tableHeaders.length > 0 && firstItem) {
+        return tableHeaders.map((fieldName, idx) => (
+          <TableRow
+            header={fieldName}
+            example={firstItem[idx]}
+            index={idx}
+            key={idx}
+            headerMap={headerMap}
+            setHeaderMap={setHeaderMap}
+            importAsOptions={props.importAsOptions}
+            i18n={props.i18n}
+          />
+        ));
+      } else if (firstItem) {
+        return firstItem.map((value, idx) => (
+          <TableRow
+            header={alphabet[idx]}
+            example={value}
+            index={idx}
+            key={idx}
+            headerMap={headerMap}
+            setHeaderMap={setHeaderMap}
+            importAsOptions={props.importAsOptions}
+            i18n={props.i18n}
+          />
+        ));
+      }
     }
   }, [values[props.name], headerMap]);
 
@@ -289,7 +348,7 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
             {props.helperText}
           </div>
         )}
-        {file && (
+        {file && !isVTT && (
           <>
             <FileBox file={file} i18n={props.i18n} onClick={handleReplace} />
             <Separator.Root className='SeparatorRoot' decorative />
@@ -371,6 +430,31 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
               </Table.Root>
             )}
           </>
+        )}
+        {file && isVTT && (
+          <Table.Root className='spreadsheet-preview-table'>
+            <Table.Header className='spreadsheet-input-table-header'>
+              <Table.Row className='spreadsheet-input-table-row'>
+                {vttOptions.map((opt) => (
+                  <Table.ColumnHeaderCell key={opt.value}>
+                    {opt.label}
+                  </Table.ColumnHeaderCell>
+                ))}
+              </Table.Row>
+            </Table.Header>
+            <Table.Body>
+              {(values as any)[props.name].map((item: any, idx: number) => {
+                // console.log(item);
+                return (
+                  <Table.Row key={idx}>
+                    {vttOptions.map((opt) => (
+                      <VTTCell option={opt} value={item[opt.value]} />
+                    ))}
+                  </Table.Row>
+                );
+              })}
+            </Table.Body>
+          </Table.Root>
         )}
       </div>
     );

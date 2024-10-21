@@ -1,0 +1,44 @@
+.switch-root {
+  background-color: var(--gray-300);
+  width: 50px;
+  min-width: initial;
+  height: 26px;
+  border-radius: 30px;
+  position: relative;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  border: none;
+}
+
+.switch-icon {
+  display: none;
+  color: white;
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 8px;
+  top: 6px;
+}
+
+.switch-root[data-state='checked'] {
+  background-color: var(--primary);
+}
+
+.switch-root[data-state='checked'] .switch-icon {
+  display: initial;
+}
+
+.switch-thumb {
+  display: block;
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  background-color: white;
+  border-radius: 9999px;
+  transition: transform 100ms;
+  transform: translateX(-60%);
+  will-change: transform;
+}
+
+.switch-thumb[data-state='checked'] {
+  transform: translateX(60%);
+}

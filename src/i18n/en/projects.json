@@ -13,7 +13,7 @@
   "Pages": "Pages",
   "All Events": "All Events",
   "No events have been added": "No events have been added",
-  "No sets have been added": "No sets have been added",
+  "_no_sets_message_": "No Annotation sets have been added. Sets can be added once the Event has been created.",
   "Edit Annotation Set": "Edit Annotation Set",
   "Create Annotation Set": "Create Annotation Set",
   "Auto-Generated": "Auto-Generated",
@@ -22,5 +22,6 @@
   "home": "Home",
   "event": "Event",
   "Last Edited": "Last Edited",
-  "Invited": "Invited"
+  "Invited": "Invited",
+  "Loading Your Projects": "Loading Your Projects"
 }

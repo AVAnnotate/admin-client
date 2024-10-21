@@ -1,9 +1,10 @@
+import { checkVTTDelete, checkVTTUpdate } from '@backend/captionHelper.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import { updateProjectLastUpdated } from '@lib/pages/index.ts';
-import type { AnnotationEntry, AnnotationPage } from '@ty/Types.ts';
+import type { Annotation, AnnotationEntry, AnnotationPage } from '@ty/Types.ts';
 import type { apiAnnotationPost, apiAnnotationSetPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -30,12 +31,13 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const fs = initFs();
 
-  const { commitAndPush, exists, deleteFile, context } = await gitRepo({
-    fs,
-    repositoryURL,
-    branch: 'main',
-    userInfo: info,
-  });
+  const { commitAndPush, exists, deleteFile, readFile, context } =
+    await gitRepo({
+      fs,
+      repositoryURL,
+      branch: 'main',
+      userInfo: info,
+    });
 
   const filePath = `/data/annotations/${annotationSetUuid}.json`;
 
@@ -46,9 +48,13 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
     });
   }
 
+  const annos: Annotation = JSON.parse(readFile(filePath) as string);
+
   deleteFile(filePath);
 
   await updateProjectLastUpdated(context);
+
+  await checkVTTDelete(eventUuid, annos.source_id, annotationSetUuid, context);
 
   const commitMessage = `Deleted annotation set ${annotationSetUuid}`;
 
@@ -141,6 +147,8 @@ export const POST: APIRoute = async ({
 
   await updateProjectLastUpdated(context);
 
+  await checkVTTUpdate(annos, annotationSetUuid, context);
+
   const commitMessage = `Added ${count || '1'} annotation${
     count === 1 ? '' : 's'
   } to set ${annotationSetUuid} in event ${eventUuid}`;
@@ -205,6 +213,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   writeFile(filePath, JSON.stringify(annos, null, 2));
 
   await updateProjectLastUpdated(context);
+
+  await checkVTTUpdate(annos, annotationSetUuid, context);
 
   const commitMessage = `Updated name of annotation set ${annotationSetUuid} to ${body.set}`;
 

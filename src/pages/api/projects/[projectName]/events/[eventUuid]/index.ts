@@ -1,3 +1,4 @@
+import { generateVTTFile } from '@backend/captionHelper.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
 import { userInfo } from '@backend/userInfo.ts';
@@ -8,7 +9,7 @@ import {
   ensureUniqueSlug,
   trimStringToMaxLength,
 } from '@lib/pages/index.ts';
-import type { Page, UserInfo } from '@ty/Types.ts';
+import type { Event, Page, UserInfo } from '@ty/Types.ts';
 import type { apiEventPut } from '@ty/api.ts';
 import type { APIRoute, AstroCookies } from 'astro';
 import { v4 as uuidv4 } from 'uuid';
@@ -52,17 +53,24 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readDir, readFile, writeFile, commitAndPush, context } =
-    await gitRepo({
-      fs: initFs(),
-      repositoryURL,
-      branch: 'main',
-      userInfo: info as UserInfo,
-    });
+  const {
+    readDir,
+    readFile,
+    writeFile,
+    commitAndPush,
+    deleteFile,
+    exists,
+    context,
+  } = await gitRepo({
+    fs: initFs(),
+    repositoryURL,
+    branch: 'main',
+    userInfo: info as UserInfo,
+  });
 
   const filepath = `/data/events/${eventUuid}.json`;
 
-  const originalEvent = JSON.parse(readFile(filepath) as string);
+  const originalEvent: Event = JSON.parse(readFile(filepath) as string);
 
   // if any new AV files were added, we need to create a default annotation set
   const newAvFiles = Object.keys(event.audiovisual_files).filter(
@@ -116,6 +124,73 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
           );
         }
       });
+  }
+
+  // If a set is specified, go ahead and generate
+  for (let key of Object.keys(event.audiovisual_files)) {
+    const oldAVFile = originalEvent.audiovisual_files[key];
+    const avFile = event.audiovisual_files[key];
+    if (oldAVFile && oldAVFile.caption_set) {
+      for (let i = 0; i < oldAVFile.caption_set.length; i++) {
+        // Delete the old VTT file if it has been removed
+        if (
+          avFile.caption_set?.find(
+            (s) =>
+              s.annotation_page_id ===
+              // @ts-ignore
+              oldAVFile.caption_set[i].annotation_page_id
+          ) !== undefined &&
+          exists(`/data/vtt/${oldAVFile.caption_set[i].annotation_page_id}.vtt`)
+        ) {
+          await deleteFile(
+            `/data/vtt/${oldAVFile.caption_set[i].annotation_page_id}.vtt`
+          );
+        }
+      }
+    }
+
+    if (!avFile.caption_set) {
+      avFile.caption_set = [];
+    } else {
+      for (let i = 0; i < avFile.caption_set.length; i++) {
+        await generateVTTFile(avFile.caption_set[i], context);
+      }
+    }
+  }
+  // If sets were removed then delete them
+  for (let key of Object.keys(originalEvent.audiovisual_files)) {
+    const oldAVFile = originalEvent.audiovisual_files[key];
+
+    if (
+      oldAVFile &&
+      oldAVFile.caption_set &&
+      oldAVFile.caption_set.length > 0
+    ) {
+      for (let i = 0; i < oldAVFile.caption_set.length; i++) {
+        if (event.audiovisual_files[key]) {
+          const avFile = event.audiovisual_files[key];
+
+          const found = avFile.caption_set?.find(
+            (s) =>
+              s.annotation_page_id ===
+              // @ts-ignore
+              oldAVFile.caption_set[i].annotation_page_id
+          );
+
+          if (!found) {
+            if (
+              exists(
+                `/data/vtt/${oldAVFile.caption_set[i].annotation_page_id}.vtt`
+              )
+            ) {
+              await deleteFile(
+                `/data/vtt/${oldAVFile.caption_set[i].annotation_page_id}.vtt`
+              );
+            }
+          }
+        }
+      }
+    }
   }
 
   const successCommit = await commitAndPush(`Updated event ${eventUuid}`);
@@ -215,6 +290,16 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
       '/data/pages/order.json',
       JSON.stringify(newOrder, null, 2)
     );
+  }
+
+  const eventFile = readFile(filepath);
+  const event = JSON.parse(eventFile as string);
+  // Delete any associated caption sets
+  for (let key of Object.keys(event.audiovisual_files)) {
+    const avFile = event.audiovisual_files[key];
+    if (avFile.caption_set && avFile.caption_set.length > 0) {
+      deleteFile(`/data/vtt/${avFile.caption_set}.vtt`);
+    }
   }
 
   // Delete the event
