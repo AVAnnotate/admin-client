@@ -1,5 +1,5 @@
 import * as Dialog from '@radix-ui/react-dialog';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ClipInterface,
   DurationInterface,
@@ -55,9 +55,11 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
         ? Object.keys(props.project.events!)[1]
         : '')
   );
-  const [includes, setIncludes] = useState<Includes[]>(props.includes || []);
-  const [event1File, setEvent1File] = useState(props.event1File || '');
-  const [event2File, setEvent2File] = useState(props.event2File || '');
+  const [includes, setIncludes] = useState<Includes[]>(
+    props.includes || ['media', 'annotations', 'label', 'description']
+  );
+  const [event1File, setEvent1File] = useState(props.event1File || null);
+  const [event2File, setEvent2File] = useState(props.event2File || null);
   const [event1Start, setEvent1Start] = useState<number | undefined>(
     props.event1Start
   );
@@ -89,16 +91,6 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
 
   const { t } = props.i18n;
 
-  // Default to the only AV file if there's only one
-  useEffect(() => {
-    if (event1 && Object.keys(event1.audiovisual_files).length === 1) {
-      setEvent1File(Object.keys(event1.audiovisual_files)[0]);
-    }
-    if (event2 && Object.keys(event2.audiovisual_files).length === 1) {
-      setEvent2File(Object.keys(event2.audiovisual_files)[0]);
-    }
-  }, [event1, event2]);
-
   return (
     <Dialog.Root open>
       <Dialog.Overlay className='slate-dialog-overlay' />
@@ -121,7 +113,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
           {duration === 'clip' && (
             <div className='event-options-container'>
               <div>
-                {event1 && Object.keys(event1.audiovisual_files).length > 1 && (
+                {event1 && (
                   <FileRadioInterface
                     i18n={props.i18n}
                     files={event1.audiovisual_files}
@@ -148,7 +140,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
           {duration === 'clip' && (
             <div className='event-options-container'>
               <div>
-                {event2 && Object.keys(event2.audiovisual_files).length > 1 && (
+                {event2 && (
                   <FileRadioInterface
                     i18n={props.i18n}
                     files={event2.audiovisual_files}
@@ -193,13 +185,13 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
                       uuid: event1Uuid,
                       start: event1Start,
                       end: event1End,
-                      file: event1File,
+                      file: event1File || undefined,
                     },
                     event2: {
                       uuid: event2Uuid,
                       start: event2Start,
                       end: event2End,
-                      file: event2File,
+                      file: event2File || undefined,
                     },
                   })
                 }

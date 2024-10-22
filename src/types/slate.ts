@@ -29,7 +29,7 @@ export type Includes = 'media' | 'annotations' | 'label' | 'description';
 
 export interface SlateEventNodeData {
   end?: number;
-  file: string;
+  file?: string;
   includes: Includes[];
   start?: number;
   uuid: string;

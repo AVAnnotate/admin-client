@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import type { Includes, SlateEventNodeData } from '../../types/slate.ts';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   ClipInterface,
   DurationInterface,
@@ -37,8 +37,10 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
   const [duration, setDuration] = useState<'full' | 'clip'>(
     props.start || props.end ? 'clip' : 'full'
   );
-  const [file, setFile] = useState(props.file || '');
-  const [includes, setIncludes] = useState<Includes[]>(props.includes || []);
+  const [file, setFile] = useState(props.file || undefined);
+  const [includes, setIncludes] = useState<Includes[]>(
+    props.includes || ['media', 'annotations', 'label', 'description']
+  );
   const [start, setStart] = useState<number | undefined>(props.start);
   const [end, setEnd] = useState<number | undefined>(props.end);
 
@@ -49,13 +51,6 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
       return null;
     }
   }, [eventUuid]);
-
-  // Default to the only AV file if there's only one
-  useEffect(() => {
-    if (event && Object.keys(event.audiovisual_files).length === 1) {
-      setFile(Object.keys(event.audiovisual_files)[0]);
-    }
-  }, [event]);
 
   const { t } = props.i18n;
 
@@ -84,11 +79,11 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
               />
               {duration === 'clip' && (
                 <>
-                  {event && Object.keys(event.audiovisual_files).length > 1 && (
+                  {event && (
                     <FileRadioInterface
                       i18n={props.i18n}
                       files={event.audiovisual_files}
-                      selectedFile={file}
+                      selectedFile={file || null}
                       setSelectedFile={(newFile) => setFile(newFile)}
                     />
                   )}
