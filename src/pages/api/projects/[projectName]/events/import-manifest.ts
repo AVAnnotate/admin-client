@@ -8,6 +8,8 @@ import { initFs } from '@lib/memfs/index.ts';
 import type { UserInfo, Event, ProjectData } from '@ty/Types.ts';
 import { emptyParagraph } from '@lib/slate/index.tsx';
 import { autoGenerateEventPage } from '@lib/pages/autogenerate.ts';
+import { setTemplate } from '@lib/annotations/index.ts';
+import { v4 as uuidv4 } from 'uuid';
 
 // Create a new event
 export const POST: APIRoute = async ({
@@ -87,19 +89,56 @@ export const POST: APIRoute = async ({
             await autoGenerateEventPage(context, info, event, eventRec.id);
           }
 
-          // Find any matching annotations
-          for (let j = 0; j < results.annotations.length; j++) {
-            const annoRec = results.annotations[j];
-            if (annoRec.annotation.event_id === eventRec.id) {
-              const annoPath = `/data/annotations/${annoRec.id}.json`;
-              await writeFile(
-                annoPath,
-                JSON.stringify(annoRec.annotation, null, 2)
+          if (
+            results.annotations.length === 0 ||
+            results.annotations.filter(
+              (a) => a.annotation.event_id === eventRec.id
+            ).length === 0
+          ) {
+            // generate default annotation set for each AV file
+            const keys = Object.keys(eventRec.event.audiovisual_files);
+            for (let j = 0; j < keys.length; j++) {
+              const key = keys[j];
+              const defaultSetUuid = uuidv4();
+
+              const successSet = await writeFile(
+                `/data/annotations/${defaultSetUuid}.json`,
+                JSON.stringify(
+                  {
+                    ...setTemplate,
+                    event_id: eventRec.id,
+                    source_id: key,
+                  },
+                  null,
+                  2
+                )
               );
+
+              if (!successSet) {
+                console.error('Failed to write default set');
+                return new Response(null, {
+                  status: 500,
+                  statusText: 'Failed to write default set',
+                });
+              }
+            }
+          } else {
+            // Find any matching annotations
+            for (let j = 0; j < results.annotations.length; j++) {
+              const annoRec = results.annotations[j];
+              if (annoRec.annotation.event_id === eventRec.id) {
+                const annoPath = `/data/annotations/${annoRec.id}.json`;
+                await writeFile(
+                  annoPath,
+                  JSON.stringify(annoRec.annotation, null, 2)
+                );
+              }
             }
           }
         }
       }
+
+      // Check if any event is missing a default set
 
       if (results.tags.length > 0) {
         // Add any new tags
