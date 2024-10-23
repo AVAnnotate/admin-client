@@ -39,6 +39,17 @@ export const PageRow: React.FC<Props> = (props) => {
       icon: FiletypeHtml,
       onClick: () => props.onDisableAutoGeneration(),
     },
+    {
+      label: t['Open'],
+      icon: BoxArrowUpRight,
+      onClick: () =>
+        window.open(
+          `https://${props.project.project.github_org}.github.io/${
+            props.project.project.slug
+          }/${props.project.pages[props.uuid].slug || props.uuid}`,
+          '_blank'
+        ),
+    },
   ];
 
   const meatballOptions = useMemo(() => {
@@ -46,7 +57,13 @@ export const PageRow: React.FC<Props> = (props) => {
       {
         label: t['Open'],
         icon: BoxArrowUpRight,
-        onClick: () => {},
+        onClick: () =>
+          window.open(
+            `https://${props.project.project.github_org}.github.io/${
+              props.project.project.slug
+            }/${props.project.pages[props.uuid].slug || props.uuid}`,
+            '_blank'
+          ),
       },
       {
         label: t['Edit'],
