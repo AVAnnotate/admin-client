@@ -138,8 +138,6 @@ export const POST: APIRoute = async ({
         }
       }
 
-      // Check if any event is missing a default set
-
       if (results.tags.length > 0) {
         // Add any new tags
         if (
