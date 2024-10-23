@@ -41,7 +41,7 @@ const initialAvFile = {
   is_offline: 'false',
   file_url: '',
   duration: 0,
-  caption_set: '',
+  caption_set: [],
 };
 
 export const EventForm: React.FC<Props> = (props) => {
