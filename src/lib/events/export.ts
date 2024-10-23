@@ -18,10 +18,14 @@ export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
     const fields = [
       Number.isInteger(anno.start_time)
         ? formatTimestamp(anno.start_time, false)
-        : '',
+        : Number.isNaN(anno.start_time)
+        ? ''
+        : formatTimestamp(Math.round(anno.start_time), false),
       Number.isInteger(anno.end_time)
         ? formatTimestamp(anno.end_time, false)
-        : '',
+        : Number.isNaN(anno.end_time)
+        ? ''
+        : formatTimestamp(Math.round(anno.end_time), false),
       anno.annotation ? serializeRichText(anno.annotation) : '',
       anno.tags.map((t) => t.tag).join('|') || '',
     ];
