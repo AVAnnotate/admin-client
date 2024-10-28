@@ -89,7 +89,6 @@ export const Projects = (props: ProjectsProps) => {
       if (sort === 'Name') {
         projs.myProjects.sort(Sorters['Name']);
         projs.sharedProjects.sort(Sorters['Name']);
-        console.log(projs.myProjects);
         setProjects(projs);
       } else if (sort === 'Oldest') {
         projs.myProjects.sort(Sorters['Oldest']);
