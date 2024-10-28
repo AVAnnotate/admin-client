@@ -41,8 +41,15 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
         <div className='annotations-pane'>
           <div className='annotations-pane-header'>
             <div className='set-picker'>
+              <h3>{t['Annotations']}</h3>
               <div className='select-container'>
-                <h3>{t['Annotations']}</h3>
+                <Button
+                  className='outline add-set-button'
+                  onClick={() => props.stateHandlers.setShowAddSetModal(true)}
+                >
+                  {t['Add Set']}
+                  <PlusIcon />
+                </Button>
                 {props.sets.length > 1 && (
                   <SetSelect
                     onChange={(uuid) =>
@@ -56,13 +63,6 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
                   />
                 )}
               </div>
-              <Button
-                className='outline add-set-button'
-                onClick={() => props.stateHandlers.setShowAddSetModal(true)}
-              >
-                {t['Add Set']}
-                <PlusIcon />
-              </Button>
             </div>
             <AnnotationTableHeader
               displayAnnotations={props.displayAnnotations}

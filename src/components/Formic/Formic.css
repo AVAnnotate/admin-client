@@ -317,6 +317,14 @@
   padding: 8px 14px 8px 14px;
   position: relative;
   user-select: none;
+  width: 100%;
+}
+
+.select-item * {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 10px;
 }
 
 .select-item[data-disabled] {
