@@ -108,7 +108,7 @@ export const importIIIFManifest = async (
           const annotations: AnnotationEntry[] = [];
           const label = getLabel(a.label);
           let anno: IIIFAnnotationPage | undefined = undefined;
-          if (a.id.endsWith('.json')) {
+          if (a.id.endsWith('.json') && !a.items) {
             const annoResult = await fetch(a.id);
             if (annoResult.ok) {
               anno = await annoResult.json();
@@ -155,6 +155,7 @@ export const importIIIFManifest = async (
               }
             });
           }
+          console.log('Annotations: ', annotations);
           result.annotations.push({
             id: annoFileId,
             annotation: {
