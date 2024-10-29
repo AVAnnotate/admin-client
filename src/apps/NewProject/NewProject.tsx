@@ -44,7 +44,8 @@ export const NewProject = (props: NewProjectProps) => {
       additionalUsers: project.additional_users.map((u) => u.login_name),
       language: project.language,
       autoPopulateHomePage: project.auto_populate_home_page,
-      visibility: 'public',
+      visibility: project.is_private ? 'private' : 'public',
+      generate_pages_site: !!project.generate_pages_site,
       tags: project.tags
         ? // @ts-ignore
           mapTagData(project!.tags.data, map)

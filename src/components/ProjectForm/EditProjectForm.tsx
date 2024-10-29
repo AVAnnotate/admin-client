@@ -1,6 +1,11 @@
-import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
-import { Formik, Form } from 'formik';
-import { TextInput, UserList } from '@components/Formic/index.tsx';
+import type {
+  ProjectData,
+  Translations,
+  UserInfo,
+  Project,
+} from '@ty/Types.ts';
+import { Formik, Form, useFormikContext } from 'formik';
+import { TextInput, UserList, ToggleInput } from '@components/Formic/index.tsx';
 import { useEffect, useRef, useMemo } from 'react';
 
 import './ProjectForm.css';
@@ -29,6 +34,17 @@ const FormContents = (props: EditProjectFormProps) => {
   const generalRef = useRef(null);
   const userRef = useRef(null);
 
+  const { values, setFieldValue } = useFormikContext();
+
+  useEffect(() => {
+    if (
+      (values as Project).is_private &&
+      (values as Project).generate_pages_site
+    ) {
+      setFieldValue('generate_pages_site', false);
+    }
+  }, [values]);
+
   useEffect(() => {
     const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>
       ref.current!.scrollIntoView();
@@ -46,6 +62,17 @@ const FormContents = (props: EditProjectFormProps) => {
         <Form>
           <h2>{t['General']}</h2>
           <div ref={generalRef} />
+          <ToggleInput
+            label={t['Use Private Repository']}
+            name='is_private'
+            helperText={t['_private_repository_helper_text_']}
+          />
+
+          <ToggleInput
+            label={t['Generate GitHub Pages Site']}
+            name='generate_pages_site'
+            helperText={t['_generate_pages_site_helper_text_']}
+          />
 
           <TextInput
             label={t['Title']}
@@ -111,6 +138,10 @@ export const EditProjectForm: React.FC<EditProjectFormProps> = (props) => {
       media_player: props.projectData.project.media_player,
       authors: props.projectData.project.authors,
       title: props.projectData.project.title,
+      is_private: !!props.projectData.project.is_private,
+      generate_pages_site:
+        props.projectData.project.generate_pages_site ||
+        props.projectData.publish.publish_pages_app,
     };
   }, [props.projectData]);
 
