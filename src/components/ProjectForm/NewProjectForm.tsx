@@ -1,5 +1,5 @@
 import type { GitHubOrganization, Project, Translations } from '@ty/Types.ts';
-import { Formik, Form } from 'formik';
+import { Formik, Form, useFormikContext } from 'formik';
 import {
   TextInput,
   SelectInput,
@@ -43,6 +43,8 @@ const FormContents = (props: NewProjectFormProps) => {
 
   const emptyProject: Project = {
     github_org: props.orgs[0].orgName,
+    is_private: false,
+    generate_pages_site: true,
     title: '',
     description: '',
     language: 'en',
@@ -110,123 +112,148 @@ const FormContents = (props: NewProjectFormProps) => {
             setSubmitting(false);
           }}
         >
-          {({ isValid }) => (
-            <Form>
-              <h2>{t['General']}</h2>
-              <div ref={generalRef} />
-              <SelectInput
-                label={t['GitHub Organization']}
-                name='github_org'
-                options={props.orgs.map((o) => ({
-                  value: o.orgName,
-                  label: o.orgName,
-                }))}
-                required
-              />
+          {({ isValid, setFieldValue, values }) => {
+            if (
+              (values as Project).is_private &&
+              (values as Project).generate_pages_site
+            ) {
+              setFieldValue('generate_pages_site', false);
+            }
 
-              <TextInput
-                label={t['Title']}
-                helperText={
-                  t[
-                    'A title that will show up at the top of your project pages.'
-                  ]
-                }
-                name='title'
-                required
-              />
+            return (
+              <Form>
+                <h2>{t['General']}</h2>
+                <div ref={generalRef} />
+                <SelectInput
+                  label={t['GitHub Organization']}
+                  name='github_org'
+                  options={props.orgs.map((o) => ({
+                    value: o.orgName,
+                    label: o.orgName,
+                  }))}
+                  required
+                />
 
-              <TextInput
-                label={t['Description']}
-                helperText={t['A brief paragraph describing your project.']}
-                name='description'
-                isLarge
-                required
-              />
+                <ToggleInput
+                  label={t['Use Private Repository']}
+                  name='is_private'
+                  helperText={t['_private_repository_helper_text_']}
+                />
 
-              <SelectInput
-                label={t['Language']}
-                name='language'
-                options={countryOptions}
-                required
-              />
+                <ToggleInput
+                  label={t['Generate GitHub Pages Site']}
+                  name='generate_pages_site'
+                  helperText={t['_generate_pages_site_helper_text_']}
+                />
 
-              <TextInput
-                label={t['Project Slug']}
-                helperText={
-                  t[
-                    'A short name used in URLs for your project which will be the repository name used on GitHub.'
-                  ]
-                }
-                name='slug'
-                required
-                bottomNote={
-                  t[
-                    'Please do not use spaces or punctuation other than hyphens.'
-                  ]
-                }
-              />
+                <TextInput
+                  label={t['Title']}
+                  helperText={
+                    t[
+                      'A title that will show up at the top of your project pages.'
+                    ]
+                  }
+                  name='title'
+                  required
+                />
 
-              <TextInput
-                label={t['Project Author(s)']}
-                helperText={
-                  t[
-                    'Names will appear at the bottom of your project pages. If left blank, the project owners GitHub username will show instead.'
-                  ]
-                }
-                name='authors'
-              />
+                <TextInput
+                  label={t['Description']}
+                  helperText={t['A brief paragraph describing your project.']}
+                  name='description'
+                  isLarge
+                  required
+                />
 
-              <MediaPlayerField i18n={props.i18n} />
+                <SelectInput
+                  label={t['Language']}
+                  name='language'
+                  options={countryOptions}
+                  required
+                />
 
-              <ToggleInput
-                label={t['Auto-populate Home page']}
-                helperText=''
-                name='auto_populate_home_page'
-              />
+                <TextInput
+                  label={t['Project Slug']}
+                  helperText={
+                    t[
+                      'A short name used in URLs for your project which will be the repository name used on GitHub.'
+                    ]
+                  }
+                  name='slug'
+                  required
+                  bottomNote={
+                    t[
+                      'Please do not use spaces or punctuation other than hyphens.'
+                    ]
+                  }
+                />
 
-              <div className='project-form-divider' />
-              <div ref={userRef} />
-              <UserList
-                label={t['Additional Users (optional)']}
-                name='additional_users'
-                addString={t['add']}
-                nameString={t['User GitHub Name']}
-                i18n={props.i18n}
-              />
+                <TextInput
+                  label={t['Project Author(s)']}
+                  helperText={
+                    t[
+                      'Names will appear at the bottom of your project pages. If left blank, the project owners GitHub username will show instead.'
+                    ]
+                  }
+                  name='authors'
+                />
 
-              <div className='project-form-divider' />
+                <MediaPlayerField i18n={props.i18n} />
 
-              <div ref={tagRef} />
-              <h2>{t['Tags (optional)']}</h2>
-              <div className='av-label'>
-                {
-                  t[
-                    'Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.'
-                  ]
-                }
-              </div>
-              <SpreadsheetInput
-                accept='.tsv, .csv, .xlsx, .txt'
-                i18n={props.i18n}
-                label={t['Tags File']}
-                name='tags'
-                importAsOptions={importAsOptions}
-              />
+                <ToggleInput
+                  label={t['Auto-populate Home page']}
+                  helperText=''
+                  name='auto_populate_home_page'
+                />
 
-              <BottomBar>
-                <div className='project-form-actions-container'>
-                  <Button className='primary' type='submit' disabled={!isValid}>
-                    {t['Create Project']}
-                  </Button>
-                  <a href={`/${props.i18n.lang}/projects`}>
-                    <Button type='submit' className='outline'>
-                      {t['cancel']}
-                    </Button>
-                  </a>
+                <div className='project-form-divider' />
+                <div ref={userRef} />
+                <UserList
+                  label={t['Additional Users (optional)']}
+                  name='additional_users'
+                  addString={t['add']}
+                  nameString={t['User GitHub Name']}
+                  i18n={props.i18n}
+                />
+
+                <div className='project-form-divider' />
+
+                <div ref={tagRef} />
+                <h2>{t['Tags (optional)']}</h2>
+                <div className='av-label'>
+                  {
+                    t[
+                      'Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.'
+                    ]
+                  }
                 </div>
-              </BottomBar>
-            </Form>
-          )}
+                <SpreadsheetInput
+                  accept='.tsv, .csv, .xlsx, .txt'
+                  i18n={props.i18n}
+                  label={t['Tags File']}
+                  name='tags'
+                  importAsOptions={importAsOptions}
+                />
+
+                <BottomBar>
+                  <div className='project-form-actions-container'>
+                    <Button
+                      className='primary'
+                      type='submit'
+                      disabled={!isValid}
+                    >
+                      {t['Create Project']}
+                    </Button>
+                    <a href={`/${props.i18n.lang}/projects`}>
+                      <Button type='submit' className='outline'>
+                        {t['cancel']}
+                      </Button>
+                    </a>
+                  </div>
+                </BottomBar>
+              </Form>
+            );
+          }}
         </Formik>
       </div>
     </div>

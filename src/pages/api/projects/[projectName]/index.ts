@@ -4,6 +4,7 @@ import {
   enablePages,
   replaceRepoTopics,
   getRepo,
+  changeRepoVisibility,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -90,28 +91,30 @@ export const POST: APIRoute = async ({
 
     const repo: FullRepository = await resp.json();
 
-    // Enable pages
-    const respPages: Response = await enablePages(
-      body.gitHubOrg,
-      projectName as string,
-      token?.value as string
-    );
-
-    if (!respPages.ok) {
-      console.error('Status: ', respPages.status);
-      console.error('Failed to enable GitHub pages: ', respPages.statusText);
-      return new Response(
-        JSON.stringify({
-          avaError: '_failed_pages_enable_',
-        }),
-        {
-          status: 500,
-          statusText: respPages.statusText,
-        }
+    if (body.generate_pages_site) {
+      // Enable pages
+      const respPages: Response = await enablePages(
+        body.gitHubOrg,
+        projectName as string,
+        token?.value as string
       );
-    }
 
-    console.info('GitHub Pages enabled!');
+      if (!respPages.ok) {
+        console.error('Status: ', respPages.status);
+        console.error('Failed to enable GitHub pages: ', respPages.statusText);
+        return new Response(
+          JSON.stringify({
+            avaError: '_failed_pages_enable_',
+          }),
+          {
+            status: 500,
+            statusText: respPages.statusText,
+          }
+        );
+      }
+
+      console.info('GitHub Pages enabled!');
+    }
 
     // Add avannotate-project topic
     const respTopics: Response = await replaceRepoTopics(
@@ -175,13 +178,14 @@ export const POST: APIRoute = async ({
 
     const project = {
       publish: {
-        publish_pages_app: true,
+        publish_pages_app: body.generate_pages_site,
         publish_sha: '',
         publish_iso_date: '',
       },
       users: collabs,
       project: {
         github_org: body.gitHubOrg,
+        is_private: body.visibility === 'private',
         title: body.title,
         description: body.description,
         language: body.language,
@@ -343,6 +347,58 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     });
   }
 
+  const projectConfig = JSON.parse(readFile('/data/project.json').toString());
+
+  // Has repo visibility changed?
+  if (projectConfig.is_private !== body.is_private) {
+    const visResponse = await changeRepoVisibility(
+      info?.token as string,
+      slugContents.org,
+      slugContents.repo,
+      body.is_private
+    );
+
+    if (!visResponse.ok) {
+      return new Response(null, {
+        status: 500,
+        statusText: 'Failed update repo visibility: ' + visResponse.statusText,
+      });
+    }
+
+    projectConfig.is_private = body.is_private;
+  }
+
+  // Sync pages site creation
+  if (projectConfig.publish.publish_pages_app !== body.generate_pages_site) {
+    if (body.generate_pages_site) {
+      // Enable pages
+      const respPages: Response = await enablePages(
+        slugContents.org,
+        slugContents.repo as string,
+        token?.value as string
+      );
+
+      if (!respPages.ok) {
+        console.error('Status: ', respPages.status);
+        console.error('Failed to enable GitHub pages: ', respPages.statusText);
+        return new Response(
+          JSON.stringify({
+            avaError: '_failed_pages_enable_',
+          }),
+          {
+            status: 500,
+            statusText: respPages.statusText,
+          }
+        );
+      }
+
+      console.info('GitHub Pages enabled!');
+    }
+
+    projectConfig.publish.publish_pages_app = body.generate_pages_site;
+    projectConfig.project.generate_pages_site = body.generate_pages_site;
+  }
+
   // Add Collaborators
   let collabs;
 
@@ -360,8 +416,6 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     });
   }
 
-  const projectConfig = JSON.parse(readFile('/data/project.json').toString());
-
   // override existing properties with new ones from the request
   const newConfig: Project = {
     ...projectConfig,
@@ -372,13 +426,16 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     },
   };
 
-  writeFile('/data/project.json', JSON.stringify(newConfig, null, 2));
+  await writeFile('/data/project.json', JSON.stringify(newConfig, null, 2));
 
   await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(
     `Updated project file for ${body.title}`
   );
+
+  // Delay hack
+  await delay(3000);
 
   if (successCommit.error) {
     console.error('Failed to write project data: ', successCommit.error);

@@ -30,7 +30,8 @@ export type apiAnnotationSetPost = {
 export type apiProjectsProjectNamePost = {
   templateRepo: string;
   description: string;
-  visibility?: 'private' | 'public'; // Defaults to private
+  visibility: 'private' | 'public';
+  generate_pages_site: boolean;
   title: string;
   slug: string;
   gitHubOrg: string;
@@ -98,6 +99,8 @@ export type apiProjectPut = {
   media_player: MediaPlayer;
   title: string;
   tags?: Tags;
+  is_private: boolean;
+  generate_pages_site: boolean;
 };
 
 export type apiAnalyzeManifest = {

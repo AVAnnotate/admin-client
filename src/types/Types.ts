@@ -42,6 +42,8 @@ export type MediaPlayer = 'avannotate' | 'universal' | 'aviary';
 
 export type Project = {
   github_org: string;
+  is_private?: boolean;
+  generate_pages_site?: boolean;
   title: string;
   description: string;
   language: string;

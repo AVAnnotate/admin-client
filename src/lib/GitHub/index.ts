@@ -333,3 +333,22 @@ export const getRepo = async (
     },
   });
 };
+
+export const changeRepoVisibility = async (
+  token: string,
+  org: string,
+  slug: string,
+  isPrivate: boolean
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/repos/${org}/${slug}`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify({
+      private: isPrivate,
+    }),
+  });
+};

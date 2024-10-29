@@ -33,5 +33,9 @@
   "Tag Category": "Tag Category",
   "Import file contains column headers?": "Import file contains column headers?",
   "Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.": "Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.",
-  "Project Slug should only contain alphanumeric characters and hyphens.": "Project Slug should only contain alphanumeric characters and hyphens."
+  "Project Slug should only contain alphanumeric characters and hyphens.": "Project Slug should only contain alphanumeric characters and hyphens.",
+  "Use Private Repository": "Use Private Repository",
+  "_private_repository_helper_text_": "Private repositories do not generate GitHub Pages sites. Instead they will generate a static site and check it into your project repository.",
+  "Generate GitHub Pages Site": "Generate GitHub Pages Site",
+  "_generate_pages_site_helper_text_": "Generate a GitHub Pages site.  If unchecked a static site which you can deploy will be created and checked into your project repository."
 }
