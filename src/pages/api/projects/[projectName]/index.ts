@@ -395,8 +395,8 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       console.info('GitHub Pages enabled!');
     }
 
-    projectConfig.publish.publish_pages_app = body.generate_pages_site;
-    projectConfig.project.generate_pages_site = body.generate_pages_site;
+    projectConfig.publish.publish_pages_app = !!body.generate_pages_site;
+    projectConfig.project.generate_pages_site = !!body.generate_pages_site;
   }
 
   // Add Collaborators
