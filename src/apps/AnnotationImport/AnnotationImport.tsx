@@ -98,7 +98,9 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
         )
         .map((uuid) => ({
           label: `${
-            props.project.events[props.project.annotations[uuid].event_id].label
+            props.project.events[props.project.annotations[uuid].event_id]
+              .audiovisual_files[props.project.annotations[uuid].source_id]
+              .label
           } - ${props.project.annotations[uuid].set}`,
           value: uuid,
         })),
