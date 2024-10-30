@@ -281,7 +281,6 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
     const order = JSON.parse(orderFile as string);
 
-    console.log('Delete: ', deleteList);
     const newOrder: string[] = order.filter(
       (o: string) => !deleteList.includes(o)
     );

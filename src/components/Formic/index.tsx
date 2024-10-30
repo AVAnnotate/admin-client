@@ -223,6 +223,68 @@ export const SelectInput = (props: SelectInputProps) => {
   );
 };
 
+interface DoubleSwitchInputProps {
+  label: string;
+  helperText?: string;
+  name: string;
+  optionLeft: { label: string; value: string; disabled?: boolean };
+  optionRight: { label: string; value: string; disabled?: boolean };
+  required?: boolean;
+  bottomNote?: string;
+}
+
+export const DoubleSwitchInput = (props: DoubleSwitchInputProps) => {
+  const [_field, meta, helpers] = useField(props.name);
+
+  const { value } = meta;
+  const { setValue } = helpers;
+  return (
+    <div>
+      <div className='av-label-bold formic-form-label'>
+        {props.label}
+        {props.required && <Required />}
+      </div>
+      {props.helperText && (
+        <div className='av-label formic-form-helper-text'>
+          {props.helperText}
+        </div>
+      )}
+      <div className='formic-form-switch'>
+        <Button
+          type='button'
+          className={
+            value === props.optionLeft.value
+              ? 'unstyled formic-form-switch-button formic-form-switch-button-left formic-form-switch-button-selected'
+              : 'unstyled formic-form-switch-button formic-form-switch-button-left'
+          }
+          onClick={() => setValue(props.optionLeft.value)}
+          disabled={props.optionLeft.disabled}
+        >
+          {props.optionLeft.label}
+        </Button>
+        <Button
+          type='button'
+          className={
+            value === props.optionRight.value
+              ? 'unstyled formic-form-switch-button formic-form-switch-button-right formic-form-switch-button-selected'
+              : 'unstyled formic-form-switch-button formic-form-switch-button-right'
+          }
+          onClick={() => setValue(props.optionRight.value)}
+          disabled={props.optionRight.disabled}
+        >
+          {props.optionRight.label}
+        </Button>
+      </div>
+      <ErrorMessage name={props.name} component='div' />
+      {props.bottomNote && (
+        <div className='av-label-italic formic-form-helper-text'>
+          {props.bottomNote}
+        </div>
+      )}
+    </div>
+  );
+};
+
 interface TripleSwitchInputProps {
   label: string;
   helperText?: string;

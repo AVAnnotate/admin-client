@@ -100,69 +100,72 @@ export const importIIIFManifest = async (
       },
     });
 
-    for (let x = 0; x < c.annotations.length; x++) {
-      const a = c.annotations[x];
-      if (a.type === 'AnnotationPage') {
-        const annoFileId = uuidv4();
-        const annotations: AnnotationEntry[] = [];
-        const label = getLabel(a.label);
-        let anno: IIIFAnnotationPage | undefined = undefined;
-        if (a.id.endsWith('.json')) {
-          const annoResult = await fetch(a.id);
-          if (annoResult.ok) {
-            anno = await annoResult.json();
+    if (c.annotations && c.annotations.length > 0) {
+      for (let x = 0; x < c.annotations.length; x++) {
+        const a = c.annotations[x];
+        if (a.type === 'AnnotationPage') {
+          const annoFileId = uuidv4();
+          const annotations: AnnotationEntry[] = [];
+          const label = getLabel(a.label);
+          let anno: IIIFAnnotationPage | undefined = undefined;
+          if (a.id.endsWith('.json') && !a.items) {
+            const annoResult = await fetch(a.id);
+            if (annoResult.ok) {
+              anno = await annoResult.json();
+            }
+          } else {
+            anno = a;
           }
-        } else {
-          anno = a;
-        }
-        if (anno) {
-          anno.items?.forEach((i) => {
-            const setTags: Tag[] = [];
-            if (i.type === 'Annotation') {
-              const { start, end } = getTime(i.target);
-              let nodes: Node[] = [];
-              const tags: Tag[] = [...setTags];
-              if (!Array.isArray(i.body)) {
-                const document = JSDOM.fragment(
-                  `${(i.body as IIIFResource).value as string}`
-                );
-                nodes = deserialize(document);
-              } else {
-                (i.body as IIIFResource[]).forEach((b) => {
-                  if (b.purpose === 'tagging') {
-                    tags.push({
-                      category: '_uncategorized_',
-                      tag: b.value as string,
-                    });
-                    if (result.tags.findIndex((t) => t === b.value) === -1) {
-                      result.tags.push(b.value as string);
+          if (anno) {
+            anno.items?.forEach((i) => {
+              const setTags: Tag[] = [];
+              if (i.type === 'Annotation') {
+                const { start, end } = getTime(i.target);
+                let nodes: Node[] = [];
+                const tags: Tag[] = [...setTags];
+                if (!Array.isArray(i.body)) {
+                  const document = JSDOM.fragment(
+                    `${(i.body as IIIFResource).value as string}`
+                  );
+                  nodes = deserialize(document);
+                } else {
+                  (i.body as IIIFResource[]).forEach((b) => {
+                    if (b.purpose === 'tagging') {
+                      tags.push({
+                        category: '_uncategorized_',
+                        tag: b.value as string,
+                      });
+                      if (result.tags.findIndex((t) => t === b.value) === -1) {
+                        result.tags.push(b.value as string);
+                      }
+                    } else {
+                      const document = JSDOM.fragment(`${b.value as string}`);
+                      const res = deserialize(document);
+                      nodes = [...nodes, ...res];
                     }
-                  } else {
-                    const document = JSDOM.fragment(`${b.value as string}`);
-                    const res = deserialize(document);
-                    nodes = [...nodes, ...res];
-                  }
+                  });
+                }
+                annotations.push({
+                  start_time: start,
+                  end_time: end || start,
+                  annotation: nodes,
+                  tags: tags,
+                  uuid: uuidv4(),
                 });
               }
-              annotations.push({
-                start_time: start,
-                end_time: end || start,
-                annotation: nodes,
-                tags: tags,
-                uuid: uuidv4(),
-              });
-            }
+            });
+          }
+          console.log('Annotations: ', annotations);
+          result.annotations.push({
+            id: annoFileId,
+            annotation: {
+              event_id: eventId,
+              source_id: sourceId,
+              set: label,
+              annotations: annotations,
+            },
           });
         }
-        result.annotations.push({
-          id: annoFileId,
-          annotation: {
-            event_id: eventId,
-            source_id: sourceId,
-            set: label,
-            annotations: annotations,
-          },
-        });
       }
     }
   }

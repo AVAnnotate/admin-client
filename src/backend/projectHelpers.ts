@@ -369,15 +369,12 @@ export const addCollaborators = async (
     );
 
     if (findIdx === -1 && !currentUsers[i].admin) {
-      console.log('Here!');
       const respCollabs: Response = await removeCollaborator(
         projectName as string,
         org,
         currentUsers[i].login_name,
         token as string
       );
-
-      console.log('!done');
 
       if (!respCollabs.ok) {
         throw new Error(`Failed to remove collaborator ${additionalUsers[i]}`);

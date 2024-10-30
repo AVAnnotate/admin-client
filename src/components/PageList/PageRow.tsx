@@ -39,6 +39,29 @@ export const PageRow: React.FC<Props> = (props) => {
       icon: FiletypeHtml,
       onClick: () => props.onDisableAutoGeneration(),
     },
+    {
+      label: t['Open'],
+      icon: BoxArrowUpRight,
+      onClick: () => {
+        // See what kind of page this is
+        const type = props.project.pages[props.uuid].autogenerate.enabled
+          ? props.project.pages[props.uuid].autogenerate.type
+          : 'page';
+        let url;
+        if (type === 'home') {
+          url = `https://${props.project.project.github_org}.github.io/${props.project.project.slug}/`;
+        } else if (type === 'event') {
+          url = `https://${props.project.project.github_org}.github.io/${
+            props.project.project.slug
+          }/events/${props.project.pages[props.uuid].slug || props.uuid}`;
+        } else {
+          url = `https://${props.project.project.github_org}.github.io/${
+            props.project.project.slug
+          }/pages/${props.project.pages[props.uuid].slug || props.uuid}`;
+        }
+        return window.open(url, '_blank');
+      },
+    },
   ];
 
   const meatballOptions = useMemo(() => {
@@ -46,7 +69,25 @@ export const PageRow: React.FC<Props> = (props) => {
       {
         label: t['Open'],
         icon: BoxArrowUpRight,
-        onClick: () => {},
+        onClick: () => {
+          // See what kind of page this is
+          const type = props.project.pages[props.uuid].autogenerate.enabled
+            ? props.project.pages[props.uuid].autogenerate.type
+            : 'page';
+          let url;
+          if (type === 'home') {
+            url = `https://${props.project.project.github_org}.github.io/${props.project.project.slug}/`;
+          } else if (type === 'event') {
+            url = `https://${props.project.project.github_org}.github.io/${
+              props.project.project.slug
+            }/events/${props.project.pages[props.uuid].slug || props.uuid}`;
+          } else {
+            url = `https://${props.project.project.github_org}.github.io/${
+              props.project.project.slug
+            }/pages/${props.project.pages[props.uuid].slug || props.uuid}`;
+          }
+          return window.open(url, '_blank');
+        },
       },
       {
         label: t['Edit'],
@@ -67,6 +108,7 @@ export const PageRow: React.FC<Props> = (props) => {
       options.push({
         label: t['Re-Enable Auto-Generation'],
         icon: FiletypeHtml,
+        // @ts-ignore
         onClick: () => props.onReEnableAutoGeneration(),
       });
     }
@@ -86,6 +128,7 @@ export const PageRow: React.FC<Props> = (props) => {
       options.push({
         label: t['Delete'],
         icon: Trash,
+        // @ts-ignore
         onClick: async () => props.onDelete(),
       });
     }
