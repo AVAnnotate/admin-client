@@ -78,7 +78,7 @@ export const matchTag = (tag1: Tag, tag2: Tag) =>
 const fetchableFileTypes = ['mp3', 'mp4', 'ogg', 'm4a'];
 
 export const getFileDuration = async (url: string): Promise<number | null> => {
-  if (fetchableFileTypes.includes(url.slice(-3))) {
+  if (url && fetchableFileTypes.includes(url.slice(-3))) {
     // note: the Audio constructor can handle videos for this purpose too
     return new Promise((resolve) => {
       const audio = new Audio();
