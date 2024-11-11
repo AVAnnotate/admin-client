@@ -20,7 +20,7 @@ export const GET: APIRoute = async ({ request }) => {
         status: 302,
         headers: {
           'Set-Cookie': `access-token=${access_token}`,
-          Location: `${import.meta.env.PUBLIC_REDIRECT_URL}/redirect`,
+          Location: `${import.meta.env.PUBLIC_REDIRECT_URL}/en/projects`,
         },
       });
     })
