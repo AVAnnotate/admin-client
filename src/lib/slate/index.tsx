@@ -41,6 +41,8 @@ export const Element = ({
           {children}
         </h2>
       );
+    case 'line-break':
+      return <br contentEditable={false} />;
     case 'list-item':
       return (
         <li style={style} {...attributes}>
