@@ -17,7 +17,7 @@ export const deserialize = (
   el: DocumentFragment | ChildNode,
   markAttributes: { [key: string]: boolean } = {}
 ): any => {
-  if (el.nodeType === Node.TEXT_NODE) {
+  if (el.nodeType === Node.TEXT_NODE || el.nodeName === 'BR') {
     return jsx('text', markAttributes, el.textContent);
   } else if (
     el.nodeType !== Node.DOCUMENT_FRAGMENT_NODE &&
@@ -40,6 +40,9 @@ export const deserialize = (
     case 'ITALIC':
       nodeAttributes.italic = true;
       break;
+    case 'I':
+      nodeAttributes.italic = true;
+      break;
     case 'STRONG':
       nodeAttributes.bold = true;
   }
@@ -55,8 +58,6 @@ export const deserialize = (
   switch (el.nodeName) {
     case 'BODY':
       return jsx('fragment', {}, children);
-    case 'BR':
-      return '\n';
     case 'BLOCKQUOTE':
       return jsx('element', { type: 'quote' }, children);
     case 'P':
