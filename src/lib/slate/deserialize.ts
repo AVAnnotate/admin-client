@@ -58,8 +58,6 @@ export const deserialize = (
   switch (el.nodeName) {
     case 'BODY':
       return jsx('fragment', {}, children);
-    case 'BR':
-      return '\n';
     case 'BLOCKQUOTE':
       return jsx('element', { type: 'quote' }, children);
     case 'P':
