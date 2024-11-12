@@ -18,6 +18,8 @@ import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { deserialize } from '@lib/slate/deserialize.ts';
 import { getFileDuration } from '@lib/events/index.ts';
 import * as Dialog from '@radix-ui/react-dialog';
+import { Text } from 'slate';
+import { emptyParagraph } from '@lib/slate/index.tsx';
 
 interface Props {
   i18n: Translations;
@@ -130,7 +132,13 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
       if (ev.description) {
         const template = document.createElement('description');
         template.innerHTML = ev.description as unknown as string;
-        ev.description = deserialize(template);
+
+        const descNode = deserialize(template);
+
+        if (Text.isText(descNode)) {
+          const paragraph = structuredClone(emptyParagraph);
+          paragraph[0].children = [descNode];
+        }
       }
 
       for await (const afUuid of Object.keys(ev.audiovisual_files)) {

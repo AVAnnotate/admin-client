@@ -3,7 +3,7 @@ import {
   EmbeddedEventComparison,
 } from '@components/EmbeddedEvent/index.ts';
 import { getTranslationsFromUrl } from '@i18n';
-import { Node, Text, type Descendant } from 'slate';
+import { type Element as SlateElement, Node, Text } from 'slate';
 
 export const Element = ({
   attributes,
@@ -206,7 +206,7 @@ export const serialize = (nodes: Node[]) => {
   });
 };
 
-export const emptyParagraph: Descendant[] = [
+export const emptyParagraph: SlateElement[] = [
   {
     type: 'paragraph',
     children: [{ text: '' }],
