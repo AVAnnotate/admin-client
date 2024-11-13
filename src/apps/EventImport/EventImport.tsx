@@ -130,7 +130,13 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
       if (ev.description) {
         const template = document.createElement('description');
         template.innerHTML = ev.description as unknown as string;
-        ev.description = deserialize(template);
+
+        ev.description = [
+          {
+            type: 'paragraph',
+            children: deserialize(template),
+          },
+        ];
       }
 
       for await (const afUuid of Object.keys(ev.audiovisual_files)) {
