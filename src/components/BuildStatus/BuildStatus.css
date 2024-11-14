@@ -1,0 +1,27 @@
+.build-status-spinner {
+  color: var(--primary);
+}
+
+.build-status-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.rightTI {
+  white-space: nowrap;
+  overflow: hidden;
+  animation: marquee 10s linear infinite;
+}
+.rightTI:hover {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  0% {
+    text-indent: 100%;
+  }
+  100% {
+    text-indent: -100%;
+  }
+}

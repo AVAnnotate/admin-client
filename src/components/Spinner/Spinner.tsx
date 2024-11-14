@@ -17,7 +17,7 @@ export const Spinner = (props: SpinnerProps) => {
       className={props.className ? `${props.className} spinner` : 'spinner'}
       style={{ width }}
     >
-      <circle cx='50' cy='50' r='45' />
+      <circle cx='50' cy='50' r='45' fill='inherit' />
     </svg>
   );
 };

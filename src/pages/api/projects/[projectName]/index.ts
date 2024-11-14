@@ -5,6 +5,8 @@ import {
   replaceRepoTopics,
   getRepo,
   changeRepoVisibility,
+  disablePages,
+  removeRepositoryHomepage,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -288,17 +290,19 @@ export const POST: APIRoute = async ({
       );
     }
 
-    // Finally create the homepage link
-    const respHomepage = await addRepositoryHomepage(
-      body.gitHubOrg,
-      info?.token as string,
-      projectName,
-      `https://${body.gitHubOrg}.github.io/${projectName}`
-    );
+    // Finally create the homepage link if publishing
+    if (body.generate_pages_site) {
+      const respHomepage = await addRepositoryHomepage(
+        body.gitHubOrg,
+        projectName,
+        info?.token as string,
+        `https://${body.gitHubOrg}.github.io/${projectName}`
+      );
 
-    if (!respHomepage.ok) {
-      // Don't fail for this
-      console.log('Failed to create homepage link');
+      if (!respHomepage.ok) {
+        // Don't fail for this
+        console.log('Failed to create homepage link');
+      }
     }
 
     return new Response(
@@ -369,13 +373,53 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   }
 
   // Sync pages site creation
-  if (projectConfig.publish.publish_pages_app !== body.generate_pages_site) {
+  if (projectConfig.project.generate_pages_site !== body.generate_pages_site) {
+    if (
+      projectConfig.project.generate_pages_site &&
+      !body.generate_pages_site
+    ) {
+      console.log('Deleting Pages site.');
+      const respDisable: Response = await disablePages(
+        slugContents.org,
+        slugContents.repo as string,
+        info?.token as string
+      );
+
+      if (!respDisable.ok) {
+        console.error('Status: ', respDisable.status);
+        console.error(
+          'Failed to delete GitHub pages: ',
+          respDisable.statusText
+        );
+        return new Response(
+          JSON.stringify({
+            avaError: '_failed_pages_delete_',
+          }),
+          {
+            status: 500,
+            statusText: respDisable.statusText,
+          }
+        );
+      }
+
+      const homepageResp = await removeRepositoryHomepage(
+        slugContents.org,
+        slugContents.repo as string,
+        info?.token as string
+      );
+
+      if (!homepageResp.ok) {
+        // Log error but do not fail
+        console.error('Status: ', homepageResp.status);
+        console.error('Failed to delete Home page: ', homepageResp.statusText);
+      }
+    }
     if (body.generate_pages_site) {
       // Enable pages
       const respPages: Response = await enablePages(
         slugContents.org,
         slugContents.repo as string,
-        token?.value as string
+        info?.token as string
       );
 
       if (!respPages.ok) {
@@ -393,6 +437,18 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       }
 
       console.info('GitHub Pages enabled!');
+
+      const respHomepage = await addRepositoryHomepage(
+        slugContents.org,
+        slugContents.repo,
+        info?.token as string,
+        `https://${slugContents.org}.github.io/${slugContents.repo}`
+      );
+
+      if (!respHomepage.ok) {
+        // Don't fail for this
+        console.log('Failed to create homepage link');
+      }
     }
 
     projectConfig.publish.publish_pages_app = !!body.generate_pages_site;
