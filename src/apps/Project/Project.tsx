@@ -22,11 +22,12 @@ import './Project.css';
 import { PageList } from '@components/PageList/index.ts';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { Chats } from '@phosphor-icons/react/dist/icons/Chats';
 import { exportEvents } from '@lib/events/export.ts';
+import { BuildStatus } from '@components/BuildStatus/BuildStatus.tsx';
 
 interface Props {
   i18n: Translations;
@@ -54,10 +55,6 @@ export const Project: React.FC<Props> = (props) => {
     [props.project.events]
   );
 
-  const handleNavToSets = () => {
-    window.location.pathname = `/${lang}/projects/${props.projectSlug}/sets`;
-  };
-
   const handleNavToSettings = () => {
     window.location.pathname = `/${lang}/projects/${props.projectSlug}/settings`;
   };
@@ -82,7 +79,10 @@ export const Project: React.FC<Props> = (props) => {
       />
       <div className='project-container'>
         <div className='project-top-bar'>
-          <h2 className='project-title'>{props.project.project.title}</h2>
+          <h2 className='project-title'>
+            {props.project.project.title}
+            <BuildStatus projectSlug={props.projectSlug} i18n={props.i18n} />
+          </h2>
           <div className='project-top-bar-buttons'>
             <a href={`/${lang}/projects/${props.projectSlug}/tags`}>
               <Button className='primary'>
