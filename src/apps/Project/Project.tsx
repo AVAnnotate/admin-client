@@ -22,10 +22,9 @@ import './Project.css';
 import { PageList } from '@components/PageList/index.ts';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
 import { Table } from '@components/Table/Table.tsx';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
-import { Chats } from '@phosphor-icons/react/dist/icons/Chats';
 import { exportEvents } from '@lib/events/export.ts';
 import { BuildStatus } from '@components/BuildStatus/BuildStatus.tsx';
 
@@ -116,10 +115,6 @@ export const Project: React.FC<Props> = (props) => {
                   >
                     {t['View']}
                     <BoxArrowUpRight />
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item className='dropdown-item project-dropdown-item'>
-                    {t['Export']}
-                    <DownloadIcon />
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
