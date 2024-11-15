@@ -42,9 +42,6 @@ import type { ProjectData, Translations } from '@ty/Types.ts';
 import type { ElementTypes, ImageData } from '@ty/slate.ts';
 import { Element, emptyParagraph, Leaf } from '../../../lib/slate/index.tsx';
 
-// This code is adapted from the rich text example at:
-// https://github.com/ianstormtaylor/slate/blob/main/site/examples/richtext.tsx
-
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
 
@@ -212,6 +209,31 @@ const withAVAPlugin = (editor: BaseEditor & ReactEditor) => {
   return editor;
 };
 
+const withColumnsPlugin = (editor: BaseEditor & ReactEditor) => {
+  const { insertNodes } = editor;
+
+  // Slate intentionally includes the parent element of selected text.
+  // (see https://github.com/ianstormtaylor/slate/pull/4489)
+  // We don't want that, at least not when copying text from inside of a grid,
+  // because we'd end up with a single, detached column. So this block overrides
+  // the insertNodes method to check whether we're trying to insert a grid
+  // with a single column. If so, we only insert the content from inside the column
+  // and ignore the top two layers (the grid and column nodes).
+  editor.insertNodes = (el) => {
+    if (Array.isArray(el) && el.length > 0) {
+      const grid = el[0] as any;
+      if (grid.type === 'grid' && grid.children && grid.children.length === 1) {
+        const column = grid.children[0];
+        return insertNodes(column.children);
+      }
+    }
+
+    return insertNodes(el);
+  };
+
+  return editor;
+};
+
 interface Props {
   initialValue?: any;
   onChange: (data: any) => any;
@@ -226,7 +248,10 @@ interface Props {
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
-  const editor = useMemo(() => withReact(withAVAPlugin(createEditor())), []);
+  const editor = useMemo(
+    () => withReact(withColumnsPlugin(withAVAPlugin(createEditor()))),
+    []
+  );
   const renderElement = useCallback(
     (elProps: any) => (
       <Element {...elProps} project={props.project} i18n={props.i18n} />
