@@ -243,12 +243,15 @@ const withColumnsPlugin = (editor: BaseEditor & ReactEditor) => {
   editor.normalizeNode = (entry) => {
     const [node, path] = entry;
 
+    // @ts-ignore
     if (node.type === 'grid') {
       const parentPath = Path.parent(path);
 
+      // @ts-ignore
       if (node.children.length === 1) {
         Transforms.removeNodes(editor, { at: path });
 
+        // @ts-ignore
         const singleColumn = node.children[0];
 
         if (singleColumn.children && singleColumn.children.length > 0) {
@@ -280,7 +283,7 @@ interface Props {
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
-  const editorRef = useRef<BaseEditor & ReactEditor>(null);
+  const editorRef = useRef<(BaseEditor & ReactEditor) | null>(null);
 
   if (!editorRef.current) {
     editorRef.current = withReact(

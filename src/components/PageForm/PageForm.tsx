@@ -65,8 +65,6 @@ const FormContents: React.FC<Props> = (props) => {
     }
   }, [(values as FormPage).parent]);
 
-  console.log(values.content);
-
   return (
     <Form className='page-form'>
       <div className='page-form-body'>
