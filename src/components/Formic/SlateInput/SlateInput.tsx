@@ -1,4 +1,4 @@
-import { useCallback, useMemo, type ReactElement } from 'react';
+import { useCallback, useRef, type ReactElement } from 'react';
 import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react';
 import {
   Editor,
@@ -6,6 +6,7 @@ import {
   createEditor,
   Element as SlateElement,
   type BaseEditor,
+  Path,
 } from 'slate';
 import { Button } from '@radix-ui/themes';
 import {
@@ -210,7 +211,7 @@ const withAVAPlugin = (editor: BaseEditor & ReactEditor) => {
 };
 
 const withColumnsPlugin = (editor: BaseEditor & ReactEditor) => {
-  const { insertNodes } = editor;
+  const { insertNodes, normalizeNode } = editor;
 
   // Slate intentionally includes the parent element of selected text.
   // (see https://github.com/ianstormtaylor/slate/pull/4489)
@@ -219,16 +220,47 @@ const withColumnsPlugin = (editor: BaseEditor & ReactEditor) => {
   // the insertNodes method to check whether we're trying to insert a grid
   // with a single column. If so, we only insert the content from inside the column
   // and ignore the top two layers (the grid and column nodes).
-  editor.insertNodes = (el) => {
-    if (Array.isArray(el) && el.length > 0) {
-      const grid = el[0] as any;
+  editor.insertNodes = (nodes, options) => {
+    if (Array.isArray(nodes) && nodes.length > 0) {
+      const grid = nodes[0] as any;
       if (grid.type === 'grid' && grid.children && grid.children.length === 1) {
         const column = grid.children[0];
-        return insertNodes(column.children);
+        insertNodes(column.children);
+      } else {
+        insertNodes(nodes, options);
+      }
+    } else {
+      insertNodes(nodes, options);
+    }
+  };
+
+  // Normalize the grid node so that, if it ever ends up with only one column,
+  // (e.g. when the user backspaces to remove the other column), the grid and
+  // solo column are removed and all its content is brought to the top level.
+  //
+  // With a little more hacking, this could probably be updated to handle
+  // the situation addressed by the insertNodes override above.
+  editor.normalizeNode = (entry) => {
+    const [node, path] = entry;
+
+    if (node.type === 'grid') {
+      const parentPath = Path.parent(path);
+
+      if (node.children.length === 1) {
+        Transforms.removeNodes(editor, { at: path });
+
+        const singleColumn = node.children[0];
+
+        if (singleColumn.children && singleColumn.children.length > 0) {
+          Transforms.insertNodes(editor, { text: '' }, { at: parentPath });
+          Transforms.insertNodes(editor, singleColumn.children, {
+            at: [...parentPath, 0],
+          });
+        }
       }
     }
 
-    return insertNodes(el);
+    return normalizeNode(entry);
   };
 
   return editor;
@@ -248,10 +280,16 @@ interface Props {
 }
 
 export const SlateInput: React.FC<Props> = (props) => {
-  const editor = useMemo(
-    () => withReact(withColumnsPlugin(withAVAPlugin(createEditor()))),
-    []
-  );
+  const editorRef = useRef<BaseEditor & ReactEditor>(null);
+
+  if (!editorRef.current) {
+    editorRef.current = withReact(
+      withColumnsPlugin(withAVAPlugin(createEditor()))
+    );
+  }
+
+  const editor = editorRef.current;
+
   const renderElement = useCallback(
     (elProps: any) => (
       <Element {...elProps} project={props.project} i18n={props.i18n} />
