@@ -67,11 +67,6 @@ export const POST: APIRoute = async ({
 
       for (let i = 0; i < results.events.length; i++) {
         const eventRec = results.events[i];
-        console.log(
-          `Event id: ${
-            eventRec.event.label
-          }, includes: ${body.event_labels?.includes(eventRec.event.label)}`
-        );
         if (
           !body.event_labels ||
           body.event_labels.length === 0 ||
