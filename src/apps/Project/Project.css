@@ -12,6 +12,9 @@
 
 .project-container .project-top-bar .project-title {
   font-size: 24px;
+  gap: 5px;
+  display: flex;
+  flex-direction: row;
 }
 
 .project-container .project-top-bar .project-top-bar-buttons {

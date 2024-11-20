@@ -180,12 +180,32 @@ export const createRepositoryFromTemplate = async (
 
 export const addRepositoryHomepage = async (
   org: string,
-  token: string,
   repoName: string,
+  token: string,
   homePageURL: string
 ): Promise<Response> => {
   const body = {
     homepage: homePageURL,
+  };
+
+  return await fetch(`https://api.github.com/repos/${org}/${repoName}`, {
+    method: 'PATCH',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify(body),
+  });
+};
+
+export const removeRepositoryHomepage = async (
+  org: string,
+  repoName: string,
+  token: string
+): Promise<Response> => {
+  const body = {
+    homepage: '',
   };
 
   return await fetch(`https://api.github.com/repos/${org}/${repoName}`, {
@@ -220,6 +240,21 @@ export const enablePages = async (
       'X-GitHub-Api-Version': '2022-11-28',
     },
     body: JSON.stringify(body),
+  });
+};
+
+export const disablePages = async (
+  org: string,
+  repo: string,
+  token: string
+): Promise<Response> => {
+  return await fetch(`https://api.github.com/repos/${org}/${repo}/pages`, {
+    method: 'DELETE',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
   });
 };
 
@@ -351,4 +386,22 @@ export const changeRepoVisibility = async (
       private: isPrivate,
     }),
   });
+};
+
+export const checkWorkflowStatus = async (
+  token: string,
+  org: string,
+  slug: string
+): Promise<Response> => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${slug}/actions/workflows/deploy-main.yml/runs?status=in_progress`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
 };

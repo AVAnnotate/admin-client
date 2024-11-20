@@ -1,15 +1,29 @@
 import type {
-  IIIFAnnotationPage,
-  IIIFAnnotationTarget,
-  IIIFPresentationManifest,
-  IIIFResource,
-} from '@ty/iiif.ts';
+  AnnotationPage as IIIFAnnotationPage,
+  Annotation as IIIFAnnotation,
+  Manifest as IIIFPresentationManifest,
+  Canvas as IIIFCanvas,
+  AnnotationTarget as IIIFAnnotationTarget,
+  IIIFExternalWebResource as IIIFResource,
+  AnnotationBody as IIIFAnnotationBody,
+  Target,
+  ContentResource,
+  EmbeddedResource,
+} from '@iiif/presentation-3';
 import type { AnnotationEntry, AnnotationPage, Event, Tag } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { deserialize } from '@lib/slate/deserialize.ts';
 import type { Node } from 'slate';
 // @ts-ignore
 import { JSDOM } from 'jsdom';
+
+type AVFileMap = {
+  [canvas: string]: {
+    avFileUrl: string;
+    startDuration: number;
+    endDuration: number;
+  }[];
+};
 
 export type ImportManifestResults = {
   events: { id: string; event: Event }[];
@@ -34,6 +48,7 @@ export const importIIIFManifest = async (
 
   // Look for canvases
   const canvases = items.filter((i) => i.type === 'Canvas');
+  const map = getAVMap(canvases);
 
   // Label count
   let avLabelCount: number = 1;
@@ -42,39 +57,42 @@ export const importIIIFManifest = async (
   for (let w = 0; w < canvases.length; w++) {
     const c = canvases[w];
     const label = c.label && c.label.en ? c.label.en[0] : '';
-    const annoPages = c.items.filter((i) => i.type === 'AnnotationPage');
+    const annoPages = c.items?.filter((i) => i.type === 'AnnotationPage');
     const avFiles: { [key: string]: any } = {};
     const eventId = uuidv4();
     const sourceId = uuidv4();
     let avType = 'Audio';
-    for (let q = 0; q < annoPages.length; q++) {
-      const a = annoPages[q];
-      if (a && a.items) {
-        a.items.forEach((i) => {
-          if (i.type === 'Annotation') {
-            if (!Array.isArray(i.body)) {
-              const b: IIIFResource = i.body as IIIFResource;
-              avType = b.type;
-              avFiles[sourceId] = {
-                label: `AV File ${avLabelCount++}`,
-                file_url: b.id,
-                duration: b.duration || 0,
-              };
-            } else {
-              const ba: IIIFResource[] = i.body as IIIFResource[];
-              ba.forEach((b) => {
+    if (annoPages) {
+      for (let q = 0; q < annoPages.length; q++) {
+        const a = annoPages[q];
+        if (a && a.items) {
+          a.items.forEach((i) => {
+            if (i.type === 'Annotation') {
+              if (!Array.isArray(i.body)) {
+                const b: IIIFResource = i.body as IIIFResource;
                 avType = b.type;
                 avFiles[sourceId] = {
                   label: `AV File ${avLabelCount++}`,
                   file_url: b.id,
                   duration: b.duration || 0,
                 };
-              });
+              } else {
+                const ba: IIIFResource[] = i.body as IIIFResource[];
+                ba.forEach((b) => {
+                  avType = b.type;
+                  avFiles[sourceId] = {
+                    label: `AV File ${avLabelCount++}`,
+                    file_url: b.id,
+                    duration: b.duration || 0,
+                  };
+                });
+              }
             }
-          }
-        });
+          });
+        }
       }
     }
+
     result.events.push({
       id: eventId,
       event: {
@@ -120,26 +138,39 @@ export const importIIIFManifest = async (
             anno.items?.forEach((i) => {
               const setTags: Tag[] = [];
               if (i.type === 'Annotation') {
-                const { start, end } = getTime(i.target);
+                const { start, end } = getTime(i.target as Target, map);
                 let nodes: Node[] = [];
                 const tags: Tag[] = [...setTags];
-                if (!Array.isArray(i.body)) {
+                const body:
+                  | IIIFAnnotationBody
+                  | IIIFAnnotationBody[]
+                  | undefined = i.body;
+                if (!Array.isArray(body)) {
                   const document = JSDOM.fragment(
-                    `${(i.body as IIIFResource).value as string}`
+                    `${(body as EmbeddedResource).value as string}`
                   );
                   nodes = deserialize(document);
                 } else {
-                  (i.body as IIIFResource[]).forEach((b) => {
-                    if (b.purpose === 'tagging') {
+                  nodes = [];
+                  body.forEach((b) => {
+                    if ((b as ContentResource).motivation === 'tagging') {
                       tags.push({
                         category: '_uncategorized_',
-                        tag: b.value as string,
+                        tag: (b as EmbeddedResource).value as string,
                       });
-                      if (result.tags.findIndex((t) => t === b.value) === -1) {
-                        result.tags.push(b.value as string);
+                      if (
+                        result.tags.findIndex(
+                          (t) => t === (b as EmbeddedResource).value
+                        ) === -1
+                      ) {
+                        result.tags.push(
+                          (b as EmbeddedResource).value as string
+                        );
                       }
                     } else {
-                      const document = JSDOM.fragment(`${b.value as string}`);
+                      const document = JSDOM.fragment(
+                        `${(b as EmbeddedResource).value as string}`
+                      );
                       const res = deserialize(document);
                       nodes = [...nodes, ...res];
                     }
@@ -155,7 +186,6 @@ export const importIIIFManifest = async (
               }
             });
           }
-          console.log('Annotations: ', annotations);
           result.annotations.push({
             id: annoFileId,
             annotation: {
@@ -185,23 +215,29 @@ const getLabel = (label: any) => {
   return 'default';
 };
 
-const getTime = (target: IIIFAnnotationTarget | string) => {
-  const ret = { start: 0, end: 0 };
+const getTime = (target: IIIFAnnotationTarget | string, map: AVFileMap) => {
+  const ret: { url: string | undefined; start: number; end: number } = {
+    url: undefined,
+    start: 0,
+    end: 0,
+  };
   if (typeof target === 'string') {
     const timesRef = target.split('#t=');
     const times = timesRef[1] ? timesRef[1].split(',') : [];
 
-    if (times.length > 0) {
-      ret.start = parseFloat(times[0]);
-      ret.end = parseFloat(times[1]);
-    }
-  } else {
-    const selTarget = target as IIIFAnnotationTarget;
-    if (selTarget.selector) {
-      if (selTarget.selector.type === 'PointSelector') {
-        ret.start = ret.end = parseFloat(selTarget.selector.t);
-      } else {
-        const times = selTarget.selector.t.split(',');
+    const mapEntry = map[timesRef[0]];
+    if (mapEntry) {
+      const filtered = mapEntry.filter(
+        (e) =>
+          e.startDuration >= parseFloat(times[0]) &&
+          e.endDuration <= parseFloat(times[1])
+      );
+      if (filtered.length > 0 && times.length > 0) {
+        ret.url = filtered[0].avFileUrl;
+        ret.start = parseFloat(times[0]) + filtered[0].startDuration;
+        ret.end = parseFloat(times[1]) + filtered[0].startDuration;
+      } else if (times.length > 0) {
+        ret.url = timesRef[0];
         ret.start = parseFloat(times[0]);
         ret.end = parseFloat(times[1]);
       }
@@ -209,4 +245,38 @@ const getTime = (target: IIIFAnnotationTarget | string) => {
   }
 
   return ret;
+};
+
+const getAVMap = (canvases: IIIFCanvas[]) => {
+  // A Canvas can contain multiple AV files.
+  // When a Canvas is targeted, we need to determine
+  // which AV File is being referenced
+  let map: AVFileMap = {};
+  canvases.forEach((c) => {
+    let duration = c.duration;
+    let start = 0;
+    c.items?.forEach((i) => {
+      if (i.type === 'AnnotationPage') {
+        i.items?.forEach((p, idx) => {
+          if (p.motivation === 'painting') {
+            const decoded = decodeURIComponent(
+              (p.body as IIIFResource).id as string
+            );
+            const url = decoded.split('?');
+            if (!map[c.id]) {
+              map[c.id] = [];
+            }
+            map[c.id].push({
+              avFileUrl: url[0],
+              startDuration: start,
+              endDuration:
+                start + ((p.body as IIIFResource).duration as number),
+            });
+          }
+        });
+      }
+    });
+  });
+
+  return map;
 };

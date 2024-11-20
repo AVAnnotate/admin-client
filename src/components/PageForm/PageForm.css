@@ -44,7 +44,7 @@
 }
 
 .page-form .slate-column {
-  border: 1px solid var(--gray-400);
+  outline: 1px solid var(--gray-400);
 }
 
 .page-form .slate-column:last-child {
