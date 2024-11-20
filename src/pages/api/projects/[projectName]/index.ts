@@ -373,6 +373,12 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   }
 
   // Sync pages site creation
+
+  // Older projects may not have this value
+  if (projectConfig.project.generate_pages_site === undefined) {
+    projectConfig.project.generate_pages_site =
+      projectConfig.publish.publish_pages_app;
+  }
   if (projectConfig.project.generate_pages_site !== body.generate_pages_site) {
     if (
       projectConfig.project.generate_pages_site &&
