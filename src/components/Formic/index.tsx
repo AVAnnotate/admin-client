@@ -126,11 +126,25 @@ interface TimeInputProps {
 }
 
 export const TimeInput = (props: TimeInputProps) => {
-  const valueToDisplay = useCallback((seconds: number) => {
-    return new Date((seconds || 0) * 1000).toISOString().slice(11, 19);
-  }, []);
+  const valueToDisplay = useCallback(
+    (seconds: number, minutes: number, hours: number) => {
+      return `${hours.toString().padStart(2, '0')}:${minutes
+        .toString()
+        .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+      // return new Date((seconds || 0) * 1000).toISOString().slice(11, 19);
+    },
+    []
+  );
 
-  const [display, setDisplay] = useState(valueToDisplay(props.initialValue));
+  const initialHours = Math.floor(props.initialValue / 3600);
+  const initialMinutes = Math.floor(
+    (props.initialValue - 3600 * Math.floor(props.initialValue / 3600)) / 60
+  );
+  const initialSeconds = props.initialValue % 60;
+
+  const [display, setDisplay] = useState(
+    valueToDisplay(initialSeconds, initialMinutes, initialHours)
+  );
 
   const onChange = useCallback((event: any) => {
     const input = event.target.value.replaceAll(':', '');
@@ -148,7 +162,7 @@ export const TimeInput = (props: TimeInputProps) => {
 
       if (hours < 24) {
         const totalSeconds = seconds + minutes * 60 + hours * 3600;
-        setDisplay(valueToDisplay(totalSeconds));
+        setDisplay(valueToDisplay(seconds, minutes, hours));
 
         props.onChange(totalSeconds);
       }
