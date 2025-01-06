@@ -64,12 +64,12 @@ export const Player: React.FC<Props> = (props) => {
   const { t } = props.i18n;
 
   const formattedPosition = useMemo(
-    () => formatTimestamp(position),
+    () => formatTimestamp(position, false),
     [position]
   );
 
   const formattedDuration = useMemo(
-    () => formatTimestamp(duration),
+    () => formatTimestamp(duration, false),
     [duration]
   );
 
