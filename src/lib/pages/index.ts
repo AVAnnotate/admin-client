@@ -137,7 +137,10 @@ export const ensureUniqueSlug = (slugIn: string, context: GitRepoContext) => {
   const slug = trimStringToMaxLength(slugIn, MAX_SLUG_LENGTH);
 
   // @ts-ignore
-  let ret = slugify(slug, { lower: true, strict: true });
+  let ret = slugify(slug, { lower: true, strict: true }).replace(
+    /[^a-zA-Z0-9-_]/g,
+    ''
+  );
 
   const { readDir, readFile } = context;
 
