@@ -212,3 +212,7 @@ export const emptyParagraph: SlateElement[] = [
     children: [{ text: '' }],
   },
 ];
+
+export const serializeToPlainText = (nodes: Node[]) => {
+  return nodes.map((n) => Node.string(n)).join('\n');
+};
