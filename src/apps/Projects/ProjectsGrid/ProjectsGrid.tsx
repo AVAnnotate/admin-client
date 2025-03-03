@@ -6,6 +6,8 @@ interface ProjectsGridProps {
   projects: ProjectData[];
 
   i18n: Translations;
+
+  getProjectData(org: string, repo: string): Promise<any>;
 }
 
 export const ProjectsGrid = (props: ProjectsGridProps) => {
@@ -15,6 +17,7 @@ export const ProjectsGrid = (props: ProjectsGridProps) => {
         <ProjectCard
           project={p}
           i18n={props.i18n}
+          getProjectData={props.getProjectData}
           key={`${p.project.github_org}+${p.project.slug}`}
         />
       ))}
