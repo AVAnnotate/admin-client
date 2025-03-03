@@ -1,9 +1,4 @@
-import type {
-  AllProjects,
-  ProjectData,
-  Translations,
-  UserInfo,
-} from '@ty/Types.ts';
+import type { AllProjects, Translations, UserInfo } from '@ty/Types.ts';
 import { Plus } from '@phosphor-icons/react/Plus';
 import { Header } from './Header/Header.tsx';
 import './Projects.css';
@@ -12,9 +7,8 @@ import { useEffect, useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
 import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
 import { Sorters } from '@components/SortAction/index.ts';
-import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 
-export type Repositories = { org: string; repo: string };
+export type Repositories = { org: string; repo: string; title: string };
 export interface ProjectsProps {
   repos: Repositories[];
 
@@ -30,7 +24,6 @@ export const Projects = (props: ProjectsProps) => {
   const [search, setSearch] = useState<string | undefined>();
   const [sort, setSort] = useState<'Name' | 'Oldest' | 'Newest'>('Name');
   const [projects, setProjects] = useState<AllProjects | undefined>();
-  const [saving, setSaving] = useState(false);
 
   const handleChangeFilter = (filter: ProjectFilter) => {
     setFilter(filter);
@@ -44,44 +37,55 @@ export const Projects = (props: ProjectsProps) => {
     setSort(sortFn);
   };
 
-  const getAllProjects = async (repos: Repositories[]) => {
-    const allProjects: ProjectData[] = [];
-    for (let i = 0; i < repos.length; i++) {
-      const repo = repos[i];
-      const resp = await fetch(`/api/git-repos/${repo.org}/${repo.repo}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
+  const getProjectData = (org: string, repo: string): Promise<any> => {
+    return fetch(`/api/git-repos/${org}/${repo}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }).then((resp) => {
       if (resp.ok) {
-        const data = await resp.json();
-
-        allProjects.push(data);
+        return resp.json().then((data) => {
+          return data;
+        });
+      } else {
+        return null;
       }
-    }
-
-    return allProjects;
+    });
   };
 
   useEffect(() => {
     if (props.repos) {
-      setSaving(true);
-      getAllProjects(props.repos).then((data) => {
-        const all: AllProjects = {
-          myProjects: data.filter(
-            (p) => p.project.creator === props.userInfo.profile.gitHubName
-          ),
-          sharedProjects: data.filter(
-            (p) => p.project.creator !== props.userInfo.profile.gitHubName
-          ),
-        };
-        setProjects(all);
-        setSaving(false);
+      const all: AllProjects = {
+        myProjects: [],
+        sharedProjects: [],
+      };
+
+      props.repos.forEach((repo) => {
+        if (repo.org === props.userInfo.profile.gitHubName) {
+          all.myProjects.push({
+            // @ts-ignore
+            project: {
+              slug: repo.repo,
+              title: repo.title,
+              github_org: repo.org,
+            },
+          });
+        } else {
+          all.sharedProjects.push({
+            // @ts-ignore
+            project: {
+              slug: repo.repo,
+              title: repo.title,
+              github_org: repo.org,
+            },
+          });
+        }
       });
+
+      setProjects(all);
     }
-  }, []);
+  }, [props.repos]);
 
   useEffect(() => {
     if (projects) {
@@ -104,7 +108,6 @@ export const Projects = (props: ProjectsProps) => {
 
   return (
     <div className='projects-container'>
-      {saving && <LoadingOverlay text={t['Loading Your Projects']} />}
       <div className='projects-header-bar'>
         <h1>{t['Projects']}</h1>
         <Button
@@ -140,6 +143,7 @@ export const Projects = (props: ProjectsProps) => {
                 )
           }
           i18n={props.i18n}
+          getProjectData={getProjectData}
         />
       )}
     </div>
