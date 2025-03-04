@@ -177,6 +177,60 @@ export const mapAnnotationData = async (
   return ret;
 };
 
+export const mapAnnotationDataVTT = async (
+  data: any[],
+  tagsIn: Tags,
+  projectSlug: string
+) => {
+  const tags: Tags = JSON.parse(JSON.stringify(tagsIn));
+  const availableColors = tagColors.filter(
+    (c) => tags.tagGroups.findIndex((g) => g.color === c) === -1
+  );
+  let tagsUpdated = false;
+  const tMap: Tag[] = [];
+  for (let i = 0; i < data.length; i++) {
+    const anno = data[i];
+    for (let j = 0; j < anno.tags.length; j++) {
+      const tag = anno.tags[j];
+      const found = getTag(tag.tag, tags);
+      if (found) {
+        tMap.push(found);
+      } else {
+        // Either the tag or category was not found
+        // Do we have the category?
+        const catIndex = tags.tagGroups.findIndex(
+          (g) => g.category.toLowerCase() === tag.category.toLowerCase()
+        );
+        if (catIndex === -1) {
+          // Not found. Add new category
+          tags.tagGroups.push({
+            category: tag.category,
+            color: availableColors.length > 0 ? availableColors[0] : '#0A0A0A',
+          });
+
+          availableColors.shift();
+        }
+        tags.tags.push({
+          category: tag.category,
+          tag: tag.tag,
+        });
+
+        tagsUpdated = true;
+        tMap.push({
+          category: tag.category,
+          tag: tag.tag,
+        });
+      }
+    }
+  }
+
+  if (tagsUpdated) {
+    await updateTags(tagsIn, tags, projectSlug);
+  }
+
+  return data;
+};
+
 const updateTags = async (
   originalTags: Tags,
   newTags: Tags,

@@ -11,7 +11,7 @@ import { Button } from '@radix-ui/themes';
 import type { Event, ProjectData, Translations, Tags } from '@ty/Types.ts';
 import { Form, Formik, useFormikContext } from 'formik';
 import { useContext, useMemo, useState } from 'react';
-import { mapAnnotationData } from '@lib/parse/index.ts';
+import { mapAnnotationData, mapAnnotationDataVTT } from '@lib/parse/index.ts';
 
 import './AnnotationImport.css';
 
@@ -56,7 +56,8 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
   ) => {
     let annos;
     if (isVTT) {
-      annos = body.annotations;
+      // @ts-ignore
+      annos = await mapAnnotationDataVTT(body.annotations, tags, projectSlug);
     } else {
       annos = await mapAnnotationData(
         body.annotations.data,
