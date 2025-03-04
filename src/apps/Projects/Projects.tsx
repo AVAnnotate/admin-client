@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
 import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
 import { Sorters } from '@components/SortAction/index.ts';
+import type { ProjectData } from '@types/Types.ts';
 
 export type Repositories = { org: string; repo: string; title: string };
 export interface ProjectsProps {
@@ -23,7 +24,7 @@ export const Projects = (props: ProjectsProps) => {
   const [filter, setFilter] = useState(ProjectFilter.MINE);
   const [search, setSearch] = useState<string | undefined>();
   const [sort, setSort] = useState<'Name' | 'Oldest' | 'Newest'>('Name');
-  const [projects, setProjects] = useState<AllProjects | undefined>();
+  const [projects, setProjects] = useState<ProjectData[] | undefined>();
 
   const handleChangeFilter = (filter: ProjectFilter) => {
     setFilter(filter);
@@ -56,31 +57,17 @@ export const Projects = (props: ProjectsProps) => {
 
   useEffect(() => {
     if (props.repos) {
-      const all: AllProjects = {
-        myProjects: [],
-        sharedProjects: [],
-      };
+      const all: ProjectData[] = [];
 
       props.repos.forEach((repo) => {
-        if (repo.org === props.userInfo.profile.gitHubName) {
-          all.myProjects.push({
-            // @ts-ignore
-            project: {
-              slug: repo.repo,
-              title: repo.title,
-              github_org: repo.org,
-            },
-          });
-        } else {
-          all.sharedProjects.push({
-            // @ts-ignore
-            project: {
-              slug: repo.repo,
-              title: repo.title,
-              github_org: repo.org,
-            },
-          });
-        }
+        all.push({
+          // @ts-ignore
+          project: {
+            slug: repo.repo,
+            title: repo.title,
+            github_org: repo.org,
+          },
+        });
       });
 
       setProjects(all);
@@ -89,18 +76,15 @@ export const Projects = (props: ProjectsProps) => {
 
   useEffect(() => {
     if (projects) {
-      const projs: AllProjects = JSON.parse(JSON.stringify(projects));
+      const projs: ProjectData[] = JSON.parse(JSON.stringify(projects));
       if (sort === 'Name') {
-        projs.myProjects.sort(Sorters['Name']);
-        projs.sharedProjects.sort(Sorters['Name']);
+        projs.sort(Sorters['Name']);
         setProjects(projs);
       } else if (sort === 'Oldest') {
-        projs.myProjects.sort(Sorters['Oldest']);
-        projs.sharedProjects.sort(Sorters['Oldest']);
+        projs.sort(Sorters['Oldest']);
         setProjects(projs);
       } else {
-        projs.myProjects.sort(Sorters['Newest']);
-        projs.sharedProjects.sort(Sorters['Newest']);
+        projs.sort(Sorters['Newest']);
         setProjects(projs);
       }
     }
@@ -127,22 +111,10 @@ export const Projects = (props: ProjectsProps) => {
       />
       {projects && (
         <ProjectsGrid
-          projects={
-            filter === ProjectFilter.MINE
-              ? projects.myProjects.filter((p) =>
-                  search
-                    ? p.project.title.includes(search) ||
-                      p.project.description.includes(search)
-                    : true
-                )
-              : projects.sharedProjects.filter((p) =>
-                  search
-                    ? p.project.title.includes(search) ||
-                      p.project.description.includes(search)
-                    : true
-                )
-          }
+          projects={projects}
           i18n={props.i18n}
+          filter={filter}
+          userInfo={props.userInfo}
           getProjectData={getProjectData}
         />
       )}

@@ -1,14 +1,17 @@
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
 import './ProjectCard.css';
 import { Avatar } from '@components/Avatar/Avatar.tsx';
 import { Skeleton } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
+import { ProjectFilter } from '@apps/Projects/Header/Header.tsx';
 
 type ProjectCardProps = {
   project: ProjectData;
   i18n: Translations;
+  userInfo: UserInfo;
+  filter: ProjectFilter;
   getProjectData(org: string, repo: string): Promise<any>;
 };
 
@@ -31,6 +34,16 @@ export const ProjectCard = (props: ProjectCardProps) => {
         });
     }
   }, [props.project]);
+
+  if (
+    !project.project.creator ||
+    (project.project.creator === props.userInfo.profile.gitHubName &&
+      props.filter !== ProjectFilter.MINE) ||
+    (project.project.creator !== props.userInfo.profile.gitHubName &&
+      props.filter !== ProjectFilter.SHARED)
+  ) {
+    return <div />;
+  }
 
   return (
     <div className='project-card-container'>
