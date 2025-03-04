@@ -164,7 +164,11 @@ const VTTCell = (props: VTTCellProps) => {
     const text = serialize(value);
     return <Table.Cell key={option.value}>{text}</Table.Cell>;
   } else {
-    return <Table.Cell key={option.value}>{value.join('|')}</Table.Cell>;
+    return (
+      <Table.Cell key={option.value}>
+        {value.map((t: any) => t.tag).join('|')}
+      </Table.Cell>
+    );
   }
 };
 
