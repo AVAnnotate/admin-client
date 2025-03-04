@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
 import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
 import { Sorters } from '@components/SortAction/index.ts';
-import type { ProjectData } from '@types/Types.ts';
+import type { ProjectData } from '@ty/Types.ts';
 
 export type Repositories = { org: string; repo: string; title: string };
 export interface ProjectsProps {
