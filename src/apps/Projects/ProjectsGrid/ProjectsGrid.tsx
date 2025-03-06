@@ -10,6 +10,8 @@ interface ProjectsGridProps {
 
   filter: ProjectFilter;
 
+  search: string;
+
   userInfo: UserInfo;
 
   getProjectData(org: string, repo: string): Promise<any>;
@@ -23,6 +25,7 @@ export const ProjectsGrid = (props: ProjectsGridProps) => {
           project={p}
           i18n={props.i18n}
           filter={props.filter}
+          search={props.search}
           userInfo={props.userInfo}
           getProjectData={props.getProjectData}
           key={`${p.project.github_org}+${p.project.slug}`}

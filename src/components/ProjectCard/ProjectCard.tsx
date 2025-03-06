@@ -12,6 +12,7 @@ type ProjectCardProps = {
   i18n: Translations;
   userInfo: UserInfo;
   filter: ProjectFilter;
+  search: string;
   getProjectData(org: string, repo: string): Promise<any>;
 };
 
@@ -40,7 +41,15 @@ export const ProjectCard = (props: ProjectCardProps) => {
     (project.project.creator === props.userInfo.profile.gitHubName &&
       props.filter !== ProjectFilter.MINE) ||
     (project.project.creator !== props.userInfo.profile.gitHubName &&
-      props.filter !== ProjectFilter.SHARED)
+      props.filter !== ProjectFilter.SHARED) ||
+    (props.search &&
+      props.search.length > 0 &&
+      !project.project.title
+        .toLocaleLowerCase()
+        .includes(props.search.toLocaleLowerCase()) &&
+      !project.project.description
+        .toLocaleLowerCase()
+        .includes(props.search.toLocaleLowerCase()))
   ) {
     return <div />;
   }

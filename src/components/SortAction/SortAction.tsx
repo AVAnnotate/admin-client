@@ -40,7 +40,7 @@ const Icons = {
 export const SortAction = (props: SortActionProps) => {
   const { t } = props.i18n;
 
-  const [sort, setSort] = useState<keyof typeof Sorters>('Name');
+  const [sort, setSort] = useState<keyof typeof Sorters>('Newest');
 
   const changeSort = (key: keyof typeof Sorters) => () => {
     setSort(key);
