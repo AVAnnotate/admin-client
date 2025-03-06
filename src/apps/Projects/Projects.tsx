@@ -15,6 +15,7 @@ export type Repositories = {
   repo: string;
   title: string;
   created_at: string;
+  updated_at: string;
 };
 export interface ProjectsProps {
   repos: Repositories[];
@@ -76,12 +77,13 @@ export const Projects = (props: ProjectsProps) => {
             slug: repo.repo,
             title: repo.title,
             github_org: repo.org,
-            created_at: repo.created_at,
           },
+          repo_created_at: repo.created_at,
+          repo_updated_at: repo.updated_at,
         });
       });
 
-      setProjects(all);
+      setProjects(all.sort(Sorters[sort]));
     }
   }, [props.repos]);
 

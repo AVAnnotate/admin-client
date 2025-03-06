@@ -227,8 +227,8 @@ export const POST: APIRoute = async ({
       created_at: new Date().toISOString(),
       created_by: info!.profile.gitHubName || '',
       title: body.title,
-      updated_at: info!.profile.gitHubName || '',
-      updated_by: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      updated_by: info!.profile.gitHubName || '',
       autogenerate: {
         enabled: body.autoPopulateHomePage,
         type: 'home',

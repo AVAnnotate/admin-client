@@ -30,7 +30,7 @@ export const ProjectCard = (props: ProjectCardProps) => {
         )
         .then((data: ProjectData) => {
           if (data) {
-            setProject(data);
+            setProject({ ...project, ...data });
           }
         });
     }
@@ -67,14 +67,15 @@ export const ProjectCard = (props: ProjectCardProps) => {
           </div>
           <Skeleton
             loading={
-              (project.project.updated_at || project.project.created_at) ===
-              undefined
+              (project.repo_updated_at || project.repo_created_at) === undefined
             }
           >
             <div className='project-card-last-edited av-body-small-italic'>
-              {`${t['Last Edited']} ${new Date(
-                project.project.updated_at || project.project.created_at
-              ).toLocaleDateString('en-US')}`}
+              {project.repo_updated_at || project.repo_created_at
+                ? `${t['Last Edited']} ${new Date(
+                    project.repo_updated_at || project.repo_created_at
+                  ).toLocaleDateString('en-US')}`
+                : 'Unknown'}
             </div>
           </Skeleton>
         </div>
