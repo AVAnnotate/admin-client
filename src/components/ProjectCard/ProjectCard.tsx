@@ -12,6 +12,7 @@ type ProjectCardProps = {
   i18n: Translations;
   userInfo: UserInfo;
   filter: ProjectFilter;
+  search: string;
   getProjectData(org: string, repo: string): Promise<any>;
 };
 
@@ -29,7 +30,7 @@ export const ProjectCard = (props: ProjectCardProps) => {
         )
         .then((data: ProjectData) => {
           if (data) {
-            setProject(data);
+            setProject({ ...project, ...data });
           }
         });
     }
@@ -40,7 +41,15 @@ export const ProjectCard = (props: ProjectCardProps) => {
     (project.project.creator === props.userInfo.profile.gitHubName &&
       props.filter !== ProjectFilter.MINE) ||
     (project.project.creator !== props.userInfo.profile.gitHubName &&
-      props.filter !== ProjectFilter.SHARED)
+      props.filter !== ProjectFilter.SHARED) ||
+    (props.search &&
+      props.search.length > 0 &&
+      !project.project.title
+        .toLocaleLowerCase()
+        .includes(props.search.toLocaleLowerCase()) &&
+      !project.project.description
+        .toLocaleLowerCase()
+        .includes(props.search.toLocaleLowerCase()))
   ) {
     return <div />;
   }
@@ -58,14 +67,15 @@ export const ProjectCard = (props: ProjectCardProps) => {
           </div>
           <Skeleton
             loading={
-              (project.project.updated_at || project.project.created_at) ===
-              undefined
+              (project.repo_updated_at || project.repo_created_at) === undefined
             }
           >
             <div className='project-card-last-edited av-body-small-italic'>
-              {`${t['Last Edited']} ${new Date(
-                project.project.updated_at || project.project.created_at
-              ).toLocaleDateString('en-US')}`}
+              {project.repo_updated_at || project.repo_created_at
+                ? `${t['Last Edited']} ${new Date(
+                    project.repo_updated_at || project.repo_created_at
+                  ).toLocaleDateString('en-US')}`
+                : 'Unknown'}
             </div>
           </Skeleton>
         </div>

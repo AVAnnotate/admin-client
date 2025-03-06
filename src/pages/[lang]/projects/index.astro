@@ -21,7 +21,13 @@ if (!info) {
 const repos = await getRepos(info as UserInfo);
 
 const userRepos = repos.map((d: any) => {
-  return { org: d.owner.login, repo: d.name, title: d.description };
+  return {
+    org: d.owner.login,
+    repo: d.name,
+    title: d.description,
+    created_at: d.created_at,
+    updated_at: d.updated_at,
+  };
 });
 ---
 

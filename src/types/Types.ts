@@ -154,6 +154,9 @@ export type ProjectFile = {
   users: ProviderUser[];
 
   publish: Publish;
+
+  repo_created_at: string;
+  repo_updated_at: string;
 };
 
 export type ProjectData = {

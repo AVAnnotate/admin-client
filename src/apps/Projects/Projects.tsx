@@ -1,7 +1,6 @@
-import type { AllProjects, Translations, UserInfo } from '@ty/Types.ts';
+import type { Translations, UserInfo } from '@ty/Types.ts';
 import { Plus } from '@phosphor-icons/react/Plus';
 import { Header } from './Header/Header.tsx';
-import './Projects.css';
 import { Button } from '@radix-ui/themes';
 import { useEffect, useState } from 'react';
 import { ProjectFilter } from './Header/Header.tsx';
@@ -9,7 +8,15 @@ import { ProjectsGrid } from './ProjectsGrid/ProjectsGrid.tsx';
 import { Sorters } from '@components/SortAction/index.ts';
 import type { ProjectData } from '@ty/Types.ts';
 
-export type Repositories = { org: string; repo: string; title: string };
+import './Projects.css';
+
+export type Repositories = {
+  org: string;
+  repo: string;
+  title: string;
+  created_at: string;
+  updated_at: string;
+};
 export interface ProjectsProps {
   repos: Repositories[];
 
@@ -23,8 +30,10 @@ export const Projects = (props: ProjectsProps) => {
 
   const [filter, setFilter] = useState(ProjectFilter.MINE);
   const [search, setSearch] = useState<string | undefined>();
-  const [sort, setSort] = useState<'Name' | 'Oldest' | 'Newest'>('Name');
+  const [sort, setSort] = useState<'Name' | 'Oldest' | 'Newest'>('Newest');
   const [projects, setProjects] = useState<ProjectData[] | undefined>();
+  const [readyCount, setReasyCount] = useState(0);
+  const [saving, setSaving] = useState(false);
 
   const handleChangeFilter = (filter: ProjectFilter) => {
     setFilter(filter);
@@ -59,6 +68,8 @@ export const Projects = (props: ProjectsProps) => {
     if (props.repos) {
       const all: ProjectData[] = [];
 
+      setSaving(true);
+
       props.repos.forEach((repo) => {
         all.push({
           // @ts-ignore
@@ -67,10 +78,12 @@ export const Projects = (props: ProjectsProps) => {
             title: repo.title,
             github_org: repo.org,
           },
+          repo_created_at: repo.created_at,
+          repo_updated_at: repo.updated_at,
         });
       });
 
-      setProjects(all);
+      setProjects(all.sort(Sorters[sort]));
     }
   }, [props.repos]);
 
@@ -112,6 +125,7 @@ export const Projects = (props: ProjectsProps) => {
       {projects && (
         <ProjectsGrid
           projects={projects}
+          search={search || ''}
           i18n={props.i18n}
           filter={filter}
           userInfo={props.userInfo}
