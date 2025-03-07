@@ -292,15 +292,9 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
           </Dialog.Root>
         )}
         <h1>{t['Import events file']}</h1>
-        <p>
-          {
-            t[
-              "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project's events."
-            ]
-          }
-        </p>
+        <p>{t['event_import_message']}</p>
         <SpreadsheetInput
-          accept='.tsv, .csv, .xlsx, .txt'
+          accept='.tsv, .csv, .xlsx, .xls, .txt'
           i18n={props.i18n}
           label={t['Events file']}
           name='events'

@@ -20,7 +20,7 @@
   "Import manifest": "Import manifest",
   "IIIF Manifest URL": "IIIF Manifest URL",
   "Import events file": "Import events file",
-  "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project's events.": "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project's events.",
+  "event_import_message": "Upload a .tsv, .csv, .xlsx, .xls, or tab-separated .txt file that includes event(s) label, item type, file label, file URL, citation (optional), and description (optional). Events associated with multiple AV files are updated to include additional AV files after initial event upload.",
   "Events file": "Events file",
   "Import file contains column headers?": "Import file contains column headers?",
   "Preview Data": "Preview Data",
