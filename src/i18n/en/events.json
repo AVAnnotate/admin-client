@@ -69,5 +69,7 @@
   "Number of Annotations": "Number of Annotations",
   "Captions": "Captions",
   "Use for Captions": "Use for Captions",
-  "Tag Category for Speaker (optional)": "Tag Category for Speaker (optional)"
+  "Tag Category for Speaker (optional)": "Tag Category for Speaker (optional)",
+  "Override Duration": "Override Duration",
+  "Calculate Duration": "Calculate Duration"
 }
