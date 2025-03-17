@@ -318,13 +318,13 @@ export const mapEventData = (
       [uuidv4()]: {
         label: item[map['audiovisual_file_label']],
         is_offline: false,
+        file_type: item[map['audiovisual_file_type']],
         file_url: item[map['audiovisual_file_url']],
         duration: item[map['audiovisual_file_duration']],
       },
     },
     auto_generate_web_page: autoGenerateWebpage,
     citation: item[map['citation']],
-    item_type: item[map['item_type']],
     label: item[map['label']],
     description: item[map['description']],
   }));

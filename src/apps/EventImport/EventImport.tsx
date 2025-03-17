@@ -186,9 +186,9 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         value: 'description',
       },
       {
-        label: t['Event Item Type'],
+        label: t['File Type'],
         required: true,
-        value: 'item_type',
+        value: 'audiovisual_file_type',
       },
       {
         label: t['AV File Label'],
