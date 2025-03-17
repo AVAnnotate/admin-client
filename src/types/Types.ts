@@ -82,6 +82,7 @@ export type AudiovisualFile = {
   is_offline: boolean;
   file_url: string;
   duration: number;
+  duration_overridden?: boolean;
   caption_set?: CaptionSet[];
 };
 

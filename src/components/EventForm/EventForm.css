@@ -72,7 +72,7 @@
   display: flex;
   gap: 30px;
   width: 100%;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   justify-content: space-around;
   align-items: flex-end;
   align-content: center;
@@ -88,4 +88,17 @@
 
 .event-form .sets-table {
   width: 100%;
+}
+
+.event-form .av-duration-input {
+  width: 80px;
+}
+
+.event-form .av-duration-override {
+  padding-bottom: 12px;
+  width: 70px;
+}
+
+.event-form .av-duration-override-button {
+  height: 40px;
 }
