@@ -1,11 +1,9 @@
 import {
   SelectInput,
   TextInput,
-  TimeInput,
   DurationInput,
 } from '@components/Formic/index.tsx';
 import type {
-  AnnotationPage,
   AudiovisualFile,
   Event,
   FormEvent,
@@ -197,21 +195,6 @@ const FormContents: React.FC<Props> = (props) => {
       <div className='form-body'>
         <h2>{t['Event Information']}</h2>
         <TextInput label={t['Label']} name='label' required />
-        <SelectInput
-          label={t['Item Type']}
-          name='item_type'
-          options={[
-            {
-              label: t['Audio'],
-              value: 'Audio',
-            },
-            {
-              label: t['Video'],
-              value: 'Video',
-            },
-          ]}
-          required
-        />
         <Separator.Root className='SeparatorRoot' decorative />
         <h2>{t['Audiovisual File(s)']}</h2>
         <FieldArray
@@ -257,6 +240,22 @@ const FormContents: React.FC<Props> = (props) => {
                                 ? t['File Available Offline']
                                 : undefined
                             }
+                          />
+                          <SelectInput
+                            width='120px'
+                            label={t['File Type']}
+                            name={`audiovisual_files.${key}.file_type`}
+                            options={[
+                              {
+                                label: t['Audio'],
+                                value: 'Audio',
+                              },
+                              {
+                                label: t['Video'],
+                                value: 'Video',
+                              },
+                            ]}
+                            required
                           />
                         </div>
                         <DurationInput
