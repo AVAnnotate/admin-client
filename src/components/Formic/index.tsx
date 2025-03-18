@@ -48,7 +48,7 @@ export const TextInput = (props: TextInputProps) => {
       {props.label && (
         <div className='av-label-bold formic-form-label'>
           {props.label}
-          {props.required && <Required />}
+          {props.label && props.required && <Required />}
         </div>
       )}
       {props.helperText && (
@@ -98,7 +98,7 @@ export const RichTextInput = (props: RichTextInputProps) => {
       {props.label && (
         <div className='av-label-bold formic-form-label'>
           {props.label}
-          {props.required && <Required />}
+          {props.label && props.required && <Required />}
         </div>
       )}
       {props.helperText && (
@@ -182,7 +182,7 @@ export const TimeInput = (props: TimeInputProps) => {
       {props.label && (
         <div className='av-label-bold formic-form-label formic'>
           <span>{props.label}</span>
-          {props.required && <Required />}
+          {props.label && props.required && <Required />}
         </div>
       )}
       <input
@@ -250,7 +250,7 @@ export const DurationInput = (props: DurationInputProps) => {
       {props.label && (
         <div className='av-label-bold formic-form-label'>
           {props.label}
-          {props.required && <Required />}
+          {props.label && props.required && <Required />}
         </div>
       )}
       {props.helperText && (
@@ -298,8 +298,8 @@ export const SelectInput = (props: SelectInputProps) => {
   return (
     <div className={`formic-form-field ${props.className || ''}'`}>
       <div className='av-label-bold formic-form-label'>
-        {props.label}
-        {props.required && <Required />}
+        {props.label || <div className='av-label-spacer' />}
+        {props.label && props.required && <Required />}
       </div>
       {props.helperText && (
         <div className='av-label formic-form-helper-text'>
@@ -351,7 +351,7 @@ export const DoubleSwitchInput = (props: DoubleSwitchInputProps) => {
     <div>
       <div className='av-label-bold formic-form-label'>
         {props.label}
-        {props.required && <Required />}
+        {props.label && props.required && <Required />}
       </div>
       {props.helperText && (
         <div className='av-label formic-form-helper-text'>
@@ -414,7 +414,7 @@ export const TripleSwitchInput = (props: TripleSwitchInputProps) => {
     <div>
       <div className='av-label-bold formic-form-label'>
         {props.label}
-        {props.required && <Required />}
+        {props.label && props.required && <Required />}
       </div>
       {props.helperText && (
         <div className='av-label formic-form-helper-text'>
@@ -486,7 +486,7 @@ export const ToggleInput = (props: ToggleInputProps) => {
     <div className='formic-form-switch-container'>
       <div className='av-label-bold formic-form-label'>
         {props.label}
-        {props.required && <Required />}
+        {props.label && props.required && <Required />}
       </div>
       {props.helperText && (
         <div className='av-label formic-form-helper-text'>
@@ -537,7 +537,7 @@ export const UserList = (props: UserListProps) => {
     <div>
       <div className='av-label-bold formic-form-label'>
         {props.label}
-        {props.required && <Required />}
+        {props.label && props.required && <Required />}
       </div>
       <SearchUsers
         buttonText={props.addString}
