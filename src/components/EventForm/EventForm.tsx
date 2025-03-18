@@ -210,7 +210,7 @@ const FormContents: React.FC<Props> = (props) => {
                           className='av-label-input'
                           label={idx === 0 ? t['Label'] : undefined}
                           name={`audiovisual_files.${key}.label`}
-                          required={idx === 0}
+                          required
                         />
                         <div className='av-url-group'>
                           <SelectInput
@@ -219,7 +219,7 @@ const FormContents: React.FC<Props> = (props) => {
                             backgroundColor='var(--gray-200)'
                             label={idx === 0 ? t['File'] : undefined}
                             name={`audiovisual_files.${key}.is_offline`}
-                            required={idx === 0}
+                            required
                             options={[
                               { value: 'false', label: t['URL'] },
                               { value: 'true', label: t['Offline'] },
@@ -243,7 +243,7 @@ const FormContents: React.FC<Props> = (props) => {
                           />
                           <SelectInput
                             width='120px'
-                            label={t['File Type']}
+                            label={idx === 0 ? t['File Type'] : undefined}
                             name={`audiovisual_files.${key}.file_type`}
                             options={[
                               {
@@ -255,7 +255,7 @@ const FormContents: React.FC<Props> = (props) => {
                                 value: 'Video',
                               },
                             ]}
-                            required
+                            required={idx === 0 ? true : undefined}
                           />
                         </div>
                         <DurationInput
