@@ -1,9 +1,22 @@
 .project-settings-container {
-  margin: 20px auto;
+  margin: 100px auto;
   max-width: 1200px;
 }
 
 .project-settings-form-container {
   display: flex;
-  gap: 10px;
+  flex-direction: row;
+  max-width: 1000px;
+  margin-left: calc((100vw - 1000px) / 2);
+}
+
+.project-settings-form {
+  overflow-y: auto;
+  position: relative;
+}
+
+.project-settings-sidebar {
+  position: fixed;
+  top: 150px;
+  left: 64px;
 }

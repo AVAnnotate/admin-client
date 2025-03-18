@@ -36,6 +36,9 @@ export const ProjectSettings: React.FC<Props> = (props) => {
     });
   };
 
+  const isOwner =
+    props.project.project.creator === props.userInfo.profile.gitHubName;
+
   return (
     <>
       {saving && <LoadingOverlay />}
@@ -52,28 +55,41 @@ export const ProjectSettings: React.FC<Props> = (props) => {
       <div className='project-settings-container'>
         <h2>{t['Settings']}</h2>
         <div className='project-settings-form-container'>
-          <Sidebar
-            selection={tab}
-            onSelect={(newTab) => setTab(newTab as Tabs)}
-            tabs={[
-              {
-                name: 'general',
-                label: t['General'],
-              },
-              {
-                name: 'users',
-                label: t['Users'],
-              },
-            ]}
-          />
-          <EditProjectForm
-            selection={tab}
-            projectData={props.project}
-            projectSlug={props.projectSlug}
-            i18n={props.i18n}
-            onSave={(data) => handleSaveProject(data)}
-            userInfo={props.userInfo}
-          />
+          <div className='project-settings-sidebar'>
+            <Sidebar
+              selection={tab}
+              onSelect={(newTab) => setTab(newTab as Tabs)}
+              tabs={
+                isOwner
+                  ? [
+                      {
+                        name: 'general',
+                        label: t['General'],
+                      },
+                      {
+                        name: 'users',
+                        label: t['Users'],
+                      },
+                    ]
+                  : [
+                      {
+                        name: 'general',
+                        label: t['General'],
+                      },
+                    ]
+              }
+            />
+          </div>
+          <div className='project-settings-form'>
+            <EditProjectForm
+              selection={tab}
+              projectData={props.project}
+              projectSlug={props.projectSlug}
+              i18n={props.i18n}
+              onSave={(data) => handleSaveProject(data)}
+              userInfo={props.userInfo}
+            />
+          </div>
         </div>
       </div>
     </>
