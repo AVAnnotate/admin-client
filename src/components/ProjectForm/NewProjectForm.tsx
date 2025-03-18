@@ -83,7 +83,7 @@ const FormContents = (props: NewProjectFormProps) => {
       ref.current!.scrollIntoView();
 
     if (props.selection === 'general') {
-      scrollTo(0, 0);
+      executeScroll(generalRef);
     } else if (props.selection === 'users') {
       executeScroll(userRef);
     } else {
@@ -122,8 +122,8 @@ const FormContents = (props: NewProjectFormProps) => {
 
             return (
               <Form>
-                <h2>{t['General']}</h2>
                 <div ref={generalRef} />
+                <h2>{t['General']}</h2>
                 <SelectInput
                   label={t['GitHub Organization']}
                   name='github_org'
@@ -208,8 +208,9 @@ const FormContents = (props: NewProjectFormProps) => {
 
                 <div className='project-form-divider' />
                 <div ref={userRef} />
+                <h2>{t['Users']}</h2>
                 <UserList
-                  label={t['Additional Users (optional)']}
+                  label={t['Add Additional Users (optional)']}
                   name='additional_users'
                   addString={t['add']}
                   nameString={t['User GitHub Name']}

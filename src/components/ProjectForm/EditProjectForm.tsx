@@ -47,7 +47,7 @@ const FormContents = (props: EditProjectFormProps) => {
 
   useEffect(() => {
     const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>
-      ref.current!.scrollIntoView();
+      ref.current!.scrollIntoView({ block: 'start' });
 
     if (props.selection === 'general') {
       executeScroll(generalRef);
@@ -60,19 +60,24 @@ const FormContents = (props: EditProjectFormProps) => {
     <div className='project-form'>
       <div className='project-form-container'>
         <Form>
-          <h2>{t['General']}</h2>
           <div ref={generalRef} />
-          <ToggleInput
-            label={t['Use Private Repository']}
-            name='is_private'
-            helperText={t['_private_repository_helper_text_']}
-          />
+          <h2>{t['General']}</h2>
+          {props.projectData.project.creator ===
+            props.userInfo.profile.gitHubName && (
+            <>
+              <ToggleInput
+                label={t['Use Private Repository']}
+                name='is_private'
+                helperText={t['_private_repository_helper_text_']}
+              />
 
-          <ToggleInput
-            label={t['Generate GitHub Pages Site']}
-            name='generate_pages_site'
-            helperText={t['_generate_pages_site_helper_text_']}
-          />
+              <ToggleInput
+                label={t['Generate GitHub Pages Site']}
+                name='generate_pages_site'
+                helperText={t['_generate_pages_site_helper_text_']}
+              />
+            </>
+          )}
 
           <TextInput
             label={t['Title']}
@@ -101,17 +106,23 @@ const FormContents = (props: EditProjectFormProps) => {
             name='authors'
           />
 
-          <MediaPlayerField i18n={props.i18n} />
+          {/* <MediaPlayerField i18n={props.i18n} /> */}
 
           <div className='project-form-divider' />
           <div ref={userRef} />
-          <UserList
-            label={t['Users']}
-            name='additional_users'
-            addString={t['add']}
-            nameString={t['User GitHub Name']}
-            i18n={props.i18n}
-          />
+          {props.projectData.project.creator ===
+            props.userInfo.profile.gitHubName && (
+            <>
+              <h2>{t['Users']}</h2>
+              <UserList
+                label={t['Users']}
+                name='additional_users'
+                addString={t['add']}
+                nameString={t['User GitHub Name']}
+                i18n={props.i18n}
+              />
+            </>
+          )}
           <BottomBar>
             <div className='project-form-actions-container'>
               <Button className='primary' type='submit'>
