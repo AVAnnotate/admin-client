@@ -1,0 +1,32 @@
+.stsc-container {
+  display: grid;
+  grid-template-columns: 220px auto;
+  grid-template-areas:
+    'sidebar header'
+    'sidebar contents';
+}
+
+.stsc-contents-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  grid-area: header;
+}
+
+.stsc-contents-container {
+  grid-area: contents;
+  overflow: auto;
+}
+
+.stsc-sidebar-wrapper {
+  padding: 10px;
+  grid-area: sidebar;
+}
+
+.stsc-content-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  margin: auto;
+  padding-bottom: 90px;
+  padding-top: 60px;
+}

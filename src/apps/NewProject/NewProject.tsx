@@ -1,11 +1,11 @@
 import type { GitHubOrganization, Project, Translations } from '@ty/Types.ts';
-import { Sidebar } from '../../components/Sidebar/index.ts';
 import { useState } from 'react';
 import { NewProjectForm } from '../../components/ProjectForm/index.ts';
 import type { apiProjectsProjectNamePost } from '@ty/api.ts';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { mapTagData } from '@lib/parse/index.ts';
 import { avaError } from '../../nanos/error.ts';
+import { SideTabScrollingContainer } from '@components/SideTabScrollingContainer/SideTabScrollingContainer.tsx';
 
 import './NewProject.css';
 
@@ -71,37 +71,33 @@ export const NewProject = (props: NewProjectProps) => {
   return (
     <div className='new-project-container container'>
       {saving && <LoadingOverlay />}
-      <h1>{t['Create New Project']}</h1>
-      <div className='new-project-panes'>
-        <div className='new-project-sidebar'>
-          <Sidebar
-            selection={selection}
-            onSelect={setSelection}
-            tabs={[
-              {
-                name: 'general',
-                label: t['General'],
-              },
-              {
-                name: 'users',
-                label: t['Users'],
-              },
-              {
-                name: 'tags',
-                label: t['Tags'],
-              },
-            ]}
-          />
-        </div>
-        <div className='new-project-form-container'>
-          <NewProjectForm
-            i18n={props.i18n}
-            onSave={handleSaveProject}
-            orgs={props.orgs}
-            selection={selection}
-          />
-        </div>
-      </div>
+      <SideTabScrollingContainer
+        sidebarHeaderLabel={t['Create New Project']}
+        tabs={[
+          {
+            name: 'general',
+            label: t['General'],
+          },
+          {
+            name: 'users',
+            label: t['Users'],
+          },
+          {
+            name: 'tags',
+            label: t['Tags'],
+          },
+        ]}
+        containerHeight={`${window.innerHeight - 120 - 90}px`}
+        selection={selection}
+        onSelect={(selection) => setSelection(selection)}
+      >
+        <NewProjectForm
+          i18n={props.i18n}
+          onSave={handleSaveProject}
+          orgs={props.orgs}
+          selection={selection}
+        />
+      </SideTabScrollingContainer>
     </div>
   );
 };

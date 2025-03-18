@@ -50,7 +50,7 @@ const FormContents = (props: EditProjectFormProps) => {
       ref.current!.scrollIntoView({ block: 'start' });
 
     if (props.selection === 'general') {
-      scrollTo(0, 0);
+      executeScroll(generalRef);
     } else {
       executeScroll(userRef);
     }
@@ -60,8 +60,8 @@ const FormContents = (props: EditProjectFormProps) => {
     <div className='project-form'>
       <div className='project-form-container'>
         <Form>
-          <h2>{t['General']}</h2>
           <div ref={generalRef} />
+          <h2>{t['General']}</h2>
           {props.projectData.project.creator ===
             props.userInfo.profile.gitHubName && (
             <>

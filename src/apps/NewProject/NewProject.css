@@ -1,6 +1,5 @@
 .new-project-container {
-  margin-top: 32px;
-  margin-left: 42px;
+  margin: 100px auto;
   overflow-y: hidden;
 }
 

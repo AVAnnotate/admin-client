@@ -1,11 +1,11 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
 import './ProjectSettings.css';
-import { Sidebar } from '@components/Sidebar/Sidebar.tsx';
 import { useState } from 'react';
 import { EditProjectForm } from '@components/ProjectForm/EditProjectForm.tsx';
 import type { apiProjectPut } from '@ty/api.ts';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
+import { SideTabScrollingContainer } from '@components/SideTabScrollingContainer/SideTabScrollingContainer.tsx';
 
 interface Props {
   i18n: Translations;
@@ -40,7 +40,7 @@ export const ProjectSettings: React.FC<Props> = (props) => {
     props.project.project.creator === props.userInfo.profile.gitHubName;
 
   return (
-    <>
+    <div className='project-settings-container'>
       {saving && <LoadingOverlay />}
       <Breadcrumbs
         items={[
@@ -52,46 +52,41 @@ export const ProjectSettings: React.FC<Props> = (props) => {
           { label: t['Settings'], link: '' },
         ]}
       />
-      <div className='project-settings-container'>
-        <h2>{t['Settings']}</h2>
-        <div className='project-settings-form-container'>
-          <div className='project-settings-sidebar'>
-            <Sidebar
-              selection={tab}
-              onSelect={(newTab) => setTab(newTab as Tabs)}
-              tabs={
-                isOwner
-                  ? [
-                      {
-                        name: 'general',
-                        label: t['General'],
-                      },
-                      {
-                        name: 'users',
-                        label: t['Users'],
-                      },
-                    ]
-                  : [
-                      {
-                        name: 'general',
-                        label: t['General'],
-                      },
-                    ]
-              }
-            />
-          </div>
-          <div className='project-settings-form'>
-            <EditProjectForm
-              selection={tab}
-              projectData={props.project}
-              projectSlug={props.projectSlug}
-              i18n={props.i18n}
-              onSave={(data) => handleSaveProject(data)}
-              userInfo={props.userInfo}
-            />
-          </div>
-        </div>
-      </div>
-    </>
+
+      <SideTabScrollingContainer
+        sidebarHeaderLabel={t['Settings']}
+        containerHeight={`${window.innerHeight - 120 - 90}px`}
+        selection={tab}
+        tabs={
+          isOwner
+            ? [
+                {
+                  name: 'general',
+                  label: t['General'],
+                },
+                {
+                  name: 'users',
+                  label: t['Users'],
+                },
+              ]
+            : [
+                {
+                  name: 'general',
+                  label: t['General'],
+                },
+              ]
+        }
+        onSelect={(selection) => setTab(selection as Tabs)}
+      >
+        <EditProjectForm
+          selection={tab}
+          projectData={props.project}
+          projectSlug={props.projectSlug}
+          i18n={props.i18n}
+          onSave={(data) => handleSaveProject(data)}
+          userInfo={props.userInfo}
+        />
+      </SideTabScrollingContainer>
+    </div>
   );
 };

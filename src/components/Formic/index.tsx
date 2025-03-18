@@ -512,7 +512,7 @@ export const ToggleInput = (props: ToggleInputProps) => {
 };
 
 interface UserListProps {
-  label: string;
+  label?: string;
   helperText?: string;
   required?: boolean;
   name: string;
