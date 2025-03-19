@@ -156,6 +156,54 @@ export const PageList: React.FC<Props> = (props) => {
     setSaving(false);
   };
 
+  const handleMakeTopLevel = async (uuid: string) => {
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    const page = copy.pages[uuid];
+    setSaving(true);
+    page.parent = undefined;
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
+  const handleSetParent = async (uuid: string, parentId: string) => {
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    const page = copy.pages[uuid];
+    setSaving(true);
+    page.parent = parentId;
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
   const handleDeletePage = async (uuid: string) => {
     setSaving(true);
     const res = await fetch(
@@ -202,6 +250,8 @@ export const PageList: React.FC<Props> = (props) => {
               onReEnableAutoGeneration={() =>
                 handleReEnableAutoGeneration(uuid)
               }
+              onMakeTopLevel={() => handleMakeTopLevel(uuid)}
+              onSetParent={(parentId) => handleSetParent(uuid, parentId)}
               onDelete={() => handleDeletePage(uuid)}
             />
           ))}

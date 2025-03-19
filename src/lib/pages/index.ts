@@ -37,9 +37,7 @@ export const getNewOrder = (
   const parentPages = (
     Object.keys(allPages)
       .map((pageUuid) => {
-        if (!allPages[pageUuid].parent) {
-          return { uuid: pageUuid, idx: newOrder.indexOf(pageUuid) };
-        }
+        return { uuid: pageUuid, idx: newOrder.indexOf(pageUuid) };
       })
       .filter(Boolean) as { uuid: string; idx: number }[]
   ).sort((a, b) => {
@@ -54,6 +52,8 @@ export const getNewOrder = (
 
   // if we just added a parent to a previously parentless page, add it to the
   // bottom of that parent's list of children
+  console.info('Page: ', uuid, ', Parent Page: ', newPage.parent);
+  console.info('All Pages: ', JSON.stringify(parentPages, null, 2));
   const parentPage = parentPages.find((pp) => pp.uuid === newPage.parent);
 
   if (!parentPage) {
