@@ -77,3 +77,33 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   return new Response(JSON.stringify(body), { status: 200 });
 };
+
+export const GET: APIRoute = async ({ cookies, params, request, redirect }) => {
+  if (request.headers.get('Content-Type') !== 'application/json') {
+    return new Response(null, { status: 400 });
+  }
+
+  const { projectName } = params;
+
+  const token = cookies.get('access-token');
+  const info = await userInfo(cookies);
+
+  if (!token || !info || !projectName) {
+    return redirect('/', 307);
+  }
+
+  const repositoryURL = getRepositoryUrl(projectName);
+
+  const fs = initFs();
+
+  const { readFile } = await gitRepo({
+    fs,
+    repositoryURL,
+    branch: 'main',
+    userInfo: info,
+  });
+
+  const order = readFile('/data/pages/order.json');
+
+  return new Response(JSON.stringify(order), { status: 200 });
+};
