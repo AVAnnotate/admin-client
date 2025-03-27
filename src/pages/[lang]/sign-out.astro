@@ -1,4 +1,14 @@
 ---
+import { userInfo } from '@backend/userInfo';
+import { signOut } from '@lib/GitHub';
+
+const user = await userInfo(Astro.cookies);
+
+if (!user) {
+  return Astro.redirect(`/${lang}/sign-in`);
+}
+
+signOut(user.token);
 Astro.cookies.delete('access-token', { path: '/' });
 
 return Astro.redirect('/');
