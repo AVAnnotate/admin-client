@@ -4,7 +4,8 @@
   margin: auto;
   justify-content: space-around;
   align-items: center;
-  gap: 10px;
+  gap: 20px;
+  padding-top: 32px;
 }
 .sign-in-anchor {
   display: flex;
@@ -15,8 +16,22 @@
   padding: 10px !important;
   border-radius: 5px;
   border: 1px solid black;
-  color: var(--black) !important;
-  width: 300px;
+  color: white !important;
+  background-color: #015f86;
+  width: 2o0px;
+}
+
+.authorize-anchor {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  background-color: var(--gray-400);
+  padding: 10px !important;
+  border-radius: 5px;
+  border: 1px solid black;
+  color: black !important;
+  width: 280px;
 }
 
 .sign-in-button-container {

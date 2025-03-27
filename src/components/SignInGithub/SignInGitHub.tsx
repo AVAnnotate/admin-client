@@ -51,7 +51,7 @@ export const SignInGitHub = (props: SignInGitHubProps) => {
       </a>
       <a
         id='sign-in'
-        className='sign-in-anchor'
+        className='authorize-anchor'
         href={`https://github.com/settings/connections/applications/${
           import.meta.env.PUBLIC_GITHUB_CLIENT_ID
         }`}
