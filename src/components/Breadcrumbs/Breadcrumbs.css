@@ -4,6 +4,11 @@
   text-decoration: none;
   font-size: 16px;
   box-sizing: border-box;
+  position: fixed;
+  top: 60px;
+  left: 0;
+  width: 100%;
+  z-index: 100;
 }
 
 .breadcrumbs-container .breadcrumbs-list {

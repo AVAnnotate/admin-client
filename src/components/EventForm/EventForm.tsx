@@ -2,6 +2,7 @@ import {
   SelectInput,
   TextInput,
   TimeInput,
+  DurationInput,
 } from '@components/Formic/index.tsx';
 import type {
   AnnotationPage,
@@ -107,7 +108,10 @@ const FormContents: React.FC<Props> = (props) => {
 
       // set the duration for any AV files whose durations we've stored above
       Object.keys(vals.audiovisual_files).forEach((uuid) => {
-        if (newDurationVals[vals.audiovisual_files[uuid].file_url]) {
+        if (
+          newDurationVals[vals.audiovisual_files[uuid].file_url] &&
+          !vals.audiovisual_files[uuid].duration_overridden
+        ) {
           setFieldValue(
             `audiovisual_files.${uuid}.duration`,
             newDurationVals[vals.audiovisual_files[uuid].file_url]
@@ -255,39 +259,75 @@ const FormContents: React.FC<Props> = (props) => {
                             }
                           />
                         </div>
-                        <TimeInput
+                        <DurationInput
                           className='av-duration-input'
+                          name={`audiovisual_files['${key}'].duration`}
                           // disable input if we were able to automatically set the duration
                           disabled={
                             !!durationVals[
                               (values as FormEvent).audiovisual_files[key]
                                 .file_url
-                            ]
+                            ] &&
+                            !(values as FormEvent).audiovisual_files[key]
+                              .duration_overridden
                           }
                           label={idx === 0 ? t['Duration'] : undefined}
                           // force this to re-render when the auto-duration thing picks up a value
                           key={
+                            (values as FormEvent).audiovisual_files[key]
+                              .duration_overridden
+                              ? undefined
+                              : durationVals[
+                                  (values as FormEvent).audiovisual_files[key]
+                                    .file_url
+                                ]
+                          }
+                          required
+                          initialValue={
+                            (values as FormEvent).audiovisual_files[key]
+                              .duration ||
                             durationVals[
                               (values as FormEvent).audiovisual_files[key]
                                 .file_url
                             ]
                           }
-                          onChange={(input: number) =>
-                            setFieldValue(
-                              `audiovisual_files.${key}.duration`,
-                              input
-                            )
-                          }
-                          required
-                          initialValue={
-                            durationVals[
-                              (values as FormEvent).audiovisual_files[key]
-                                .file_url
-                            ] ||
-                            (values as FormEvent).audiovisual_files[key]
-                              .duration
-                          }
                         />
+                        <div className='av-duration-override'>
+                          {!!durationVals[
+                            (values as FormEvent).audiovisual_files[key]
+                              .file_url
+                          ] && (
+                            <Button
+                              className='outline av-duration-override-button'
+                              onClick={() => {
+                                setFieldValue(
+                                  `audiovisual_files['${key}'].duration_overridden`,
+                                  !(values as FormEvent).audiovisual_files[key]
+                                    .duration_overridden
+                                );
+                                if (
+                                  (values as FormEvent).audiovisual_files[key]
+                                    .duration_overridden
+                                ) {
+                                  setFieldValue(
+                                    `audiovisual_files['${key}'].duration`,
+                                    durationVals[
+                                      (values as FormEvent).audiovisual_files[
+                                        key
+                                      ].file_url
+                                    ]
+                                  );
+                                }
+                              }}
+                              type='button'
+                            >
+                              {(values as FormEvent).audiovisual_files[key]
+                                .duration_overridden
+                                ? t['Calculate Duration']
+                                : t['Override Duration']}
+                            </Button>
+                          )}
+                        </div>
                         {idx !== 0 ? (
                           <Button
                             className='av-trash-button'

@@ -1,0 +1,4 @@
+Event Label	Event Description (Optional)	Event Item Type (Audio or Visual)	AVFile Label (might be the same as event label)	AV File URL	Event Citation (optional)
+"S1576, T86-243"	This recording is available on the Florida Memory Project.	Audio	"S1576, T86-243"	https://ia801304.us.archive.org/11/items/WPA_1939_Jacksonville_Halpert/T86-243.mp3	
+"S1576, T86-244"	This recording is available on the Florida Memory Project.	Audio	"S1576, T86-244"	https://ia601304.us.archive.org/11/items/WPA_1939_Jacksonville_Halpert/T86-244.mp3	
+"S1576, T86-245"	This recording is available on the Florida Memory Project.	Audio	"S1576, T86-245"	https://ia601304.us.archive.org/11/items/WPA_1939_Jacksonville_Halpert/T86-245.mp3	

@@ -25,10 +25,10 @@ export const Sorters = {
   },
 
   Newest: (a: ProjectData, b: ProjectData) =>
-    a.project.created_at < b.project.created_at ? 1 : -1,
+    a.repo_updated_at < b.repo_updated_at ? 1 : -1,
 
   Oldest: (a: ProjectData, b: ProjectData) =>
-    a.project.created_at > b.project.created_at ? 1 : -1,
+    a.repo_updated_at > b.repo_updated_at ? 1 : -1,
 };
 
 const Icons = {
@@ -40,7 +40,7 @@ const Icons = {
 export const SortAction = (props: SortActionProps) => {
   const { t } = props.i18n;
 
-  const [sort, setSort] = useState<keyof typeof Sorters>('Name');
+  const [sort, setSort] = useState<keyof typeof Sorters>('Newest');
 
   const changeSort = (key: keyof typeof Sorters) => () => {
     setSort(key);

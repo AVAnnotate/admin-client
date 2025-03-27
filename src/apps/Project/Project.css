@@ -1,5 +1,5 @@
 .project-container {
-  margin: 20px auto;
+  margin: 60px auto;
   max-width: 1200px;
 }
 
@@ -53,4 +53,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+
+.project-breadcrumb-container {
+  position: sticky;
+  top: 60px;
+  z-index: 2;
 }

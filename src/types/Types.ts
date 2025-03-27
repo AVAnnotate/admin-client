@@ -82,6 +82,7 @@ export type AudiovisualFile = {
   is_offline: boolean;
   file_url: string;
   duration: number;
+  duration_overridden?: boolean;
   caption_set?: CaptionSet[];
 };
 
@@ -154,6 +155,9 @@ export type ProjectFile = {
   users: ProviderUser[];
 
   publish: Publish;
+
+  repo_created_at: string;
+  repo_updated_at: string;
 };
 
 export type ProjectData = {

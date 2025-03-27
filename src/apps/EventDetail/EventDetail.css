@@ -279,11 +279,17 @@
   opacity: 0;
 }
 
+.audio-event-detail .event-detail-table-container {
+  margin: 28px 0;
+}
+
 .video-event-detail {
   display: grid;
   grid-template-columns: 4fr 2fr;
   background: #fff;
   box-sizing: border-box;
+  margin-top: 60px;
+  margin-bottom: 60px;
 }
 
 .video-event-detail .formic-form-field {
@@ -301,7 +307,7 @@
 }
 
 .video-event-detail .table-container {
-  max-height: calc(100% - 182px);
+  max-height: calc(100% - 230px);
   overflow-y: auto;
   box-sizing: border-box;
   padding: 0 26px;

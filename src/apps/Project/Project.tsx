@@ -70,12 +70,14 @@ export const Project: React.FC<Props> = (props) => {
           projectSlug={props.projectSlug}
         />
       )}
-      <Breadcrumbs
-        items={[
-          { label: t['Projects'], link: `/${lang}/projects` },
-          { label: props.project.project.title, link: '' },
-        ]}
-      />
+      <div className='project-breadcrumb-container'>
+        <Breadcrumbs
+          items={[
+            { label: t['Projects'], link: `/${lang}/projects` },
+            { label: props.project.project.title, link: '' },
+          ]}
+        />
+      </div>
       <div className='project-container'>
         <div className='project-top-bar'>
           <h2 className='project-title'>

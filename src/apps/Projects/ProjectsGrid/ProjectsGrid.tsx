@@ -1,11 +1,20 @@
 import { ProjectCard } from '@components/ProjectCard/ProjectCard.tsx';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
 import './ProjectsGrid.css';
+import type { ProjectFilter } from '../Header/Header.tsx';
 
 interface ProjectsGridProps {
   projects: ProjectData[];
 
   i18n: Translations;
+
+  filter: ProjectFilter;
+
+  search: string;
+
+  userInfo: UserInfo;
+
+  getProjectData(org: string, repo: string): Promise<any>;
 }
 
 export const ProjectsGrid = (props: ProjectsGridProps) => {
@@ -15,6 +24,10 @@ export const ProjectsGrid = (props: ProjectsGridProps) => {
         <ProjectCard
           project={p}
           i18n={props.i18n}
+          filter={props.filter}
+          search={props.search}
+          userInfo={props.userInfo}
+          getProjectData={props.getProjectData}
           key={`${p.project.github_org}+${p.project.slug}`}
         />
       ))}

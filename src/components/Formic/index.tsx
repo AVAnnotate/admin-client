@@ -21,6 +21,15 @@ const validateRequiredField = (name: string, value: any) => {
   }
 };
 
+const secondsToString = (value: number) => {
+  const hours = Math.floor(value / 3600);
+  const minutes = Math.floor((value - 3600 * Math.floor(value / 3600)) / 60);
+  const seconds = value % 60;
+  return `${hours.toString().padStart(2, '0')}:${minutes
+    .toString()
+    .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+};
+
 interface TextInputProps {
   disabled?: boolean;
   label?: string;
@@ -181,6 +190,93 @@ export const TimeInput = (props: TimeInputProps) => {
         disabled={props.disabled}
         onChange={onChange}
         value={display}
+      />
+    </div>
+  );
+};
+
+interface DurationInputProps {
+  disabled?: boolean;
+  label?: string;
+  helperText?: string;
+  name: string;
+  required?: boolean;
+  bottomNote?: string;
+  className?: string;
+  placeholder?: string;
+  initialValue?: number;
+}
+
+export const DurationInput = (props: DurationInputProps) => {
+  const [_field, meta, helpers] = useField(props.name);
+  const [valueString, setValueString] = useState(
+    props.initialValue
+      ? secondsToString(props.initialValue)
+      : props.placeholder || '00:00:00'
+  );
+
+  const { value } = meta;
+  const { setValue } = helpers;
+
+  const handleChange = (val: string) => {
+    val = val.replace(/[^0-9:]/g, ''); // Allow only numbers and colons
+    const parts = val.split(':');
+    const output: number[] = [];
+
+    if (parts.length > 3) {
+      parts.splice(3); // Limit to HH:mm:ss
+      val = parts.join(':');
+    }
+
+    // Pad with leading zeros and limit values
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].length > 2) {
+        output[i] = parseInt(parts[i].slice(0, 2));
+      } else {
+        output[i] = parseInt(parts[i]);
+      }
+    }
+
+    if (output[0] > 99) output[0] = 99;
+    if (output[1] > 59) output[1] = 59;
+    if (output[2] > 59) output[2] = 59;
+
+    setValue(output[0] * 3600 + output[1] * 60 + output[2]);
+    setValueString(val);
+  };
+
+  return (
+    <div className={`formic-form-field ${props.className}`}>
+      {props.label && (
+        <div className='av-label-bold formic-form-label'>
+          {props.label}
+          {props.required && <Required />}
+        </div>
+      )}
+      {props.helperText && (
+        <div className='av-label formic-form-helper-text'>
+          {props.helperText}
+        </div>
+      )}
+      <input
+        id={props.name}
+        className='formic-form-text formic-time-input'
+        type='text'
+        required
+        disabled={props.disabled}
+        pattern='[0-9]{2}:[0-9]{2}:[0-9]{2}'
+        value={valueString}
+        onChange={(ev) => handleChange(ev.target.value)}
+      />
+      {props.bottomNote && (
+        <div className='av-label-italic formic-form-helper-text'>
+          {props.bottomNote}
+        </div>
+      )}
+      <ErrorMessage
+        name={props.name}
+        component='div'
+        className='formic-form-error'
       />
     </div>
   );
@@ -416,7 +512,7 @@ export const ToggleInput = (props: ToggleInputProps) => {
 };
 
 interface UserListProps {
-  label: string;
+  label?: string;
   helperText?: string;
   required?: boolean;
   name: string;

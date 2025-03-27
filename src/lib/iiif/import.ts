@@ -112,7 +112,9 @@ export const importIIIFManifest = async (
         created_at: new Date().toISOString(),
         created_by: userName,
         item_type: avType === 'Video' ? 'Video' : 'Audio',
-        label: `Imported Event ${result.events.length + 1}`,
+        label: mani.label.en
+          ? mani.label.en[0]
+          : `Imported Event ${result.events.length + 1}`,
         updated_at: new Date().toISOString(),
         updated_by: userName,
       },

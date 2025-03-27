@@ -405,3 +405,22 @@ export const checkWorkflowStatus = async (
     }
   );
 };
+
+export const signOut = async (token: string): Promise<Response> => {
+  return await fetch(
+    `https://api.github.com/applications/${
+      import.meta.env.PUBLIC_GITHUB_CLIENT_ID
+    }/token`,
+    {
+      method: 'GET',
+      headers: {
+        User: `${import.meta.env.PUBLIC_GITHUB_CLIENT_ID}:${
+          import.meta.env.GITHUB_CLIENT_SECRET
+        }`,
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
+};
