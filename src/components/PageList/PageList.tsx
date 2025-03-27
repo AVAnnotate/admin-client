@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import './PageList.css';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { Page, ProjectData, Translations } from '@ty/Types.ts';
 import { Button } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
@@ -174,6 +174,17 @@ export const PageList: React.FC<Props> = (props) => {
     );
 
     if (res.ok) {
+      const resOrder = await fetch(
+        `/api/projects/${props.projectSlug}/pages/order`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await resOrder.json();
+      setPageOrder(JSON.parse(data));
       setProject(copy);
     }
 
@@ -186,6 +197,53 @@ export const PageList: React.FC<Props> = (props) => {
     const page = copy.pages[uuid];
     setSaving(true);
     page.parent = parentId;
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      const resOrder = await fetch(
+        `/api/projects/${props.projectSlug}/pages/order`,
+        {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      const data = await resOrder.json();
+      setPageOrder(JSON.parse(data));
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
+  const handleDesignateHome = async (uuid: string) => {
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    let prevHome: Page | undefined;
+
+    for (uuid in copy.pages) {
+      if (copy.pages[uuid].autogenerate.type === 'home') {
+        prevHome = copy.pages[uuid];
+      }
+    }
+    const page = copy.pages[uuid];
+    setSaving(true);
+
+    page.autogenerate.type === 'home';
+    if (prevHome) {
+      prevHome.autogenerate.enabled = false;
+      prevHome.autogenerate.type = 'custom';
+    }
     const res = await fetch(
       `/api/projects/${props.projectSlug}/pages/${uuid}`,
       {
@@ -250,6 +308,7 @@ export const PageList: React.FC<Props> = (props) => {
               onReEnableAutoGeneration={() =>
                 handleReEnableAutoGeneration(uuid)
               }
+              onDesignateHome={() => handleDesignateHome(uuid)}
               onMakeTopLevel={() => handleMakeTopLevel(uuid)}
               onSetParent={(parentId) => handleSetParent(uuid, parentId)}
               onDelete={() => handleDeletePage(uuid)}

@@ -12,6 +12,8 @@ import {
   FiletypeHtml,
   AlignTop,
   ListNested,
+  House,
+  HouseFill,
 } from 'react-bootstrap-icons';
 
 interface Props {
@@ -24,6 +26,7 @@ interface Props {
   onDrop: () => Promise<void>;
   onDisableAutoGeneration(): void;
   onReEnableAutoGeneration(): void;
+  onDesignateHome(): void;
   onMakeTopLevel(): void;
   onSetParent(pageId: string): void;
   onDelete(): void;
@@ -157,6 +160,18 @@ export const PageRow: React.FC<Props> = (props) => {
       });
     }
 
+    if (
+      props.project.pages[props.uuid] &&
+      props.project.pages[props.uuid].autogenerate.type !== 'home'
+    ) {
+      options.push({
+        label: t['Designate as Home Page'],
+        icon: House,
+        // @ts-ignore
+        onClick: () => props.onDesignateHome(),
+      });
+    }
+
     // Re-parent
     const childPages: MeatballMenuItem[] = [];
     for (const pageId in props.project.pages) {
@@ -269,6 +284,7 @@ export const PageRow: React.FC<Props> = (props) => {
     >
       <GripVertical />
       <Text className='page-title' weight='bold'>
+        {page.autogenerate.type === 'home' ? <HouseFill /> : <div />}
         {page.parent && (
           <div
             style={{
