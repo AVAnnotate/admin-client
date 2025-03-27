@@ -61,7 +61,7 @@ export const PageEdit: React.FC<Props> = (props) => {
           { label: t['Add Page'], link: '' },
         ]}
       />
-      <div className='container'>
+      <div className='container' style={{ paddingTop: 70 }}>
         <PageForm {...props} onSubmit={onSubmit} />
       </div>
     </>
