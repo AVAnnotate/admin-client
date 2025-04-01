@@ -129,8 +129,6 @@ export const getProject = async (
 
   const parsed = parseURL(htmlUrl);
 
-  console.log(parsed);
-
   const respRepo = await getRepo(
     userInfo.token,
     parsed.org,
@@ -142,6 +140,11 @@ export const getProject = async (
   let projectChanged = false;
 
   // Make sure the project file is accurate
+  if (project.project.github_org !== parsed.org) {
+    project.project.github_org = parsed.org;
+    projectChanged = true;
+  }
+
   if (project.project.is_private !== repo.private) {
     project.project.is_private = repo.private;
     projectChanged = true;
@@ -149,11 +152,6 @@ export const getProject = async (
 
   if (project.project.generate_pages_site !== repo.has_pages) {
     project.project.generate_pages_site = repo.has_pages;
-    projectChanged = true;
-  }
-
-  if (project.project.github_org !== parsed.org) {
-    project.project.github_org = parsed.org;
     projectChanged = true;
   }
 
