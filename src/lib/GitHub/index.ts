@@ -230,7 +230,6 @@ export const enablePages = async (
       path: '/',
     },
     build_type: 'workflow',
-    https_enforced: true,
   };
   return await fetch(`https://api.github.com/repos/${org}/${repo}/pages`, {
     method: 'POST',

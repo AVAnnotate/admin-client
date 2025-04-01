@@ -6,6 +6,7 @@ import {
   getUser,
   removeCollaborator,
   getUserRepos,
+  getRepo,
 } from '@lib/GitHub/index.ts';
 import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
@@ -101,16 +102,39 @@ export const getProject = async (
 ) => {
   const fs = initFs();
 
-  const { exists, readDir, readFile } = await gitRepo({
-    fs: fs,
-    repositoryURL: htmlUrl,
-    branch: 'main',
-    userInfo: userInfo,
-  });
+  const { exists, readDir, readFile, writeFile, commitAndPush } = await gitRepo(
+    {
+      fs: fs,
+      repositoryURL: htmlUrl,
+      branch: 'main',
+      userInfo: userInfo,
+    }
+  );
 
   const proj = readFile('/data/project.json');
 
   const project: ProjectData = JSON.parse(proj as string);
+
+  const respRepo = await getRepo(
+    userInfo.token,
+    project.project.github_org,
+    project.project.slug
+  );
+
+  const repo = await respRepo.json();
+
+  let projectChanged = false;
+
+  // Make sure the project file is accurate
+  if (project.project.is_private !== repo.private) {
+    project.project.is_private = repo.private;
+    projectChanged = true;
+  }
+
+  if (project.project.generate_pages_site !== repo.has_pages) {
+    project.project.generate_pages_site = repo.has_pages;
+    projectChanged = true;
+  }
 
   const users = await getCollaborators(
     project.project.slug,
@@ -188,6 +212,27 @@ export const getProject = async (
 
     project.pages = pageData.pages;
     project.pageOrder = pageData.order;
+  }
+
+  if (projectChanged) {
+    const success = await writeFile(
+      '/data/project.json',
+      JSON.stringify(project, null, 2)
+    );
+
+    if (!success) {
+      console.error('Failed to write project data');
+      return project;
+    }
+
+    const successCommit = await commitAndPush(
+      `Updated project file for ${project.project.title}`
+    );
+
+    if (successCommit.error) {
+      console.error('Failed to write project data: ', successCommit.error);
+      return project;
+    }
   }
 
   return project;
