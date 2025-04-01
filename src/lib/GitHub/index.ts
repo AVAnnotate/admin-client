@@ -111,7 +111,7 @@ export const addCollaborator = async (
   token: string
 ): Promise<Response> => {
   const body = {
-    permission: 'write',
+    permission: 'push',
   };
 
   return await fetch(

@@ -148,7 +148,7 @@ export const POST: APIRoute = async ({
         body.additionalUsers,
         projectName,
         body.gitHubOrg,
-        token
+        token?.value as string
       );
     } catch (e) {
       return new Response(
