@@ -36,6 +36,7 @@ export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
             type={props.event.item_type}
             i18n={props.i18n}
             url={props.event.audiovisual_files[props.avFileUuid].file_url}
+            offline={props.event.audiovisual_files[props.avFileUuid].is_offline}
             position={annoPosition}
           />
           <div className='set-info-bar'>

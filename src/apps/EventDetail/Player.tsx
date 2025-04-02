@@ -20,6 +20,8 @@ interface Props {
   type: 'Audio' | 'Video';
   i18n: Translations;
   url: string;
+  offline?: boolean;
+
   // optional props for controlling the
   // player from a parent component
   playing?: boolean;
@@ -89,25 +91,29 @@ export const Player: React.FC<Props> = (props) => {
 
   return (
     <div className='player'>
-      <ReactPlayer
-        controls={props.type === 'Video'}
-        playing={playing}
-        played={position / duration || 0}
-        muted={muted}
-        onDuration={(dur) => setDuration(dur)}
-        onProgress={(data) => {
-          // don't move the point if the user is currently dragging it
-          if (!seeking) {
-            setPosition(data.playedSeconds);
-          }
-        }}
-        onReady={(player) => setPlayer(player)}
-        progressInterval={50}
-        url={props.url}
-        width={props.type === 'Video' ? '100%' : 0}
-        height={props.type === 'Video' ? '100%' : 0}
-      />
-      {props.type === 'Audio' && (
+      {props.offline ? (
+        <div className='offline'>{t['No media is available.']}</div>
+      ) : (
+        <ReactPlayer
+          controls={props.type === 'Video'}
+          playing={playing}
+          played={position / duration || 0}
+          muted={muted}
+          onDuration={(dur) => setDuration(dur)}
+          onProgress={(data) => {
+            // don't move the point if the user is currently dragging it
+            if (!seeking) {
+              setPosition(data.playedSeconds);
+            }
+          }}
+          onReady={(player) => setPlayer(player)}
+          progressInterval={50}
+          url={props.url}
+          width={props.type === 'Video' ? '100%' : 0}
+          height={props.type === 'Video' ? '100%' : 0}
+        />
+      )}
+      {props.type === 'Audio' && !props.offline && (
         <div className='player-control-panel'>
           <div className='content'>
             <Button

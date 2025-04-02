@@ -34,6 +34,7 @@ export const VideoDisplay: React.FC<EventDisplayProps> = (props) => {
             type='Video'
             i18n={props.i18n}
             url={props.event.audiovisual_files[props.avFileUuid].file_url}
+            offline={props.event.audiovisual_files[props.avFileUuid].is_offline}
             position={annoPosition}
           />
           <p>{props.event.citation}</p>
