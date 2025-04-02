@@ -423,3 +423,22 @@ export const signOut = async (token: string): Promise<Response> => {
     }
   );
 };
+
+export const activateWorkflow = async (
+  token: string,
+  org: string,
+  repo: string,
+  workflowName: string
+): Promise<Response> => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repo}/actions/workflows/${workflowName}/enable`,
+    {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
+};

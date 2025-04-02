@@ -21,6 +21,18 @@ import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
 import type { RepositoryInvitation } from '@ty/github.ts';
 
+export const parseURL = (url: string) => {
+  const splitStart = url.split('https://github.com/');
+  const split = splitStart[1].split('/');
+  const org = split[0];
+  const repo = split[1];
+
+  return {
+    org,
+    repo,
+  };
+};
+
 export const getOrgs = async (
   userInfo: UserInfo
 ): Promise<GitHubOrganization[]> => {
@@ -115,9 +127,11 @@ export const getProject = async (
 
   const project: ProjectData = JSON.parse(proj as string);
 
+  const parsed = parseURL(htmlUrl);
+
   const respRepo = await getRepo(
     userInfo.token,
-    project.project.github_org,
+    parsed.org,
     project.project.slug
   );
 
@@ -126,6 +140,11 @@ export const getProject = async (
   let projectChanged = false;
 
   // Make sure the project file is accurate
+  if (project.project.github_org !== parsed.org) {
+    project.project.github_org = parsed.org;
+    projectChanged = true;
+  }
+
   if (project.project.is_private !== repo.private) {
     project.project.is_private = repo.private;
     projectChanged = true;
