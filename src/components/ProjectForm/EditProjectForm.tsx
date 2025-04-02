@@ -106,8 +106,6 @@ const FormContents = (props: EditProjectFormProps) => {
             name='authors'
           />
 
-          {/* <MediaPlayerField i18n={props.i18n} /> */}
-
           <div className='project-form-divider' />
           <div ref={userRef} />
           {props.projectData.project.creator ===

@@ -60,7 +60,11 @@ export const Element = ({
     case 'image':
       return (
         <div {...attributes} style={style} contentEditable={false}>
-          <img src={element.url} className={`slate-img-${element.size}`} />
+          <img
+            src={element.url}
+            className={`slate-img-${element.size}`}
+            alt='Embedded image'
+          />
           {children}
         </div>
       );
