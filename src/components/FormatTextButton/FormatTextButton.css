@@ -1,0 +1,8 @@
+.format-text-button {
+  width: 150px;
+  background-color: transparent;
+  color: black;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}

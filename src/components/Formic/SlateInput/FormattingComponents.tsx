@@ -6,44 +6,58 @@ import { Button } from '@radix-ui/themes';
 import * as Dialog from '@radix-ui/react-dialog';
 import type { ImageData, ImageSize } from '@ty/slate.ts';
 import type { Translations } from '@ty/Types.ts';
+import { ToolbarTooltip } from './ToolbarTooltip.tsx';
 
 export const HighlightColorButton = (props: SlateButtonProps) => {
   const editor = useSlate();
+  const { t } = props.i18n;
 
   return (
-    <Button className='unstyled' type='button'>
-      <label className='slate-highlight-color-button'>
-        <props.icon />
-        <input
-          className='hidden'
-          type='color'
-          onChange={(ev) => editor.addMark('highlight', ev.target.value)}
-        />
-      </label>
-    </Button>
+    <ToolbarTooltip
+      // @ts-ignore
+      content={t.rteToolbar[props.format as string]}
+    >
+      <Button className='unstyled' type='button'>
+        <label className='slate-highlight-color-button'>
+          <props.icon />
+          <input
+            className='hidden'
+            type='color'
+            onChange={(ev) => editor.addMark('highlight', ev.target.value)}
+          />
+        </label>
+      </Button>
+    </ToolbarTooltip>
   );
 };
 
 export const ColorButton = (props: SlateButtonProps) => {
   const editor = useSlate();
+  const { t } = props.i18n;
 
   return (
-    <Button className='unstyled' type='button'>
-      <label className='slate-color-button'>
-        <props.icon />
-        <input
-          className='hidden'
-          type='color'
-          onChange={(ev) => editor.addMark('color', ev.target.value)}
-        />
-      </label>
-    </Button>
+    <ToolbarTooltip
+      // @ts-expect-error
+      content={t.rteToolbar[props.format as string]}
+    >
+      <Button className='unstyled' type='button'>
+        <label className='slate-color-button'>
+          <props.icon />
+          <input
+            className='hidden'
+            type='color'
+            onChange={(ev) => editor.addMark('color', ev.target.value)}
+          />
+        </label>
+      </Button>
+    </ToolbarTooltip>
   );
 };
 
 export interface LinkDialogProps {
   i18n: Translations;
   icon: React.FC;
+  format: string;
   onSubmit: (url: string) => void;
   title: string;
 }
@@ -75,16 +89,21 @@ export const LinkButton = (props: LinkDialogProps) => {
   return (
     <Dialog.Root open={open}>
       <Dialog.Trigger asChild>
-        <Button
-          className={`link-button unstyled ${
-            highlightedText ? '' : 'disabled-link-button'
-          }`}
-          disabled={!highlightedText}
-          onClick={() => setOpen(true)}
-          type='button'
+        <ToolbarTooltip
+          // @ts-expect-error
+          content={t.rteToolbar[props.format as string]}
         >
-          <props.icon />
-        </Button>
+          <Button
+            className={`link-button unstyled ${
+              highlightedText ? '' : 'disabled-link-button'
+            }`}
+            disabled={!highlightedText}
+            onClick={() => setOpen(true)}
+            type='button'
+          >
+            <props.icon />
+          </Button>
+        </ToolbarTooltip>
       </Dialog.Trigger>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
@@ -154,13 +173,15 @@ export const ImageButton = (props: ImageDialogProps) => {
   return (
     <Dialog.Root open={open}>
       <Dialog.Trigger asChild>
-        <Button
-          className='image-button unstyled'
-          onClick={() => setOpen(true)}
-          type='button'
-        >
-          <props.icon />
-        </Button>
+        <ToolbarTooltip content={props.title}>
+          <Button
+            className='image-button unstyled'
+            onClick={() => setOpen(true)}
+            type='button'
+          >
+            <props.icon />
+          </Button>
+        </ToolbarTooltip>
       </Dialog.Trigger>
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>

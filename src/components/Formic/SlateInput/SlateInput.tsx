@@ -1,4 +1,10 @@
-import { useCallback, useRef, type ReactElement } from 'react';
+import {
+  Children,
+  useCallback,
+  useRef,
+  useState,
+  type ReactElement,
+} from 'react';
 import { Editable, withReact, useSlate, Slate, ReactEditor } from 'slate-react';
 import {
   Editor,
@@ -7,8 +13,10 @@ import {
   Element as SlateElement,
   type BaseEditor,
   Path,
+  Node as SlateNode,
 } from 'slate';
 import { Button } from '@radix-ui/themes';
+import { withHistory } from 'slate-history';
 import {
   BookmarkIcon,
   CodeIcon,
@@ -42,6 +50,8 @@ import {
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import type { ElementTypes, ImageData } from '@ty/slate.ts';
 import { Element, emptyParagraph, Leaf } from '../../../lib/slate/index.tsx';
+import { FormatTextButton } from '@components/FormatTextButton/FormatTextButton.tsx';
+import { ToolbarTooltip } from './ToolbarTooltip.tsx';
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
@@ -121,43 +131,51 @@ const isMarkActive = (editor: ReactEditor, format: string) => {
 
 const BlockButton = (props: SlateButtonProps) => {
   const editor = useSlate();
+  const { t } = props.i18n;
 
   return (
-    <Button
-      className={`block-button unstyled ${
-        isBlockActive(editor, props.format) ? 'active-button' : ''
-      }`}
-      onMouseDown={(event) => {
-        event.preventDefault();
-        if (props.onInsert) {
-          props.onInsert(editor);
-        } else {
-          toggleBlock(editor, props.format);
-        }
-      }}
-      type='button'
-    >
-      <props.icon />
-    </Button>
+    // @ts-ignore
+    <ToolbarTooltip content={t.rteToolbar[props.format as string]}>
+      <Button
+        className={`block-button unstyled ${
+          isBlockActive(editor, props.format) ? 'active-button' : ''
+        }`}
+        onMouseDown={(event) => {
+          event.preventDefault();
+          if (props.onInsert) {
+            props.onInsert(editor);
+          } else {
+            toggleBlock(editor, props.format);
+          }
+        }}
+        type='button'
+      >
+        <props.icon />
+      </Button>
+    </ToolbarTooltip>
   );
 };
 
 const MarkButton = (props: SlateButtonProps) => {
   const editor = useSlate();
+  const { t } = props.i18n;
 
   return (
-    <Button
-      className={`mark-button unstyled ${
-        isMarkActive(editor, props.format) ? 'active-button' : ''
-      }`}
-      onMouseDown={(event) => {
-        event.preventDefault();
-        toggleMark(editor, props.format);
-      }}
-      type='button'
-    >
-      <props.icon />
-    </Button>
+    // @ts-ignore
+    <ToolbarTooltip content={t.rteToolbar[props.format as string]}>
+      <Button
+        className={`mark-button unstyled ${
+          isMarkActive(editor, props.format) ? 'active-button' : ''
+        }`}
+        onMouseDown={(event) => {
+          event.preventDefault();
+          toggleMark(editor, props.format);
+        }}
+        type='button'
+      >
+        <props.icon />
+      </Button>
+    </ToolbarTooltip>
   );
 };
 
@@ -285,23 +303,50 @@ interface Props {
 export const SlateInput: React.FC<Props> = (props) => {
   const editorRef = useRef<(BaseEditor & ReactEditor) | null>(null);
 
+  const [currentFormat, setCurrentFormat] = useState('normal');
+  const { t } = props.i18n;
+
   if (!editorRef.current) {
     editorRef.current = withReact(
-      withColumnsPlugin(withAVAPlugin(createEditor()))
+      withHistory(withColumnsPlugin(withAVAPlugin(createEditor())))
     );
   }
 
   const editor = editorRef.current;
 
+  const handleChange = (path: Path, property: string, value: any) => {
+    const rootNode = SlateNode.get(editor, []);
+    const currentNode = SlateNode.descendant(rootNode, path);
+    console.log('Current: ', currentNode);
+    const update: any = { ...currentNode };
+    update[property] = value;
+    Transforms.setNodes(editor, update, { at: path });
+  };
+
   const renderElement = useCallback(
     (elProps: any) => (
-      <Element {...elProps} project={props.project} i18n={props.i18n} />
+      <Element
+        {...elProps}
+        project={props.project}
+        i18n={props.i18n}
+        onChange={(property: string, value: any) => {
+          const path = ReactEditor.findPath(editor, elProps.element);
+          handleChange(path, property, value);
+        }}
+      />
     ),
     [props.project]
   );
   const renderLeaf = useCallback((props: any) => <Leaf {...props} />, []);
 
-  const { t } = props.i18n;
+  const handleTextFormatChange = (format: string) => {
+    Editor.removeMark(editor, 'textSize');
+    if (format !== 'normal') {
+      Editor.addMark(editor, 'textSize', format);
+    }
+
+    setCurrentFormat(format);
+  };
 
   return (
     <div className='slate-form'>
@@ -314,32 +359,74 @@ export const SlateInput: React.FC<Props> = (props) => {
           {props.children}
           {props.elementTypes.includes('marks') && (
             <>
-              <MarkButton format='bold' icon={FontBoldIcon} />
-              <MarkButton format='italic' icon={FontItalicIcon} />
-              <MarkButton format='underline' icon={UnderlineIcon} />
-              <MarkButton format='strikethrough' icon={StrikethroughIcon} />
-              <MarkButton format='code' icon={CodeIcon} />
-              <BlockButton format='block-quote' icon={QuoteIcon} />
+              <FormatTextButton
+                i18n={props.i18n}
+                currentFormat={currentFormat}
+                onSetFormat={handleTextFormatChange}
+              />
+              <MarkButton format='bold' icon={FontBoldIcon} i18n={props.i18n} />
+              <MarkButton
+                format='italic'
+                icon={FontItalicIcon}
+                i18n={props.i18n}
+              />
+              <MarkButton
+                format='underline'
+                icon={UnderlineIcon}
+                i18n={props.i18n}
+              />
+              <MarkButton
+                format='strikethrough'
+                icon={StrikethroughIcon}
+                i18n={props.i18n}
+              />
+              <MarkButton format='code' icon={CodeIcon} i18n={props.i18n} />
+              <BlockButton
+                format='block-quote'
+                icon={QuoteIcon}
+                i18n={props.i18n}
+              />
               <div className='toolbar-separator' />
-              <HighlightColorButton format='highlight' icon={PaintBucket} />
-              <ColorButton format='color' icon={Type} />
+              <HighlightColorButton
+                format='highlight'
+                icon={PaintBucket}
+                i18n={props.i18n}
+              />
+              <ColorButton format='color' icon={Type} i18n={props.i18n} />
               <div className='toolbar-separator' />
             </>
           )}
           {props.elementTypes.includes('blocks') && (
             <>
-              <BlockButton format='numbered-list' icon={ListOl} />
-              <BlockButton format='bulleted-list' icon={ListUl} />
+              <BlockButton
+                format='numbered-list'
+                icon={ListOl}
+                i18n={props.i18n}
+              />
+              <BlockButton
+                format='bulleted-list'
+                icon={ListUl}
+                i18n={props.i18n}
+              />
               <BlockButton
                 format='table-of-contents'
                 icon={BookmarkIcon}
                 onInsert={insertTableOfContents}
+                i18n={props.i18n}
               />
               <div className='toolbar-separator' />
-              <BlockButton format='left' icon={JustifyLeft} />
-              <BlockButton format='center' icon={TextCenter} />
-              <BlockButton format='right' icon={JustifyRight} />
-              <BlockButton format='justify' icon={Justify} />
+              <BlockButton format='left' icon={JustifyLeft} i18n={props.i18n} />
+              <BlockButton
+                format='center'
+                icon={TextCenter}
+                i18n={props.i18n}
+              />
+              <BlockButton
+                format='right'
+                icon={JustifyRight}
+                i18n={props.i18n}
+              />
+              <BlockButton format='justify' icon={Justify} i18n={props.i18n} />
               <div className='toolbar-separator' />
             </>
           )}
@@ -349,6 +436,7 @@ export const SlateInput: React.FC<Props> = (props) => {
               i18n={props.i18n}
               title={t['Insert link']}
               onSubmit={(url) => editor.addMark('link', url)}
+              format='link'
             />
           )}
           {props.elementTypes.includes('images') && (

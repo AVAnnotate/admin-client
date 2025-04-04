@@ -1,0 +1,11 @@
+.context-menu-content {
+  background-color: lightgray;
+  width: 150px;
+  padding: 12px;
+}
+
+.context-menu-item {
+  background-color: lightgray;
+  cursor: pointer;
+  font-size: 12px;
+}

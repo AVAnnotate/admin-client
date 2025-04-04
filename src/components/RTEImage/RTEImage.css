@@ -1,0 +1,13 @@
+.rte-image-scaler-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.rte-image-scaler-content {
+  background-color: transparent !important;
+}
+
+.rte-image-scaler-thumb-tracker {
+  padding-top: 18px;
+}

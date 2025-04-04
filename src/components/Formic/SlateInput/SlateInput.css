@@ -215,3 +215,8 @@
   position: relative;
   user-select: none;
 }
+
+.toolbar-tooltip-content {
+  color: black;
+  background-color: white;
+}
