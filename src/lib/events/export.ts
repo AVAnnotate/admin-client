@@ -1,4 +1,4 @@
-import { serializeToPlainText, serialize } from '@lib/slate/index.tsx';
+import { serializeToPlainHTML, serialize } from '@lib/slate/index.tsx';
 import type { AnnotationEntry, Event } from '@ty/Types.ts';
 import { formatTimestamp } from './index.ts';
 import ReactDOMServer from 'react-dom/server';
@@ -8,8 +8,14 @@ import type { Node } from 'slate';
 // (see https://stackoverflow.com/a/17808731)
 const formatField = (str: string) => `"${str.replaceAll('"', '""')}"`;
 
-const serializeRichText = (nodes: Node[]) =>
-  ReactDOMServer.renderToString(serialize(nodes));
+const serializeRichText = (nodes: Node[]) => {
+  let str = ReactDOMServer.renderToString(serializeToPlainHTML(nodes));
+
+  str = str.replace('<div>', '');
+  str = str.replace('</div>', '');
+  str = str.replace('<span>', '');
+  return str.replace('</span>', '');
+};
 
 export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
   let str = 'Start Time,End Time,Annotation,Tags (vertical bar separated)\n';
@@ -26,7 +32,7 @@ export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
         : Number.isNaN(anno.end_time)
         ? ''
         : formatTimestamp(Math.round(anno.end_time), false),
-      anno.annotation ? serializeToPlainText(anno.annotation) : '',
+      anno.annotation ? serializeRichText(anno.annotation) : '',
       anno.tags.map((t) => t.tag).join('|') || '',
     ];
 
@@ -54,7 +60,7 @@ export const exportEvents = (projectName: string, events: Event[]) => {
         event.audiovisual_files[uuid].label,
         event.audiovisual_files[uuid].file_url,
         event.citation || '',
-        event.description ? serializeToPlainText(event.description) : '',
+        event.description ? serializeRichText(event.description) : '',
       ];
 
       str += fields.map(formatField).join(',');
