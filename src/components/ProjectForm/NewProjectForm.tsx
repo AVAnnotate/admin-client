@@ -198,8 +198,6 @@ const FormContents = (props: NewProjectFormProps) => {
                   name='authors'
                 />
 
-                <MediaPlayerField i18n={props.i18n} />
-
                 <ToggleInput
                   label={t['Auto-populate Home page']}
                   helperText=''

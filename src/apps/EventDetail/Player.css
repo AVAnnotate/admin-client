@@ -116,3 +116,7 @@
   height: 24px;
   width: 24px;
 }
+
+.player .offline {
+  font-style: italic;
+}

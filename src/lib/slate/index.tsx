@@ -17,6 +17,8 @@ export const Element = ({
   const { t } = i18n;
 
   switch (element.type) {
+    case 'link':
+      return <a href={element.url}>{children}</a>;
     case 'block-quote':
       return (
         <blockquote style={style} {...attributes}>
@@ -58,7 +60,11 @@ export const Element = ({
     case 'image':
       return (
         <div {...attributes} style={style} contentEditable={false}>
-          <img src={element.url} className={`slate-img-${element.size}`} />
+          <img
+            src={element.url}
+            className={`slate-img-${element.size}`}
+            alt='Embedded image'
+          />
           {children}
         </div>
       );

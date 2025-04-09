@@ -13,7 +13,7 @@ import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
 import { userInfo } from '@backend/userInfo.ts';
 import { initFs } from '@lib/memfs/index.ts';
-import type { UserInfo, Project, Page } from '@ty/Types.ts';
+import type { UserInfo, Page, ProjectData } from '@ty/Types.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { delay } from '@lib/utility/index.ts';
 import {
@@ -148,7 +148,7 @@ export const POST: APIRoute = async ({
         body.additionalUsers,
         projectName,
         body.gitHubOrg,
-        token
+        token?.value as string
       );
     } catch (e) {
       return new Response(
@@ -351,10 +351,12 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     });
   }
 
-  const projectConfig = JSON.parse(readFile('/data/project.json').toString());
+  const projectConfig: ProjectData = JSON.parse(
+    readFile('/data/project.json').toString()
+  );
 
   // Has repo visibility changed?
-  if (projectConfig.is_private !== body.is_private) {
+  if (projectConfig.project.is_private !== body.is_private) {
     const visResponse = await changeRepoVisibility(
       info?.token as string,
       slugContents.org,
@@ -369,7 +371,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       });
     }
 
-    projectConfig.is_private = body.is_private;
+    projectConfig.project.is_private = body.is_private;
   }
 
   // Sync pages site creation
@@ -479,7 +481,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   }
 
   // override existing properties with new ones from the request
-  const newConfig: Project = {
+  const newConfig: ProjectData = {
     ...projectConfig,
     project: {
       ...projectConfig.project,
