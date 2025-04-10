@@ -71,7 +71,7 @@ export const Element = ({
           <RTEImage
             url={element.url}
             i18n={i18n}
-            altText={element.altText}
+            caption={element.caption}
             scale={element.scale || 100}
             onChange={onChange}
             popoverAnchor={popoverAnchor ? popoverAnchor : undefined}

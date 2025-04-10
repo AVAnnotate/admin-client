@@ -9,7 +9,7 @@ interface RTEImageProps {
   i18n: Translations;
   url: string;
   scale: number;
-  altText?: string;
+  caption?: string;
   popoverAnchor: any;
   element: any;
   editor?: AVAEditor;
@@ -29,7 +29,11 @@ export const RTEImage = (props: RTEImageProps) => {
         <ContextMenu.Trigger>
           <img
             src={props.url}
-            alt={props.altText || t['Embedded Image']}
+            alt={
+              props.caption && props.caption.length > 0
+                ? props.caption
+                : t['Embedded Image']
+            }
             width={`${props.scale}%`}
           />
         </ContextMenu.Trigger>
@@ -68,7 +72,7 @@ export const RTEImage = (props: RTEImageProps) => {
           props.onUpdateImage(props.editor, image, props.element)
         }
         open={propertiesOpen}
-        altText={props.element.altText}
+        caption={props.element.caption}
         url={props.element.url}
         onClose={() => setPropertiesOpen(false)}
       />

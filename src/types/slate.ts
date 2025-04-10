@@ -24,7 +24,7 @@ export type ImageSize = 'thumbnail' | 'medium' | 'large' | 'full';
 export interface ImageData {
   url: string;
   size?: ImageSize;
-  altText?: string;
+  caption?: string;
 }
 
 export type Includes = 'media' | 'annotations' | 'label' | 'description';

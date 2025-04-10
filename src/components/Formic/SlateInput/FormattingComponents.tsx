@@ -157,19 +157,19 @@ export interface ImageDialogProps {
   hideButton?: boolean;
   open?: boolean;
   url?: string;
-  altText?: string;
+  caption?: string;
   onClose?(): void;
 }
 
 export const ImageButton = (props: ImageDialogProps) => {
   const [open, setOpen] = useState(false);
   const [url, setUrl] = useState(props.url);
-  const [altText, setAltText] = useState<string | undefined>(props.altText);
+  const [caption, setCaption] = useState<string | undefined>(props.caption);
 
   const { t } = props.i18n;
 
   const submit = () => {
-    url && props.onSubmit({ url, altText });
+    url && props.onSubmit({ url, caption });
     setOpen(false);
   };
 
@@ -216,11 +216,11 @@ export const ImageButton = (props: ImageDialogProps) => {
               }}
             />
           </label>
-          <label>{t['Alternative Text']}</label>
+          <label>{t['Caption']}</label>
           <input
-            name='altText'
-            value={altText}
-            onChange={(ev) => setAltText(ev.target.value)}
+            name='caption'
+            value={caption}
+            onChange={(ev) => setCaption(ev.target.value)}
             onKeyDown={(ev) => {
               // override the default enter behavior,
               // which is to submit the parent form

@@ -223,7 +223,7 @@ export const updateImage = (editor: AVAEditor, image: ImageData, node: any) => {
 
   const update: any = { ...currentNode };
   update.url = image.url;
-  update.altText = image.altText;
+  update.caption = image.caption;
 
   Transforms.setNodes(editor, update, { at: path });
 };
