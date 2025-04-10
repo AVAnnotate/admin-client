@@ -1,5 +1,5 @@
-import { TriangleDownIcon, TriangleUpIcon } from '@radix-ui/react-icons';
-import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { TriangleDownIcon, CheckIcon } from '@radix-ui/react-icons';
+import * as Select from '@radix-ui/react-select';
 import { Button } from '@radix-ui/themes';
 import { useState } from 'react';
 import type { Translations } from '@ty/Types.ts';
@@ -15,73 +15,64 @@ interface FormatTextButtonProps {
 }
 
 export const FormatTextButton = (props: FormatTextButtonProps) => {
-  const [open, setOpen] = useState(false);
-
   const { t } = props.i18n;
 
   return (
-    <Dropdown.Root modal={false} open={open}>
-      <Dropdown.Trigger asChild>
-        <Button className='format-text-button' onClick={() => setOpen(!open)}>
-          {/* @ts-ignore */}
-          {t.rteToolbar[props.currentFormat]}
-          {open ? <TriangleUpIcon /> : <TriangleDownIcon />}
-        </Button>
-      </Dropdown.Trigger>
-      <Dropdown.Portal>
-        <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
-          <Dropdown.Item
-            className='dropdown-item'
-            onClick={() => {
-              props.onSetFormat('normal');
-              setOpen(false);
-            }}
-          >
-            {/* @ts-ignore */}
-            {t.rteToolbar['normal']}
-          </Dropdown.Item>
-          <Dropdown.Item
-            className='dropdown-item'
-            onClick={() => {
-              props.onSetFormat('heading-four');
-              setOpen(false);
-            }}
-          >
-            {/* @ts-ignore */}
-            {t.rteToolbar['heading-four']}
-          </Dropdown.Item>
-          <Dropdown.Item
-            className='dropdown-item'
-            onClick={() => {
-              props.onSetFormat('heading-three');
-              setOpen(false);
-            }}
-          >
-            {/* @ts-ignore */}
-            {t.rteToolbar['heading-three']}
-          </Dropdown.Item>
-          <Dropdown.Item
-            className='dropdown-item'
-            onClick={() => {
-              props.onSetFormat('heading-two');
-              setOpen(false);
-            }}
-          >
-            {/* @ts-ignore */}
-            {t.rteToolbar['heading-two']}
-          </Dropdown.Item>
-          <Dropdown.Item
-            className='dropdown-item'
-            onClick={() => {
-              props.onSetFormat('heading-one');
-              setOpen(false);
-            }}
-          >
-            {/* @ts-ignore */}
-            {t.rteToolbar['heading-one']}
-          </Dropdown.Item>
-        </Dropdown.Content>
-      </Dropdown.Portal>
-    </Dropdown.Root>
+    <Select.Root value={props.currentFormat} onValueChange={props.onSetFormat}>
+      <Select.Trigger className='select-trigger format-text-trigger'>
+        <Select.Value className='select-value' />
+        <Select.Icon className='select-icon'>
+          {<TriangleDownIcon />}
+        </Select.Icon>
+      </Select.Trigger>
+      <Select.Portal>
+        <Select.Content className='select-content'>
+          <Select.Viewport>
+            <Select.Item className='select-item' value='normal'>
+              {/* @ts-ignore */}
+              <Select.ItemText>{t.rteToolbar['normal']}</Select.ItemText>
+              <Select.ItemIndicator className='SelectItemIndicator'>
+                <CheckIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className='select-item' value='small'>
+              {/* @ts-ignore */}
+              <Select.ItemText>{t.rteToolbar['small']}</Select.ItemText>
+              <Select.ItemIndicator className='SelectItemIndicator'>
+                <CheckIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className='select-item' value='heading-one'>
+              {/* @ts-ignore */}
+              <Select.ItemText>{t.rteToolbar['heading-one']}</Select.ItemText>
+              <Select.ItemIndicator className='SelectItemIndicator'>
+                <CheckIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className='select-item' value='heading-two'>
+              {/* @ts-ignore */}
+              <Select.ItemText>{t.rteToolbar['heading-two']}</Select.ItemText>
+              <Select.ItemIndicator className='SelectItemIndicator'>
+                <CheckIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className='select-item' value='heading-three'>
+              {/* @ts-ignore */}
+              <Select.ItemText>{t.rteToolbar['heading-three']}</Select.ItemText>
+              <Select.ItemIndicator className='SelectItemIndicator'>
+                <CheckIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+            <Select.Item className='select-item' value='heading-four'>
+              {/* @ts-ignore */}
+              <Select.ItemText>{t.rteToolbar['heading-four']}</Select.ItemText>
+              <Select.ItemIndicator className='SelectItemIndicator'>
+                <CheckIcon />
+              </Select.ItemIndicator>
+            </Select.Item>
+          </Select.Viewport>
+        </Select.Content>
+      </Select.Portal>
+    </Select.Root>
   );
 };

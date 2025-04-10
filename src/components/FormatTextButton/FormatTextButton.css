@@ -1,8 +1,14 @@
-.format-text-button {
+.format-text-trigger {
   width: 150px;
-  background-color: transparent;
-  color: black;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+  background-color: var(--gray-200);
+  border: none !important;
+}
+
+.format-text-trigger:hover {
+  background-color: var(--gray-300);
+}
+
+.format-text-trigger:focus {
+  border: none !important;
+  box-shadow: none !important;
 }

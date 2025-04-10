@@ -1,5 +1,5 @@
 import type { Translations } from '@ty/Types.ts';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import * as ContextMenu from '@radix-ui/react-context-menu';
 import { PaddingControl } from './PaddingControl.tsx';
 import './RTEColumn.css';
@@ -15,6 +15,8 @@ interface RTEColumnProps {
 
   children: any;
 
+  popoverAnchor: any;
+
   onChange(property: string, value: any): void;
 }
 
@@ -22,6 +24,7 @@ export const RTEColumn = (props: RTEColumnProps) => {
   const [paddingOpen, setPaddingOpen] = useState(false);
 
   const { t } = props.i18n;
+
   return (
     <>
       <ContextMenu.Root>
@@ -70,10 +73,17 @@ export const RTEColumn = (props: RTEColumnProps) => {
             >
               {t['Set Padding']}
             </ContextMenu.Item>
+            <ContextMenu.Item
+              className='context-menu-item'
+              onClick={() => props.onChange('delete', '')}
+            >
+              {t['Delete Column']}
+            </ContextMenu.Item>
           </ContextMenu.Content>
         </ContextMenu.Portal>
       </ContextMenu.Root>
       <PaddingControl
+        anchorEl={props.popoverAnchor.current}
         paddingLeft={props.paddingLeft || 0}
         paddingRight={props.paddingRight || 0}
         paddingTop={props.paddingTop || 0}

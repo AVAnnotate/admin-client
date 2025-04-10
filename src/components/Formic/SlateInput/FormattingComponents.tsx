@@ -1,10 +1,10 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './SlateInput.css';
-import { useSlate } from 'slate-react';
+import { ReactEditor, useSlate } from 'slate-react';
 import type { SlateButtonProps } from '@ty/ui.ts';
 import { Button } from '@radix-ui/themes';
 import * as Dialog from '@radix-ui/react-dialog';
-import type { ImageData, ImageSize } from '@ty/slate.ts';
+import type { AVAEditor, ImageData, ImageSize } from '@ty/slate.ts';
 import type { Translations } from '@ty/Types.ts';
 import { ToolbarTooltip } from './ToolbarTooltip.tsx';
 
@@ -151,38 +151,49 @@ export const LinkButton = (props: LinkDialogProps) => {
 
 export interface ImageDialogProps {
   i18n: Translations;
-  icon: React.FC;
+  icon?: React.FC;
   onSubmit: (image: ImageData) => void;
   title: string;
+  hideButton?: boolean;
+  open?: boolean;
+  url?: string;
+  altText?: string;
+  onClose?(): void;
 }
-
-const imageSizes = ['thumbnail', 'medium', 'large', 'full'];
 
 export const ImageButton = (props: ImageDialogProps) => {
   const [open, setOpen] = useState(false);
-  const [url, setUrl] = useState('');
-  const [size, setSize] = useState<ImageSize>('medium');
+  const [url, setUrl] = useState(props.url);
+  const [altText, setAltText] = useState<string | undefined>(props.altText);
 
   const { t } = props.i18n;
 
   const submit = () => {
-    props.onSubmit({ url, size });
+    url && props.onSubmit({ url, altText });
     setOpen(false);
   };
 
+  useEffect(() => {
+    if (props.open) {
+      setOpen(true);
+    }
+  }, [props.open]);
+
   return (
     <Dialog.Root open={open}>
-      <Dialog.Trigger asChild>
-        <ToolbarTooltip content={props.title}>
-          <Button
-            className='image-button unstyled'
-            onClick={() => setOpen(true)}
-            type='button'
-          >
-            <props.icon />
-          </Button>
-        </ToolbarTooltip>
-      </Dialog.Trigger>
+      {!props.hideButton && (
+        <Dialog.Trigger asChild>
+          <ToolbarTooltip content={props.title}>
+            <Button
+              className='image-button unstyled'
+              onClick={() => setOpen(true)}
+              type='button'
+            >
+              {props.icon && <props.icon />}
+            </Button>
+          </ToolbarTooltip>
+        </Dialog.Trigger>
+      )}
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
         <Dialog.Title className='slate-dialog-title'>
@@ -205,34 +216,44 @@ export const ImageButton = (props: ImageDialogProps) => {
               }}
             />
           </label>
-          <label>
-            {t['Size']}
-            <select
-              className='formic-form-select'
-              onChange={(ev) => setSize(ev.target.value as ImageSize)}
-              value={size}
-            >
-              {imageSizes.map((val) => (
-                <option key={val} value={val}>
-                  {t[val]}
-                </option>
-              ))}
-            </select>
-          </label>
+          <label>{t['Alternative Text']}</label>
+          <input
+            name='altText'
+            value={altText}
+            onChange={(ev) => setAltText(ev.target.value)}
+            onKeyDown={(ev) => {
+              // override the default enter behavior,
+              // which is to submit the parent form
+              if (ev.key === 'Enter') {
+                ev.preventDefault();
+                submit();
+              }
+            }}
+          />
         </div>
         <div className='slate-dialog-close-bar'>
           <Dialog.Close asChild>
             <Button
               className='unstyled'
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setOpen(false);
+                props.onClose && props.onClose();
+              }}
               role='button'
             >
               {t['cancel']}
             </Button>
           </Dialog.Close>
           <Dialog.Close asChild>
-            <Button className='primary' role='button' onClick={() => submit()}>
-              {t['Insert']}
+            <Button
+              className='primary'
+              role='button'
+              onClick={() => {
+                submit();
+                props.onClose && props.onClose();
+              }}
+            >
+              {t['save']}
             </Button>
           </Dialog.Close>
         </div>

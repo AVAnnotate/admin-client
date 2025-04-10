@@ -43,5 +43,10 @@
   "Top": "Top",
   "Bottom": "Bottom",
   "Left": "Left",
-  "Right": "Right"
+  "Right": "Right",
+  "Delete Column": "Delete Column",
+  "Full Width": "Full Width",
+  "Add Padding": "Add Padding",
+  "Image Size": "Image Size",
+  "Update Properties": "Update Properties"
 }

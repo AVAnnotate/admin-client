@@ -30,9 +30,12 @@
     "justify": "Justify",
     "link": "Insert Link",
     "normal": "Normal Text",
+    "small": "Small Text",
     "heading-four": "Heading 4",
     "heading-three": "Heading 3",
     "heading-two": "Heading 2",
-    "heading-one": "Heading 1"
+    "heading-one": "Heading 1",
+    "undo": "Undo",
+    "redo": "Redo"
   }
 }

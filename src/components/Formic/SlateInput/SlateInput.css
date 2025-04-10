@@ -4,7 +4,7 @@
 }
 
 .slate-form .slate-toolbar {
-  background: var(--gray-300);
+  background: var(--gray-200);
   display: flex;
   gap: 4px;
   padding: 0 16px 0 16px;
@@ -39,10 +39,16 @@
   color: #000;
 }
 
+.slate-form .slate-toolbar button:disabled svg {
+  color: var(--gray-500);
+}
+
 .slate-form .slate-toolbar .toolbar-separator {
   width: 1px;
   height: 20px;
-  background-color: var(--gray-500);
+  margin-left: 5px;
+  margin-right: 5px;
+  background-color: var(--gray-400);
 }
 
 .dropdown-subtrigger {
@@ -163,6 +169,10 @@
   color: var(--gray-500);
 }
 
+.slate-form .disabled svg {
+  color: var(--gray-500);
+}
+
 .slate-form .slate-img-thumbnail {
   max-width: 160px;
 }
@@ -220,3 +230,47 @@
   color: black;
   background-color: white;
 }
+
+.slate-form h1 {
+  font-size: 32px;
+  font-weight: bold;
+  line-height: auto;
+}
+
+.slate-form h2 {
+  font-size: 24px;
+  font-weight: bold;
+  line-height: auto;
+}
+
+.slate-form h3 {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: auto;
+}
+
+.slate-form h4 {
+  font-size: 16px;
+  font-weight: bold;
+  line-height: auto;
+}
+
+.slate-form small {
+  font-size: 14px;
+  font-weight: normal;
+  line-height: 150%;
+}
+
+.slate-form .normal-text {
+  font-size: 16px;
+  font-weight: normal;
+  line-height: 150%;
+}
+
+/* .slate-form .slate-grid {
+  background-color: #f6f6f6;
+}
+
+.slate-form .slate-grid p {
+  background-color: white;
+} */
