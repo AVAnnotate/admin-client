@@ -14,9 +14,11 @@ export const generateDefaultEvent = (): FormEvent => ({
   audiovisual_files: {
     [uuidv4()]: {
       label: '',
+      file_type: 'Audio',
       is_offline: false,
       file_url: '',
       duration: 90,
+      duration_overridden: false,
       caption_set: [],
     },
   },

@@ -33,7 +33,7 @@ export const AudioDisplay: React.FC<EventDisplayProps> = (props) => {
             }
           />
           <Player
-            type={props.event.item_type}
+            type={props.event.audiovisual_files[props.avFileUuid].file_type}
             i18n={props.i18n}
             url={props.event.audiovisual_files[props.avFileUuid].file_url}
             offline={props.event.audiovisual_files[props.avFileUuid].is_offline}

@@ -432,3 +432,7 @@
   flex-direction: row;
   align-items: center;
 }
+
+.av-label-spacer {
+  height: 21px;
+}

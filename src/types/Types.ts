@@ -80,6 +80,7 @@ export type CaptionSet = {
 export type AudiovisualFile = {
   label: string;
   is_offline: boolean;
+  file_type: 'Audio' | 'Video';
   file_url: string;
   duration: number;
   duration_overridden?: boolean;
@@ -98,7 +99,7 @@ export type Event = {
   citation?: string;
   created_at: string;
   created_by: string;
-  item_type: 'Audio' | 'Video';
+  item_type?: 'Audio' | 'Video';
   label: string;
   updated_at: string;
   updated_by: string;

@@ -1,11 +1,9 @@
 import {
   SelectInput,
   TextInput,
-  TimeInput,
   DurationInput,
 } from '@components/Formic/index.tsx';
 import type {
-  AnnotationPage,
   AudiovisualFile,
   Event,
   FormEvent,
@@ -197,21 +195,6 @@ const FormContents: React.FC<Props> = (props) => {
       <div className='form-body'>
         <h2>{t['Event Information']}</h2>
         <TextInput label={t['Label']} name='label' required />
-        <SelectInput
-          label={t['Item Type']}
-          name='item_type'
-          options={[
-            {
-              label: t['Audio'],
-              value: 'Audio',
-            },
-            {
-              label: t['Video'],
-              value: 'Video',
-            },
-          ]}
-          required
-        />
         <Separator.Root className='SeparatorRoot' decorative />
         <h2>{t['Audiovisual File(s)']}</h2>
         <FieldArray
@@ -227,7 +210,7 @@ const FormContents: React.FC<Props> = (props) => {
                           className='av-label-input'
                           label={idx === 0 ? t['Label'] : undefined}
                           name={`audiovisual_files.${key}.label`}
-                          required={idx === 0}
+                          required
                         />
                         <div className='av-url-group'>
                           <SelectInput
@@ -236,7 +219,7 @@ const FormContents: React.FC<Props> = (props) => {
                             backgroundColor='var(--gray-200)'
                             label={idx === 0 ? t['File'] : undefined}
                             name={`audiovisual_files.${key}.is_offline`}
-                            required={idx === 0}
+                            required
                             options={[
                               { value: 'false', label: t['URL'] },
                               { value: 'true', label: t['Offline'] },
@@ -257,6 +240,22 @@ const FormContents: React.FC<Props> = (props) => {
                                 ? t['File Available Offline']
                                 : undefined
                             }
+                          />
+                          <SelectInput
+                            width='120px'
+                            label={idx === 0 ? t['File Type'] : undefined}
+                            name={`audiovisual_files.${key}.file_type`}
+                            options={[
+                              {
+                                label: t['Audio'],
+                                value: 'Audio',
+                              },
+                              {
+                                label: t['Video'],
+                                value: 'Video',
+                              },
+                            ]}
+                            required={idx === 0 ? true : undefined}
                           />
                         </div>
                         <DurationInput
