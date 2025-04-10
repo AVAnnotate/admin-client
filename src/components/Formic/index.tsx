@@ -4,7 +4,7 @@ import './Formic.css';
 import { Avatar } from '@components/Avatar/index.ts';
 import type { ProjectData, ProviderUser, Translations } from '@ty/Types.ts';
 import { Trash } from '@phosphor-icons/react/Trash';
-import { useCallback, useState, type ReactElement } from 'react';
+import { useCallback, useState, type ReactElement, useRef } from 'react';
 import { SearchUsers } from '@components/SearchUsers/index.ts';
 import { SlateInput } from './SlateInput/index.ts';
 import * as Switch from '@radix-ui/react-switch';
@@ -93,8 +93,13 @@ interface RichTextInputProps extends Omit<TextInputProps, 'isLarge'> {
 export const RichTextInput = (props: RichTextInputProps) => {
   const { setFieldValue, values } = useFormikContext();
 
+  const [currentFormat, setCurrentFormat] = useState('normal');
+
+  const anchorEl = useRef(null);
+
   return (
     <div className={`formic-form-field ${props.className || ''}`}>
+      <div style={{ position: 'sticky', top: 0, left: 0 }} ref={anchorEl} />
       {props.label && (
         <div className='av-label-bold formic-form-label'>
           {props.label}
@@ -108,10 +113,16 @@ export const RichTextInput = (props: RichTextInputProps) => {
       )}
       <SlateInput
         elementTypes={props.elementTypes}
-        onChange={(data) => setFieldValue(props.name, data)}
+        onChange={(data, format) => {
+          setCurrentFormat(format);
+          setFieldValue(props.name, data);
+        }}
         i18n={props.i18n}
         initialValue={(values as any)[props.name] || props.initialValue}
         project={props.project}
+        currentFormat={currentFormat}
+        onSetFormat={setCurrentFormat}
+        popoverAnchor={anchorEl}
       >
         {props.children}
       </SlateInput>

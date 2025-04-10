@@ -34,7 +34,7 @@ export const Breadcrumbs = (props: BreadcrumbsProps) => {
               )}
             </li>
             {idx !== props.items.length - 1 ? (
-              <CaretRightIcon color='white' height={22} width={22} />
+              <CaretRightIcon height={22} width={22} />
             ) : (
               <></>
             )}

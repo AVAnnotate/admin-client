@@ -8,10 +8,13 @@
 
 .page-form .top-config-bar {
   display: grid;
-  grid-template-columns: 1fr 3fr;
+  grid-template-columns: 1fr 4fr 9fr;
   gap: 20px;
 }
-
+.page-form .top-config-bar-icon {
+  padding-top: 30px;
+  padding-left: 10px;
+}
 .page-form .page-form-body {
   display: flex;
   flex-flow: column;
@@ -19,8 +22,8 @@
 }
 
 .page-form .page-content-editor .formic-form-textarea {
-  min-height: 600px;
-  height: auto;
+  height: calc(100vh - 350px);
+  overflow-y: auto;
 }
 
 .page-form .bottom-bar-flex {
