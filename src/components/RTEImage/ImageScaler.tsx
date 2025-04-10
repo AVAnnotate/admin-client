@@ -54,8 +54,18 @@ export const ImageScaler = (props: ImageScalerProps) => {
                 <Slider.Thumb className='slider-thumb' />
               </Slider.Root>
               <div className='rte-image-scale-output'>
-                <TextField.Root size='2' value={props.scale} disabled>
-                  <TextField.Slot side='right'>%</TextField.Slot>
+                <TextField.Root
+                  className='rte-image-text-field'
+                  size='2'
+                  value={props.scale}
+                  disabled
+                >
+                  <TextField.Slot
+                    side='right'
+                    className='rte-image-text-field-slot'
+                  >
+                    %{' '}
+                  </TextField.Slot>
                 </TextField.Root>
               </div>
             </div>
