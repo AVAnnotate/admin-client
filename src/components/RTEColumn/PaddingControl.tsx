@@ -35,6 +35,13 @@ export const PaddingControl = (props: PaddingControlProps) => {
     bottom: props.paddingBottom,
   });
 
+  const [currentValues, setCurrentValues] = useState({
+    left: props.paddingLeft.toString(),
+    right: props.paddingRight.toString(),
+    top: props.paddingTop.toString(),
+    bottom: props.paddingBottom.toString(),
+  });
+
   const virtualRef = useRef<any | null>(null);
 
   if (props.anchorEl) virtualRef.current = props.anchorEl;
@@ -48,7 +55,23 @@ export const PaddingControl = (props: PaddingControlProps) => {
     });
   }, []);
 
+  useEffect(() => {
+    setCurrentValues({
+      left: props.paddingLeft.toString(),
+      right: props.paddingRight.toString(),
+      top: props.paddingTop.toString(),
+      bottom: props.paddingBottom.toString(),
+    });
+  }, [props]);
+
   const checkAndSendChange = (side: string, strValue: string) => {
+    if (strValue.length === 0) {
+      let vals = { ...currentValues };
+      // @ts-ignore
+      vals[side] = '';
+      setCurrentValues(vals);
+      return;
+    }
     const val = parseInt(strValue);
     if (!isNaN(val)) {
       if (val <= 100) {
@@ -56,6 +79,16 @@ export const PaddingControl = (props: PaddingControlProps) => {
       }
     }
   };
+
+  const valid =
+    currentValues.bottom.length > 0 &&
+    parseInt(currentValues.bottom) <= 100 &&
+    currentValues.top.length > 0 &&
+    parseInt(currentValues.top) <= 100 &&
+    currentValues.left.length > 0 &&
+    parseInt(currentValues.left) <= 100 &&
+    currentValues.right.length > 0 &&
+    parseInt(currentValues.right) <= 100;
 
   return (
     <Popover.Root open={props.open}>
@@ -72,7 +105,7 @@ export const PaddingControl = (props: PaddingControlProps) => {
                 <PinTopIcon width={32} height={32} />
                 <TextField.Root
                   size='2'
-                  value={props.paddingTop}
+                  value={currentValues.top}
                   onChange={(ev) => {
                     checkAndSendChange('top', ev.target.value);
                   }}
@@ -99,7 +132,7 @@ export const PaddingControl = (props: PaddingControlProps) => {
                 <PinLeftIcon width={32} height={32} />
                 <TextField.Root
                   size='2'
-                  value={props.paddingLeft}
+                  value={currentValues.left}
                   onChange={(ev) => {
                     checkAndSendChange('left', ev.target.value);
                   }}
@@ -124,7 +157,7 @@ export const PaddingControl = (props: PaddingControlProps) => {
                 <PinRightIcon width={32} height={32} />
                 <TextField.Root
                   size='2'
-                  value={props.paddingRight}
+                  value={currentValues.right}
                   onChange={(ev) => {
                     checkAndSendChange('right', ev.target.value);
                   }}
@@ -151,7 +184,7 @@ export const PaddingControl = (props: PaddingControlProps) => {
                 <PinBottomIcon width={32} height={32} />
                 <TextField.Root
                   size='2'
-                  defaultValue={props.paddingBottom}
+                  defaultValue={currentValues.bottom}
                   onChange={(ev) => {
                     checkAndSendChange('bottom', ev.target.value);
                   }}
@@ -191,6 +224,7 @@ export const PaddingControl = (props: PaddingControlProps) => {
                 className='Button primary'
                 aria-label='Save'
                 onClick={() => props.onClose()}
+                disabled={!valid}
               >
                 {t['save']}
               </button>
