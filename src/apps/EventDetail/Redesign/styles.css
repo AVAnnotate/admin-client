@@ -1,0 +1,26 @@
+.event-detail .event-title-container {
+  height: 48px;
+  display: flex;
+  align-items: center;
+}
+
+.event-detail .event-title-container .container {
+  width: 100%;
+}
+
+.event-detail .event-title-container h1 {
+  padding: 0;
+  margin: 0;
+}
+
+.event-detail-tab-content {
+  background: #ffffff;
+  border-top: 1px solid var(--gray-200);
+  z-index: 2;
+}
+
+.event-detail-tab-content h2 {
+  margin-top: 32px;
+  margin-bottom: 20px;
+  padding: 0;
+}
