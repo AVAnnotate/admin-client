@@ -6,12 +6,13 @@ interface Tab {
 }
 
 interface Props {
-  tabs: Tab[];
+  children?: React.ReactNode | React.ReactNode[];
   currentTab: Tab;
   setTab: (tab: Tab) => void;
+  tabs: Tab[];
 }
 
-const EventDetailTabs: React.FC<Props> = (props) => {
+const Tabs: React.FC<Props> = (props) => {
   return (
     <div className='event-detail-tabs-container'>
       {props.tabs.map((tab) => (
@@ -28,8 +29,9 @@ const EventDetailTabs: React.FC<Props> = (props) => {
           {tab.title}
         </button>
       ))}
+      {props.children}
     </div>
   );
 };
 
-export default EventDetailTabs;
+export default Tabs;

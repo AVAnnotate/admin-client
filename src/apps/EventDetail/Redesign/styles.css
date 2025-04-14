@@ -24,3 +24,13 @@
   margin-bottom: 20px;
   padding: 0;
 }
+
+.event-detail .annotation-table-container {
+  background: var(--gray-100);
+  border: 1px solid var(--gray-200);
+}
+
+.event-detail .annotation-display h3 {
+  font-size: 16px;
+  font-weight: 600;
+}

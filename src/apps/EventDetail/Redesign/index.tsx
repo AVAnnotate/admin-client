@@ -2,8 +2,9 @@ import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import type { Event, ProjectData, Translations } from '@ty/Types.ts';
 import { useMemo, useState } from 'react';
 import Tabs from './Tabs.tsx';
-import TabContent from './TabContent.tsx';
+import AvFile from './AvFile.tsx';
 import './styles.css';
+import { DeleteEventModal } from '@components/DeleteEventModal/index.ts';
 
 interface EventDetailProps {
   event: Event;
@@ -15,6 +16,8 @@ interface EventDetailProps {
 
 export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const { t, lang } = props.i18n;
+
+  const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
 
   const tabs = useMemo(() => {
     const uuids = Object.keys(props.event.audiovisual_files);
@@ -29,6 +32,27 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   }, []);
 
   const [tab, setTab] = useState(tabs[0]);
+
+  const sets = useMemo(() => {
+    return Object.keys(props.project.annotations).filter((uuid) => {
+      const setObj = props.project.annotations[uuid];
+
+      return (
+        setObj.event_id === props.eventUuid && setObj.source_id === tab.uuid
+      );
+    });
+  }, [tab, props.project.annotations]);
+
+  // all annotation sets from this project
+  const [allAnnotations, setAllAnnotations] = useState(
+    Object.fromEntries(
+      Object.entries(props.project.annotations).filter((ent) => {
+        const anno = props.project.annotations[ent[0]];
+
+        return anno.event_id === props.eventUuid;
+      })
+    )
+  );
 
   return (
     <>
@@ -57,12 +81,31 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             <Tabs currentTab={tab} tabs={tabs} setTab={setTab} />
           )}
         </div>
-        <TabContent
-          avFile={props.event.audiovisual_files[tab.uuid]}
+        <AvFile
+          fileUrl={props.event.audiovisual_files[tab.uuid].file_url}
           i18n={props.i18n}
+          key={tab.uuid}
+          project={props.project}
+          projectSlug={props.projectSlug}
+          sets={sets}
           title={tab.title}
+          uuid={tab.uuid}
+          eventUuid={props.eventUuid}
+          event={props.event}
         />
       </div>
+      {showEventDeleteModal && (
+        <DeleteEventModal
+          annotations={props.project.annotations}
+          eventUuid={props.eventUuid}
+          i18n={props.i18n}
+          onAfterSave={() =>
+            (window.location.pathname = `/${lang}/projects/${props.projectSlug}`)
+          }
+          onCancel={() => setShowEventDeleteModal(false)}
+          projectSlug={props.projectSlug}
+        />
+      )}
     </>
   );
 };
