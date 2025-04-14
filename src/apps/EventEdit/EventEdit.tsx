@@ -63,8 +63,12 @@ export const EventEdit: React.FC<Props> = ({
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
           {
-            label: project.project.title,
+            label: t['Data Manager'],
             link: `/${lang}/projects/${projectSlug}`,
+          },
+          {
+            label: event.label,
+            link: `/${lang}/projects/${projectSlug}/events/${uuid}`,
           },
           { label: t['Edit Event'], link: '' },
         ]}

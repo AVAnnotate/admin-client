@@ -351,16 +351,6 @@ export const Tags = (props: TagsProps) => {
   return (
     <ToastProvider>
       {saving && <LoadingOverlay />}
-      <Breadcrumbs
-        items={[
-          { label: t['Projects'], link: `/${lang}/projects` },
-          {
-            label: props.project.project.title,
-            link: `/${lang}/projects/${props.projectSlug}`,
-          },
-          { label: t['Tags'], link: '' },
-        ]}
-      />
       <div className='tags-container'>
         <div className='tags-header-row'>
           <h1>{t['Tags']}</h1>

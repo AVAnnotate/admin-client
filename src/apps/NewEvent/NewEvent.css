@@ -1,5 +1,6 @@
 .manifest-toggle {
   display: flex;
+  margin-top: 24px;
 }
 
 .manifest-toggle .create-manifest-button {
@@ -16,4 +17,5 @@
 
 .new-event-container {
   padding-bottom: 60px;
+  padding-top: 60px;
 }

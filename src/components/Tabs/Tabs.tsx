@@ -48,6 +48,7 @@ export const Tabs: React.FC<Props> = (props) => {
           hidden={
             tab.keepMounted && `tab${idx}` !== activeTab ? true : undefined
           }
+          className='tab-content'
         >
           {tab.component}
         </RadixTabs.Content>

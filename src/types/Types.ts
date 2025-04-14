@@ -165,6 +165,7 @@ export type ProjectData = {
   annotations: { [key: string]: Annotation };
 
   events: { [key: string]: Event };
+  eventOrder?: string[];
 
   pages: { [key: string]: Page };
   pageOrder?: string[];

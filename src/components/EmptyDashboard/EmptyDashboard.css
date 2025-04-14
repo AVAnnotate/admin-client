@@ -1,0 +1,17 @@
+.empty-dashboard-container {
+  width: 100%;
+  background-color: white;
+}
+
+.empty-dashboard-label {
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+}
+
+empty-dashboard-actions {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-content: center;
+}

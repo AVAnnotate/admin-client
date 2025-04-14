@@ -15,6 +15,7 @@ import type {
   AllProjects,
   ProjectData,
   Page,
+  Event,
   ProviderUser,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
@@ -107,6 +108,41 @@ export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   return { pages, order };
 };
 
+export const getEventData = (
+  context: GitRepoContext,
+  topLevelNames: string[],
+  dir: string
+) => {
+  const events: { [key: string]: Event } = {};
+
+  // Fill two separate arrays depending on whether a
+  // page is a child or a parent.
+  for (const filename of topLevelNames) {
+    if (filename !== 'order.json' && filename !== '.gitkeep') {
+      const file = context.readFile(`/data/${dir}/${filename}`);
+
+      try {
+        const contents: Event = JSON.parse(file.toString());
+        events[filename.replace('.json', '')] = contents;
+      } catch (e) {
+        console.warn(`Error parsing ${filename}: ${e}`);
+      }
+    }
+  }
+
+  let order: string[] = [];
+
+  if (context.exists(`/data/${dir}/order.json`)) {
+    console.log('Here!');
+    const orderFile = context.readFile(`/data/${dir}/order.json`);
+    order = JSON.parse(orderFile as string);
+  } else {
+    Object.keys(events).forEach((k) => order.push(k));
+  }
+
+  return { events, order };
+};
+
 export const getProject = async (
   userInfo: UserInfo,
   htmlUrl: string,
@@ -114,14 +150,13 @@ export const getProject = async (
 ) => {
   const fs = initFs();
 
-  const { exists, readDir, readFile, writeFile, commitAndPush } = await gitRepo(
-    {
+  const { exists, readDir, readFile, writeFile, commitAndPush, context } =
+    await gitRepo({
       fs: fs,
       repositoryURL: htmlUrl,
       branch: 'main',
       userInfo: userInfo,
-    }
-  );
+    });
 
   const proj = readFile('/data/project.json');
 
@@ -215,11 +250,14 @@ export const getProject = async (
       annotationFiles as unknown as string[],
       'annotations'
     );
-    project.events = getDirData(
-      fs,
+    const eventData = getEventData(
+      context,
       eventFiles as unknown as string[],
       'events'
     );
+
+    project.events = eventData.events;
+    project.eventOrder = eventData.order;
 
     project.annotations = getDirData(
       fs,
@@ -310,11 +348,14 @@ export const buildProjectData = (
     ? readDir('/data/annotations', '.json')
     : [];
 
-  project.events = getDirData(
-    options.fs,
+  const eventData = getEventData(
+    context,
     eventFiles as unknown as string[],
     'events'
   );
+
+  project.events = eventData.events;
+  project.eventOrder = eventData.order;
 
   project.annotations = getDirData(
     options.fs,
