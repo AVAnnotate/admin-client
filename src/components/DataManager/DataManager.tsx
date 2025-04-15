@@ -19,7 +19,7 @@ export const DataManager = (props: DataManagerProps) => {
   return (
     <div className='data-manager-container'>
       <Tabs.Root className='tabs-root' defaultValue='tab1'>
-        <Tabs.List className='tabs-list' aria-label='Manage your account'>
+        <Tabs.List className='tabs-list'>
           <Tabs.Trigger className='tabs-trigger' value='tab1'>
             {t['Events']}
           </Tabs.Trigger>

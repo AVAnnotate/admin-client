@@ -12,6 +12,7 @@
   padding-left: 32px;
   padding-top: 15px;
   gap: 5px;
+  cursor: pointer;
 }
 
 .project-container .project-top-bar {

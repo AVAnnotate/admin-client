@@ -50,7 +50,12 @@ export const Project: React.FC<Props> = (props) => {
         />
       )}
       <div className='project-container'>
-        <div className='project-back'>
+        <div
+          className='project-back'
+          onClick={() =>
+            (window.location.href = `/${props.i18n.lang}/projects`)
+          }
+        >
           <ChevronLeft />
           <div className='av-label-bold'>{t['All Projects']}</div>
         </div>

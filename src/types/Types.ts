@@ -105,6 +105,10 @@ export type Event = {
   updated_by: string;
 };
 
+export type EventWithUUID = Event & {
+  uuid: string;
+};
+
 export interface FormEvent
   extends Omit<
     Event,
