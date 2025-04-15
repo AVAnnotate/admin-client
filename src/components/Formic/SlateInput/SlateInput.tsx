@@ -56,6 +56,7 @@ import type { ElementTypes, ImageData, AVAEditor } from '@ty/slate.ts';
 import { Element, emptyParagraph, Leaf } from '../../../lib/slate/index.tsx';
 import { FormatTextButton } from '@components/FormatTextButton/FormatTextButton.tsx';
 import { ToolbarTooltip } from './ToolbarTooltip.tsx';
+import { deserializeHtml } from '@lib/slate/deserialize.ts';
 
 const LIST_TYPES = ['numbered-list', 'bulleted-list'];
 const TEXT_ALIGN_TYPES = ['left', 'center', 'right', 'justify'];
@@ -292,6 +293,35 @@ const withColumnsPlugin = (editor: ReactEditor & BaseEditor) => {
   return editor;
 };
 
+const withHtml = (editor: AVAEditor) => {
+  const { insertData, isInline, isVoid } = editor;
+
+  editor.isInline = (element: SlateElement) => {
+    // @ts-ignore
+    return element.type === 'link' ? true : isInline(element);
+  };
+
+  editor.isVoid = (element: SlateElement) => {
+    // @ts-ignore
+    return element.type === 'image' ? true : isVoid(element);
+  };
+
+  editor.insertData = (data) => {
+    const html = data.getData('text/html');
+
+    if (html) {
+      const parsed = new DOMParser().parseFromString(html, 'text/html');
+      const fragment = deserializeHtml(parsed.body);
+      Transforms.insertFragment(editor, fragment);
+      return;
+    }
+
+    insertData(data);
+  };
+
+  return editor;
+};
+
 interface Props {
   initialValue?: any;
   onChange: (data: any, format: string) => any;
@@ -318,8 +348,8 @@ export const SlateInput: React.FC<Props> = (props) => {
   const { t } = props.i18n;
 
   if (!editorRef.current) {
-    editorRef.current = withReact(
-      withHistory(withColumnsPlugin(withAVAPlugin(createEditor())))
+    editorRef.current = withHtml(
+      withReact(withHistory(withColumnsPlugin(withAVAPlugin(createEditor()))))
     );
   }
 
