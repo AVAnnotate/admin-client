@@ -76,7 +76,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             <h1 className='event-title'>{props.event.label}</h1>
           </div>
         </div>
-        <div className='container'>
+        <div className='tab-container container'>
           {tabs.length > 1 && (
             <Tabs currentTab={tab} tabs={tabs} setTab={setTab} />
           )}

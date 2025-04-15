@@ -1,5 +1,6 @@
 import type {
   AnnotationEntry,
+  AudiovisualFile,
   Event,
   ProjectData,
   Translations,
@@ -22,7 +23,7 @@ import { DeleteModal } from '@components/DeleteModal/index.ts';
 import { AnnotationTable } from './AnnotationTable.tsx';
 
 interface Props {
-  fileUrl: string;
+  avFile: AudiovisualFile;
   i18n: Translations;
   project: ProjectData;
   projectSlug: string;
@@ -124,7 +125,7 @@ const onSubmitEditAnno = async (editAnno: AnnotationEntry, baseUrl: string) => {
 };
 
 const AvFile: React.FC<Props> = (props) => {
-  const { t, lang } = props.i18n;
+  const { t } = props.i18n;
 
   const tabs = useMemo(
     () =>
@@ -258,7 +259,11 @@ const AvFile: React.FC<Props> = (props) => {
       <div className='event-detail-tab-content'>
         <div className='container'>
           <h2>{props.title}</h2>
-          <Player type={'Audio'} i18n={props.i18n} url={props.fileUrl} />
+          <Player
+            type={'Audio'}
+            i18n={props.i18n}
+            url={props.avFile.file_url}
+          />
           <Separator.Root className='SeparatorRoot' decorative />
           <Tabs currentTab={set} tabs={tabs} setTab={setSet}>
             <Dropdown.Root modal={false}>

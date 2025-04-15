@@ -109,27 +109,7 @@
   padding-top: 10px;
 }
 
-.csv-button,
-.edit-button {
-  border: 1px solid var(--gray-900);
-  background: none;
-  color: var(--gray-900);
-}
 
-.csv-button svg,
-.edit-button svg {
-  color: var(--gray-900);
-}
-
-.delete-button {
-  border: 1px solid #db2828;
-  background: none;
-  color: #db2828;
-}
-
-.delete-button svg {
-  color: #db2828;
-}
 
 .event-detail .rt-TableRootTable {
   background: #fff;
@@ -145,46 +125,6 @@
   background: #fff;
   border: 1px solid var(--gray-200);
   padding: 0 16px;
-}
-
-.event-detail .event-detail-table-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 58px;
-}
-
-.event-detail .annotation-table-row:hover {
-  background: var(--gray-100);
-}
-
-.event-detail .annotation-table-row .annotation-data-cell:hover {
-  cursor: pointer;
-}
-
-.audio-event-detail .timestamp-column {
-  width: 180px;
-}
-
-.audio-event-detail .text-column {
-  width: 50%;
-}
-
-.event-detail .options-column {
-  width: 30px;
-}
-
-.event-detail .meatball-cell {
-  padding: 0;
-  width: 30px;
-}
-
-.event-detail .meatball-cell .meatball-container {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  width: 100%;
 }
 
 .audio-event-detail .event-detail-table-header .header-buttons {
@@ -225,52 +165,11 @@
   width: 260px;
 }
 
-.event-detail .searchbox {
-  margin: 0;
-  height: 32px;
-  padding: 0 8px;
-  width: auto;
-}
-
 .event-detail .formic-form-field svg {
   position: absolute;
   right: 10px;
   height: 16px;
   width: 16px;
-}
-
-.event-detail .empty-annos-note {
-  text-align: center;
-  width: 100%;
-}
-
-.event-detail .header-row .rt-TableColumnHeaderCell {
-  padding: 0;
-  height: 32px;
-  background: var(--gray-200);
-  border-left: 1px solid #fff;
-  border-right: 1px solid #fff;
-}
-
-.event-detail .rt-TableColumnHeaderCell .header-cell-container {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  margin: 0 10px;
-}
-
-.event-detail .rt-TableColumnHeaderCell {
-  border-top: 1px solid var(--gray-200);
-}
-
-.event-detail .rt-TableCell {
-  border-left: 1px solid var(--gray-200);
-  border-right: 1px solid var(--gray-200);
-}
-
-.event-detail .annotation-cell p,
-.event-detail .timestamp-cell p {
-  margin: 0;
 }
 
 .invisible-tag-holder {

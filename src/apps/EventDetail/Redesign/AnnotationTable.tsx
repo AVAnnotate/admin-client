@@ -167,7 +167,7 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
             </Table.Row>
           </Table.Header>
         )}
-        <Table.Body>
+        <Table.Body className='annotation-table-body'>
           {props.displayAnnotations.length === 0 && !props.hideHeader && (
             <Table.Row>
               <Table.Cell colSpan={4} className='empty-annos-note'>
