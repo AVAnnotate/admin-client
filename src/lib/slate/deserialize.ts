@@ -1,5 +1,4 @@
 import { jsx } from 'slate-hyperscript';
-import { Text } from 'slate';
 
 let Node;
 
@@ -130,7 +129,6 @@ export const deserializeHtml = (el: HTMLElement | ChildNode): any => {
   const { nodeName } = el;
   let parent = el;
 
-  console.log(nodeName);
   if (
     nodeName === 'PRE' &&
     el.childNodes[0] &&
@@ -154,8 +152,7 @@ export const deserializeHtml = (el: HTMLElement | ChildNode): any => {
   }
 
   if (TEXT_TAGS[nodeName]) {
-    const attrs = (TEXT_TAGS as any)[nodeName](el);
-
+    const attrs = TEXT_TAGS[nodeName]();
     return children.map((child) => jsx('text', attrs, child));
   }
 
