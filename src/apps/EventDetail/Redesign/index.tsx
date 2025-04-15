@@ -5,6 +5,12 @@ import Tabs from './Tabs.tsx';
 import AvFile from './AvFile.tsx';
 import './styles.css';
 import { DeleteEventModal } from '@components/DeleteEventModal/index.ts';
+import { Video } from '@phosphor-icons/react/Video';
+import { SpeakerLoudIcon } from '@radix-ui/react-icons';
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { DotsThree } from '@phosphor-icons/react/dist/icons/DotsThree';
+import { PencilSquare, Trash } from 'react-bootstrap-icons';
+import { Button } from '@radix-ui/themes';
 
 interface EventDetailProps {
   event: Event;
@@ -23,12 +29,16 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     const uuids = Object.keys(props.event.audiovisual_files);
     const isSingleAvFile = uuids.length === 1;
 
-    return uuids.map((uuid, index) => ({
-      uuid,
-      title: isSingleAvFile
-        ? props.event.audiovisual_files[uuid].label
-        : `${index + 1}. ${props.event.audiovisual_files[uuid].label}`,
-    }));
+    return uuids.map((uuid, index) => {
+      const avFileObj = props.event.audiovisual_files[uuid];
+
+      return {
+        uuid,
+        title: isSingleAvFile
+          ? avFileObj.label
+          : `${index + 1}. ${avFileObj.label}`,
+      };
+    });
   }, []);
 
   const [tab, setTab] = useState(tabs[0]);
@@ -43,15 +53,9 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     });
   }, [tab, props.project.annotations]);
 
-  // all annotation sets from this project
-  const [allAnnotations, setAllAnnotations] = useState(
-    Object.fromEntries(
-      Object.entries(props.project.annotations).filter((ent) => {
-        const anno = props.project.annotations[ent[0]];
-
-        return anno.event_id === props.eventUuid;
-      })
-    )
+  const baseUrl = useMemo(
+    () => `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}`,
+    [props.projectSlug, props.eventUuid]
   );
 
   return (
@@ -74,15 +78,52 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
         <div className='event-title-container'>
           <div className='container'>
             <h1 className='event-title'>{props.event.label}</h1>
+            <Dropdown.Root modal={false}>
+              <Dropdown.Trigger asChild>
+                <Button className='meatball-menu-button primary' type='button'>
+                  <DotsThree size={30} color='white' />
+                </Button>
+              </Dropdown.Trigger>
+              <Dropdown.Portal>
+                <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
+                  <Dropdown.Item className='dropdown-item'>
+                    <a href={`${baseUrl}/edit`}>
+                      <PencilSquare color='black' />
+                      Edit event
+                    </a>
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    className='dropdown-item'
+                    onClick={() => setShowEventDeleteModal(true)}
+                  >
+                    <Trash color='red' />
+                    Delete event
+                  </Dropdown.Item>
+                </Dropdown.Content>
+              </Dropdown.Portal>
+            </Dropdown.Root>
           </div>
         </div>
         <div className='tab-container container'>
           {tabs.length > 1 && (
-            <Tabs currentTab={tab} tabs={tabs} setTab={setTab} />
+            <Tabs
+              currentTab={tab}
+              tabs={tabs}
+              setTab={setTab}
+              renderIcon={(tab) => {
+                const avFile = props.event.audiovisual_files[tab.uuid];
+
+                if (avFile.file_type === 'Video') {
+                  return <Video color='black' />;
+                }
+
+                return <SpeakerLoudIcon color='black' />;
+              }}
+            />
           )}
         </div>
         <AvFile
-          fileUrl={props.event.audiovisual_files[tab.uuid].file_url}
+          avFile={props.event.audiovisual_files[tab.uuid]}
           i18n={props.i18n}
           key={tab.uuid}
           project={props.project}

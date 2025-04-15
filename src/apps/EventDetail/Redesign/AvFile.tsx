@@ -20,7 +20,9 @@ import { AnnotationSearchBox } from '../AnnotationSearchBox.tsx';
 import { AnnotationModal } from '@components/AnnotationModal/index.ts';
 import { SetFormModal } from '@components/SetModal/index.ts';
 import { DeleteModal } from '@components/DeleteModal/index.ts';
-import { AnnotationTable } from './AnnotationTable.tsx';
+import AnnotationTable from './AnnotationTable.tsx';
+import { formatTimestamp } from '@lib/events/index.ts';
+import { Button } from '@radix-ui/themes';
 
 interface Props {
   avFile: AudiovisualFile;
@@ -125,7 +127,7 @@ const onSubmitEditAnno = async (editAnno: AnnotationEntry, baseUrl: string) => {
 };
 
 const AvFile: React.FC<Props> = (props) => {
-  const { t } = props.i18n;
+  const { t, lang } = props.i18n;
 
   const tabs = useMemo(
     () =>
@@ -258,19 +260,25 @@ const AvFile: React.FC<Props> = (props) => {
     <>
       <div className='event-detail-tab-content'>
         <div className='container'>
-          <h2>{props.title}</h2>
+          <h2>{`${props.title} (${formatTimestamp(
+            props.avFile.duration,
+            false
+          )})`}</h2>
           <Player
-            type={'Audio'}
+            type={props.avFile.file_type || props.event.item_type || 'Audio'}
             i18n={props.i18n}
             url={props.avFile.file_url}
           />
           <Separator.Root className='SeparatorRoot' decorative />
-          <Tabs currentTab={set} tabs={tabs} setTab={setSet}>
+          <Tabs currentTab={set} tabs={tabs} setTab={setSet} showDividers>
             <Dropdown.Root modal={false}>
               <Dropdown.Trigger asChild>
-                <div className='meatball-menu-icon'>
-                  <DotsThree size={16} />
-                </div>
+                <Button
+                  className='unstyled meatball-menu-icon annotation-tab-meatball-button'
+                  type='button'
+                >
+                  <DotsThree size={16} color='black' />
+                </Button>
               </Dropdown.Trigger>
               <Dropdown.Portal>
                 <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
@@ -279,11 +287,15 @@ const AvFile: React.FC<Props> = (props) => {
                     onClick={() => setShowAddSetModal(true)}
                   >
                     <Plus />
-                    Add annotation set
+                    {t['Add annotation set']}
                   </Dropdown.Item>
                   <Dropdown.Item className='dropdown-item'>
-                    <Gear />
-                    Manage annotation sets
+                    <a
+                      href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
+                    >
+                      <Gear />
+                      {t['Manage annotation sets']}
+                    </a>
                   </Dropdown.Item>
                 </Dropdown.Content>
               </Dropdown.Portal>
@@ -309,6 +321,9 @@ const AvFile: React.FC<Props> = (props) => {
               setDeleteAnnoUuid={setDeleteAnnoUuid}
               setEditAnnoUuid={setEditAnnoUuid}
               setAnnoPosition={setAnnoPosition}
+              projectSlug={props.projectSlug}
+              eventUuid={props.eventUuid}
+              setShowAnnoCreateModal={setShowAnnoCreateModal}
             />
           </div>
         </div>
@@ -347,8 +362,8 @@ const AvFile: React.FC<Props> = (props) => {
           }}
           avFileOptions={[
             {
-              label: set.title,
-              value: set.uuid,
+              label: props.avFile.label,
+              value: props.uuid,
             },
           ]}
         />

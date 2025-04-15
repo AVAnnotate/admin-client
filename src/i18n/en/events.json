@@ -71,5 +71,10 @@
   "Tag Category for Speaker (optional)": "Tag Category for Speaker (optional)",
   "Override Duration": "Override Duration",
   "Calculate Duration": "Calculate Duration",
-  "No media is available.": "No media is available."
+  "No media is available.": "No media is available.",
+  "Add annotation set": "Add annotation set",
+  "Manage annotation sets": "Manage annotation sets",
+  "Add annotations": "Add annotations",
+  "Add single annotation": "Add single annotation",
+  "Import from file": "Import from file"
 }

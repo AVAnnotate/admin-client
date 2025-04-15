@@ -1,8 +1,9 @@
-import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
+import { DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import type { AnnotationEntry, Translations } from '@ty/Types.ts';
-import type { ReactElement } from 'react';
-import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
+import { type ReactElement } from 'react';
+import { CaretDownFill, FileEarmarkArrowUp, Plus } from 'react-bootstrap-icons';
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
 
 interface Props {
   children?: ReactElement | ReactElement[];
@@ -21,6 +22,7 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
 
   return (
     <div className='event-detail-table-header'>
+      <p>{props.displayAnnotations.length}</p>
       <div className='header-buttons'>
         {props.children}
         {props.setUuid && (
@@ -29,22 +31,33 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
             {t['CSV']}
           </Button>
         )}
-        <Button
-          className='primary'
-          onClick={() =>
-            (window.location.pathname = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`)
-          }
-        >
-          <FileEarmarkArrowUp />
-          {t['import']}
-        </Button>
-        <Button
-          className='primary'
-          onClick={() => props.setShowAnnoCreateModal(true)}
-        >
-          <PlusIcon />
-          {t['Add']}
-        </Button>
+        <Dropdown.Root modal={false}>
+          <Dropdown.Trigger asChild>
+            <Button className='primary' type='button'>
+              {t['Add annotations']}
+              <CaretDownFill color='white' />
+            </Button>
+          </Dropdown.Trigger>
+          <Dropdown.Portal>
+            <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
+              <Dropdown.Item
+                className='dropdown-item'
+                onClick={() => props.setShowAnnoCreateModal(true)}
+              >
+                <FileEarmarkArrowUp />
+                {t['Add single annotation']}
+              </Dropdown.Item>
+              <Dropdown.Item className='dropdown-item'>
+                <a
+                  href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`}
+                >
+                  <Plus color='black' />
+                  {t['Import from file']}
+                </a>
+              </Dropdown.Item>
+            </Dropdown.Content>
+          </Dropdown.Portal>
+        </Dropdown.Root>
       </div>
     </div>
   );
