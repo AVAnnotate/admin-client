@@ -1,6 +1,6 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
 import type { Event, ProjectData, Translations } from '@ty/Types.ts';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Tabs from './Tabs.tsx';
 import AvFile from './AvFile.tsx';
 import './styles.css';
@@ -58,6 +58,16 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     [props.projectSlug, props.eventUuid]
   );
 
+  const avFile = useMemo(
+    () => props.event.audiovisual_files[tab.uuid],
+    [tab.uuid, props.event.audiovisual_files]
+  );
+
+  const fileType = useMemo(
+    () => avFile.file_type || props.event.item_type || 'Audio',
+    [avFile, props.event.item_type]
+  );
+
   return (
     <>
       <div className='breadcrumbs-container'>
@@ -89,7 +99,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                   <Dropdown.Item className='dropdown-item'>
                     <a href={`${baseUrl}/edit`}>
                       <PencilSquare color='black' />
-                      Edit event
+                      {t['Edit Event']}
                     </a>
                   </Dropdown.Item>
                   <Dropdown.Item
@@ -97,7 +107,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
                     onClick={() => setShowEventDeleteModal(true)}
                   >
                     <Trash color='red' />
-                    Delete event
+                    {t['Delete Event']}
                   </Dropdown.Item>
                 </Dropdown.Content>
               </Dropdown.Portal>
@@ -110,10 +120,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
               currentTab={tab}
               tabs={tabs}
               setTab={setTab}
-              renderIcon={(tab) => {
-                const avFile = props.event.audiovisual_files[tab.uuid];
+              renderIcon={(item) => {
+                const file = props.event.audiovisual_files[item.uuid];
 
-                if (avFile.file_type === 'Video') {
+                if (file.file_type === 'Video') {
                   return <Video color='black' />;
                 }
 
@@ -122,18 +132,42 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             />
           )}
         </div>
-        <AvFile
-          avFile={props.event.audiovisual_files[tab.uuid]}
-          i18n={props.i18n}
-          key={tab.uuid}
-          project={props.project}
-          projectSlug={props.projectSlug}
-          sets={sets}
-          title={tab.title}
-          uuid={tab.uuid}
-          eventUuid={props.eventUuid}
-          event={props.event}
-        />
+        {fileType === 'Audio' && (
+          <div className='event-detail-tab-content'>
+            <div className='container'>
+              <AvFile
+                avFile={avFile}
+                i18n={props.i18n}
+                fileType={fileType}
+                key={tab.uuid}
+                project={props.project}
+                projectSlug={props.projectSlug}
+                sets={sets}
+                title={tab.title}
+                uuid={tab.uuid}
+                eventUuid={props.eventUuid}
+                event={props.event}
+              />
+            </div>
+          </div>
+        )}
+        {fileType === 'Video' && (
+          <div className='video-event-detail-tab'>
+            <AvFile
+              avFile={avFile}
+              i18n={props.i18n}
+              fileType={fileType}
+              key={tab.uuid}
+              project={props.project}
+              projectSlug={props.projectSlug}
+              sets={sets}
+              title={tab.title}
+              uuid={tab.uuid}
+              eventUuid={props.eventUuid}
+              event={props.event}
+            />
+          </div>
+        )}
       </div>
       {showEventDeleteModal && (
         <DeleteEventModal

@@ -9,9 +9,6 @@ import Player from './Player.tsx';
 import * as Separator from '@radix-ui/react-separator';
 import { useMemo, useState } from 'react';
 import Tabs from './Tabs.tsx';
-import * as Dropdown from '@radix-ui/react-dropdown-menu';
-import { DotsThree } from '@phosphor-icons/react/DotsThree';
-import { Gear, Plus } from 'react-bootstrap-icons';
 import { AnnotationTableHeader } from './AnnotationTableHeader.tsx';
 import { exportAnnotations } from '@lib/events/export.ts';
 import type { apiAnnotationSetPost } from '@ty/api.ts';
@@ -22,10 +19,12 @@ import { SetFormModal } from '@components/SetModal/index.ts';
 import { DeleteModal } from '@components/DeleteModal/index.ts';
 import AnnotationTable from './AnnotationTable.tsx';
 import { formatTimestamp } from '@lib/events/index.ts';
-import { Button } from '@radix-ui/themes';
+import { SetSelect } from './SetSelect.tsx';
+import SetManagementDropdown from './SetManagementDropdown.tsx';
 
 interface Props {
   avFile: AudiovisualFile;
+  fileType: 'Audio' | 'Video';
   i18n: Translations;
   project: ProjectData;
   projectSlug: string;
@@ -258,75 +257,67 @@ const AvFile: React.FC<Props> = (props) => {
 
   return (
     <>
-      <div className='event-detail-tab-content'>
-        <div className='container'>
-          <h2>{`${props.title} (${formatTimestamp(
-            props.avFile.duration,
-            false
-          )})`}</h2>
-          <Player
-            type={props.avFile.file_type || props.event.item_type || 'Audio'}
+      <div className='event-detail-content'>
+        <h2>{`${props.title} (${formatTimestamp(
+          props.avFile.duration,
+          false
+        )})`}</h2>
+        <Player
+          type={props.avFile.file_type || props.event.item_type || 'Audio'}
+          i18n={props.i18n}
+          offline={props.avFile.is_offline}
+          url={props.avFile.file_url}
+          position={annoPosition}
+        />
+      </div>
+      {props.fileType === 'Audio' && (
+        <Separator.Root className='SeparatorRoot' decorative />
+      )}
+      {props.fileType === 'Audio' && (
+        <Tabs currentTab={set} tabs={tabs} setTab={setSet} showDividers>
+          <SetManagementDropdown
+            setShowAddSetModal={setShowAddSetModal}
+            editUrl={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
             i18n={props.i18n}
-            url={props.avFile.file_url}
           />
-          <Separator.Root className='SeparatorRoot' decorative />
-          <Tabs currentTab={set} tabs={tabs} setTab={setSet} showDividers>
-            <Dropdown.Root modal={false}>
-              <Dropdown.Trigger asChild>
-                <Button
-                  className='unstyled meatball-menu-icon annotation-tab-meatball-button'
-                  type='button'
-                >
-                  <DotsThree size={16} color='black' />
-                </Button>
-              </Dropdown.Trigger>
-              <Dropdown.Portal>
-                <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
-                  <Dropdown.Item
-                    className='dropdown-item'
-                    onClick={() => setShowAddSetModal(true)}
-                  >
-                    <Plus />
-                    {t['Add annotation set']}
-                  </Dropdown.Item>
-                  <Dropdown.Item className='dropdown-item'>
-                    <a
-                      href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
-                    >
-                      <Gear />
-                      {t['Manage annotation sets']}
-                    </a>
-                  </Dropdown.Item>
-                </Dropdown.Content>
-              </Dropdown.Portal>
-            </Dropdown.Root>
-          </Tabs>
-          <div className='annotation-table-container'>
-            <AnnotationTableHeader
-              eventUuid={props.eventUuid}
-              displayAnnotations={displayAnnotations}
+        </Tabs>
+      )}
+      <div className='annotation-table-container'>
+        <AnnotationTableHeader
+          eventUuid={props.eventUuid}
+          displayAnnotations={displayAnnotations}
+          fileType={props.fileType}
+          i18n={props.i18n}
+          onExport={onExport}
+          projectSlug={props.projectSlug}
+          setSearch={setSearch}
+          setShowAnnoCreateModal={setShowAnnoCreateModal}
+          setUuid={set.uuid}
+        >
+          {props.fileType === 'Video' && (
+            <SetSelect
+              editUrl={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
+              onChange={(set) => setSet(set)}
+              sets={tabs}
+              value={set}
               i18n={props.i18n}
-              onExport={onExport}
-              projectSlug={props.projectSlug}
-              setSearch={setSearch}
-              setShowAnnoCreateModal={setShowAnnoCreateModal}
-              setUuid={set.uuid}
-            >
-              <AnnotationSearchBox setSearch={setSearch} />
-            </AnnotationTableHeader>
-            <AnnotationTable
-              i18n={props.i18n}
-              displayAnnotations={displayAnnotations}
-              project={props.project}
-              setDeleteAnnoUuid={setDeleteAnnoUuid}
-              setEditAnnoUuid={setEditAnnoUuid}
-              setAnnoPosition={setAnnoPosition}
-              projectSlug={props.projectSlug}
-              eventUuid={props.eventUuid}
-              setShowAnnoCreateModal={setShowAnnoCreateModal}
+              setShowAddSetModal={setShowAddSetModal}
             />
-          </div>
-        </div>
+          )}
+        </AnnotationTableHeader>
+        <AnnotationTable
+          i18n={props.i18n}
+          displayAnnotations={displayAnnotations}
+          project={props.project}
+          setDeleteAnnoUuid={setDeleteAnnoUuid}
+          setEditAnnoUuid={setEditAnnoUuid}
+          setAnnoPosition={setAnnoPosition}
+          projectSlug={props.projectSlug}
+          eventUuid={props.eventUuid}
+          setShowAnnoCreateModal={setShowAnnoCreateModal}
+          tagPosition={props.fileType === 'Video' ? 'below' : 'column'}
+          hideHeader={props.fileType === 'Video'}
+        />
       </div>
       {deleteAnnoUuid && (
         <DeleteModal
