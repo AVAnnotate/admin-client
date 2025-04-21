@@ -7,13 +7,12 @@ import type {
 } from '@ty/Types.ts';
 import Player from './Player.tsx';
 import * as Separator from '@radix-ui/react-separator';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import Tabs from './Tabs.tsx';
 import { AnnotationTableHeader } from './AnnotationTableHeader.tsx';
 import { exportAnnotations } from '@lib/events/export.ts';
 import type { apiAnnotationSetPost } from '@ty/api.ts';
 import { Node } from 'slate';
-import { AnnotationSearchBox } from '../AnnotationSearchBox.tsx';
 import { AnnotationModal } from '@components/AnnotationModal/index.ts';
 import { SetFormModal } from '@components/SetModal/index.ts';
 import { DeleteModal } from '@components/DeleteModal/index.ts';
@@ -21,6 +20,7 @@ import AnnotationTable from './AnnotationTable.tsx';
 import { formatTimestamp } from '@lib/events/index.ts';
 import { SetSelect } from './SetSelect.tsx';
 import SetManagementDropdown from './SetManagementDropdown.tsx';
+import useExpandHeight from 'src/hooks/useExpandHeight.tsx';
 
 interface Props {
   avFile: AudiovisualFile;
@@ -271,16 +271,16 @@ const AvFile: React.FC<Props> = (props) => {
         />
       </div>
       {props.fileType === 'Audio' && (
-        <Separator.Root className='SeparatorRoot' decorative />
-      )}
-      {props.fileType === 'Audio' && (
-        <Tabs currentTab={set} tabs={tabs} setTab={setSet} showDividers>
-          <SetManagementDropdown
-            setShowAddSetModal={setShowAddSetModal}
-            editUrl={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
-            i18n={props.i18n}
-          />
-        </Tabs>
+        <>
+          <Separator.Root className='SeparatorRoot' decorative />
+          <Tabs currentTab={set} tabs={tabs} setTab={setSet} showDividers>
+            <SetManagementDropdown
+              setShowAddSetModal={setShowAddSetModal}
+              editUrl={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/edit`}
+              i18n={props.i18n}
+            />
+          </Tabs>
+        </>
       )}
       <div className='annotation-table-container'>
         <AnnotationTableHeader

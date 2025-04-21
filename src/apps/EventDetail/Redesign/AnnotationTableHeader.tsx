@@ -1,7 +1,6 @@
 import { DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import type { AnnotationEntry, Translations } from '@ty/Types.ts';
-import { type ReactElement } from 'react';
 import { CaretDownFill, FileEarmarkArrowUp, Plus } from 'react-bootstrap-icons';
 import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { AnnotationSearchBox } from './AnnotationSearchBox.tsx';
@@ -24,10 +23,13 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
 
   return (
     <div className='event-detail-table-header'>
+      {props.fileType === 'Video' && (
+        <h2 className='video-annotations-header'>{t['Annotations']}</h2>
+      )}
       {props.children}
       <div className='header-buttons'>
         <AnnotationSearchBox setSearch={props.setSearch} />
-        <div>
+        <div className='buttons'>
           {props.setUuid && (
             <Button
               className='csv-button'

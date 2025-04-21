@@ -1,3 +1,7 @@
+.event-detail * {
+  box-sizing: border-box;
+}
+
 .event-detail .event-title-container {
   height: 48px;
   display: flex;
@@ -148,6 +152,7 @@
 
 .event-detail .meatball-cell {
   padding: 0;
+  height: 100%;
   width: 30px;
 }
 
@@ -159,15 +164,54 @@
   width: 100%;
 }
 
+.event-detail .meatball-cell .meatball-menu-icon {
+  width: 28px;
+  height: 28px;
+}
+
 .event-detail .event-detail-table-header .header-buttons {
   display: flex;
   gap: 12px;
+  width: 100%;
+}
+
+.event-detail .audio-event-detail-tab .header-buttons {
   justify-content: space-between;
+}
+
+.event-detail .video-event-detail-tab .event-detail-table-container {
+  background: var(--gray-100);
+  border-top: 1px solid var(--gray-200);
+}
+
+.event-detail .video-event-detail-tab .event-detail-table-header {
+  background: var(--gray-100);
+}
+
+.event-detail .video-event-detail-tab .event-detail-table-container .rt-TableCell {
+  background: #ffffff;
+}
+
+.event-detail .video-event-detail-tab .event-detail-table-header .header-buttons {
+  padding: 0 6px;
+}
+
+.event-detail .video-event-detail-tab .event-detail-table-header .header-buttons .formic-form-text {
   width: 100%;
 }
 
 .event-detail .video-event-detail-tab .event-detail-table-header .header-buttons .formic-form-field {
-  width: 60px;
+  flex-grow: 1;
+}
+
+.event-detail .header-buttons .buttons {
+  display: flex;
+}
+
+.event-detail .video-event-detail-tab .video-annotations-header {
+  font-size: 18px;
+  margin-bottom: 16px;
+  margin: 0 6px;
 }
 
 .event-detail .tag-cell-container,
@@ -175,6 +219,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
+}
+
+.invisible-tag-holder {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
 }
 
 .event-detail .tag-cell-container .tag-cell-overflow {
@@ -221,18 +271,22 @@
 }
 
 .event-detail .meatball-menu-button svg {
+  position: relative;
+  top: 1px;
+  height: 24px;
+  width: 24px;
   padding: 0;
   margin: 0;
-  transform: scale(2);
+  fill: black;
 }
 
-.event-detail .event-detail-tab-content .annotation-tab-meatball-button {
+.event-detail .annotation-tab-meatball-button {
   height: 32px;
   width: 32px;
   border-radius: 100%;
 }
 
-.event-detail .event-detail-tab-content .annotation-tab-meatball-button svg {
+.event-detail .annotation-tab-meatball-button svg {
   transform: scale(1.2);
   position: relative;
   top: 1px;
@@ -253,17 +307,20 @@
   gap: 10;
   width: 100%;
   padding: 0 10px;
-  box-sizing: border-box;
-  max-height: calc(100vh - 280px);
   background-color: #ffffff;
+  border-top: 1px solid var(--gray-200);
 }
 
 .event-detail .video-event-detail-tab .event-detail-table-header {
   display: block;
 }
 
+.event-detail .video-event-detail-tab .player {
+  height: 480px;
+}
+
 .event-detail .video-event-detail-tab video {
-  height: 100%;
+  max-height: 100%;
   width: 100%;
 }
 
@@ -271,10 +328,11 @@
   flex-grow: 1;
   overflow-y: auto;
   padding: 26px;
+  max-height: 100%;
 }
 
 .event-detail .video-event-detail-tab .annotation-table-container {
-  width: 500px;
+  width: 33%;
   border: none;
   background-color: var(--gray-200);
 }
@@ -285,9 +343,7 @@
 }
 
 .event-detail .video-event-detail-tab .annotation-table-container .event-detail-table-container {
-  max-height: calc(100vh - 220px);
   overflow-y: auto;
-  box-sizing: border-box;
   padding: 0 26px;
 }
 

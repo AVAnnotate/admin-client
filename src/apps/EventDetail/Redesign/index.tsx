@@ -11,6 +11,7 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { DotsThree } from '@phosphor-icons/react/dist/icons/DotsThree';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import { Button } from '@radix-ui/themes';
+import useExpandHeight from 'src/hooks/useExpandHeight.tsx';
 
 interface EventDetailProps {
   event: Event;
@@ -68,6 +69,10 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
     [avFile, props.event.item_type]
   );
 
+  const videoEventDetailTabRef = useRef(null);
+
+  useExpandHeight(videoEventDetailTabRef);
+
   return (
     <>
       <div className='breadcrumbs-container'>
@@ -90,14 +95,14 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             <h1 className='event-title'>{props.event.label}</h1>
             <Dropdown.Root modal={false}>
               <Dropdown.Trigger asChild>
-                <Button className='meatball-menu-button primary' type='button'>
+                <Button className='meatball-menu-button unstyled' type='button'>
                   <DotsThree size={30} color='white' />
                 </Button>
               </Dropdown.Trigger>
               <Dropdown.Portal>
                 <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
                   <Dropdown.Item className='dropdown-item'>
-                    <a href={`${baseUrl}/edit`}>
+                    <a href={`${baseUrl}/edit`} className='unstyled'>
                       <PencilSquare color='black' />
                       {t['Edit Event']}
                     </a>
@@ -133,7 +138,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           )}
         </div>
         {fileType === 'Audio' && (
-          <div className='event-detail-tab-content'>
+          <div className='audio-event-detail-tab event-detail-tab-content'>
             <div className='container'>
               <AvFile
                 avFile={avFile}
@@ -152,7 +157,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           </div>
         )}
         {fileType === 'Video' && (
-          <div className='video-event-detail-tab'>
+          <div className='video-event-detail-tab' ref={videoEventDetailTabRef}>
             <AvFile
               avFile={avFile}
               i18n={props.i18n}

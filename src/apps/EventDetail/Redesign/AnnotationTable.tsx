@@ -1,6 +1,7 @@
 import { MeatballMenu } from '@components/MeatballMenu/index.ts';
 import { formatTimestamp } from '@lib/events/index.ts';
 import { serialize } from '@lib/slate/index.tsx';
+import { DotsThree } from '@phosphor-icons/react/dist/icons/DotsThree';
 import { Pencil2Icon } from '@radix-ui/react-icons';
 import { Button, Table } from '@radix-ui/themes';
 import type {
@@ -11,6 +12,7 @@ import type {
 } from '@ty/Types.ts';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { FileEarmarkArrowUp, Plus, Trash } from 'react-bootstrap-icons';
+import useExpandHeight from 'src/hooks/useExpandHeight.tsx';
 
 interface TagListProps {
   groups: {
@@ -168,8 +170,12 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
     []
   );
 
+  const containerRef = useRef(null);
+
+  useExpandHeight(containerRef);
+
   return (
-    <div className='event-detail-table-container'>
+    <div className='event-detail-table-container' ref={containerRef}>
       <Table.Root>
         {!props.hideHeader && (
           <Table.Header>
@@ -216,12 +222,15 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
               >
                 {serialize(an.annotation)}
                 {tagPosition === 'below' && (
-                  <TagList
-                    groups={tagGroups}
-                    maxWidth={tagCellWidth}
-                    rows={props.tagRows}
-                    tags={an.tags}
-                  />
+                  <>
+                    <p>hi</p>
+                    <TagList
+                      groups={tagGroups}
+                      maxWidth={tagCellWidth}
+                      rows={props.tagRows}
+                      tags={an.tags}
+                    />
+                  </>
                 )}
               </Table.Cell>
               {tagPosition === 'column' && (
@@ -254,6 +263,7 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
                         onClick: () => props.setDeleteAnnoUuid(an.uuid),
                       },
                     ]}
+                    icon={DotsThree}
                     row={t}
                   />
                 </div>
