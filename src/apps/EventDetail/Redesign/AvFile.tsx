@@ -269,6 +269,9 @@ const AvFile: React.FC<Props> = (props) => {
           url={props.avFile.file_url}
           position={annoPosition}
         />
+        {props.fileType === 'Video' && props.event.citation && (
+          <p className='citation'>{props.event.citation}</p>
+        )}
       </div>
       {props.fileType === 'Audio' && (
         <>
@@ -319,6 +322,9 @@ const AvFile: React.FC<Props> = (props) => {
           hideHeader={props.fileType === 'Video'}
         />
       </div>
+      {props.fileType === 'Audio' && props.event.citation && (
+        <p className='citation'>{props.event.citation}</p>
+      )}
       {deleteAnnoUuid && (
         <DeleteModal
           name={t['Annotation']}
