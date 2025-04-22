@@ -35,12 +35,16 @@
 .event-list-box-container {
 }
 
-.event-list .event-list-box-container .event-list-box {
+.event-list-box {
   border: 1px solid var(--gray-300);
   display: grid;
   grid-template-columns: 2fr 1fr 1fr 40px;
   align-items: center;
   padding: 0 20px;
+}
+
+.event-list .event-list-box-container .event-list-title {
+  cursor: pointer;
 }
 
 .event-list .event-list-box-container .event-list-box .page-autogen-pill {

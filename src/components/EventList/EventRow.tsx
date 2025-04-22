@@ -63,13 +63,14 @@ export const EventRow: React.FC<Props> = (props) => {
   const avTypes = useMemo(() => {
     const types: string[] = [];
 
+    const legacy = props.project.events[event.uuid].item_type;
+
+    if (legacy) {
+      types.push(legacy);
+    }
+
     for (const avFile in props.project.events[event.uuid].audiovisual_files) {
       const file = props.project.events[event.uuid].audiovisual_files[avFile];
-      const legacy = props.project.events[event.uuid].item_type;
-
-      if (legacy) {
-        types.push(legacy);
-      }
       if (file.file_type && !types.includes(file.file_type)) {
         types.push(file.file_type);
       }
@@ -80,7 +81,13 @@ export const EventRow: React.FC<Props> = (props) => {
 
   return (
     <Box className='event-list-box' key={event.uuid} height='56px' width='100%'>
-      <Text className='page-title' weight='bold'>
+      <Text
+        className='page-title event-list-title'
+        weight='bold'
+        onClick={() =>
+          (window.location.pathname = `${window.location.pathname}/events/${event.uuid}`)
+        }
+      >
         {truncate(event.label)}
       </Text>
       <div>{avTypes.join(',')}</div>
