@@ -1,7 +1,13 @@
 // react-player requires a weird workaround to keep TS from complaining
 import { default as _ReactPlayer } from 'react-player';
 import type { ReactPlayerProps } from 'react-player/types/lib';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  type SetStateAction,
+} from 'react';
 import './Player.css';
 import { Button } from '@radix-ui/themes';
 import {
@@ -30,7 +36,7 @@ interface Props {
 
 const ReactPlayer = _ReactPlayer as unknown as React.FC<ReactPlayerProps>;
 
-export const Player: React.FC<Props> = (props) => {
+const Player: React.FC<Props> = (props) => {
   // total length of recording, in seconds
   const [duration, setDuration] = useState(0);
 
@@ -99,14 +105,14 @@ export const Player: React.FC<Props> = (props) => {
           playing={playing}
           played={position / duration || 0}
           muted={muted}
-          onDuration={(dur) => setDuration(dur)}
-          onProgress={(data) => {
+          onDuration={(dur: SetStateAction<number>) => setDuration(dur)}
+          onProgress={(data: any) => {
             // don't move the point if the user is currently dragging it
             if (!seeking) {
               setPosition(data.playedSeconds);
             }
           }}
-          onReady={(player) => setPlayer(player)}
+          onReady={(player: any) => setPlayer(player)}
           progressInterval={50}
           url={props.url}
           width={props.type === 'Video' ? '100%' : 0}
@@ -128,7 +134,7 @@ export const Player: React.FC<Props> = (props) => {
             </Button>
             <div className='position-label'>
               <span className='timestamp position'>{formattedPosition}</span>
-              <span>&nbsp;/&nbsp;</span>
+              <span>/</span>
               <span className='timestamp duration'>{formattedDuration}</span>
             </div>
             <div className='seek-bar'>
@@ -184,3 +190,5 @@ export const Player: React.FC<Props> = (props) => {
     </div>
   );
 };
+
+export default Player;

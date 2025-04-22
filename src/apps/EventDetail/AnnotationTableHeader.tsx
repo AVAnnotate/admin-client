@@ -1,20 +1,18 @@
-import { DownloadIcon, PlusIcon } from '@radix-ui/react-icons';
+import { DownloadIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import type { AnnotationEntry, Translations } from '@ty/Types.ts';
-import type { ReactElement } from 'react';
-import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
+import { CaretDownFill, FileEarmarkArrowUp, Plus } from 'react-bootstrap-icons';
+import * as Dropdown from '@radix-ui/react-dropdown-menu';
+import { AnnotationSearchBox } from './AnnotationSearchBox.tsx';
 
 interface Props {
-  children?: ReactElement | ReactElement[];
+  children?: any;
   eventUuid: string;
   displayAnnotations: AnnotationEntry[];
+  fileType: 'Audio' | 'Video';
   i18n: Translations;
   onExport: () => void;
   projectSlug: string;
-  sets: {
-    uuid: string;
-    label: string;
-  }[];
   setSearch: (q: string) => void;
   setShowAnnoCreateModal: (arg: boolean) => void;
   setUuid: string;
@@ -25,36 +23,51 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
 
   return (
     <div className='event-detail-table-header'>
-      <p>
-        {props.sets.length > 1
-          ? props.sets.find((set) => set.uuid === props.setUuid)?.label
-          : t['All Annotations']}
-        &nbsp;({props.displayAnnotations.length})
-      </p>
+      {props.fileType === 'Video' && (
+        <h2 className='video-annotations-header'>{t['Annotations']}</h2>
+      )}
+      {props.children}
       <div className='header-buttons'>
-        {props.children}
-        {props.setUuid && (
-          <Button className='csv-button' onClick={props.onExport} type='button'>
-            <DownloadIcon />
-            {t['CSV']}
-          </Button>
-        )}
-        <Button
-          className='primary'
-          onClick={() =>
-            (window.location.pathname = `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`)
-          }
-        >
-          <FileEarmarkArrowUp />
-          {t['import']}
-        </Button>
-        <Button
-          className='primary'
-          onClick={() => props.setShowAnnoCreateModal(true)}
-        >
-          <PlusIcon />
-          {t['Add']}
-        </Button>
+        <AnnotationSearchBox setSearch={props.setSearch} />
+        <div className='buttons'>
+          {props.setUuid && (
+            <Button
+              className='csv-button'
+              onClick={props.onExport}
+              type='button'
+            >
+              <DownloadIcon />
+              {t['CSV']}
+            </Button>
+          )}
+          <Dropdown.Root modal={false}>
+            <Dropdown.Trigger asChild>
+              <Button className='primary' type='button'>
+                {props.fileType === 'Audio' ? t['Add annotations'] : t['Add']}
+                <CaretDownFill color='white' />
+              </Button>
+            </Dropdown.Trigger>
+            <Dropdown.Portal>
+              <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
+                <Dropdown.Item
+                  className='dropdown-item'
+                  onClick={() => props.setShowAnnoCreateModal(true)}
+                >
+                  <FileEarmarkArrowUp />
+                  {t['Add single annotation']}
+                </Dropdown.Item>
+                <Dropdown.Item className='dropdown-item'>
+                  <a
+                    href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`}
+                  >
+                    <Plus color='black' />
+                    {t['Import from file']}
+                  </a>
+                </Dropdown.Item>
+              </Dropdown.Content>
+            </Dropdown.Portal>
+          </Dropdown.Root>
+        </div>
       </div>
     </div>
   );

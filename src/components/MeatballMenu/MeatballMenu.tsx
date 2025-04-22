@@ -4,18 +4,22 @@ import * as Dropdown from '@radix-ui/react-dropdown-menu';
 import { DotsThreeVertical } from '@phosphor-icons/react/DotsThreeVertical';
 
 import './MeatballMenu.css';
+import { useMemo } from 'react';
 
 interface Props {
   buttons: MeatballMenuItem[];
+  icon?: any;
   row: { [key: string]: any };
 }
 
-export const MeatballMenu: React.FC<Props> = ({ buttons, row }) => {
+export const MeatballMenu: React.FC<Props> = ({ buttons, icon, row }) => {
+  const IconComponent = useMemo(() => icon || DotsThreeVertical, [icon]);
+
   return (
     <Dropdown.Root modal={false}>
       <Dropdown.Trigger asChild>
         <div className='meatball-menu-icon'>
-          <DotsThreeVertical size={16} />
+          <IconComponent size={16} />
         </div>
       </Dropdown.Trigger>
       <Dropdown.Portal>
