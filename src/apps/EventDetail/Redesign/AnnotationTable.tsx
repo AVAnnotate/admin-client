@@ -222,15 +222,12 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
               >
                 {serialize(an.annotation)}
                 {tagPosition === 'below' && (
-                  <>
-                    <p>hi</p>
-                    <TagList
-                      groups={tagGroups}
-                      maxWidth={tagCellWidth}
-                      rows={props.tagRows}
-                      tags={an.tags}
-                    />
-                  </>
+                  <TagList
+                    groups={tagGroups}
+                    maxWidth={tagCellWidth}
+                    rows={props.tagRows}
+                    tags={an.tags}
+                  />
                 )}
               </Table.Cell>
               {tagPosition === 'column' && (
