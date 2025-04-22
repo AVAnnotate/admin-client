@@ -240,7 +240,6 @@ export const SetsTable: React.FC<Props> = (props) => {
                 property: (set: AnnotationPage) => {
                   const event = props.project.events[set.event_id];
                   const avFile = event.audiovisual_files[set.source_id];
-                  console.log(set.source_id);
                   return avFile.label;
                 },
                 title: t['AV File'],
