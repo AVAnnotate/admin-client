@@ -68,6 +68,7 @@ export type ProviderUser = {
 
 export type Publish = {
   publish_pages_app: boolean;
+  publish_static_site: boolean;
   publish_sha: string;
   publish_iso_date: string;
 };

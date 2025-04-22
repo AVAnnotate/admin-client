@@ -1,35 +1,52 @@
 import { MeatballMenu } from '@components/MeatballMenu/index.ts';
 import { Pencil2Icon } from '@radix-ui/react-icons';
-import { Box, Text } from '@radix-ui/themes';
+import { Box, Text, IconButton } from '@radix-ui/themes';
+import { Icon } from '@radix-ui/themes/dist/esm/components/callout.js';
 import type { ProjectData, Translations } from '@ty/Types.ts';
 import type { DraggedPage, MeatballMenuItem } from '@ty/ui.ts';
 import { useMemo } from 'react';
 import {
   ArrowReturnRight,
   BoxArrowUpRight,
-  GripVertical,
+  CaretRightFill,
+  CaretDownFill,
   Trash,
   FiletypeHtml,
   AlignTop,
   ListNested,
   House,
   HouseFill,
+  ArrowUp,
+  ArrowDown,
 } from 'react-bootstrap-icons';
+
+const truncate = (str: string) => {
+  if (str.length <= 36) {
+    return str;
+  }
+
+  return `${str.slice(0, 36)}...`;
+};
 
 interface Props {
   project: ProjectData;
   uuid: string;
   index: number;
-  pickedUp: DraggedPage | null;
-  setPickedUp: (arg: DraggedPage | null) => void;
   i18n: Translations;
-  onDrop: () => Promise<void>;
+  hasChildren: boolean;
+  expanded: boolean;
+  visible: boolean;
+  canGoUp: boolean;
+  canGoDown: boolean;
   onDisableAutoGeneration(): void;
   onReEnableAutoGeneration(): void;
   onDesignateHome(): void;
   onMakeTopLevel(): void;
   onSetParent(pageId: string): void;
   onDelete(): void;
+  onSetExpanded(expanded: boolean): void;
+  onUp(): void;
+  onDown(): void;
 }
 
 export const PageRow: React.FC<Props> = (props) => {
@@ -140,7 +157,9 @@ export const PageRow: React.FC<Props> = (props) => {
         label: t['Edit'],
         icon: Pencil2Icon,
         onClick: () =>
-          (window.location.href = `${window.location.href}/pages/${props.uuid}`),
+          (window.location.href = `${
+            window.location.origin + window.location.pathname
+          }/pages/${props.uuid}`),
       },
     ];
 
@@ -252,38 +271,45 @@ export const PageRow: React.FC<Props> = (props) => {
 
     return count;
   }, [page]);
+
+  const arrowState = useMemo(() => {
+    let state = 'none';
+    if (props.hasChildren) {
+      if (props.expanded) {
+        state = 'down';
+      } else {
+        state = 'right';
+      }
+    }
+
+    return state;
+  }, [props.expanded, props.hasChildren]);
+
   return (
     <Box
-      className={`page-list-box ${
-        props.pickedUp?.hoverIndex === props.index
-          ? 'page-list-box-hovered'
-          : ''
-      }`}
-      draggable
+      className={`page-list-box ${props.visible ? '' : 'page-list-box-hidden'}`}
       key={props.uuid}
-      onDragStart={(_ev) => {
-        props.setPickedUp({
-          uuid: props.uuid,
-          originalIndex: props.index,
-          hoverIndex: props.index,
-        });
-      }}
-      onDragOver={(ev) => {
-        ev.preventDefault();
-        if (props.pickedUp) {
-          props.setPickedUp({
-            ...props.pickedUp,
-            hoverIndex: props.index,
-          });
-        }
-      }}
-      onDrop={async () => await props.onDrop()}
-      onDragEnd={() => props.setPickedUp(null)}
       height='56px'
       width='100%'
     >
-      <GripVertical />
       <Text className='page-title' weight='bold'>
+        {arrowState === 'none' ? (
+          <div className='row-arrow-container' />
+        ) : arrowState === 'down' ? (
+          <div
+            className='row-arrow-container'
+            onClick={() => props.onSetExpanded(false)}
+          >
+            <CaretDownFill />
+          </div>
+        ) : (
+          <div
+            className='row-arrow-container'
+            onClick={() => props.onSetExpanded(true)}
+          >
+            <CaretRightFill />
+          </div>
+        )}
         {page.autogenerate.type === 'home' ? <HouseFill /> : <div />}
         {page.parent && (
           <div
@@ -297,16 +323,30 @@ export const PageRow: React.FC<Props> = (props) => {
             <ArrowReturnRight />
           </div>
         )}
-        {page.title}
+        {truncate(page.title)}
       </Text>
       {page.autogenerate.enabled ? (
-        <div className='page-autogen-pill'>{`${t['Auto-Generated']}-${
-          t[page.autogenerate.type]
-        }`}</div>
+        <div className='page-autogen-pill'>{t['Auto-generated']}</div>
       ) : (
         <div />
       )}
       <span>{dateString}</span>
+      <div className='page-row-reorder'>
+        <IconButton
+          className='page-row-reorder-button'
+          disabled={!props.canGoUp}
+          onClick={props.onUp}
+        >
+          <ArrowUp color='white' />
+        </IconButton>
+        <IconButton
+          className='page-row-reorder-button'
+          disabled={!props.canGoDown}
+          onClick={props.onDown}
+        >
+          <ArrowDown color='white' />
+        </IconButton>
+      </div>
       <MeatballMenu
         buttons={
           page.autogenerate.enabled ? meatballOptionsAutoGen : meatballOptions

@@ -37,10 +37,6 @@ const FormContents = (props: NewProjectFormProps) => {
 
   const { headerMap } = useContext(SpreadsheetInputContext);
 
-  const generalRef = useRef(null);
-  const userRef = useRef(null);
-  const tagRef = useRef(null);
-
   const emptyProject: Project = {
     github_org: props.orgs[0].orgName,
     is_private: false,
@@ -52,7 +48,7 @@ const FormContents = (props: NewProjectFormProps) => {
     creator: '',
     authors: '',
     media_player: 'avannotate',
-    auto_populate_home_page: true,
+    auto_populate_home_page: false,
     additional_users: [],
     tags: {
       tagGroups: [],
@@ -77,19 +73,6 @@ const FormContents = (props: NewProjectFormProps) => {
     ],
     []
   );
-
-  useEffect(() => {
-    const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>
-      ref.current!.scrollIntoView();
-
-    if (props.selection === 'general') {
-      executeScroll(generalRef);
-    } else if (props.selection === 'users') {
-      executeScroll(userRef);
-    } else {
-      executeScroll(tagRef);
-    }
-  }, [props.selection]);
 
   return (
     <div className='project-form'>
@@ -122,7 +105,6 @@ const FormContents = (props: NewProjectFormProps) => {
 
             return (
               <Form>
-                <div ref={generalRef} />
                 <h2>{t['General']}</h2>
                 <SelectInput
                   label={t['GitHub Organization']}
@@ -138,12 +120,6 @@ const FormContents = (props: NewProjectFormProps) => {
                   label={t['Use Private Repository']}
                   name='is_private'
                   helperText={t['_private_repository_helper_text_']}
-                />
-
-                <ToggleInput
-                  label={t['Generate GitHub Pages Site']}
-                  name='generate_pages_site'
-                  helperText={t['_generate_pages_site_helper_text_']}
                 />
 
                 <TextInput
@@ -198,14 +174,7 @@ const FormContents = (props: NewProjectFormProps) => {
                   name='authors'
                 />
 
-                <ToggleInput
-                  label={t['Auto-populate Home page']}
-                  helperText=''
-                  name='auto_populate_home_page'
-                />
-
                 <div className='project-form-divider' />
-                <div ref={userRef} />
                 <h2>{t['Users']}</h2>
                 <UserList
                   label={t['Add Additional Users (optional)']}
@@ -213,25 +182,6 @@ const FormContents = (props: NewProjectFormProps) => {
                   addString={t['add']}
                   nameString={t['User GitHub Name']}
                   i18n={props.i18n}
-                />
-
-                <div className='project-form-divider' />
-
-                <div ref={tagRef} />
-                <h2>{t['Tags (optional)']}</h2>
-                <div className='av-label'>
-                  {
-                    t[
-                      'Tags are labels used in the interface to index, organize, and discover topics in the annotations. Categories can be used to organize the tags in groups.'
-                    ]
-                  }
-                </div>
-                <SpreadsheetInput
-                  accept='.tsv, .csv, .xlsx, .txt'
-                  i18n={props.i18n}
-                  label={t['Tags File']}
-                  name='tags'
-                  importAsOptions={importAsOptions}
                 />
 
                 <BottomBar>

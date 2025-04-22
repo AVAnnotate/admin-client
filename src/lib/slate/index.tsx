@@ -169,15 +169,15 @@ export const Element = ({
 
 export const Leaf = ({ attributes, children, leaf }: any) => {
   if (leaf.textSize === 'heading-one') {
-    children = <h1>{children}</h1>;
+    children = <div className='heading-one'>{children}</div>;
   } else if (leaf.textSize === 'heading-two') {
-    children = <h2>{children}</h2>;
+    children = <div className='heading-two'>{children}</div>;
   } else if (leaf.textSize === 'heading-three') {
-    children = <h3>{children}</h3>;
+    children = <div className='heading-three'>{children}</div>;
   } else if (leaf.textSize === 'heading-four') {
-    children = <h4>{children}</h4>;
+    children = <div className='heading-four'>{children}</div>;
   } else if (leaf.textSize === 'small') {
-    children = <small>{children}</small>;
+    children = <div className='small-text'>{children}</div>;
   }
   if (leaf.bold) {
     children = <b>{children}</b>;

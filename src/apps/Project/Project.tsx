@@ -9,14 +9,14 @@ import {
 } from 'react-bootstrap-icons';
 
 import './Project.css';
-import { PageList } from '@components/PageList/index.ts';
 import { Tabs } from '@components/Tabs/Tabs.tsx';
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as Tooltip from '@radix-ui/react-tooltip';
 import { Avatar } from '@components/Avatar/Avatar.tsx';
 import { DataManager } from '@components/DataManager/DataManager.tsx';
+import { SiteBuilder } from '@components/SiteBuilder/SiteBuilder.tsx';
 
 interface Props {
   i18n: Translations;
@@ -30,11 +30,29 @@ interface EventWithUuid extends Event {
 
 export const Project: React.FC<Props> = (props) => {
   const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
+  const [activeTab, setActiveTab] = useState<string | undefined>();
 
   const { lang, t } = props.i18n;
 
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const tab = params.get('tab');
+    if (tab && tab !== activeTab) {
+      setActiveTab(tab);
+    }
+  }, []);
+
   const handleNavToSettings = () => {
     window.location.pathname = `/${lang}/projects/${props.projectSlug}/settings`;
+  };
+
+  const handleSetActive = (tab: string) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', tab);
+
+    window.history.pushState({}, '', url);
+    setActiveTab(tab);
   };
 
   return (
@@ -129,6 +147,8 @@ export const Project: React.FC<Props> = (props) => {
         </div>
         <div className='project-tabs'>
           <Tabs
+            activeTab={activeTab}
+            onSetActive={handleSetActive}
             tabs={[
               {
                 keepMounted: true,
@@ -145,7 +165,7 @@ export const Project: React.FC<Props> = (props) => {
                 keepMounted: true,
                 title: t['Site Builder'],
                 component: (
-                  <PageList
+                  <SiteBuilder
                     i18n={props.i18n}
                     project={props.project}
                     projectSlug={props.projectSlug}

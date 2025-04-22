@@ -19,6 +19,14 @@ interface Props {
   onDelete(): void;
 }
 
+const truncate = (str: string) => {
+  if (str.length <= 36) {
+    return str;
+  }
+
+  return `${str.slice(0, 36)}...`;
+};
+
 export const EventRow: React.FC<Props> = (props) => {
   const { event } = props;
   const { t } = props.i18n;
@@ -62,19 +70,18 @@ export const EventRow: React.FC<Props> = (props) => {
       if (legacy) {
         types.push(legacy);
       }
-      if (!types.includes(file.file_type)) {
+      if (file.file_type && !types.includes(file.file_type)) {
         types.push(file.file_type);
       }
     }
 
-    console.log(types);
     return types;
   }, [props.project]);
 
   return (
     <Box className='event-list-box' key={event.uuid} height='56px' width='100%'>
       <Text className='page-title' weight='bold'>
-        {event.label}
+        {truncate(event.label)}
       </Text>
       <div>{avTypes.join(',')}</div>
       <div>{new Date(event.updated_at).toLocaleDateString()}</div>
