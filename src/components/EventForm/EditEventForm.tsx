@@ -43,7 +43,7 @@ const initialAvFile = {
   caption_set: [],
 };
 
-export const EventForm: React.FC<Props> = (props) => {
+export const EditEventForm: React.FC<Props> = (props) => {
   const onSubmit = async (data: FormEvent | Event) => {
     // convert the AV files' string values to boolean
     Object.keys(data.audiovisual_files).forEach((key) => {

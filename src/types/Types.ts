@@ -94,6 +94,7 @@ export type FormAudiovisualFile = Omit<AudiovisualFile, 'is_offline'> & {
 
 export type Event = {
   audiovisual_files: { [key: string]: AudiovisualFile };
+  av_file_order?: string[];
   auto_generate_web_page: boolean;
   description: Node[];
   citation?: string;

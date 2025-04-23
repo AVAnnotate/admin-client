@@ -1,4 +1,4 @@
-import { EventForm } from '@components/EventForm/index.ts';
+import { EditEventForm } from '@components/EventForm/index.ts';
 import type {
   Annotation,
   Event,
@@ -71,7 +71,7 @@ export const EventEdit: React.FC<Props> = ({
       />
       <div className='container'>
         <h1>{t['Edit Event']}</h1>
-        <EventForm
+        <EditEventForm
           event={event}
           i18n={i18n}
           onSubmit={onSubmit}
