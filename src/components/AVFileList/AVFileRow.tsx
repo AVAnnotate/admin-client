@@ -1,25 +1,20 @@
 import { MeatballMenu } from '@components/MeatballMenu/index.ts';
-import { Box, Text, Button } from '@radix-ui/themes';
-import { Event, Translations, FormEvent } from '@ty/Types.ts';
+import { Box, Button } from '@radix-ui/themes';
+import type { Event, Translations, FormEvent } from '@ty/Types.ts';
 import type { DraggedPage } from '@ty/ui.ts';
-import { useMemo, useState } from 'react';
-import {
-  ArrowReturnRight,
-  BoxArrowUpRight,
-  GripVertical,
-  Trash,
-  FiletypeHtml,
-} from 'react-bootstrap-icons';
+import { useMemo } from 'react';
+import { GripVertical, Trash } from 'react-bootstrap-icons';
 import {
   SelectInput,
   TextInput,
   DurationInput,
 } from '@components/Formic/index.tsx';
-import { FieldArray, useFormikContext } from 'formik';
+import { FieldArray } from 'formik';
 import * as Separator from '@radix-ui/react-separator';
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import { v4 as uuidv4 } from 'uuid';
 import { SetsTable } from '@components/EventForm/SetsTable.tsx';
+import { useFormikContext } from 'formik';
 
 interface Props {
   event: Event;
@@ -34,6 +29,8 @@ interface Props {
 
 export const AVFileRow: React.FC<Props> = (props) => {
   const { t } = props.i18n;
+
+  const { setFieldValue, values } = useFormikContext();
 
   const meatballOptions = useMemo(() => {
     return [

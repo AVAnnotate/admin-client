@@ -79,7 +79,7 @@ export const AVFileList: React.FC<Props> = (props) => {
         <div className='page-list-box-container'>
           {order!.map((uuid, idx) => (
             <AVFileRow
-              event={event}
+              event={ev}
               uuid={uuid}
               index={idx}
               pickedUp={pickedUp}
