@@ -1,4 +1,5 @@
 .tabs {
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -8,23 +9,30 @@
   all: unset;
 }
 
+.tabs .tab-content {
+  background-color: var(--gray-100);
+}
+
 .tabs .tab-list {
   flex-shrink: 0;
   display: flex;
-  border-bottom: 2px solid #e5e5e5;
   gap: 8px;
+  padding: 0 63px;
 }
 
 .tabs .tab-trigger {
-  height: 40px;
+  height: 42px;
+  width: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
   line-height: 1;
   background-color: transparent !important;
-  color: var(--gray-500);
+  color: white;
   font-weight: 600;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
 }
 
 .tabs .tab-trigger:hover {
@@ -33,12 +41,8 @@
 }
 
 .tabs .tab-trigger[data-state='active'] {
-  box-shadow: 0 2px 0 0 var(--primary);
+  background-color: var(--gray-100) !important;
   color: var(--gray-900);
-}
-
-.tabs .tab-trigger[data-state='active']:hover {
-  box-shadow: 0 2px 0 0 var(--primary);
 }
 
 .tabs .tab-trigger .tab-count {

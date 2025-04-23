@@ -1,8 +1,8 @@
 import type { GitRepoContext } from '@backend/gitRepo.ts';
 import {
   findAutoGenHome,
-  trimStringToMaxLength,
   ensureUniqueSlug,
+  normalizeAndWriteOrder,
 } from './index.ts';
 import type { FormEvent, Page, UserInfo } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
@@ -53,16 +53,85 @@ export const autoGenerateEventPage = async (
 
   order.push(pageId);
 
-  const successOrder = await context.writeFile(
-    '/data/pages/order.json',
-    JSON.stringify(order, null, 2)
+  normalizeAndWriteOrder(context, order);
+};
+
+export const removeAutoGenerateEventPage = async (
+  context: GitRepoContext,
+  pageUuid: string
+) => {
+  context.deleteFile(`/data/pages/${pageUuid}.json`);
+
+  const orderFile = context.readFile('/data/pages/order.json');
+
+  const order: string[] = JSON.parse(orderFile as string);
+
+  const idx = order.findIndex((o) => o === pageUuid);
+
+  if (idx > -1) {
+    order.splice(idx, 1);
+  }
+
+  normalizeAndWriteOrder(context, order);
+};
+
+export const autoGenerateHomePage = async (
+  context: GitRepoContext,
+  info: UserInfo,
+  title: string
+) => {
+  const homePage: Page = {
+    content: [],
+    created_at: new Date().toISOString(),
+    created_by: info!.profile.gitHubName || '',
+    title: title,
+    updated_at: new Date().toISOString(),
+    updated_by: info!.profile.gitHubName || '',
+    autogenerate: {
+      enabled: true,
+      type: 'home',
+    },
+  };
+
+  const pageId = uuidv4();
+  const successPage = await context.writeFile(
+    `/data/pages/${pageId}.json`,
+    JSON.stringify(homePage, null, 2)
   );
 
-  if (!successOrder) {
-    console.error('Failed to write page order');
+  if (!successPage) {
+    console.error('Failed to write home page');
     return new Response(null, {
       status: 500,
-      statusText: 'Failed to write page order',
+      statusText: 'Failed to write home page',
     });
   }
+
+  const orderFile = context.readFile('/data/pages/order.json');
+
+  const order = JSON.parse(orderFile as string);
+
+  // Make it top level
+  order.unshift(pageId);
+
+  normalizeAndWriteOrder(context, order);
+};
+
+export const removeAutoGenerateHomePage = async (
+  context: GitRepoContext,
+  pageUuid: string
+) => {
+  context.deleteFile(`/data/pages/${pageUuid}.json`);
+
+  const orderFile = context.readFile('/data/pages/order.json');
+
+  const order: string[] = JSON.parse(orderFile as string);
+
+  const idx = order.findIndex((o) => o === pageUuid);
+
+  if (idx > -1) {
+    order.splice(idx, 1);
+  }
+
+  normalizeAndWriteOrder(context, order);
 };

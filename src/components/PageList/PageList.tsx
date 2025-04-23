@@ -1,13 +1,27 @@
-import React, { useMemo, useState } from 'react';
+import React, { Children, useEffect, useMemo, useState } from 'react';
 import './PageList.css';
-import type { ProjectData, Translations } from '@ty/Types.ts';
+import type { Page, ProjectData, Translations } from '@ty/Types.ts';
 import { Button } from '@radix-ui/themes';
-import { PlusIcon } from '@radix-ui/react-icons';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
-import type { DraggedPage } from '@ty/ui.ts';
 import { PageRow } from './PageRow.tsx';
+import {
+  makePageArray,
+  getOrderFromPageArray,
+  type OrderEntry,
+} from '@lib/pages/reorder.ts';
 
+type RowState = {
+  [key: string]: {
+    uuid: string;
+    hasChildren: boolean;
+    expanded: boolean;
+    parent: string | undefined;
+    visible: boolean;
+    canGoUp?: boolean;
+    canGoDown?: boolean;
+  };
+};
 interface Props {
   i18n: Translations;
   project: ProjectData;
@@ -18,42 +32,63 @@ export const PageList: React.FC<Props> = (props) => {
   const [saving, setSaving] = useState(false);
   const [pageOrder, setPageOrder] = useState(props.project.pageOrder);
   const [project, setProject] = useState(props.project);
+  const [rowState, setRowState] = useState<RowState>({});
 
   const { t } = props.i18n;
 
-  const [pickedUp, setPickedUp] = useState<DraggedPage | null>(null);
+  useEffect(() => {
+    if (pageOrder) {
+      let state: RowState = {};
+
+      const orderArray = makePageArray(project, pageOrder);
+
+      orderArray.forEach((entry, idx) => {
+        state[entry.id] = {
+          uuid: entry.id,
+          expanded: true,
+          parent: entry.parent,
+          visible: true,
+          hasChildren: entry.children.length > 0,
+        };
+
+        // Now determine how we can move this item
+        state[entry.id].canGoDown = false;
+        state[entry.id].canGoUp = false;
+        if (entry.parent) {
+          const parentEntry = orderArray.find((e) => e.id === entry.parent);
+          if (parentEntry) {
+            const childIdx = parentEntry.children.findIndex(
+              (child) => child === entry.id
+            );
+            if (childIdx > 0 && parentEntry.children.length > 1) {
+              state[entry.id].canGoUp = true;
+            }
+            if (
+              childIdx < parentEntry.children.length - 1 &&
+              parentEntry.children.length > 1
+            ) {
+              state[entry.id].canGoDown = true;
+            }
+          }
+        } else {
+          if (idx > 0 && orderArray.length > 1) {
+            state[entry.id].canGoUp = true;
+          }
+
+          if (idx < orderArray.length - 1 && orderArray.length > 1) {
+            state[entry.id].canGoDown = true;
+          }
+        }
+      });
+
+      setRowState(state);
+    }
+  }, [project, pageOrder]);
 
   const isChanged = useMemo(
     () => pageOrder !== props.project.pageOrder,
     [props.project.pageOrder, pageOrder]
   );
-
-  const onDrop = async () => {
-    if (pickedUp) {
-      // ignore if we're dropping in the same spot it came from
-      if (pickedUp.hoverIndex === pickedUp.originalIndex) {
-        return setPickedUp(null);
-      }
-
-      const selectedPage = project.pages![pickedUp.uuid];
-
-      let newArray = pageOrder!.filter((k) => k !== pickedUp.uuid);
-
-      if (selectedPage.parent) {
-        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
-      } else {
-        const children = pageOrder!.filter(
-          (key) => project.pages![key].parent === pickedUp.uuid
-        );
-
-        newArray = newArray.filter((k) => !children.includes(k));
-
-        newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid, ...children);
-      }
-
-      setPageOrder(newArray);
-    }
-  };
 
   const onSubmit = async () => {
     setSaving(true);
@@ -156,6 +191,141 @@ export const PageList: React.FC<Props> = (props) => {
     setSaving(false);
   };
 
+  const handleMakeTopLevel = async (uuid: string) => {
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
+    const copyOrder = [...(pageOrder as string[])];
+
+    const page = copy.pages[uuid];
+    setSaving(true);
+    page.parent = undefined;
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      // Move the page to the end
+      const idx = copyOrder.findIndex((o) => o === uuid);
+      if (idx > -1) {
+        copyOrder.splice(idx, 1);
+        copyOrder.push(uuid);
+
+        const resOrder = await fetch(
+          `/api/projects/${props.projectSlug}/pages/order`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order: copyOrder }),
+          }
+        );
+
+        if (resOrder.ok) {
+          setPageOrder(copyOrder);
+        }
+      }
+
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
+  const handleSetParent = async (uuid: string, parentId: string) => {
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    const page = copy.pages[uuid];
+    setSaving(true);
+    page.parent = parentId;
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      // Make the pageArray from the old project data
+      let pageArray = makePageArray(project, pageOrder as string[]);
+
+      // Adjust page array
+      let childEntry = pageArray.find((e) => e.id === uuid);
+      let parentEntry = pageArray.find((e) => e.id === parentId);
+
+      if (childEntry && parentEntry) {
+        childEntry.parent === parentId;
+        parentEntry.children.push(uuid);
+
+        const newOrder = getOrderFromPageArray(pageArray);
+
+        const resOrder = await fetch(
+          `/api/projects/${props.projectSlug}/pages/order`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ order: newOrder }),
+          }
+        );
+
+        if (resOrder.ok) {
+          setPageOrder(newOrder);
+        }
+      }
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
+  const handleDesignateHome = async (uuid: string) => {
+    const copy: ProjectData = JSON.parse(JSON.stringify(project));
+
+    let prevHome: Page | undefined;
+
+    for (uuid in copy.pages) {
+      if (copy.pages[uuid].autogenerate.type === 'home') {
+        prevHome = copy.pages[uuid];
+      }
+    }
+    const page = copy.pages[uuid];
+    setSaving(true);
+
+    page.autogenerate.type === 'home';
+    if (prevHome) {
+      prevHome.autogenerate.enabled = false;
+      prevHome.autogenerate.type = 'custom';
+    }
+    const res = await fetch(
+      `/api/projects/${props.projectSlug}/pages/${uuid}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ page: page }),
+      }
+    );
+
+    if (res.ok) {
+      setProject(copy);
+    }
+
+    setSaving(false);
+  };
+
   const handleDeletePage = async (uuid: string) => {
     setSaving(true);
     const res = await fetch(
@@ -171,38 +341,118 @@ export const PageList: React.FC<Props> = (props) => {
     setSaving(false);
   };
 
+  const handleSetExpanded = (uuid: string, expanded: boolean) => {
+    let copy: RowState = { ...rowState };
+    copy[uuid].expanded = expanded;
+    Object.keys(copy).forEach((id) => {
+      let state = copy[id];
+      if (state.parent === uuid) {
+        state.visible = expanded;
+      }
+    });
+    setRowState(copy);
+  };
+
+  const handleUp = (uuid: string) => {
+    let pageArray: OrderEntry[] = makePageArray(project, pageOrder as string[]);
+    const targetPage: Page = project.pages[uuid];
+
+    if (targetPage.parent) {
+      let parent = pageArray.find((e) => e.id === targetPage.parent);
+
+      if (parent) {
+        const idx = parent.children.findIndex((i) => i === uuid);
+        if (idx > 0) {
+          const swap = parent.children[idx - 1];
+          parent.children[idx - 1] = uuid;
+          parent.children[idx] = swap;
+
+          setPageOrder(getOrderFromPageArray(pageArray));
+        }
+      }
+    } else {
+      let topLevel = pageArray.filter((e) => !e.parent);
+      const idx = topLevel.findIndex((e) => e.id === uuid);
+      if (idx > 0) {
+        const swap = topLevel[idx - 1];
+
+        const swapIdx = pageArray.findIndex((e) => e.id === swap.id);
+        const targetIndex = pageArray.findIndex((e) => e.id === uuid);
+        pageArray[swapIdx] = { ...pageArray[targetIndex] };
+        pageArray[targetIndex] = swap;
+
+        const order = getOrderFromPageArray(pageArray);
+        setPageOrder(order);
+      }
+    }
+  };
+
+  const handleDown = (uuid: string) => {
+    let pageArray: OrderEntry[] = makePageArray(project, pageOrder as string[]);
+    const targetPage: Page = project.pages[uuid];
+
+    if (targetPage.parent) {
+      let parent = pageArray.find((e) => e.id === targetPage.parent);
+
+      if (parent) {
+        const idx = parent.children.findIndex((i) => i === uuid);
+        if (idx > -1) {
+          const swap = parent.children[idx + 1];
+          parent.children[idx + 1] = uuid;
+          parent.children[idx] = swap;
+
+          const order = getOrderFromPageArray(pageArray);
+          setPageOrder(order);
+        }
+      }
+    } else {
+      let topLevel = pageArray.filter((e) => !e.parent);
+      const idx = topLevel.findIndex((e) => e.id === uuid);
+      if (idx > -1) {
+        const swap = topLevel[idx + 1];
+
+        const swapIdx = pageArray.findIndex((e) => e.id === swap.id);
+        const targetIndex = pageArray.findIndex((e) => e.id === uuid);
+        pageArray[swapIdx] = { ...pageArray[targetIndex] };
+        pageArray[targetIndex] = swap;
+
+        const order = getOrderFromPageArray(pageArray);
+
+        setPageOrder(order);
+      }
+    }
+  };
+
   return (
     <>
       {saving && <LoadingOverlay />}
       <div className='page-list'>
-        <div className='page-list-top-bar'>
-          <span>{t['All Pages']}</span>
-          <Button
-            className='primary'
-            onClick={() =>
-              (window.location.pathname = `${window.location.pathname}/pages/new`)
-            }
-          >
-            <PlusIcon />
-            {t['Add']}
-          </Button>
-        </div>
         <div className='page-list-box-container'>
           {pageOrder!.map((uuid, idx) => (
             <PageRow
               project={project}
               uuid={uuid}
               index={idx}
-              pickedUp={pickedUp}
-              setPickedUp={setPickedUp}
               i18n={props.i18n}
-              onDrop={onDrop}
               key={uuid}
+              visible={rowState[uuid] && rowState[uuid].visible}
+              hasChildren={rowState[uuid] && rowState[uuid].hasChildren}
+              expanded={rowState[uuid] && rowState[uuid].expanded}
+              canGoUp={rowState[uuid] && (rowState[uuid].canGoUp as boolean)}
+              canGoDown={
+                rowState[uuid] && (rowState[uuid].canGoDown as boolean)
+              }
               onDisableAutoGeneration={() => handleDisableAutoGeneration(uuid)}
               onReEnableAutoGeneration={() =>
                 handleReEnableAutoGeneration(uuid)
               }
+              onDesignateHome={() => handleDesignateHome(uuid)}
+              onMakeTopLevel={() => handleMakeTopLevel(uuid)}
+              onSetParent={(parentId) => handleSetParent(uuid, parentId)}
               onDelete={() => handleDeletePage(uuid)}
+              onSetExpanded={(expanded) => handleSetExpanded(uuid, expanded)}
+              onUp={() => handleUp(uuid)}
+              onDown={() => handleDown(uuid)}
             />
           ))}
         </div>

@@ -22,6 +22,7 @@
   "delete-group-description": "Deleting this group will move all tags within it to the Uncategorized group.",
   "Tag Group": "Tag Group",
   "Edit Tag Group": "Edit Tag Group",
+  "Create Tag Group": "Create Tag Group",
   "Tag Group Name": "Tag Group Name",
   "Tag Color": "Tag Color",
   "Create": "Create",
@@ -51,5 +52,7 @@
   "All tags and tag groups deleted": "All tags and tag groups deleted",
   "Failed to delete tags": "Failed to delete tags",
   "Confirm Delete All": "Confirm Delete All",
-  "_delete_all_message_": "This will delete all tag groups and tags. This cannot be undone, and is not possible after any annotation in the project has a tag applied."
+  "_delete_all_message_": "This will delete all tag groups and tags. This cannot be undone, and is not possible after any annotation in the project has a tag applied.",
+  "Import tags from file": "Import tags from file",
+  "Tag Manager": "Tag Manager"
 }

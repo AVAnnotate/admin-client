@@ -10,6 +10,8 @@ import type {
   Tag,
   AnnotationEntry,
 } from '@ty/Types.ts';
+
+import type { AutoGenerateOptions } from '@components/AutoGenerateModal/AutoGenerateModal.tsx';
 import type { Node } from 'slate';
 
 export type apiAnnotationPost =
@@ -66,6 +68,10 @@ export type apiPagePut = {
   page: Page;
 };
 
+export type apiPageAutoGen = {
+  options: AutoGenerateOptions[];
+};
+
 export type apiAddTagGroup = {
   tagGroup: TagGroup;
 };
@@ -115,3 +121,8 @@ export type apiImportManifest = {
 };
 
 export type apiValidateSlug = { org: string; slug: string };
+
+export type apiPublishSite = {
+  publish_pages: boolean;
+  publish_static: boolean;
+};

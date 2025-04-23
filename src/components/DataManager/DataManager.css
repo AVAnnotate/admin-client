@@ -1,0 +1,48 @@
+.data-manager-container {
+  padding: 28px 124px;
+}
+
+.data-manager-container .tabs-root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.data-manager-container .tabs-list {
+  display: flex;
+  flex-direction: row;
+  width: 100px;
+}
+
+.data-manager-container .tabs-trigger {
+  all: unset;
+}
+
+.data-manager-container .tabs-trigger {
+  font-family: inherit;
+  background-color: transparent;
+  padding: 0 20px;
+  height: 45px;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  line-height: 1;
+  user-select: none;
+  color: black;
+  border: none;
+  width: 45px;
+}
+
+.data-manager-container .tabs-trigger[data-state='active'] {
+  border-bottom: 2px solid black;
+}
+
+.data-manager-container .tabs-trigger:hover {
+  background-color: transparent !important;
+  box-shadow: none;
+}
+
+.data-manager-events {
+}

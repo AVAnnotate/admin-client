@@ -1,0 +1,23 @@
+.site-builder-container {
+  padding: 28px 124px;
+}
+
+.site-builder-topbar {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.site-builder-action-buttons {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.site-builder-button {
+  height: 38px;
+  font-weight: 600;
+}

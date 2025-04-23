@@ -37,7 +37,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
           {
-            label: project.project.title,
+            label: t['Data Manager'],
             link: `/${lang}/projects/${projectSlug}`,
           },
           { label: t['Add Event'], link: '' },
@@ -72,17 +72,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
           project={project}
           projectSlug={projectSlug}
           uuid={''}
-        >
-          <ToggleInput
-            helperText={
-              t[
-                'Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.'
-              ]
-            }
-            label={t['Auto-generate web page for this event?']}
-            name='auto_generate_web_page'
-          />
-        </EventForm>
+        />
         {tab === 1 && <ImportManifest i18n={i18n} projectSlug={projectSlug} />}
       </div>
     </div>

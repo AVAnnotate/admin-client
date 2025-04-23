@@ -1,5 +1,5 @@
 import * as RadixTabs from '@radix-ui/react-tabs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './Tabs.css';
 import React from 'react';
 
@@ -13,10 +13,26 @@ interface Props {
     // otherwise, it will unmount when the user changes tabs
     keepMounted?: boolean;
   }[];
+  activeTab?: string;
+  onSetActive?(tab: string): void;
 }
 
 export const Tabs: React.FC<Props> = (props) => {
-  const [activeTab, setActiveTab] = useState('tab0');
+  const [activeTab, setActiveTab] = useState(props.activeTab || 'tab0');
+
+  const handleSetActive = (tab: string) => {
+    if (props.onSetActive) {
+      props.onSetActive(tab);
+    }
+
+    setActiveTab(tab);
+  };
+
+  useEffect(() => {
+    if (props.activeTab && props.activeTab !== activeTab) {
+      setActiveTab(props.activeTab);
+    }
+  }, [props.activeTab]);
 
   return (
     <RadixTabs.Root className='tabs' value={activeTab}>
@@ -25,7 +41,7 @@ export const Tabs: React.FC<Props> = (props) => {
           <RadixTabs.Trigger
             className='tab-trigger'
             key={idx}
-            onClick={() => setActiveTab(`tab${idx}`)}
+            onClick={() => handleSetActive(`tab${idx}`)}
             value={`tab${idx}`}
           >
             {tab.icon && (
@@ -48,6 +64,7 @@ export const Tabs: React.FC<Props> = (props) => {
           hidden={
             tab.keepMounted && `tab${idx}` !== activeTab ? true : undefined
           }
+          className='tab-content'
         >
           {tab.component}
         </RadixTabs.Content>

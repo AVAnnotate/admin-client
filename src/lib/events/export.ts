@@ -50,7 +50,7 @@ export const exportEvents = (projectName: string, events: Event[]) => {
     Object.keys(event.audiovisual_files).forEach((uuid) => {
       const fields = [
         event.label,
-        event.audiovisual_files[uuid].file_type,
+        event.audiovisual_files[uuid].file_type || event.item_type,
         event.audiovisual_files[uuid].label,
         event.audiovisual_files[uuid].file_url,
         event.citation || '',

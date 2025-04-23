@@ -49,44 +49,17 @@ export const ProjectSettings: React.FC<Props> = (props) => {
             label: props.project.project.title,
             link: `/${lang}/projects/${props.projectSlug}`,
           },
-          { label: t['Settings'], link: '' },
+          { label: t['Edit Project'], link: '' },
         ]}
       />
-
-      <SideTabScrollingContainer
-        sidebarHeaderLabel={t['Settings']}
-        containerHeight={`${window.innerHeight - 120 - 90}px`}
+      <EditProjectForm
         selection={tab}
-        tabs={
-          isOwner
-            ? [
-                {
-                  name: 'general',
-                  label: t['General'],
-                },
-                {
-                  name: 'users',
-                  label: t['Users'],
-                },
-              ]
-            : [
-                {
-                  name: 'general',
-                  label: t['General'],
-                },
-              ]
-        }
-        onSelect={(selection) => setTab(selection as Tabs)}
-      >
-        <EditProjectForm
-          selection={tab}
-          projectData={props.project}
-          projectSlug={props.projectSlug}
-          i18n={props.i18n}
-          onSave={(data) => handleSaveProject(data)}
-          userInfo={props.userInfo}
-        />
-      </SideTabScrollingContainer>
+        projectData={props.project}
+        projectSlug={props.projectSlug}
+        i18n={props.i18n}
+        onSave={(data) => handleSaveProject(data)}
+        userInfo={props.userInfo}
+      />
     </div>
   );
 };
