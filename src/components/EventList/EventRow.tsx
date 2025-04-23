@@ -81,17 +81,18 @@ export const EventRow: React.FC<Props> = (props) => {
 
   return (
     <Box className='event-list-box' key={event.uuid} height='56px' width='100%'>
-      <Text
-        className='page-title event-list-title'
-        weight='bold'
+      <div
+        className='event-list-clickable'
         onClick={() =>
           (window.location.pathname = `${window.location.pathname}/events/${event.uuid}`)
         }
       >
-        {truncate(event.label)}
-      </Text>
-      <div>{avTypes.join(',')}</div>
-      <div>{new Date(event.updated_at).toLocaleDateString()}</div>
+        <Text className='page-title event-list-title' weight='bold'>
+          {truncate(event.label)}
+        </Text>
+        <div>{avTypes.join(',')}</div>
+        <div>{new Date(event.updated_at).toLocaleDateString()}</div>
+      </div>
       <MeatballMenu buttons={meatballOptions} row={event} />
     </Box>
   );

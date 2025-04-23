@@ -29,22 +29,22 @@
 }
 
 .event-list .event-list-box {
-  background-color: #fff;
-}
-
-.event-list-box-container {
-}
-
-.event-list-box {
   border: 1px solid var(--gray-300);
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 40px;
+  grid-template-columns: 1fr 40px;
   align-items: center;
   padding: 0 20px;
+  background-color: #fff;
+  cursor: pointer;
 }
 
-.event-list .event-list-box-container .event-list-title {
-  cursor: pointer;
+.event-list .event-list-box:hover {
+  background-color: var(--blue-hover);
+}
+
+.event-list .event-list-clickable {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr;
 }
 
 .event-list .event-list-box-container .event-list-box .page-autogen-pill {
