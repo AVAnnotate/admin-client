@@ -8,7 +8,9 @@
 @import './toast/index.css';
 @import './switch/index.css';
 @import '@radix-ui/themes/styles.css';
-
+@import './tooltip/index.css';
+@import './context-menu/index.css';
+@import './slider/index.css';
 @font-face {
   font-family: Inter;
   src: url('/fonts/inter/Inter.ttf');
@@ -187,7 +189,7 @@ h3 {
 }
 
 p {
-  margin: 0.8em 0;
+  margin: 0 0 !important;
   padding: 0;
 }
 

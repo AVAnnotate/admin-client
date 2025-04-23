@@ -11,5 +11,31 @@
   "Undo": "Undo",
   "Insert": "Insert",
   "Embed": "Embed",
-  "confirm": "Confirm"
+  "confirm": "Confirm",
+  "rteToolbar": {
+    "bold": "Bold",
+    "italic": "Italic",
+    "underline": "Underline",
+    "strikethrough": "Strikethrough",
+    "code": "Code",
+    "block-quote": "Block Quote",
+    "highlight": "Highlight",
+    "color": "Color",
+    "numbered-list": "Numbered List",
+    "bulleted-list": "Bulleted List",
+    "table-of-contents": "Table of Contents",
+    "left": "Left Justified",
+    "center": "Text Centered",
+    "right": "Right Justified",
+    "justify": "Justify",
+    "link": "Insert Link",
+    "normal": "Normal Text",
+    "small": "Small Text",
+    "heading-four": "Heading 4",
+    "heading-three": "Heading 3",
+    "heading-two": "Heading 2",
+    "heading-one": "Heading 1",
+    "undo": "Undo",
+    "redo": "Redo"
+  }
 }

@@ -1,5 +1,7 @@
 import type { BaseEditor } from 'slate';
 import type { ReactEditor } from 'slate-react';
+import type { Translations } from './Types.ts';
+import type { AVAEditor } from './slate.ts';
 
 export interface MeatballMenuItem {
   label: string;
@@ -17,5 +19,6 @@ export interface DraggedPage {
 export interface SlateButtonProps {
   format: string;
   icon: React.FC;
-  onInsert?: (editor: BaseEditor & ReactEditor) => void;
+  i18n: Translations;
+  onInsert?: (editor: ReactEditor) => void;
 }

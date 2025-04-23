@@ -1,0 +1,14 @@
+.format-text-trigger {
+  width: 150px;
+  background-color: var(--gray-200);
+  border: none !important;
+}
+
+.format-text-trigger:hover {
+  background-color: var(--gray-300);
+}
+
+.format-text-trigger:focus {
+  border: none !important;
+  box-shadow: none !important;
+}

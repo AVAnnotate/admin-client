@@ -29,16 +29,24 @@ const insertColumns = (
     {
       type: 'grid',
       layout: newLayout,
-      children: [
-        {
-          type: 'column',
-          children: [structuredClone(paragraph)],
-        },
-        {
-          type: 'column',
-          children: [structuredClone(paragraph)],
-        },
-      ],
+      children:
+        newLayout.length > 1
+          ? [
+              {
+                type: 'column',
+                children: [structuredClone(paragraph)],
+              },
+              {
+                type: 'column',
+                children: [structuredClone(paragraph)],
+              },
+            ]
+          : [
+              {
+                type: 'column',
+                children: [structuredClone(paragraph)],
+              },
+            ],
     },
     structuredClone(paragraph),
   ];
@@ -157,6 +165,12 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
               </Dropdown.SubTrigger>
               <Dropdown.Portal>
                 <Dropdown.SubContent className='dropdown-content meatball-dropdown-content'>
+                  <Dropdown.Item
+                    className='dropdown-item'
+                    onClick={() => updateColumnLayout([6])}
+                  >
+                    {t['Full Width']}
+                  </Dropdown.Item>
                   <Dropdown.Item
                     className='dropdown-item'
                     onClick={() => updateColumnLayout([2, 4])}

@@ -6,6 +6,7 @@ import type React from 'react';
 import { Button, Checkbox } from '@radix-ui/themes';
 import { BottomBar } from '@components/BottomBar/index.ts';
 import './ImportForm.css';
+import { useState } from 'react';
 
 interface Props {
   i18n: Translations;
@@ -34,6 +35,8 @@ type DescriptionInputProps = {
 };
 const DescriptionInput = (props: DescriptionInputProps) => {
   const [_field, _meta, helpers] = useField('description');
+
+  const [currentFormat, setCurrentFormat] = useState('normal');
   const { setValue } = helpers;
 
   const handleChange = (data: any) => {
@@ -45,6 +48,8 @@ const DescriptionInput = (props: DescriptionInputProps) => {
       onChange={handleChange}
       i18n={props.i18n}
       elementTypes={['blocks', 'marks']}
+      currentFormat={currentFormat}
+      onSetFormat={setCurrentFormat}
     />
   );
 };

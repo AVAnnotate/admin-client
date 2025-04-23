@@ -2,15 +2,23 @@ import {
   EmbeddedEvent,
   EmbeddedEventComparison,
 } from '@components/EmbeddedEvent/index.ts';
+import { updateImage } from '@components/Formic/SlateInput/SlateInput.tsx';
+import { RTEColumn } from '@components/RTEColumn/RTEColumn.tsx';
+import { RTEImage } from '@components/RTEImage/RTEImage.tsx';
 import { getTranslationsFromUrl } from '@i18n';
+import type { AVAEditor } from '@ty/slate.ts';
 import { type Element as SlateElement, Node, Text } from 'slate';
+import { ReactEditor, useSlate } from 'slate-react';
 
 export const Element = ({
   attributes,
   children,
   element,
+  popoverAnchor,
   project,
   i18n,
+  onChange,
+  editor,
 }: any) => {
   const style = { textAlign: element.align };
 
@@ -60,10 +68,16 @@ export const Element = ({
     case 'image':
       return (
         <div {...attributes} style={style} contentEditable={false}>
-          <img
-            src={element.url}
-            className={`slate-img-${element.size}`}
-            alt='Embedded image'
+          <RTEImage
+            url={element.url}
+            i18n={i18n}
+            caption={element.caption}
+            scale={element.scale || 100}
+            onChange={onChange}
+            popoverAnchor={popoverAnchor ? popoverAnchor : undefined}
+            element={element}
+            onUpdateImage={updateImage}
+            editor={editor ? (editor as AVAEditor) : undefined}
           />
           {children}
         </div>
@@ -86,7 +100,10 @@ export const Element = ({
           className='slate-grid'
           style={{
             display: 'grid',
-            gridTemplateColumns: `${element.layout[0]}fr ${element.layout[1]}fr`,
+            gridTemplateColumns:
+              element.layout.length === 2
+                ? `${element.layout[0]}fr ${element.layout[1]}fr`
+                : `${element.layout[0]}fr`,
           }}
           {...attributes}
         >
@@ -96,7 +113,18 @@ export const Element = ({
     case 'column':
       return (
         <div className='slate-column' {...attributes}>
-          {children}
+          <RTEColumn
+            i18n={i18n}
+            popoverAnchor={popoverAnchor ? popoverAnchor : undefined}
+            paddingLeft={element.left || 0}
+            paddingRight={element.right || 0}
+            paddingTop={element.top || 0}
+            paddingBottom={element.bottom || 0}
+            onChange={onChange}
+            showGridlines
+          >
+            {children}
+          </RTEColumn>
         </div>
       );
     case 'horizontal-separator':
@@ -140,6 +168,17 @@ export const Element = ({
 };
 
 export const Leaf = ({ attributes, children, leaf }: any) => {
+  if (leaf.textSize === 'heading-one') {
+    children = <h1>{children}</h1>;
+  } else if (leaf.textSize === 'heading-two') {
+    children = <h2>{children}</h2>;
+  } else if (leaf.textSize === 'heading-three') {
+    children = <h3>{children}</h3>;
+  } else if (leaf.textSize === 'heading-four') {
+    children = <h4>{children}</h4>;
+  } else if (leaf.textSize === 'small') {
+    children = <small>{children}</small>;
+  }
   if (leaf.bold) {
     children = <b>{children}</b>;
   }

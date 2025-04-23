@@ -11,6 +11,7 @@ import { Button } from '@radix-ui/themes';
 import { useEffect, useMemo } from 'react';
 import { InsertButton } from '@components/InsertEventButton/index.ts';
 import { emptyParagraph } from '@lib/slate/index.tsx';
+import { FileEarmarkText } from 'react-bootstrap-icons';
 
 const defaultPage: FormPage = {
   content: emptyParagraph,
@@ -69,6 +70,9 @@ const FormContents: React.FC<Props> = (props) => {
     <Form className='page-form'>
       <div className='page-form-body'>
         <div className='top-config-bar'>
+          <div className='top-config-bar-icon'>
+            <FileEarmarkText size={32} />
+          </div>
           <div>
             <TextInput label={t['Title']} name='title' required />
           </div>
