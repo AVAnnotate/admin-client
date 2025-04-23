@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './AVFileList.css';
-import type { Event, Translations } from '@ty/Types.ts';
+import type { FormEvent, Translations } from '@ty/Types.ts';
 import { Button } from '@radix-ui/themes';
 import { PlusIcon } from '@radix-ui/react-icons';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
@@ -10,7 +10,7 @@ import { AVFileRow } from './AVFileRow.tsx';
 
 interface Props {
   i18n: Translations;
-  event: Event;
+  event: FormEvent;
   projectSlug: string;
 }
 
@@ -25,6 +25,16 @@ export const AVFileList: React.FC<Props> = (props) => {
 
   const isChanged = useMemo(() => {
     return (props.event.av_file_order || []) === order;
+  }, [props.event]);
+
+  useEffect(() => {
+    if (props.event) {
+      if (props.event.av_file_order && props.event.av_file_order.length > 0) {
+        setOrder(props.event.av_file_order);
+      } else {
+        setOrder(Object.keys(props.event.audiovisual_files));
+      }
+    }
   }, [props.event]);
 
   const onDrop = async () => {
@@ -63,23 +73,11 @@ export const AVFileList: React.FC<Props> = (props) => {
   return (
     <>
       {saving && <LoadingOverlay />}
-      <div className='page-list'>
-        <div className='page-list-top-bar'>
-          <span>{t['All Pages']}</span>
-          <Button
-            className='primary'
-            onClick={() =>
-              (window.location.pathname = `${window.location.pathname}/pages/new`)
-            }
-          >
-            <PlusIcon />
-            {t['Add']}
-          </Button>
-        </div>
-        <div className='page-list-box-container'>
+      <div className='av-file-list'>
+        <div className='av-file-list-box-container'>
           {order!.map((uuid, idx) => (
             <AVFileRow
-              event={ev}
+              event={event}
               uuid={uuid}
               index={idx}
               pickedUp={pickedUp}
@@ -92,7 +90,7 @@ export const AVFileList: React.FC<Props> = (props) => {
           ))}
         </div>
         <BottomBar>
-          <div className='page-list-bottom-bar'>
+          <div className='av-file-list-bottom-bar'>
             <Button
               className='primary'
               disabled={!isChanged}

@@ -1,8 +1,8 @@
-.page-list {
+.av-file-list {
   margin-bottom: 100px;
 }
 
-.page-list .page-list-top-bar {
+.av-file-list .av-file-list-top-bar {
   height: 38px;
   width: 100%;
   display: flex;
@@ -11,44 +11,31 @@
   margin: 10px 0;
 }
 
-.page-list .page-list-box {
+.av-file-list .av-file-list-box {
+  border: 1px solid var(--gray-300);
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+.av-file-list .av-files-fields-line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 0 20px;
   background-color: #fff;
 }
 
-.page-list .page-list-box-container .page-list-box {
-  border: 1px solid var(--gray-300);
-  display: grid;
-  grid-template-columns: 40px 3fr 200px 1fr 40px;
-  align-items: center;
-  padding: 0 20px;
-}
-
-.page-list .page-list-box-container .page-list-box .page-autogen-pill {
-  background-color: var(--gray-300);
-  display: flex;
-  flex-direction: row;
-  height: 30px;
-  border-radius: 15px;
-  align-items: center;
-  justify-content: center;
-  margin-right: 20px;
-}
-
-.page-list .page-list-box-container .page-list-box:not(:first-child) {
-  border-top-style: none;
-}
-
-.page-list .page-title {
+.av-file-list .page-title {
   display: flex;
   gap: 20px;
   align-items: center;
 }
 
-.page-list .page-list-box-hovered {
+.av-file-list .av-file-list-box-hovered {
   border-bottom: 2px solid #62bdff !important;
 }
 
-.page-list-bottom-bar {
+.av-file-list-bottom-bar {
   width: 100%;
   display: flex;
   flex-direction: row-reverse;
@@ -56,11 +43,11 @@
   gap: 10px;
 }
 
-.page-list-bottom-bar button {
+.av-file-list-bottom-bar button {
   width: 276px;
 }
 
-.page-list-child-box {
+.av-file-list-child-box {
   margin-left: 60px;
   width: initial;
 }
