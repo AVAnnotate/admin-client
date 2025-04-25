@@ -9,6 +9,7 @@ interface Props {
   onDrop(pickedUp: DraggedPage | null): void;
   entries: { label: string; gridWidth: string }[];
   addButton?: any;
+  emptyMessage: string;
 }
 
 export const DragTable: React.FC<Props> = (props) => {
@@ -24,7 +25,6 @@ export const DragTable: React.FC<Props> = (props) => {
     return setting;
   }, [props.entries]);
 
-  console.log('Hover: ', pickedUp?.hoverIndex);
   return (
     <div className='drag-table'>
       <div
@@ -39,7 +39,17 @@ export const DragTable: React.FC<Props> = (props) => {
             </div>
           );
         })}
+        {props.addButton && (
+          <div className='drag-table-add-button-container'>
+            {props.addButton}
+          </div>
+        )}
       </div>
+      {props.rows.length === 0 && (
+        <Box className='drag-table-box' height='56px' width='100%'>
+          <div className='drag-table-empty-message'>{props.emptyMessage}</div>
+        </Box>
+      )}
       {props.rows.map((row, idx) => {
         return (
           <Box
@@ -64,7 +74,10 @@ export const DragTable: React.FC<Props> = (props) => {
                 });
               }
             }}
-            onDrop={async () => await props.onDrop(pickedUp)}
+            onDrop={async () => {
+              await props.onDrop(pickedUp);
+              setPickedUp(null);
+            }}
             onDragEnd={() => setPickedUp(null)}
             height='56px'
             width='100%'

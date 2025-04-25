@@ -13,16 +13,19 @@ import type {
 import { FieldArray, Form, Formik, useFormikContext } from 'formik';
 import * as Separator from '@radix-ui/react-separator';
 import type React from 'react';
-import { Button } from '@radix-ui/themes';
+import { Button, Select, TextField } from '@radix-ui/themes';
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import './EventForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
-import { RichTextInput } from '@components/Formic/index.tsx';
+import { RichTextInput, secondsToString } from '@components/Formic/index.tsx';
 import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState, useMemo } from 'react';
 import { SetsTable } from './SetsTable.tsx';
 import { SetFormModal } from '@components/SetModal/index.ts';
+import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
+import { ClockHistory } from 'react-bootstrap-icons';
+import { DragTable } from '@components/DragTable/DragTable.tsx';
 
 interface Props {
   children?: React.ReactNode;
@@ -35,12 +38,14 @@ interface Props {
   uuid: string;
 }
 
-const initialAvFile = {
+const initialAvFile: AudiovisualFile = {
   label: '',
-  is_offline: 'false',
+  is_offline: false,
+  file_type: 'Audio',
   file_url: '',
   duration: 0,
   caption_set: [],
+  set_sort: [],
 };
 
 export const NewEventForm: React.FC<Props> = (props) => {
@@ -78,6 +83,10 @@ const FormContents: React.FC<Props> = (props) => {
 
   const [project, setProject] = useState(props.project);
   const [addSetOpen, setAddSetOpen] = useState(false);
+  const [order, setOrder] = useState<string[]>([]);
+  const [durationStrings, setDurationStrings] = useState<{
+    [key: string]: string;
+  }>({});
 
   const { t } = i18n;
 
@@ -123,15 +132,66 @@ const FormContents: React.FC<Props> = (props) => {
     updateDurations();
   }, [(values as FormEvent).audiovisual_files]);
 
-  const handleUpdateAVFile = (avUUID: string, avFile: AudiovisualFile) => {
-    setFieldValue(
-      `audiovisual_files.${avUUID}.caption_set`,
-      avFile.caption_set
-    );
+  useEffect(() => {
+    if (props.event) {
+      if (props.event.av_file_order && props.event.av_file_order.length > 0) {
+        setOrder(props.event.av_file_order);
+      } else {
+        setOrder(Object.keys(props.event.audiovisual_files));
+        setFieldValue(
+          'av_file_order',
+          Object.keys(props.event.audiovisual_files)
+        );
+      }
+    }
+  }, [props.event]);
 
-    let p: ProjectData = JSON.parse(JSON.stringify(props.project));
-    p.events[props.uuid].audiovisual_files[avUUID] = avFile;
-    setProject(p);
+  const meatballOptions = (uuid: string) => {
+    return [
+      {
+        // @ts-ignore
+        label: values.audiovisual_files[uuid]['duration_overridden']
+          ? t['Calculate Duration']
+          : t['Override Duration'],
+        icon: ClockHistory,
+        onClick: (row: any) => {
+          setFieldValue(
+            `audiovisual_files['${uuid}'].duration_overridden`,
+            !(values as FormEvent).audiovisual_files[uuid].duration_overridden
+          );
+          if (
+            (values as FormEvent).audiovisual_files[uuid].duration_overridden
+          ) {
+            setFieldValue(
+              `audiovisual_files['${uuid}'].duration`,
+              durationVals[
+                (values as FormEvent).audiovisual_files[uuid].file_url
+              ]
+            );
+            let map = { ...durationStrings };
+            map[uuid] = secondsToString(
+              durationVals[
+                (values as FormEvent).audiovisual_files[uuid].file_url
+              ]
+            );
+            setDurationStrings(map);
+          }
+        },
+      },
+      {
+        label: t['Delete'],
+        icon: TrashIcon,
+        onClick: () => {
+          const idx = order.findIndex((o) => o === uuid);
+          if (idx > -1) {
+            const set = [...order];
+            set.splice(idx, 1);
+            setOrder(set);
+          }
+          setFieldValue(`audiovisual_files.${uuid}`, undefined);
+        },
+      },
+    ];
   };
 
   const avFileOptions = useMemo(() => {
@@ -148,10 +208,6 @@ const FormContents: React.FC<Props> = (props) => {
 
     return ret;
   }, [values]);
-
-  const handleAddSet = () => {
-    setAddSetOpen(true);
-  };
 
   const handleCreateSet = async (
     newName: string,
@@ -181,6 +237,139 @@ const FormContents: React.FC<Props> = (props) => {
     }
   };
 
+  const rows = order
+    ? order.map((uuid) => {
+        const avFile: AudiovisualFile = (values as any)['audiovisual_files'][
+          uuid
+        ];
+        return {
+          id: uuid,
+          component: (
+            <>
+              <Select.Root
+                onValueChange={(value) =>
+                  setFieldValue(
+                    `audiovisual_files[${uuid}]['file_type']`,
+                    value
+                  )
+                }
+                value={
+                  // @ts-ignore
+                  avFile.file_type || (values as any)['item_type']
+                }
+              >
+                <Select.Trigger className='av-type' />
+                <Select.Content>
+                  <Select.Item value='Audio'>{t['Audio']}</Select.Item>
+                  <Select.Item value='Video'>{t['Video']}</Select.Item>
+                </Select.Content>
+              </Select.Root>
+              <TextField.Root
+                className='av-file-label'
+                onChange={(ev) =>
+                  setFieldValue(
+                    `audiovisual_files.${uuid}.label`,
+                    ev.target.value
+                  )
+                }
+                value={avFile.label}
+              />
+              <Select.Root
+                onValueChange={(value) =>
+                  setFieldValue(
+                    `audiovisual_files[${uuid}]['is_offline']`,
+                    value === 'true'
+                  )
+                }
+                value={avFile.is_offline ? 'true' : 'false'}
+              >
+                <Select.Trigger className='av-file-type' />
+                <Select.Content>
+                  <Select.Item value='false'>{t['URL']}</Select.Item>
+                  <Select.Item value='true'>{t['Offline']}</Select.Item>
+                </Select.Content>
+              </Select.Root>
+              <TextField.Root
+                className='av-file-url'
+                onChange={(ev) =>
+                  setFieldValue(
+                    `audiovisual_files.${uuid}.file_url`,
+                    ev.target.value
+                  )
+                }
+                // @ts-ignore
+                disabled={avFile.is_offline === 'true' ? true : false}
+                value={avFile.file_url}
+              />
+              <TextField.Root
+                className={
+                  avFile.duration_overridden
+                    ? 'av-file-duration-override'
+                    : 'av-file-duration'
+                }
+                onChange={(ev) => handleTimeChange(uuid, ev.target.value)}
+                disabled={!avFile.duration_overridden}
+                pattern='[0-9]{2}:[0-9]{2}:[0-9]{2}'
+                value={
+                  durationStrings[uuid] || secondsToString(avFile.duration)
+                }
+              />
+              <MeatballMenu buttons={meatballOptions(uuid)} row={avFile} />
+            </>
+          ),
+        };
+      })
+    : [];
+
+  const handleTimeChange = (uuid: string, val: string) => {
+    val = val.replace(/[^0-9:]/g, ''); // Allow only numbers and colons
+    const parts = val.split(':');
+    const output: number[] = [];
+
+    if (parts.length > 3) {
+      parts.splice(3); // Limit to HH:mm:ss
+      val = parts.join(':');
+    }
+
+    // Pad with leading zeros and limit values
+    for (let i = 0; i < parts.length; i++) {
+      if (parts[i].length > 2) {
+        output[i] = parseInt(parts[i].slice(0, 2));
+      } else {
+        output[i] = parseInt(parts[i]);
+      }
+    }
+
+    if (output[0] > 99) output[0] = 99;
+    if (output[1] > 59) output[1] = 59;
+    if (output[2] > 59) output[2] = 59;
+
+    setFieldValue(
+      `audiovisual_files.${uuid}.duration`,
+      output[0] * 3600 + output[1] * 60 + output[2]
+    );
+    const map = { ...durationStrings };
+    map[uuid] = val;
+    setDurationStrings(map);
+  };
+
+  const handleDrop = (pickedUp: any) => {
+    if (pickedUp) {
+      // ignore if we're dropping in the same spot it came from
+      if (pickedUp.hoverIndex === pickedUp.originalIndex) {
+        return;
+      }
+
+      let newArray = order.filter((k) => k !== pickedUp.uuid);
+
+      newArray.splice(pickedUp.hoverIndex, 0, pickedUp.uuid);
+
+      setOrder(newArray);
+
+      setFieldValue('av_file_order', newArray);
+    }
+  };
+
   return (
     <Form className='event-form' style={styles}>
       {addSetOpen && (
@@ -196,170 +385,56 @@ const FormContents: React.FC<Props> = (props) => {
         <h2>{t['Event Information']}</h2>
         <TextInput label={t['Label']} name='label' required />
         <Separator.Root className='SeparatorRoot' decorative />
-        <h2>{t['Audiovisual File(s)']}</h2>
+        <div className='title-row'>
+          <h2>{t['Audiovisual File(s)']}</h2>
+          <Button
+            className='primary add-av-button'
+            onClick={() => {
+              const id = uuidv4();
+              setFieldValue(`audiovisual_files.${id}`, initialAvFile);
+              setOrder([...order, id]);
+            }}
+            type='button'
+          >
+            <PlusIcon color='white' />
+            {t['Add']}
+          </Button>
+        </div>
         <FieldArray
           name='audiovisual_files'
           render={() => (
             <div className='av-files-list'>
-              {Object.keys((values as FormEvent).audiovisual_files).map(
-                (key, idx) => {
-                  return (
-                    <div key={key} className='av-files-fields'>
-                      <div className='av-files-fields-line'>
-                        <TextInput
-                          className='av-label-input'
-                          label={idx === 0 ? t['Label'] : undefined}
-                          name={`audiovisual_files.${key}.label`}
-                          required
-                        />
-                        <div className='av-url-group'>
-                          <SelectInput
-                            className='av-select-type'
-                            width='100px'
-                            backgroundColor='var(--gray-200)'
-                            label={idx === 0 ? t['File'] : undefined}
-                            name={`audiovisual_files.${key}.is_offline`}
-                            required
-                            options={[
-                              { value: 'false', label: t['URL'] },
-                              { value: 'true', label: t['Offline'] },
-                            ]}
-                          />
-                          <TextInput
-                            className='av-file-url-input'
-                            name={`audiovisual_files.${key}.file_url`}
-                            disabled={
-                              (values as FormEvent).audiovisual_files[key]
-                                .is_offline === 'true'
-                                ? true
-                                : false
-                            }
-                            placeholder={
-                              (values as FormEvent).audiovisual_files[key]
-                                .is_offline === 'true'
-                                ? t['File Available Offline']
-                                : undefined
-                            }
-                          />
-                          <SelectInput
-                            width='120px'
-                            label={idx === 0 ? t['File Type'] : undefined}
-                            name={`audiovisual_files.${key}.file_type`}
-                            options={[
-                              {
-                                label: t['Audio'],
-                                value: 'Audio',
-                              },
-                              {
-                                label: t['Video'],
-                                value: 'Video',
-                              },
-                            ]}
-                            required={idx === 0 ? true : undefined}
-                          />
-                        </div>
-                        <DurationInput
-                          className='av-duration-input'
-                          name={`audiovisual_files['${key}'].duration`}
-                          // disable input if we were able to automatically set the duration
-                          disabled={
-                            !!durationVals[
-                              (values as FormEvent).audiovisual_files[key]
-                                .file_url
-                            ] &&
-                            !(values as FormEvent).audiovisual_files[key]
-                              .duration_overridden
-                          }
-                          label={idx === 0 ? t['Duration'] : undefined}
-                          // force this to re-render when the auto-duration thing picks up a value
-                          key={
-                            (values as FormEvent).audiovisual_files[key]
-                              .duration_overridden
-                              ? undefined
-                              : durationVals[
-                                  (values as FormEvent).audiovisual_files[key]
-                                    .file_url
-                                ]
-                          }
-                          required
-                          initialValue={
-                            (values as FormEvent).audiovisual_files[key]
-                              .duration ||
-                            durationVals[
-                              (values as FormEvent).audiovisual_files[key]
-                                .file_url
-                            ]
-                          }
-                        />
-                        <div className='av-duration-override'>
-                          {!!durationVals[
-                            (values as FormEvent).audiovisual_files[key]
-                              .file_url
-                          ] && (
-                            <Button
-                              className='outline av-duration-override-button'
-                              onClick={() => {
-                                setFieldValue(
-                                  `audiovisual_files['${key}'].duration_overridden`,
-                                  !(values as FormEvent).audiovisual_files[key]
-                                    .duration_overridden
-                                );
-                                if (
-                                  (values as FormEvent).audiovisual_files[key]
-                                    .duration_overridden
-                                ) {
-                                  setFieldValue(
-                                    `audiovisual_files['${key}'].duration`,
-                                    durationVals[
-                                      (values as FormEvent).audiovisual_files[
-                                        key
-                                      ].file_url
-                                    ]
-                                  );
-                                }
-                              }}
-                              type='button'
-                            >
-                              {(values as FormEvent).audiovisual_files[key]
-                                .duration_overridden
-                                ? t['Calculate Duration']
-                                : t['Override Duration']}
-                            </Button>
-                          )}
-                        </div>
-                        {idx !== 0 ? (
-                          <Button
-                            className='av-trash-button'
-                            onClick={() => {
-                              setFieldValue(
-                                `audiovisual_files.${key}`,
-                                undefined
-                              );
-                            }}
-                            type='button'
-                            variant='ghost'
-                          >
-                            <TrashIcon />
-                          </Button>
-                        ) : (
-                          // show an empty div so the spacing stays consistent
-                          <div className='av-trash-button'></div>
-                        )}
-                      </div>
-                    </div>
-                  );
-                }
-              )}
-              <Button
-                className='primary add-av-button'
-                onClick={() =>
-                  setFieldValue(`audiovisual_files.${uuidv4()}`, initialAvFile)
-                }
-                type='button'
-              >
-                <PlusIcon color='white' />
-                {t['Add']}
-              </Button>
+              <DragTable
+                entries={[
+                  {
+                    label: t['File Type'],
+                    gridWidth: '1fr',
+                  },
+                  {
+                    label: t['Label'],
+                    gridWidth: '2fr',
+                  },
+                  {
+                    label: t['File'],
+                    gridWidth: '100px',
+                  },
+                  {
+                    label: '',
+                    gridWidth: '3fr',
+                  },
+                  {
+                    label: t['Duration'],
+                    gridWidth: '1fr',
+                  },
+                  {
+                    label: '',
+                    gridWidth: '40px',
+                  },
+                ]}
+                rows={rows}
+                onDrop={handleDrop}
+                emptyMessage={t['_empty_av_files_message_']}
+              />
             </div>
           )}
         />

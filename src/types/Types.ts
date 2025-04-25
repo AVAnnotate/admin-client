@@ -85,6 +85,7 @@ export type AudiovisualFile = {
   duration: number;
   duration_overridden?: boolean;
   caption_set?: CaptionSet[];
+  set_sort?: string[];
 };
 
 // is_offline is stored as a string on the form

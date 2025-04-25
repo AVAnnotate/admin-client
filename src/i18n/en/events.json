@@ -77,5 +77,6 @@
   "Manage annotation sets": "Manage annotation sets",
   "Add annotations": "Add annotations",
   "Add single annotation": "Add single annotation",
-  "Import from file": "Import from file"
+  "Import from file": "Import from file",
+  "_empty_av_files_message_": "No Audiovisual files have been added to this event. Use the Add button above to add files to this event."
 }

@@ -1,9 +1,4 @@
-import {
-  SelectInput,
-  TextInput,
-  DurationInput,
-  secondsToString,
-} from '@components/Formic/index.tsx';
+import { TextInput, secondsToString } from '@components/Formic/index.tsx';
 import type {
   AudiovisualFile,
   Event,
@@ -15,13 +10,13 @@ import { FieldArray, Form, Formik, useFormikContext } from 'formik';
 import * as Separator from '@radix-ui/react-separator';
 import type React from 'react';
 import { Button, Select, TextField } from '@radix-ui/themes';
-import { PlusIcon, TrashIcon, Pencil2Icon } from '@radix-ui/react-icons';
+import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import './EventForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
 import { RichTextInput } from '@components/Formic/index.tsx';
 import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { SetsTable } from './SetsTable.tsx';
 import { SetFormModal } from '@components/SetModal/index.ts';
 import { DragTable } from '@components/DragTable/DragTable.tsx';
@@ -39,12 +34,14 @@ interface Props {
   uuid: string;
 }
 
-const initialAvFile = {
+const initialAvFile: AudiovisualFile = {
   label: '',
-  is_offline: 'false',
+  is_offline: false,
   file_url: '',
   duration: 0,
   caption_set: [],
+  set_sort: [],
+  file_type: 'Audio',
 };
 
 export const EditEventForm: React.FC<Props> = (props) => {
@@ -86,6 +83,7 @@ const FormContents: React.FC<Props> = (props) => {
   const [durationStrings, setDurationStrings] = useState<{
     [key: string]: string;
   }>({});
+  const [avFileSet, setAVFileSet] = useState<string | undefined>();
 
   const { t } = i18n;
 
@@ -199,6 +197,8 @@ const FormContents: React.FC<Props> = (props) => {
       avFile.caption_set
     );
 
+    setFieldValue(`audiovisual_files.${avUUID}.set_sort`, avFile.set_sort);
+
     let p: ProjectData = JSON.parse(JSON.stringify(props.project));
     p.events[props.uuid].audiovisual_files[avUUID] = avFile;
     setProject(p);
@@ -219,7 +219,8 @@ const FormContents: React.FC<Props> = (props) => {
     return ret;
   }, [values]);
 
-  const handleAddSet = () => {
+  const handleAddSet = (avFileId: string) => {
+    setAVFileSet(avFileId);
     setAddSetOpen(true);
   };
 
@@ -292,7 +293,7 @@ const FormContents: React.FC<Props> = (props) => {
 
       let newArray = order.filter((k) => k !== pickedUp.uuid);
 
-      newArray.splice(pickedUp.hoverIndex + 1, 0, pickedUp.uuid);
+      newArray.splice(pickedUp.hoverIndex, 0, pickedUp.uuid);
 
       setOrder(newArray);
 
@@ -303,19 +304,23 @@ const FormContents: React.FC<Props> = (props) => {
   const rows =
     props.event && order
       ? order.map((uuid) => {
-          const avFile = (values as any)['audiovisual_files'][uuid];
+          const avFile: AudiovisualFile = (values as any)['audiovisual_files'][
+            uuid
+          ];
           return {
             id: uuid,
             component: (
               <>
                 <Select.Root
                   onValueChange={(value) =>
-                    setFieldValue(`audiovisual_files.${uuid}.file_type`, value)
+                    setFieldValue(
+                      `audiovisual_files[${uuid}]['file_type']`,
+                      value
+                    )
                   }
                   value={
-                    (values as any)[
-                      `audiovisual_files[${uuid}]['file_type']`
-                    ] || (values as any)['item_type']
+                    // @ts-ignore
+                    avFile.file_type || (values as any)['item_type']
                   }
                 >
                   <Select.Trigger className='av-type' />
@@ -336,7 +341,10 @@ const FormContents: React.FC<Props> = (props) => {
                 />
                 <Select.Root
                   onValueChange={(value) =>
-                    setFieldValue(`audiovisual_files.${uuid}.is_offline`, value)
+                    setFieldValue(
+                      `audiovisual_files.${uuid}.is_offline`,
+                      value === 'true'
+                    )
                   }
                   value={avFile.is_offline ? 'true' : 'false'}
                 >
@@ -354,6 +362,7 @@ const FormContents: React.FC<Props> = (props) => {
                       ev.target.value
                     )
                   }
+                  // @ts-ignore
                   disabled={avFile.is_offline === 'true' ? true : false}
                   value={avFile.file_url}
                 />
@@ -386,6 +395,14 @@ const FormContents: React.FC<Props> = (props) => {
           onClose={() => setAddSetOpen(false)}
           onSave={handleCreateSet}
           avFileOptions={avFileOptions}
+          avFile={avFileSet}
+          isVideo={
+            avFileSet
+              ? project.events[props.uuid].audiovisual_files[
+                  avFileSet as string
+                ].file_type === 'Video'
+              : false
+          }
         />
       )}
       <div className='form-body'>
@@ -440,27 +457,29 @@ const FormContents: React.FC<Props> = (props) => {
                 ]}
                 rows={rows}
                 onDrop={handleDrop}
+                emptyMessage={t['_empty_av_files_message_']}
               />
 
               <Separator.Root className='SeparatorRoot' decorative />
               <div className='sets-table'>
                 <h2>{t['Annotation Sets']}</h2>
-                <SetsTable
-                  project={project}
-                  i18n={i18n}
-                  projectSlug={props.projectSlug}
-                  eventId={props.uuid}
-                  onUpdateAVFile={handleUpdateAVFile}
-                />
-                <Button
-                  className='primary add-av-button'
-                  onClick={handleAddSet}
-                  type='button'
-                  disabled={!props.event}
-                >
-                  <PlusIcon color='white' />
-                  {t['Add']}
-                </Button>
+                {Object.keys(
+                  props.project.events[props.uuid].audiovisual_files
+                ).map((uuid) => {
+                  return (
+                    <div style={{ marginBottom: 24 }}>
+                      <SetsTable
+                        project={project}
+                        i18n={i18n}
+                        projectSlug={props.projectSlug}
+                        eventId={props.uuid}
+                        onUpdateAVFile={handleUpdateAVFile}
+                        avFileId={uuid}
+                        onAddSet={handleAddSet}
+                      />
+                    </div>
+                  );
+                })}
               </div>
             </div>
           )}

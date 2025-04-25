@@ -1,5 +1,5 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
-import { Button } from '@radix-ui/themes';
+import { Button, Theme } from '@radix-ui/themes';
 import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
 import { useCallback, useState } from 'react';
@@ -64,14 +64,16 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
             {t['Import manifest']}
           </Button>
         </div>
-        <NewEventForm
-          i18n={i18n}
-          onSubmit={onSubmit}
-          styles={{ display: tab === 0 ? 'initial' : 'none' }}
-          project={project}
-          projectSlug={projectSlug}
-          uuid={''}
-        ></NewEventForm>
+        <Theme>
+          <NewEventForm
+            i18n={i18n}
+            onSubmit={onSubmit}
+            styles={{ display: tab === 0 ? 'initial' : 'none' }}
+            project={project}
+            projectSlug={projectSlug}
+            uuid={''}
+          />
+        </Theme>
         {tab === 1 && <ImportManifest i18n={i18n} projectSlug={projectSlug} />}
       </div>
     </div>
