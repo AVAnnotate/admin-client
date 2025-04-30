@@ -73,8 +73,11 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
             projectSlug={projectSlug}
             uuid={''}
           />
+
+          {tab === 1 && (
+            <ImportManifest i18n={i18n} projectSlug={projectSlug} />
+          )}
         </Theme>
-        {tab === 1 && <ImportManifest i18n={i18n} projectSlug={projectSlug} />}
       </div>
     </div>
   );
