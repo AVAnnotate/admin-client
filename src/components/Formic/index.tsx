@@ -21,7 +21,7 @@ const validateRequiredField = (name: string, value: any) => {
   }
 };
 
-const secondsToString = (value: number) => {
+export const secondsToString = (value: number) => {
   const hours = Math.floor(value / 3600);
   const minutes = Math.floor((value - 3600 * Math.floor(value / 3600)) / 60);
   const seconds = value % 60;

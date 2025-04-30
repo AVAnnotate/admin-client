@@ -20,6 +20,7 @@ interface Props {
   useForCaptions?: boolean;
   speakerCategory?: string;
   canEditAVFile?: boolean;
+  avFile?: string;
   onClose: () => void;
   onSave: (
     newName: string,
@@ -31,7 +32,9 @@ interface Props {
 
 export const SetFormModal: React.FC<Props> = (props) => {
   const [name, setName] = useState(props.set?.set || '');
-  const [avFile, setAVFile] = useState(props.set?.source_id || '');
+  const [avFile, setAVFile] = useState(
+    props.set?.source_id || props.avFile || ''
+  );
   const [useForCaptions, setUseForCaptions] = useState(!!props.useForCaptions);
   const [speakerCategory, setSpeakerCategory] = useState(props.speakerCategory);
 

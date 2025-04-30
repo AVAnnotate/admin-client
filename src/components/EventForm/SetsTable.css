@@ -21,3 +21,11 @@
   justify-content: space-around;
   align-items: center;
 }
+
+.set-label {
+  color: black;
+}
+
+.set-add-av-button {
+  width: 78px;
+}

@@ -86,6 +86,7 @@ export type AudiovisualFile = {
   duration: number;
   duration_overridden?: boolean;
   caption_set?: CaptionSet[];
+  set_sort?: string[];
 };
 
 // is_offline is stored as a string on the form
@@ -95,6 +96,7 @@ export type FormAudiovisualFile = Omit<AudiovisualFile, 'is_offline'> & {
 
 export type Event = {
   audiovisual_files: { [key: string]: AudiovisualFile };
+  av_file_order?: string[];
   auto_generate_web_page: boolean;
   description: Node[];
   citation?: string;
