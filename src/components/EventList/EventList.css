@@ -1,0 +1,145 @@
+.event-list {
+  background-color: var(--gray-100);
+  padding-bottom: 120px;
+}
+
+.event-list .event-list-top-bar {
+  height: 38px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+.event-list-left-title {
+  width: 400px;
+}
+.event-list-right-actions {
+  height: 38px;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  margin: 10px 0;
+  gap: 10px;
+}
+
+.event-list .event-list-box {
+  border: 1px solid var(--gray-300);
+  display: grid;
+  grid-template-columns: 1fr 40px;
+  align-items: center;
+  padding: 0 20px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.event-list .event-list-box:hover {
+  background-color: var(--blue-hover);
+}
+
+.event-list .event-list-clickable {
+  display: grid;
+  grid-template-columns: 3fr 1fr 1fr;
+}
+
+.event-list .event-list-box-container .event-list-box .page-autogen-pill {
+  background-color: var(--gray-300);
+  display: flex;
+  flex-direction: row;
+  height: 30px;
+  border-radius: 15px;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20px;
+}
+
+.event-list .event-list-box-container .event-list-box:not(:first-child) {
+  border-top-style: none;
+}
+
+.event-list .page-title {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+
+.event-list .event-list-box-hovered {
+  border-bottom: 2px solid #62bdff !important;
+}
+
+.event-list-bottom-bar {
+  width: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 10px;
+}
+
+.event-list-bottom-bar button {
+  width: 276px;
+}
+
+.event-list-child-box {
+  margin-left: 60px;
+  width: initial;
+}
+
+.event-list .csv-button {
+  border: 1px solid var(--gray-900);
+  background: none;
+  color: var(--gray-900);
+  height: 38px;
+}
+
+.event-list .csv-button svg {
+  color: var(--gray-900);
+}
+
+.event-list .sort-button {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-around;
+  border-radius: 5px;
+  padding: 8px 12px 8px 16px;
+  background-color: transparent !important;
+  color: var(--black) !important;
+  font-weight: 600;
+}
+
+.event-list .sort-button svg {
+  height: 14px;
+  width: 14px;
+}
+
+.event-list .sort-button:hover {
+  cursor: pointer;
+}
+
+.event-list .table-search {
+  display: flex;
+  align-items: center;
+}
+
+.event-list .table-search .table-search-box {
+  all: unset;
+  width: 260px;
+  height: 30px;
+  background-color: white;
+  padding: 4px;
+  border-radius: 5px;
+}
+
+.event-list .table-search .table-search-icon {
+  position: relative;
+  left: -26px;
+}
+
+.event-list .empty-action-button {
+  height: 38px;
+}

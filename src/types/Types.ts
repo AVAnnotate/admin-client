@@ -68,6 +68,7 @@ export type ProviderUser = {
 
 export type Publish = {
   publish_pages_app: boolean;
+  publish_static_site: boolean;
   publish_sha: string;
   publish_iso_date: string;
 };
@@ -105,6 +106,10 @@ export type Event = {
   label: string;
   updated_at: string;
   updated_by: string;
+};
+
+export type EventWithUUID = Event & {
+  uuid: string;
 };
 
 export interface FormEvent
@@ -167,6 +172,7 @@ export type ProjectData = {
   annotations: { [key: string]: Annotation };
 
   events: { [key: string]: Event };
+  eventOrder?: string[];
 
   pages: { [key: string]: Page };
   pageOrder?: string[];

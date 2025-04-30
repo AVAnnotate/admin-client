@@ -36,7 +36,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
           {
-            label: project.project.title,
+            label: t['Data Manager'],
             link: `/${lang}/projects/${projectSlug}`,
           },
           { label: t['Add Event'], link: '' },

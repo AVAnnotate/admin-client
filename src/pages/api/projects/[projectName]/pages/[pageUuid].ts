@@ -80,32 +80,6 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     'pages'
   );
 
-  const orderFile = readFile('/data/pages/order.json');
-
-  let newOrder = getNewOrder(
-    pages,
-    pageUuid,
-    JSON.parse(orderFile.toString()),
-    oldPage
-  );
-
-  // if the current page used to have children and we've made it into a child,
-  // we move those children to the page's new parent and update the order for each.
-  if (!oldPage.parent && page.parent) {
-    Object.keys(pages).forEach((key) => {
-      if (pages[key].parent === pageUuid) {
-        pages[key].parent = page.parent;
-        newOrder = getNewOrder(pages, key, newOrder, pages[key]);
-        writeFile(
-          `/data/pages/${key}.json`,
-          JSON.stringify(pages[key], null, 2)
-        );
-      }
-    });
-  }
-
-  writeFile('/data/pages/order.json', JSON.stringify(newOrder));
-
   await updateProjectLastUpdated(context);
 
   const successCommit = await commitAndPush(`Updated page ${body.page.title}`);

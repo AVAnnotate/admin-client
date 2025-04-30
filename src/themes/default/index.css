@@ -11,6 +11,8 @@
 @import './tooltip/index.css';
 @import './context-menu/index.css';
 @import './slider/index.css';
+@import './checkbox/index.css';
+
 @font-face {
   font-family: Inter;
   src: url('/fonts/inter/Inter.ttf');
@@ -86,6 +88,9 @@
   --blue-hover: #d9e6ed;
 
   --color-background: var(--gray-200);
+
+  --checkbox-size: 16px;
+  --checkbox-border-radius: 4px;
 }
 
 html {

@@ -1,6 +1,7 @@
 import type { Page, ProjectFile } from '@ty/Types.ts';
 import type { GitRepoContext } from '@backend/gitRepo.ts';
 import slugify from 'slugify';
+import { getPageData } from '@backend/projectHelpers.ts';
 
 const MAX_SLUG_LENGTH = 45;
 
@@ -37,9 +38,7 @@ export const getNewOrder = (
   const parentPages = (
     Object.keys(allPages)
       .map((pageUuid) => {
-        if (!allPages[pageUuid].parent) {
-          return { uuid: pageUuid, idx: newOrder.indexOf(pageUuid) };
-        }
+        return { uuid: pageUuid, idx: newOrder.indexOf(pageUuid) };
       })
       .filter(Boolean) as { uuid: string; idx: number }[]
   ).sort((a, b) => {
@@ -54,6 +53,8 @@ export const getNewOrder = (
 
   // if we just added a parent to a previously parentless page, add it to the
   // bottom of that parent's list of children
+  console.info('Page: ', uuid, ', Parent Page: ', newPage.parent);
+  console.info('All Pages: ', JSON.stringify(parentPages, null, 2));
   const parentPage = parentPages.find((pp) => pp.uuid === newPage.parent);
 
   if (!parentPage) {
@@ -173,4 +174,91 @@ export const ensureUniqueSlug = (slugIn: string, context: GitRepoContext) => {
   }
 
   return ret;
+};
+
+interface OrderItem {
+  [key: string]: OrderItem;
+}
+
+const findAndAdd = (
+  id: string,
+  map: { [key: string]: OrderItem },
+  item: { [key: string]: OrderItem }
+) => {
+  for (const key in map) {
+    if (key === id) {
+      // @ts-ignore
+      map[key].children[id] = item;
+      return map;
+    } else {
+      const found = findAndAdd(id, map[key].children, item);
+      if (found) {
+        return map;
+      }
+    }
+  }
+
+  return null;
+};
+
+const unwindMap = (map: OrderItem, order: string[]) => {
+  for (const key in map) {
+    order.push(key);
+    unwindMap(map[key], order);
+  }
+
+  console.log(order);
+  return order;
+};
+
+export const normalizeAndWriteOrder = async (
+  context: GitRepoContext,
+  order: string[]
+) => {
+  const pageFiles = context.exists('/data/pages')
+    ? context.readDir('/data/pages')
+    : [];
+  const pageData = getPageData(
+    context.options.fs,
+    pageFiles as unknown as string[],
+    'pages'
+  );
+
+  const { pages } = pageData;
+
+  let map: { [key: string]: OrderItem } | null = {};
+
+  // Map all pages
+  for (let i = 0; i < order.length; i++) {
+    map[order[i]] = { children: {} };
+  }
+
+  for (let i = 0; i < order.length; i++) {
+    const page = pages[order[i]];
+    if (page.parent && map) {
+      // Remove from map and add to parent
+      const item = { ...map[order[i]] };
+      delete map[order[i]];
+      map = findAndAdd(page.parent, map, item.children);
+    }
+  }
+
+  // Now unwind
+  let newOrder: string[] = [];
+  for (const key in map) {
+    newOrder = unwindMap(map[key], []);
+  }
+
+  const successOrder = await context.writeFile(
+    '/data/pages/order.json',
+    JSON.stringify(newOrder, null, 2)
+  );
+
+  if (!successOrder) {
+    console.error('Failed to write page order');
+    return new Response(null, {
+      status: 500,
+      statusText: 'Failed to write page order',
+    });
+  }
 };
