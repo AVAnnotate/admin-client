@@ -1,7 +1,8 @@
-import type { Page, ProjectFile } from '@ty/Types.ts';
+import type { Page, ProjectData, ProjectFile } from '@ty/Types.ts';
 import type { GitRepoContext } from '@backend/gitRepo.ts';
 import slugify from 'slugify';
 import { getPageData } from '@backend/projectHelpers.ts';
+import { makePageArray, getOrderFromPageArray } from './reorder.ts';
 
 const MAX_SLUG_LENGTH = 45;
 
@@ -224,30 +225,9 @@ export const normalizeAndWriteOrder = async (
     'pages'
   );
 
-  const { pages } = pageData;
+  const array = makePageArray(pageData as unknown as ProjectData, order);
 
-  let map: { [key: string]: OrderItem } | null = {};
-
-  // Map all pages
-  for (let i = 0; i < order.length; i++) {
-    map[order[i]] = { children: {} };
-  }
-
-  for (let i = 0; i < order.length; i++) {
-    const page = pages[order[i]];
-    if (page.parent && map) {
-      // Remove from map and add to parent
-      const item = { ...map[order[i]] };
-      delete map[order[i]];
-      map = findAndAdd(page.parent, map, item.children);
-    }
-  }
-
-  // Now unwind
-  let newOrder: string[] = [];
-  for (const key in map) {
-    newOrder = unwindMap(map[key], []);
-  }
+  const newOrder = getOrderFromPageArray(array);
 
   const successOrder = await context.writeFile(
     '/data/pages/order.json',
