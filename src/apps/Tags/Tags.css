@@ -1,6 +1,5 @@
 .tags-container {
   box-sizing: border-box;
-  padding: 32px;
   width: 100%;
 }
 
@@ -215,4 +214,12 @@
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  margin: -8px 0;
+}
+
+.tags-csv-button,
+.tags-create-tag-group-button,
+.tags-empty-button {
+  height: 38px;
+  padding: 10px 24px;
 }

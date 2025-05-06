@@ -442,3 +442,99 @@ export const activateWorkflow = async (
     }
   );
 };
+
+export const getWorkflowInfo = async (
+  token: string,
+  org: string,
+  repo: string,
+  workflowName: string,
+  branch?: string
+): Promise<Response> => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repo}/contents/.github/workflows/${workflowName}${
+      branch ? `?ref=${branch}` : ''
+    }`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
+};
+
+export const getWorkflowContent = async (
+  token: string,
+  org: string,
+  repo: string,
+  workflowName: string,
+  branch?: string
+) => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repo}/contents/.github/workflows/${workflowName}${
+      branch ? `?ref=${branch}` : ''
+    }`,
+    {
+      method: 'GET',
+      headers: {
+        Accept: 'application/vnd.github.raw+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+    }
+  );
+};
+
+export const updateWorkflowContent = async (
+  token: string,
+  org: string,
+  repo: string,
+  workflowName: string,
+  content: string,
+  sha: string,
+  branch?: string
+) => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repo}/contents/.github/workflows/${workflowName}${
+      branch ? `?ref=${branch}` : ''
+    }`,
+    {
+      method: 'PUT',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify({
+        message: 'Update to latest workflow',
+        content: btoa(content),
+        sha: sha,
+      }),
+    }
+  );
+};
+
+export const triggerWorkflow = async (
+  token: string,
+  org: string,
+  repo: string,
+  workflowName: string,
+  branch?: string
+) => {
+  return await fetch(
+    `https://api.github.com/repos/${org}/${repo}/actions/workflows/${workflowName}/dispatches`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/vnd.github+json',
+        Authorization: `Bearer ${token}`,
+        'X-GitHub-Api-Version': '2022-11-28',
+      },
+      body: JSON.stringify({
+        ref: branch || 'main',
+      }),
+    }
+  );
+};

@@ -1,12 +1,11 @@
 import { Breadcrumbs } from '@components/Breadcrumbs/index.ts';
-import { EventForm } from '@components/EventForm/index.ts';
-import { ToggleInput } from '@components/Formic/index.tsx';
-import { Button } from '@radix-ui/themes';
+import { Button, Theme } from '@radix-ui/themes';
 import type { FormEvent, ProjectData, Translations } from '@ty/Types.ts';
 import type React from 'react';
 import { useCallback, useState } from 'react';
 import './NewEvent.css';
 import { ImportManifest } from '@components/ImportManifest/ImportManifest.tsx';
+import { NewEventForm } from '@components/EventForm/NewEventForm.tsx';
 
 interface Props {
   i18n: Translations;
@@ -37,7 +36,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
           {
-            label: project.project.title,
+            label: t['Data Manager'],
             link: `/${lang}/projects/${projectSlug}`,
           },
           { label: t['Add Event'], link: '' },
@@ -65,25 +64,20 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
             {t['Import manifest']}
           </Button>
         </div>
-        <EventForm
-          i18n={i18n}
-          onSubmit={onSubmit}
-          styles={{ display: tab === 0 ? 'initial' : 'none' }}
-          project={project}
-          projectSlug={projectSlug}
-          uuid={''}
-        >
-          <ToggleInput
-            helperText={
-              t[
-                'Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.'
-              ]
-            }
-            label={t['Auto-generate web page for this event?']}
-            name='auto_generate_web_page'
+        <Theme>
+          <NewEventForm
+            i18n={i18n}
+            onSubmit={onSubmit}
+            styles={{ display: tab === 0 ? 'initial' : 'none' }}
+            project={project}
+            projectSlug={projectSlug}
+            uuid={''}
           />
-        </EventForm>
-        {tab === 1 && <ImportManifest i18n={i18n} projectSlug={projectSlug} />}
+
+          {tab === 1 && (
+            <ImportManifest i18n={i18n} projectSlug={projectSlug} />
+          )}
+        </Theme>
       </div>
     </div>
   );

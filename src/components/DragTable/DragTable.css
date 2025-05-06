@@ -1,0 +1,39 @@
+.drag-table {
+  width: 100%;
+}
+
+.drag-table-header {
+  width: 100%;
+  background-color: var(--gray-200);
+  display: grid;
+  align-items: center;
+  gap: 5px;
+  height: 48px;
+  position: relative;
+}
+
+.drag-table-box {
+  border: 1px solid var(--gray-300);
+  display: grid;
+  align-items: center;
+  gap: 5px;
+  height: 56px;
+  background-color: white;
+}
+
+.drag-table-box-hovered {
+  border-bottom: 2px solid #62bdff !important;
+}
+
+.drag-table-add-button-container {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.drag-table-empty-message {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  justify-content: center;
+}

@@ -1,15 +1,9 @@
-import type {
-  ProjectData,
-  Translations,
-  UserInfo,
-  Project,
-} from '@ty/Types.ts';
-import { Formik, Form, useFormikContext } from 'formik';
+import type { ProjectData, Translations, UserInfo } from '@ty/Types.ts';
+import { Formik, Form } from 'formik';
 import { TextInput, UserList, ToggleInput } from '@components/Formic/index.tsx';
-import { useEffect, useRef, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import './ProjectForm.css';
-import { MediaPlayerField } from './Fields.tsx';
 import { BottomBar } from '@components/BottomBar/index.ts';
 import { Button } from '@radix-ui/themes';
 import type { apiProjectPut } from '@ty/api.ts';
@@ -31,36 +25,11 @@ export interface EditProjectFormProps {
 const FormContents = (props: EditProjectFormProps) => {
   const { t } = props.i18n;
 
-  const generalRef = useRef(null);
-  const userRef = useRef(null);
-
-  const { values, setFieldValue } = useFormikContext();
-
-  useEffect(() => {
-    if (
-      (values as Project).is_private &&
-      (values as Project).generate_pages_site
-    ) {
-      setFieldValue('generate_pages_site', false);
-    }
-  }, [values]);
-
-  useEffect(() => {
-    const executeScroll = (ref: React.MutableRefObject<HTMLElement | null>) =>
-      ref.current!.scrollIntoView({ block: 'start' });
-
-    if (props.selection === 'general') {
-      executeScroll(generalRef);
-    } else {
-      executeScroll(userRef);
-    }
-  }, [props.selection]);
-
   return (
     <div className='project-form'>
       <div className='project-form-container'>
         <Form>
-          <div ref={generalRef} />
+          <h1>{t['Edit Project']}</h1>
           <h2>{t['General']}</h2>
           {props.projectData.project.creator ===
             props.userInfo.profile.gitHubName && (
@@ -69,12 +38,6 @@ const FormContents = (props: EditProjectFormProps) => {
                 label={t['Use Private Repository']}
                 name='is_private'
                 helperText={t['_private_repository_helper_text_']}
-              />
-
-              <ToggleInput
-                label={t['Generate GitHub Pages Site']}
-                name='generate_pages_site'
-                helperText={t['_generate_pages_site_helper_text_']}
               />
             </>
           )}
@@ -107,7 +70,6 @@ const FormContents = (props: EditProjectFormProps) => {
           />
 
           <div className='project-form-divider' />
-          <div ref={userRef} />
           {props.projectData.project.creator ===
             props.userInfo.profile.gitHubName && (
             <>
