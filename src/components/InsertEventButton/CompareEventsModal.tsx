@@ -186,6 +186,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
                       start: event1Start,
                       end: event1End,
                       file: event1File || undefined,
+                      file_type: event1Type || undefined,
                     },
                     event2: {
                       uuid: event2Uuid,
