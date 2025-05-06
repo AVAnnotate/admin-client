@@ -257,7 +257,7 @@ export const PageList: React.FC<Props> = (props) => {
 
     if (res.ok) {
       // Make the pageArray from the old project data
-      let pageArray = makePageArray(project, pageOrder as string[]);
+      let pageArray = makePageArray(copy, pageOrder as string[]);
 
       // Adjust page array
       let childEntry = pageArray.find((e) => e.id === uuid);
