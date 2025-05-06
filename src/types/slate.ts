@@ -35,7 +35,7 @@ export interface SlateEventNodeData {
   includes: Includes[];
   start?: number;
   uuid: string;
-  type: string;
+  type?: string;
 }
 
 export interface SlateCompareEventData {

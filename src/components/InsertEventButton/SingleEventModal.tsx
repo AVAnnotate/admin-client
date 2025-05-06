@@ -38,7 +38,7 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
     props.start || props.end ? 'clip' : 'full'
   );
   const [file, setFile] = useState(props.file || undefined);
-  const [file_type, set_file_type] = useState<'Audio' | 'Video' | undefined>();
+  const [type, setType] = useState<'Audio' | 'Video' | undefined>();
   const [includes, setIncludes] = useState<Includes[]>(
     props.includes || ['media', 'annotations', 'label', 'description']
   );
