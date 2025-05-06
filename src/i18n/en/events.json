@@ -78,5 +78,19 @@
   "Add annotations": "Add annotations",
   "Add single annotation": "Add single annotation",
   "Import from file": "Import from file",
-  "_empty_av_files_message_": "No Audiovisual files have been added to this event. Use the Add button above to add files to this event."
+  "_empty_av_files_message_": "No Audiovisual files have been added to this event. Use the Add button above to add files to this event.",
+  "Rights Statement": "Rights Statement",
+  "In Copyright": "In Copyright",
+  "In Copyright - EU Orphan Work": "In Copyright - EU Orphan Work",
+  "In Copyright - Educational Use Permitted": "In Copyright - Educational Use Permitted",
+  "In Copyright - Non-Commercial Use Permitted": "In Copyright - Non-Commercial Use Permitted",
+  "In Copyright - Rights-holder(s) Unlocatable or Unidentifiable": "In Copyright - Rights-holder(s) Unlocatable or Unidentifiable",
+  "No Copyright - Contractual Restrictions": "No Copyright - Contractual Restrictions",
+  "No Copyright - Non-Commercial Use Only": "No Copyright - Non-Commercial Use Only",
+  "No Copyright - Other Known Legal Restrictions": "No Copyright - Other Known Legal Restrictions",
+  "No Copyright - United States": "No Copyright - United States",
+  "Copyright Not Evaluated": "Copyright Not Evaluated",
+  "Copyright Undetermined": "Copyright Undetermined",
+  "No Known Copyright": "No Known Copyright",
+  "Creative Commons 4.0 International": "Creative Commons 4.0 International"
 }

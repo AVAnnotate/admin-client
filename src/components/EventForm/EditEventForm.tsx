@@ -13,7 +13,7 @@ import { Button, Select, TextField } from '@radix-ui/themes';
 import { PlusIcon, TrashIcon } from '@radix-ui/react-icons';
 import './EventForm.css';
 import { BottomBar } from '@components/BottomBar/BottomBar.tsx';
-import { RichTextInput } from '@components/Formic/index.tsx';
+import { RichTextInput, SelectInput } from '@components/Formic/index.tsx';
 import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState, useMemo } from 'react';
@@ -22,6 +22,7 @@ import { SetFormModal } from '@components/SetModal/index.ts';
 import { DragTable } from '@components/DragTable/DragTable.tsx';
 import { BoxArrowUpRight, Trash, ClockHistory } from 'react-bootstrap-icons';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
+import { rightsOptions } from '@components/EventForm/rightsOptions.ts';
 
 interface Props {
   children?: React.ReactNode;
@@ -495,6 +496,23 @@ const FormContents: React.FC<Props> = (props) => {
           initialValue={(values as FormEvent).description}
         />
         <TextInput label={t['Citation (Optional)']} name='citation' />
+        <SelectInput
+          label={t['Rights Statement']}
+          name='rights_statement'
+          options={rightsOptions(props.i18n)}
+        />
+        <div className='rights-statement'>
+          <a href='https://rightsstatements.org/page/1.0/' target='_blank'>
+            https://rightsstatements.org/page/1.0/
+          </a>
+          <br />
+          <a
+            href='https://creativecommons.org/licenses/by/4.0/deed.en'
+            target='_blank'
+          >
+            https://creativecommons.org/licenses/by/4.0/deed.en
+          </a>
+        </div>
         {children}
       </div>
       <BottomBar>

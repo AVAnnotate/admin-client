@@ -100,6 +100,7 @@ export type Event = {
   auto_generate_web_page: boolean;
   description: Node[];
   citation?: string;
+  rights_statement?: string;
   created_at: string;
   created_by: string;
   item_type?: 'Audio' | 'Video';
