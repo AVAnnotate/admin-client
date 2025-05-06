@@ -6,6 +6,7 @@ import {
   Window,
   ThreeDots,
   ChevronLeft,
+  Github,
 } from 'react-bootstrap-icons';
 
 import './Project.css';
@@ -140,6 +141,18 @@ export const Project: React.FC<Props> = (props) => {
                     <Window />
                     {t['View Website']}
                   </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    className='dropdown-item project-dropdown-item'
+                    onClick={() =>
+                      window.open(
+                        `https://github.com/${props.project.project.github_org}/${props.project.project.slug}`,
+                        '_blank'
+                      )
+                    }
+                  >
+                    <Github />
+                    {t['View in GitHub']}
+                  </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
@@ -147,7 +160,7 @@ export const Project: React.FC<Props> = (props) => {
         </div>
         <div className='project-tabs'>
           <Tabs
-            activeTab={activeTab}
+            activeTab={activeTab as string}
             onSetActive={handleSetActive}
             tabs={[
               {
