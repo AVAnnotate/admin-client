@@ -42,9 +42,7 @@ const FormContents: React.FC<Props> = (props) => {
       () => [
         { label: t['No Parent'], value: undefined },
         ...Object.keys(props.project.pages)
-          .filter(
-            (uuid) => uuid !== props.uuid && !props.project.pages![uuid].parent
-          )
+          .filter((uuid) => uuid !== props.uuid)
           .map((uuid) => {
             const page = props.project.pages![uuid];
             return {

@@ -240,6 +240,7 @@ export const PageList: React.FC<Props> = (props) => {
 
   const handleSetParent = async (uuid: string, parentId: string) => {
     const copy: ProjectData = JSON.parse(JSON.stringify(project));
+    const copyOrder: string[] = JSON.parse(JSON.stringify(pageOrder));
 
     const page = copy.pages[uuid];
     setSaving(true);
@@ -256,17 +257,25 @@ export const PageList: React.FC<Props> = (props) => {
     );
 
     if (res.ok) {
+      // Update the copy order
+      const childIndex = copyOrder.findIndex((i) => i === uuid);
+      copyOrder.splice(childIndex, 1);
+
+      const parentIndex = copyOrder.findIndex((i) => i === parentId);
+      if (parentIndex === copyOrder.length - 1) {
+        copyOrder.push(uuid);
+      } else if (parentIndex > -1) {
+        copyOrder.splice(parentIndex + 1, 0, uuid);
+      }
+
       // Make the pageArray from the old project data
-      let pageArray = makePageArray(copy, pageOrder as string[]);
+      let pageArray = makePageArray(copy, copyOrder as string[]);
 
       // Adjust page array
       let childEntry = pageArray.find((e) => e.id === uuid);
       let parentEntry = pageArray.find((e) => e.id === parentId);
 
       if (childEntry && parentEntry) {
-        childEntry.parent === parentId;
-        parentEntry.children.push(uuid);
-
         const newOrder = getOrderFromPageArray(pageArray);
 
         const resOrder = await fetch(
@@ -284,6 +293,7 @@ export const PageList: React.FC<Props> = (props) => {
           setPageOrder(newOrder);
         }
       }
+
       setProject(copy);
     }
 
@@ -341,15 +351,24 @@ export const PageList: React.FC<Props> = (props) => {
     setSaving(false);
   };
 
+  const currentArray = useMemo(
+    () => makePageArray(project, pageOrder || []),
+    [project, pageOrder]
+  );
+
   const handleSetExpanded = (uuid: string, expanded: boolean) => {
     let copy: RowState = { ...rowState };
     copy[uuid].expanded = expanded;
-    Object.keys(copy).forEach((id) => {
-      let state = copy[id];
-      if (state.parent === uuid) {
+
+    const entry = currentArray.find((e) => e.id === uuid);
+
+    if (entry) {
+      entry.allChildren.forEach((id) => {
+        let state = copy[id];
         state.visible = expanded;
-      }
-    });
+      });
+    }
+
     setRowState(copy);
   };
 
@@ -431,6 +450,7 @@ export const PageList: React.FC<Props> = (props) => {
           {pageOrder!.map((uuid, idx) => (
             <PageRow
               project={project}
+              order={pageOrder as string[]}
               uuid={uuid}
               index={idx}
               i18n={props.i18n}

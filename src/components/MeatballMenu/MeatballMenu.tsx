@@ -29,10 +29,10 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, icon, row }) => {
             .filter((but) =>
               but.displayCondition ? but.displayCondition(row) : true
             )
-            .map((but) => {
+            .map((but, idx) => {
               if (but.hasSubmenus) {
                 return (
-                  <Dropdown.Sub key={but.label}>
+                  <Dropdown.Sub key={`${but.label}-${idx}`}>
                     <Dropdown.SubTrigger className='dropdown-subtrigger'>
                       {but.icon && <but.icon />}
                       {but.label}
@@ -42,10 +42,10 @@ export const MeatballMenu: React.FC<Props> = ({ buttons, icon, row }) => {
                     </Dropdown.SubTrigger>
                     <Dropdown.Portal>
                       <Dropdown.SubContent className='dropdown-subcontent'>
-                        {but.children?.map((child) => (
+                        {but.children?.map((child, idx2) => (
                           <Dropdown.Item
                             className='dropdown-item'
-                            key={child.label}
+                            key={`${child.label}-${idx2}`}
                             onClick={async () => await child.onClick!(row)}
                           >
                             {child.icon && <child.icon />}
