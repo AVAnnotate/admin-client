@@ -286,7 +286,6 @@ export const PageRow: React.FC<Props> = (props) => {
       parent = parentPage.parent;
     }
 
-    console.log(`${page.title}, count: ${count}`);
     return count;
   }, [page]);
 
