@@ -4,6 +4,7 @@ export interface OrderEntry {
   id: string;
   parent?: string;
   children: string[];
+  allChildren: string[];
   title?: string;
 }
 
@@ -43,6 +44,7 @@ export const makePageArray = (project: ProjectData, order: string[]) => {
       title: page.title,
       parent: page.parent,
       children: [],
+      allChildren: [],
     });
   });
 
@@ -58,6 +60,16 @@ export const makePageArray = (project: ProjectData, order: string[]) => {
         if (idxParent > -1) {
           let parentEntry = pageArray[idxParent];
           parentEntry.children.push(entry.id);
+          parentEntry.allChildren.push(entry.id);
+          let parent = parentEntry.parent;
+          while (parent) {
+            const idxNextParent = pageArray.findIndex((e) => e.id === parent);
+            if (idxNextParent > -1) {
+              let nextParentEntry = pageArray[idxNextParent];
+              nextParentEntry.allChildren.push(entry.id);
+              parent = nextParentEntry.parent;
+            }
+          }
         }
       }
     }

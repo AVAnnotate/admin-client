@@ -1,4 +1,5 @@
 import { MeatballMenu } from '@components/MeatballMenu/index.ts';
+import { makePageArray } from '@lib/pages/reorder.ts';
 import { Pencil2Icon } from '@radix-ui/react-icons';
 import { Box, Text, IconButton } from '@radix-ui/themes';
 import { Icon } from '@radix-ui/themes/dist/esm/components/callout.js';
@@ -30,6 +31,7 @@ const truncate = (str: string) => {
 
 interface Props {
   project: ProjectData;
+  order: string[];
   uuid: string;
   index: number;
   i18n: Translations;
@@ -58,6 +60,8 @@ export const PageRow: React.FC<Props> = (props) => {
   const { t } = props.i18n;
 
   const meatballOptionsAutoGen = useMemo(() => {
+    const pageArray = makePageArray(props.project, props.order);
+
     const options: MeatballMenuItem[] = [
       {
         label: t['Disable Auto-Generation'],
@@ -105,12 +109,18 @@ export const PageRow: React.FC<Props> = (props) => {
       if (pageId !== props.uuid) {
         const page = props.project.pages[pageId];
 
-        childPages.push({
-          label: page.title,
-          icon: ListNested,
-          // @ts-ignore
-          onClick: () => props.onSetParent(pageId),
-        });
+        // Cannot parent a page to one of its children
+        const entry = pageArray.find((a) => a.id === pageId);
+        if (entry) {
+          if (!entry.allChildren.includes(props.uuid)) {
+            childPages.push({
+              label: page.title,
+              icon: ListNested,
+              // @ts-ignore
+              onClick: () => props.onSetParent(pageId),
+            });
+          }
+        }
       }
     }
     if (childPages.length > 0) {
@@ -129,6 +139,7 @@ export const PageRow: React.FC<Props> = (props) => {
   }, [page]);
 
   const meatballOptions = useMemo(() => {
+    const pageArray = makePageArray(props.project, props.order);
     const options = [
       {
         label: t['Open'],
@@ -197,12 +208,18 @@ export const PageRow: React.FC<Props> = (props) => {
       if (pageId !== props.uuid) {
         const page = props.project.pages[pageId];
 
-        childPages.push({
-          label: page.title,
-          // @ts-ignore
-          onClick: () => props.onSetParent(pageId),
-          id: pageId,
-        });
+        // Cannot parent a page to one of its children
+        const entry = pageArray.find((a) => a.id === pageId);
+        if (entry) {
+          if (!entry.allChildren.includes(props.uuid)) {
+            childPages.push({
+              label: page.title,
+              icon: ListNested,
+              // @ts-ignore
+              onClick: () => props.onSetParent(pageId),
+            });
+          }
+        }
       }
     }
     if (childPages.length > 0) {
@@ -310,7 +327,11 @@ export const PageRow: React.FC<Props> = (props) => {
             <CaretRightFill />
           </div>
         )}
-        {page.autogenerate.type === 'home' ? <HouseFill /> : <div />}
+        {page.autogenerate.type === 'home' ? (
+          <HouseFill />
+        ) : (
+          <div style={{ width: 16 }} />
+        )}
         {page.parent && (
           <div
             style={{
