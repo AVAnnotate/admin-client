@@ -20,7 +20,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { SetsTable } from './SetsTable.tsx';
 import { SetFormModal } from '@components/SetModal/index.ts';
 import { DragTable } from '@components/DragTable/DragTable.tsx';
-import { BoxArrowUpRight, Trash, ClockHistory } from 'react-bootstrap-icons';
+import { ClockHistory } from 'react-bootstrap-icons';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 
 interface Props {
@@ -130,6 +130,7 @@ const FormContents: React.FC<Props> = (props) => {
             const set = [...order];
             set.splice(idx, 1);
             setOrder(set);
+            setFieldValue(`av_file_order`, set);
           }
           setFieldValue(`audiovisual_files.${uuid}`, undefined);
         },
