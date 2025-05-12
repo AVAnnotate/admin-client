@@ -70,7 +70,7 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
         <Dialog.Title className='slate-dialog-title'>
-          {t['Embed Event']}
+          {t['Embed AV']}
         </Dialog.Title>
         <div className='slate-dialog-body'>
           {Object.keys(props.project.events!).length === 0 ? (

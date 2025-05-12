@@ -124,14 +124,11 @@ export const AutoGenerateModal = (props: AutoGenerateModalProps) => {
         <Dialog.Overlay className='dialog-overlay' />
         <Dialog.Content className='dialog-content'>
           <Dialog.Title className='dialog-title'>
-            {t['Add Auto-Generated Page']}
+            {t['Add auto-generated page']}
           </Dialog.Title>
-          <Dialog.Description className='dialog-description'>
-            {t['_autogenerate_modal_description_']}
-          </Dialog.Description>
           <div className='auto-gen-modal-content'>
             <div className='av-label-bold'>
-              {t['Select the page(s) you would like to auto-generate']}
+              {t['Select event(s) for auto-generated pages']}
             </div>
 
             <div className='auto-gen-modal-checkbox'>

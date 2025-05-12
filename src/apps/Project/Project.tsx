@@ -151,7 +151,7 @@ export const Project: React.FC<Props> = (props) => {
                     }
                   >
                     <Github />
-                    {t['View in GitHub']}
+                    {t['Repository']}
                   </DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>

@@ -48,7 +48,7 @@ export const EventRow: React.FC<Props> = (props) => {
         ),
     },
     {
-      label: t['Edit event settings'],
+      label: t['Event settings'],
       icon: PencilSquare,
       onClick: () =>
         (window.location.pathname = `${window.location.pathname}/events/${event.uuid}/edit`),

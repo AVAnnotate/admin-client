@@ -193,7 +193,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
             link: `/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}`,
           },
           {
-            label: t['Import Annotation File'],
+            label: t['Import Annotations'],
           },
         ]}
       />
@@ -203,7 +203,7 @@ const AnnotationImportFormContents: React.FC<FormContentsProps> = (props) => {
         <div className='av-label annotation-import-instructions'>
           {
             t[
-              'Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations or a WebVTT (.vtt) files that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.": "Upload a .tsv, .csv, .xlsx, or tab-separated .txt file of annotations that correspond with your project’s audiovisual item. If you have multiple annotation layers, upload them individually.'
+              'Upload a .tsv, .csv, .xlsx, or tab-delimited .txt file. Multiple annotation sets are uploaded separately.'
             ]
           }
         </div>

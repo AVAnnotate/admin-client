@@ -43,7 +43,7 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
           <Dropdown.Root modal={false}>
             <Dropdown.Trigger asChild>
               <Button className='primary' type='button'>
-                {props.fileType === 'Audio' ? t['Add annotations'] : t['Add']}
+                {t['Add']}
                 <CaretDownFill color='white' />
               </Button>
             </Dropdown.Trigger>
@@ -54,14 +54,14 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
                   onClick={() => props.setShowAnnoCreateModal(true)}
                 >
                   <FileEarmarkArrowUp />
-                  {t['Add single annotation']}
+                  {t['Add']}
                 </Dropdown.Item>
                 <Dropdown.Item className='dropdown-item'>
                   <a
                     href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`}
                   >
                     <Plus color='black' />
-                    {t['Import from file']}
+                    {t['Import']}
                   </a>
                 </Dropdown.Item>
               </Dropdown.Content>

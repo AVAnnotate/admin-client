@@ -355,7 +355,7 @@ export const Tags = (props: TagsProps) => {
       {saving && <LoadingOverlay />}
       <div className='tags-container'>
         <div className='tags-header-row'>
-          <h1>{t['Tag Manager']}</h1>
+          <h1>{t['Tags']}</h1>
           <div className='tags-header buttons'>
             {project &&
               project.project.tags.tags.length > 0 &&
@@ -381,7 +381,7 @@ export const Tags = (props: TagsProps) => {
               onClick={() => handleAddTagGroup()}
             >
               <PlusIcon />
-              {t['Create Tag Group']}
+              {t['Tag Group']}
             </Button>
           </div>
         </div>
@@ -394,7 +394,7 @@ export const Tags = (props: TagsProps) => {
               onClick={handleAddTagGroup}
             >
               <PlusIcon />
-              {t['Add Tag Group']}
+              {t['Add']}
             </button>
           </EmptyDashboard>
         ) : (

@@ -86,7 +86,7 @@ export const EditTagDialog = (props: EditTagDialogProps) => {
           <Dialog.Title className='dialog-title'>
             {props.name ? t['Edit Tag'] : t['Create Tag']}
           </Dialog.Title>
-          <div className='av-label-bold edit-tag-label'>{t['Tag Name']}</div>
+          <div className='av-label-bold edit-tag-label'>{t['Group']}</div>
           <SelectGroup
             group={group}
             onChange={handleChangeGroup}
@@ -94,7 +94,7 @@ export const EditTagDialog = (props: EditTagDialogProps) => {
             disabled={!props.name}
             i18n={props.i18n}
           />
-          <div className='av-label-bold edit-tag-label'>{t['Tag Name']}</div>
+          <div className='av-label-bold edit-tag-label'>{t['Tag']}</div>
           <input
             className='edit-tag-name-input'
             onChange={(e) => setName(e.target.value)}

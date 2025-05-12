@@ -22,7 +22,7 @@ export const NoTags = (props: NoTagsProps) => {
       <div className='tags-no-tags-buttons'>
         <ImportTagsDialog i18n={props.i18n} onSave={props.onImportTags} />
         <button type='button' className='outline' onClick={props.onAddTagGroup}>
-          {t['Add Tag Group']}
+          {t['Add']}
         </button>
       </div>
     </div>

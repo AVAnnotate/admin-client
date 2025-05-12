@@ -83,7 +83,7 @@ export const SiteBuilder = (props: SiteBuilderProps) => {
             onClick={() => setPublishOpen(true)}
           >
             <WindowSidebar />
-            {t['Publish Site']}
+            {t['Publish']}
           </Button>
           <DropdownButton
             title={t['Add Page']}

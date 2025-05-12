@@ -7,7 +7,7 @@ import type {
 } from '@ty/Types.ts';
 import Player from './Player.tsx';
 import * as Separator from '@radix-ui/react-separator';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Tabs from './Tabs.tsx';
 import { AnnotationTableHeader } from './AnnotationTableHeader.tsx';
 import { exportAnnotations } from '@lib/events/export.ts';
@@ -20,7 +20,6 @@ import AnnotationTable from './AnnotationTable.tsx';
 import { formatTimestamp } from '@lib/events/index.ts';
 import { SetSelect } from './SetSelect.tsx';
 import SetManagementDropdown from './SetManagementDropdown.tsx';
-import useExpandHeight from 'src/hooks/useExpandHeight.tsx';
 
 interface Props {
   avFile: AudiovisualFile;

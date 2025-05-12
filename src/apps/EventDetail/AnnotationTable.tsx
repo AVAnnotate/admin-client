@@ -155,13 +155,13 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
             type='button'
             onClick={() => props.setShowAnnoCreateModal(true)}
           >
-            <FileEarmarkArrowUp /> {t['Add single annotation']}
+            <FileEarmarkArrowUp /> {t['Add']}
           </Button>
           <a
             href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`}
           >
             <Button className='outline' type='button'>
-              <Plus color='black' /> {t['Import from file']}
+              <Plus color='black' /> {t['Import']}
             </Button>
           </a>
         </div>
