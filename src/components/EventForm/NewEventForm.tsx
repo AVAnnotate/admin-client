@@ -1,8 +1,4 @@
-import {
-  SelectInput,
-  TextInput,
-  DurationInput,
-} from '@components/Formic/index.tsx';
+import { SelectInput, TextInput } from '@components/Formic/index.tsx';
 import type {
   AudiovisualFile,
   Event,
@@ -21,11 +17,11 @@ import { RichTextInput, secondsToString } from '@components/Formic/index.tsx';
 import { generateDefaultEvent, getFileDuration } from '@lib/events/index.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useState, useMemo } from 'react';
-import { SetsTable } from './SetsTable.tsx';
 import { SetFormModal } from '@components/SetModal/index.ts';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { ClockHistory } from 'react-bootstrap-icons';
 import { DragTable } from '@components/DragTable/DragTable.tsx';
+import { rightsOptions } from './rightsOptions.ts';
 
 interface Props {
   children?: React.ReactNode;
@@ -449,6 +445,19 @@ const FormContents: React.FC<Props> = (props) => {
           initialValue={(values as FormEvent).description}
         />
         <TextInput label={t['Citation (Optional)']} name='citation' />
+        <SelectInput
+          label={t['Rights Statement']}
+          name='rights_statement'
+          options={rightsOptions(props.i18n)}
+        />
+        <div className='rights-statement'>
+          <a href='https://rightsstatements.org/page/1.0/'>
+            https://rightsstatements.org/page/1.0/
+          </a>
+          <a href='https://creativecommons.org/licenses/by/4.0/deed.en'>
+            https://creativecommons.org/licenses/by/4.0/deed.en
+          </a>
+        </div>
         {children}
       </div>
       <BottomBar>

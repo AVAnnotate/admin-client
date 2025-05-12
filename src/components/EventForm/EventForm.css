@@ -130,3 +130,7 @@
 .event-form .av-file-duration-override {
   border-color: red;
 }
+
+.event-form .rights-statement {
+  padding-top: 10px;
+}
