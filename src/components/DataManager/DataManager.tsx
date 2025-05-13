@@ -2,6 +2,8 @@ import type { ProjectData, Translations } from '@ty/Types.ts';
 import { EventList } from '@components/EventList/EventList.tsx';
 import * as Tabs from '@radix-ui/react-tabs';
 import { Tags } from '@apps/Tags/Tags.tsx';
+import { useState } from 'react';
+import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
 
 import './DataManager.css';
 
@@ -12,7 +14,11 @@ interface DataManagerProps {
 }
 
 export const DataManager = (props: DataManagerProps) => {
-  const handleDeleteEvent = (uuid: string) => {};
+  const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
+
+  const handleDeleteEvent = (uuid: string) => {
+    setDeleteUuid(uuid);
+  };
 
   const { t } = props.i18n;
 
@@ -43,6 +49,16 @@ export const DataManager = (props: DataManagerProps) => {
           />
         </Tabs.Content>
       </Tabs.Root>
+      {deleteUuid && (
+        <DeleteEventModal
+          annotations={props.project.annotations}
+          eventUuid={deleteUuid}
+          i18n={props.i18n}
+          onAfterSave={() => window.location.reload()}
+          onCancel={() => setDeleteUuid(null)}
+          projectSlug={props.projectSlug}
+        />
+      )}
     </div>
   );
 };
