@@ -358,6 +358,13 @@ export const SpreadsheetInput = (props: SpreadsheetInputProps) => {
             <Separator.Root className='SeparatorRoot' decorative />
             <div className='spreadsheet-input-headers-switch'></div>
             <h2>{t['File configuration']}</h2>
+            <p>
+              {
+                t[
+                  'For each "Column" select "Import as" for the matching data type in the imported file.'
+                ]
+              }
+            </p>
             <div className='options-row'>
               <div>
                 <div className='av-label-bold formic-form-label'>

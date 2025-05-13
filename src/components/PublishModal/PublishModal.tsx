@@ -52,9 +52,7 @@ export const PublishModal = (props: PublishModalProps) => {
       <Dialog.Portal>
         <Dialog.Overlay className='dialog-overlay' />
         <Dialog.Content className='dialog-content'>
-          <Dialog.Title className='dialog-title'>
-            {t['Publish Site']}
-          </Dialog.Title>
+          <Dialog.Title className='dialog-title'>{t['Publish']}</Dialog.Title>
           <Dialog.Description className='dialog-description'>
             {t['_publish_site_description_']}
           </Dialog.Description>

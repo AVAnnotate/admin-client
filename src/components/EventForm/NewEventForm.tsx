@@ -378,11 +378,10 @@ const FormContents: React.FC<Props> = (props) => {
         />
       )}
       <div className='form-body'>
-        <h2>{t['Event Information']}</h2>
         <TextInput label={t['Label']} name='label' required />
         <Separator.Root className='SeparatorRoot' decorative />
         <div className='title-row'>
-          <h2>{t['Audiovisual File(s)']}</h2>
+          <h2>{t['Audiovisual item(s)']}</h2>
           <Button
             className='primary add-av-button'
             onClick={() => {
@@ -403,7 +402,7 @@ const FormContents: React.FC<Props> = (props) => {
               <DragTable
                 entries={[
                   {
-                    label: t['File Type'],
+                    label: t['AV Type'],
                     gridWidth: '1fr',
                   },
                   {

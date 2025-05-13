@@ -2,6 +2,11 @@
   margin-bottom: 100px;
 }
 
+.event-form .field-caption {
+  padding-top: 6px;
+  padding-bottom: 12px;
+}
+
 .event-form .av-files-fields {
   display: flex;
   flex-direction: column;

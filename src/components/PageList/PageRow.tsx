@@ -96,7 +96,7 @@ export const PageRow: React.FC<Props> = (props) => {
     // Make a page top level
     if (page.parent) {
       options.push({
-        label: t['Move to Top Level'],
+        label: t['Make top-level page'],
         icon: AlignTop,
         // @ts-ignore
         onClick: () => props.onMakeTopLevel(),
@@ -127,7 +127,7 @@ export const PageRow: React.FC<Props> = (props) => {
       // Set a parent
       options.push({
         hasSubmenus: true,
-        label: t['Make Child of'],
+        label: t['Make subpage of'],
         icon: ListNested,
         // @ts-ignore
         onClick: () => {},
@@ -226,7 +226,7 @@ export const PageRow: React.FC<Props> = (props) => {
       // Set a parent
       options.push({
         hasSubmenus: true,
-        label: t['Make Child of'],
+        label: t['Make subpage of'],
         icon: ListNested,
         // @ts-ignore
         onClick: () => {},
@@ -237,7 +237,7 @@ export const PageRow: React.FC<Props> = (props) => {
     // Make a page top level
     if (page.parent) {
       options.push({
-        label: t['Move to Top Level'],
+        label: t['Make top-level page'],
         icon: AlignTop,
         // @ts-ignore
         onClick: () => props.onMakeTopLevel(),

@@ -96,7 +96,7 @@ export const FileRadioInterface: React.FC<FileRadioInterfaceProps> = (
   return (
     <div>
       <div className='av-label-bold formic-form-label'>
-        <span>{t['Audiovisual File']}</span>
+        <span>{t['AV Item']}</span>
         <Required />
       </div>
       {Object.keys(props.files).map((uuid) => {

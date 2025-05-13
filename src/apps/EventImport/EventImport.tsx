@@ -79,7 +79,7 @@ export const EventImport: React.FC<Props> = (props) => {
             label: t['Data Manager'],
             link: `/${lang}/projects/${props.projectSlug}`,
           },
-          { label: t['Import Events File'], link: '' },
+          { label: t['Import Events'], link: '' },
         ]}
       />
       <div className='container'>
@@ -186,7 +186,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         value: 'description',
       },
       {
-        label: t['File Type'],
+        label: t['AV Type'],
         required: true,
         value: 'audiovisual_file_type',
       },
@@ -196,7 +196,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         value: 'audiovisual_file_label',
       },
       {
-        label: t['AV File URL'],
+        label: t['AV Reference'],
         required: true,
         value: 'audiovisual_file_url',
       },
@@ -291,7 +291,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
             </Dialog.Portal>
           </Dialog.Root>
         )}
-        <h1>{t['Import Events File']}</h1>
+        <h1>{t['Import Events']}</h1>
         <p>{t['event_import_message']}</p>
         <SpreadsheetInput
           accept='.tsv, .csv, .xlsx, .xls, .txt'

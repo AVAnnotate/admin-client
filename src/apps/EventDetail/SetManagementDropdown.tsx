@@ -30,12 +30,12 @@ const SetManagementDropdown: React.FC<Props> = (props) => {
             onClick={() => props.setShowAddSetModal(true)}
           >
             <Plus />
-            {t['Add annotation set']}
+            {t['Add']}
           </Dropdown.Item>
           <Dropdown.Item className='dropdown-item'>
             <a href={props.editUrl}>
               <Gear />
-              {t['Manage annotation sets']}
+              {t['Edit']}
             </a>
           </Dropdown.Item>
         </Dropdown.Content>

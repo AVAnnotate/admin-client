@@ -96,7 +96,7 @@ export const ImportTagsDialog = (props: ImportTagsDialogProps) => {
       <Dialog.Trigger asChild>
         <Button className='primary import-tags-dialog-button' type='button'>
           <FileEarmarkArrowUp />
-          {t['Import tags from file']}
+          {t['Import']}
         </Button>
       </Dialog.Trigger>
       <Dialog.Portal>

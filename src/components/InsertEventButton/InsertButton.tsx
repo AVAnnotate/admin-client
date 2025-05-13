@@ -160,7 +160,7 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
           <Dropdown.Content className='dropdown-content meatball-dropdown-content'>
             <Dropdown.Sub>
               <Dropdown.SubTrigger className='dropdown-item dropdown-subtrigger'>
-                {t['Column']}
+                {t['Columns']}
                 <ChevronRightIcon />
               </Dropdown.SubTrigger>
               <Dropdown.Portal>
@@ -199,19 +199,19 @@ export const InsertButton: React.FC<InsertButtonProps> = (props) => {
                 setOpen(false);
               }}
             >
-              {t['Horizontal Separator']}
+              {t['Horizontal Line']}
             </Dropdown.Item>
             <Dropdown.Item
               className='dropdown-item'
               onClick={() => updateModal('single-event')}
             >
-              {t['Single event']}
+              {t['Embed AV']}
             </Dropdown.Item>
             <Dropdown.Item
               className='dropdown-item'
               onClick={() => updateModal('event-compare')}
             >
-              {t['Compare Events']}
+              {t['Compare AV']}
             </Dropdown.Item>
           </Dropdown.Content>
         </Dropdown.Portal>

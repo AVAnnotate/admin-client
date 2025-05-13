@@ -44,7 +44,7 @@ export const NewEvent: React.FC<Props> = ({ i18n, project, projectSlug }) => {
       />
       <div className='container'>
         <h1>{t['Add Event']}</h1>
-        <p>{t['Choose to create a new manifest or import an existing one.']}</p>
+        <p>{t['Create or import a IIIF manifest.']}</p>
         <div className='manifest-toggle'>
           <Button
             className={`create-manifest-button ${

@@ -199,7 +199,7 @@ export const EventList: React.FC<Props> = (props) => {
               {t['CSV']}
             </Button>
             <DropdownButton
-              title={t['Add Event']}
+              title={t['Add']}
               titleIcon={<PlusIcon />}
               items={[
                 {

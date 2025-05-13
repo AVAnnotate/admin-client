@@ -408,11 +408,10 @@ const FormContents: React.FC<Props> = (props) => {
         />
       )}
       <div className='form-body'>
-        <h2>{t['Event Information']}</h2>
         <TextInput label={t['Label']} name='label' required />
         <Separator.Root className='SeparatorRoot' decorative />
         <div className='title-row'>
-          <h2>{t['Audiovisual File(s)']}</h2>
+          <h2>{t['Audiovisual item(s)']}</h2>
           <Button
             className='primary add-av-button'
             onClick={() => {
@@ -426,6 +425,9 @@ const FormContents: React.FC<Props> = (props) => {
             {t['Add']}
           </Button>
         </div>
+        <p className='field-caption'>
+          {t['AV files appear in this order on the published site.']}
+        </p>
         <FieldArray
           name='audiovisual_files'
           render={() => (
@@ -433,7 +435,7 @@ const FormContents: React.FC<Props> = (props) => {
               <DragTable
                 entries={[
                   {
-                    label: t['File Type'],
+                    label: t['AV Type'],
                     gridWidth: '1fr',
                   },
                   {
@@ -465,6 +467,13 @@ const FormContents: React.FC<Props> = (props) => {
               <Separator.Root className='SeparatorRoot' decorative />
               <div className='sets-table'>
                 <h2>{t['Annotation Sets']}</h2>
+                <p className='field-caption'>
+                  {
+                    t[
+                      'Added and imported annotations form a default Annotation Set. Annotation sets appear in this order on the published site.'
+                    ]
+                  }
+                </p>
                 {Object.keys(
                   props.project.events[props.uuid].audiovisual_files
                 ).map((uuid) => {

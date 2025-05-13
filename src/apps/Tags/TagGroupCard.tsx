@@ -202,7 +202,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
             <div
               className='tag-group-card-show-text av-label-bold'
               onClick={() => setExpanded(!expanded)}
-            >{`${t['show']} ${list.length - 4} ${t['more']}`}</div>
+            >{`${list.length - 4} ${t['more']}`}</div>
           </div>
         ) : list.length > 4 ? (
           <div className='tag-group-card-show-less'>
@@ -210,7 +210,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
               className='tag-group-card-show-text av-label-bold'
               onClick={() => setExpanded(!expanded)}
             >
-              {t['show less']}
+              {t['Fewer']}
             </div>
           </div>
         ) : (
@@ -221,7 +221,7 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
           onClick={() => handleAddTag()}
         >
           <Plus size='16' />
-          {t['Create new tag']}
+          {t['Tag']}
         </div>
       </div>
 

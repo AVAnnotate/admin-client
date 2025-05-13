@@ -107,7 +107,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
         <Dialog.Title className='slate-dialog-title'>
-          {t['Compare Events']}
+          {t['Compare AV']}
         </Dialog.Title>
         <div className='slate-dialog-body'>
           <DurationInterface
