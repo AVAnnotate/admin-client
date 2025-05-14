@@ -11,17 +11,7 @@ export const generateDefaultAnnotation = (): AnnotationEntry => ({
 });
 
 export const generateDefaultEvent = (): FormEvent => ({
-  audiovisual_files: {
-    [uuidv4()]: {
-      label: '',
-      file_type: 'Audio',
-      is_offline: false,
-      file_url: '',
-      duration: 90,
-      duration_overridden: false,
-      caption_set: [],
-    },
-  },
+  audiovisual_files: {},
   auto_generate_web_page: true,
   description: [
     {
@@ -34,7 +24,6 @@ export const generateDefaultEvent = (): FormEvent => ({
     },
   ],
   citation: '',
-  item_type: 'Audio',
   label: '',
 });
 
