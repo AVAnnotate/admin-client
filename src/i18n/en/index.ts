@@ -23,6 +23,7 @@ export default {
     ...buttons,
     ...pages,
     ...events,
+    ...tags,
     ...all,
   },
   pages: { ...buttons, ...pages, ...all },

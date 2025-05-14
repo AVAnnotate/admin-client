@@ -46,10 +46,7 @@ export const NewProject = (props: NewProjectProps) => {
       autoPopulateHomePage: project.auto_populate_home_page,
       visibility: project.is_private ? 'private' : 'public',
       generate_pages_site: !!project.generate_pages_site,
-      tags: project.tags
-        ? // @ts-ignore
-          mapTagData(project!.tags.data, map)
-        : undefined,
+      tags: project.tags,
     };
 
     fetch(`/api/projects/${project.slug}`, {
@@ -71,33 +68,12 @@ export const NewProject = (props: NewProjectProps) => {
   return (
     <div className='new-project-container container'>
       {saving && <LoadingOverlay />}
-      <SideTabScrollingContainer
-        sidebarHeaderLabel={t['Create New Project']}
-        tabs={[
-          {
-            name: 'general',
-            label: t['General'],
-          },
-          {
-            name: 'users',
-            label: t['Users'],
-          },
-          {
-            name: 'tags',
-            label: t['Tags'],
-          },
-        ]}
-        containerHeight={`${window.innerHeight - 120 - 90}px`}
+      <NewProjectForm
+        i18n={props.i18n}
+        onSave={handleSaveProject}
+        orgs={props.orgs}
         selection={selection}
-        onSelect={(selection) => setSelection(selection)}
-      >
-        <NewProjectForm
-          i18n={props.i18n}
-          onSave={handleSaveProject}
-          orgs={props.orgs}
-          selection={selection}
-        />
-      </SideTabScrollingContainer>
+      />
     </div>
   );
 };

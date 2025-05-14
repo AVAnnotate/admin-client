@@ -231,31 +231,35 @@
   background-color: white;
 }
 
-.slate-form h1 {
+.slate-form .heading-one {
   font-size: 32px;
   font-weight: bold;
-  line-height: auto;
+  padding: 0;
+  margin: 0;
 }
 
-.slate-form h2 {
+.slate-form .heading-two {
   font-size: 24px;
   font-weight: bold;
-  line-height: auto;
+  padding: 0;
+  margin: 0;
 }
 
-.slate-form h3 {
+.slate-form .heading-three {
   font-size: 18px;
   font-weight: bold;
-  line-height: auto;
+  padding: 0;
+  margin: 0;
 }
 
-.slate-form h4 {
+.slate-form .heading-four {
   font-size: 16px;
   font-weight: bold;
-  line-height: auto;
+  padding: 0;
+  margin: 0;
 }
 
-.slate-form small {
+.slate-form .small-text {
   font-size: 14px;
   font-weight: normal;
   line-height: 150%;
@@ -266,11 +270,3 @@
   font-weight: normal;
   line-height: 150%;
 }
-
-/* .slate-form .slate-grid {
-  background-color: #f6f6f6;
-}
-
-.slate-form .slate-grid p {
-  background-color: white;
-} */

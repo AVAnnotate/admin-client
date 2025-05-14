@@ -5,21 +5,25 @@ import type {
   Translations,
 } from '@ty/Types.ts';
 import './SetsTable.css';
-import { useCallback, useMemo, useState } from 'react';
-import { Table } from '@components/Table/Table.tsx';
-import { Pencil2Icon } from '@radix-ui/react-icons';
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { Pencil2Icon, PlusIcon } from '@radix-ui/react-icons';
 import { Trash } from 'react-bootstrap-icons';
 import { DeleteSetModal } from './DeleteSetModal.tsx';
 import { SetFormModal } from '../../components/SetModal/SetModal.tsx';
 import React from 'react';
+import { DragTable } from '@components/DragTable/DragTable.tsx';
+import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
+import { Button } from '@radix-ui/themes';
 
 interface Props {
   i18n: Translations;
   project: ProjectData;
   projectSlug: string;
   eventId: string;
+  avFileId: string;
 
   onUpdateAVFile(avUUID: string, avFile: AudiovisualFile): void;
+  onAddSet(avFileId: string): void;
 }
 
 type SetWithUuid = AnnotationPage & {
@@ -29,19 +33,110 @@ type SetWithUuid = AnnotationPage & {
 export const SetsTable: React.FC<Props> = (props) => {
   const [deleteSet, setDeleteSet] = useState<SetWithUuid | null>(null);
   const [editSet, setEditSet] = useState<SetWithUuid | null>(null);
+  const [sort, setSort] = useState<string[]>([]);
 
-  const { lang, t } = props.i18n;
+  const { t } = props.i18n;
 
-  const sets: SetWithUuid[] = useMemo(
-    () =>
-      Object.keys(props.project.annotations)
-        .filter((k) => props.project.annotations[k].event_id === props.eventId)
-        .map((uuid) => ({
-          ...props.project.annotations[uuid],
-          uuid,
-        })),
-    [props.project]
-  );
+  const label =
+    props.project.events[props.eventId].audiovisual_files[props.avFileId].label;
+
+  useEffect(() => {
+    const avFile: AudiovisualFile =
+      props.project.events[props.eventId].audiovisual_files[props.avFileId];
+
+    if (avFile.set_sort && avFile.set_sort.length > 0) {
+      setSort(avFile.set_sort);
+    } else {
+      const srt: string[] = [];
+      Object.keys(props.project.annotations).forEach((id) => {
+        const anno = props.project.annotations[id];
+        if (anno.source_id === props.avFileId) {
+          srt.push(id);
+        }
+      });
+      setSort(srt);
+    }
+  }, []);
+
+  // List of AV files that contain multiple sets. We can't allow deleting the only set
+  // belonging to an AV file because it will lead to weird behavior in Event Detail.
+  const multiSetAvFiles = () => {
+    const keys = Object.keys(props.project.annotations);
+
+    const seen: string[] = [];
+    const dupes: string[] = [];
+
+    for (let i = 0; i < keys.length; i++) {
+      const set = props.project.annotations[keys[i]];
+
+      if (seen.includes(set.source_id)) {
+        dupes.push(set.source_id);
+      } else {
+        seen.push(set.source_id);
+      }
+    }
+
+    return dupes;
+  };
+
+  const meatballOptions = (uuid: string) => {
+    const annos: AnnotationPage = props.project.annotations[uuid];
+
+    const options = [
+      {
+        // @ts-ignore
+        label: t['Edit'],
+        icon: Pencil2Icon,
+        onClick: () => setEditSet({ ...props.project.annotations[uuid], uuid }),
+      },
+    ];
+
+    if (multiSetAvFiles().includes(annos.source_id)) {
+      options.push({
+        label: t['Delete'],
+        onClick: () =>
+          setDeleteSet({ ...props.project.annotations[uuid], uuid }),
+        // @ts-ignore
+        icon: Trash,
+      });
+    }
+
+    return options;
+  };
+
+  const rows = sort
+    .filter(
+      (k) =>
+        props.project.annotations[k].event_id === props.eventId &&
+        props.project.annotations[k].source_id === props.avFileId
+    )
+    .map((uuid) => {
+      const anno = props.project.annotations[uuid];
+      const set =
+        props.project.events[anno.event_id].audiovisual_files[anno.source_id]
+          .caption_set;
+      let captions = false;
+      if (set && set.find((c) => c.annotation_page_id === uuid)) {
+        captions = true;
+      }
+      return {
+        id: uuid,
+        component: (
+          <>
+            <div className='av-label set-label'>{anno.set}</div>
+            <div className='av-label set-label'>{`${anno.annotations.length} ${t['Annotations']}`}</div>
+            <div>
+              {captions ? (
+                <div className='sets-table-captions-pill'>{t['Captions']}</div>
+              ) : (
+                <div />
+              )}
+            </div>
+            <MeatballMenu buttons={meatballOptions(uuid)} row={anno} />
+          </>
+        ),
+      };
+    });
 
   const getBaseUrl = useCallback(
     (set: SetWithUuid) =>
@@ -108,27 +203,6 @@ export const SetsTable: React.FC<Props> = (props) => {
 
     setEditSet(null);
   };
-
-  // List of AV files that contain multiple sets. We can't allow deleting the only set
-  // belonging to an AV file because it will lead to weird behavior in Event Detail.
-  const multiSetAvFiles = useMemo(() => {
-    const keys = Object.keys(props.project.annotations);
-
-    const seen: string[] = [];
-    const dupes: string[] = [];
-
-    for (let i = 0; i < keys.length; i++) {
-      const set = props.project.annotations[keys[i]];
-
-      if (seen.includes(set.source_id)) {
-        dupes.push(set.source_id);
-      } else {
-        seen.push(set.source_id);
-      }
-    }
-
-    return dupes;
-  }, [props.project]);
 
   const avFileOptions = useMemo(() => {
     const ret: { value: string; label: string }[] = [];
@@ -197,6 +271,30 @@ export const SetsTable: React.FC<Props> = (props) => {
     }
   };
 
+  const handleDrop = (pickedUp: any) => {
+    if (pickedUp) {
+      // ignore if we're dropping in the same spot it came from
+      if (pickedUp.hoverIndex === pickedUp.originalIndex) {
+        return;
+      }
+
+      let newArray = sort.filter((k) => k !== pickedUp.uuid);
+
+      newArray.splice(pickedUp.hoverIndex, 0, pickedUp.uuid);
+
+      setSort(newArray);
+
+      const file: AudiovisualFile = {
+        ...props.project.events[props.eventId].audiovisual_files[
+          props.avFileId
+        ],
+        set_sort: newArray,
+      };
+
+      props.onUpdateAVFile(props.avFileId, file);
+    }
+  };
+
   return (
     <div className='sets-table-root'>
       {deleteSet && (
@@ -216,7 +314,11 @@ export const SetsTable: React.FC<Props> = (props) => {
           onSave={onEdit}
           set={editSet}
           avFileOptions={avFileOptions}
-          isVideo={props.project.events[props.eventId].item_type === 'Video'}
+          isVideo={
+            props.project.events[props.eventId].audiovisual_files[
+              editSet.source_id
+            ].file_type === 'Video'
+          }
           canEditAVFile={true}
           useForCaptions={hasCaptions()}
           speakerCategory={getSpeakerCategory()}
@@ -225,70 +327,39 @@ export const SetsTable: React.FC<Props> = (props) => {
       )}
       <div className='sets-container'>
         <div className='set-list'>
-          <Table
-            emptyText={t['_no_sets_message_']}
-            items={sets}
-            rows={[
+          <DragTable
+            rows={rows}
+            entries={[
               {
-                className: 'set-name-cell',
-                property: 'set',
-                title: t['Name'],
-                width: '40%',
+                label: label,
+                gridWidth: '2fr',
               },
               {
-                className: 'set-name-cell',
-                property: (set: AnnotationPage) => {
-                  const event = props.project.events[set.event_id];
-                  const avFile = event.audiovisual_files[set.source_id];
-                  return avFile.label;
-                },
-                title: t['AV File'],
-                width: '30%',
+                label: '',
+                gridWidth: '1fr',
               },
               {
-                className: 'set-name-cell',
-                title: t['Number of Annotations'],
-                width: '20%',
-                property: (set: AnnotationPage) =>
-                  `${set.annotations.length} ${t['Annotations']}`,
+                label: '',
+                gridWidth: '100px',
               },
               {
-                className: 'set-name-cell',
-                property: (set: SetWithUuid) => {
-                  const event = props.project.events[set.event_id];
-                  const avFile = event.audiovisual_files[set.source_id];
-                  const found = avFile.caption_set
-                    ? avFile.caption_set.find(
-                        (s) => s.annotation_page_id === set.uuid
-                      )
-                    : undefined;
-                  return found ? (
-                    <div className='sets-table-captions-pill'>
-                      {t['Captions']}
-                    </div>
-                  ) : (
-                    ''
-                  );
-                },
-                title: '',
-                width: '10%',
+                label: '',
+                gridWidth: '40px',
               },
             ]}
-            rowButtons={[
-              {
-                label: t['Edit'],
-                onClick: (item: SetWithUuid) => setEditSet(item),
-                icon: Pencil2Icon,
-              },
-              {
-                label: t['Delete'],
-                onClick: (item: SetWithUuid) => setDeleteSet(item),
-                icon: Trash,
-                displayCondition: (item: SetWithUuid) =>
-                  multiSetAvFiles.includes(item.source_id),
-              },
-            ]}
-            showHeaderRow={true}
+            onDrop={handleDrop}
+            addButton={
+              <Button
+                className='primary set-add-av-button'
+                onClick={() => props.onAddSet(props.avFileId)}
+                type='button'
+                disabled={!props.eventId}
+              >
+                <PlusIcon color='white' />
+                {t['Add']}
+              </Button>
+            }
+            emptyMessage={t['_empty_av_files_message_']}
           />
         </div>
       </div>

@@ -28,6 +28,8 @@ interface CompareEventsModalProps {
   event1End?: number;
   event2Start?: number;
   event2End?: number;
+  event1Type?: string;
+  event2Type?: string;
 }
 
 export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
@@ -73,6 +75,15 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
     props.event2End
   );
 
+  const event1Type =
+    event1Uuid && event1File
+      ? props.project.events[event1Uuid].audiovisual_files[event1File].file_type
+      : undefined;
+  const event2Type =
+    event2Uuid && event2File
+      ? props.project.events[event2Uuid].audiovisual_files[event2File].file_type
+      : undefined;
+
   const event1 = useMemo(() => {
     if (event1Uuid && props.project.events![event1Uuid]) {
       return props.project.events![event1Uuid];
@@ -96,7 +107,7 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
         <Dialog.Title className='slate-dialog-title'>
-          {t['Compare Events']}
+          {t['Compare AV']}
         </Dialog.Title>
         <div className='slate-dialog-body'>
           <DurationInterface
@@ -186,12 +197,14 @@ export const CompareEventsModal: React.FC<CompareEventsModalProps> = (
                       start: event1Start,
                       end: event1End,
                       file: event1File || undefined,
+                      type: event1Type || undefined,
                     },
                     event2: {
                       uuid: event2Uuid,
                       start: event2Start,
                       end: event2End,
                       file: event2File || undefined,
+                      type: event2Type || undefined,
                     },
                   })
                 }

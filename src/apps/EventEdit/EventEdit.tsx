@@ -1,4 +1,4 @@
-import { EventForm } from '@components/EventForm/index.ts';
+import { EditEventForm } from '@components/EventForm/index.ts';
 import type {
   Annotation,
   Event,
@@ -11,6 +11,7 @@ import type React from 'react';
 import './EventEdit.css';
 import { Breadcrumbs } from '@components/Breadcrumbs/Breadcrumbs.tsx';
 import { useCallback, useMemo } from 'react';
+import { Theme } from '@radix-ui/themes';
 
 interface Props {
   event: Event;
@@ -63,22 +64,28 @@ export const EventEdit: React.FC<Props> = ({
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
           {
-            label: project.project.title,
+            label: t['Data Manager'],
             link: `/${lang}/projects/${projectSlug}`,
+          },
+          {
+            label: event.label,
+            link: `/${lang}/projects/${projectSlug}/events/${uuid}`,
           },
           { label: t['Edit Event'], link: '' },
         ]}
       />
       <div className='container'>
         <h1>{t['Edit Event']}</h1>
-        <EventForm
-          event={event}
-          i18n={i18n}
-          onSubmit={onSubmit}
-          project={project}
-          projectSlug={projectSlug}
-          uuid={uuid}
-        />
+        <Theme>
+          <EditEventForm
+            event={event}
+            i18n={i18n}
+            onSubmit={onSubmit}
+            project={project}
+            projectSlug={projectSlug}
+            uuid={uuid}
+          />
+        </Theme>
       </div>
     </div>
   );

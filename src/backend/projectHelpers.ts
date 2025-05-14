@@ -7,6 +7,10 @@ import {
   removeCollaborator,
   getUserRepos,
   getRepo,
+  getWorkflowInfo,
+  getWorkflowContent,
+  updateWorkflowContent,
+  triggerWorkflow,
 } from '@lib/GitHub/index.ts';
 import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
@@ -15,11 +19,13 @@ import type {
   AllProjects,
   ProjectData,
   Page,
+  Event,
   ProviderUser,
 } from '@ty/Types.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { IFs } from 'memfs';
 import type { RepositoryInvitation } from '@ty/github.ts';
+import type { apiPublishSite } from '@ty/api.ts';
 
 export const parseURL = (url: string) => {
   const splitStart = url.split('https://github.com/');
@@ -32,6 +38,8 @@ export const parseURL = (url: string) => {
     repo,
   };
 };
+
+const TEMPLATE_BRANCH = import.meta.env.OVERRIDE_TEMPLATE_BRANCH || 'main';
 
 export const getOrgs = async (
   userInfo: UserInfo
@@ -107,6 +115,41 @@ export const getPageData = (fs: IFs, topLevelNames: string[], dir: string) => {
   return { pages, order };
 };
 
+export const getEventData = (
+  context: GitRepoContext,
+  topLevelNames: string[],
+  dir: string
+) => {
+  const events: { [key: string]: Event } = {};
+
+  // Fill two separate arrays depending on whether a
+  // page is a child or a parent.
+  for (const filename of topLevelNames) {
+    if (filename !== 'order.json' && filename !== '.gitkeep') {
+      const file = context.readFile(`/data/${dir}/${filename}`);
+
+      try {
+        const contents: Event = JSON.parse(file.toString());
+        events[filename.replace('.json', '')] = contents;
+      } catch (e) {
+        console.warn(`Error parsing ${filename}: ${e}`);
+      }
+    }
+  }
+
+  let order: string[] = [];
+
+  if (context.exists(`/data/${dir}/order.json`)) {
+    console.log('Here!');
+    const orderFile = context.readFile(`/data/${dir}/order.json`);
+    order = JSON.parse(orderFile as string);
+  } else {
+    Object.keys(events).forEach((k) => order.push(k));
+  }
+
+  return { events, order };
+};
+
 export const getProject = async (
   userInfo: UserInfo,
   htmlUrl: string,
@@ -114,14 +157,13 @@ export const getProject = async (
 ) => {
   const fs = initFs();
 
-  const { exists, readDir, readFile, writeFile, commitAndPush } = await gitRepo(
-    {
+  const { exists, readDir, readFile, writeFile, commitAndPush, context } =
+    await gitRepo({
       fs: fs,
       repositoryURL: htmlUrl,
       branch: 'main',
       userInfo: userInfo,
-    }
-  );
+    });
 
   const proj = readFile('/data/project.json');
 
@@ -215,11 +257,14 @@ export const getProject = async (
       annotationFiles as unknown as string[],
       'annotations'
     );
-    project.events = getDirData(
-      fs,
+    const eventData = getEventData(
+      context,
       eventFiles as unknown as string[],
       'events'
     );
+
+    project.events = eventData.events;
+    project.eventOrder = eventData.order;
 
     project.annotations = getDirData(
       fs,
@@ -310,11 +355,14 @@ export const buildProjectData = (
     ? readDir('/data/annotations', '.json')
     : [];
 
-  project.events = getDirData(
-    options.fs,
+  const eventData = getEventData(
+    context,
     eventFiles as unknown as string[],
     'events'
   );
+
+  project.events = eventData.events;
+  project.eventOrder = eventData.order;
 
   project.annotations = getDirData(
     options.fs,
@@ -447,4 +495,132 @@ export const addCollaborators = async (
   }
   console.log('Collaborators updated');
   return collabs;
+};
+
+export const publishSite = async (
+  userInfo: UserInfo,
+  org: string,
+  repo: string,
+  projectName: string,
+  options: apiPublishSite
+) => {
+  // First make sure the workflow is current
+
+  // Get the SHA of the template repo
+  const resultBase = await getWorkflowInfo(
+    userInfo.token,
+    'avannotate',
+    'project-template',
+    'deploy-main.yml',
+    TEMPLATE_BRANCH
+  );
+
+  if (!resultBase.ok) {
+    console.log(
+      'Failed to get template repo workflow info: ',
+      resultBase.statusText
+    );
+    return false;
+  }
+
+  const base = await resultBase.json();
+  const baseSHA = base.sha;
+
+  // Get the SHA of the current project workflow
+  const resultCurrent = await getWorkflowInfo(
+    userInfo.token,
+    org,
+    repo,
+    'deploy-main.yml'
+  );
+
+  if (!resultCurrent.ok) {
+    console.log(
+      'Failed to get target repo workflow info: ',
+      resultCurrent.statusText
+    );
+    return false;
+  }
+
+  const current = await resultCurrent.json();
+  const repoSHA = current.sha;
+
+  if (baseSHA !== repoSHA) {
+    // Fetch the newest
+    const resultGet = await getWorkflowContent(
+      userInfo.token,
+      'avannotate',
+      'project-template',
+      'deploy-main.yml',
+      TEMPLATE_BRANCH
+    );
+
+    if (!resultGet.ok) {
+      console.log(
+        'Failed to get template repo workflow content: ',
+        resultGet.statusText
+      );
+      return;
+    }
+
+    const workflow = await resultGet.text();
+
+    // Update the current workflow
+    const resultPut = await updateWorkflowContent(
+      userInfo.token,
+      org,
+      repo,
+      'deploy-main.yml',
+      workflow,
+      repoSHA
+    );
+
+    if (!resultPut.ok) {
+      console.log('Failed to update workflow: ', resultPut.statusText);
+      return false;
+    }
+  }
+
+  // Update the project file
+  const repositoryURL = getRepositoryUrl(projectName);
+
+  const { readFile, writeFile, commitAndPush, context } = await gitRepo({
+    fs: initFs(),
+    repositoryURL,
+    userInfo: userInfo,
+  });
+
+  const projectData = readFile('/data/project.json');
+  const project: ProjectData = JSON.parse(projectData as string);
+
+  project.publish.publish_pages_app = !!options.publish_pages;
+  project.publish.publish_static_site = !!options.publish_static;
+
+  const res = await writeFile('/data/project.json', JSON.stringify(project));
+
+  if (!res) {
+    console.log('Failed to update project.json');
+    return false;
+  }
+
+  const resCommit = await commitAndPush('Update Project publish');
+  if (!resCommit.ok) {
+    console.log('Failed to update project file: ', resCommit.error);
+    return false;
+  }
+
+  // Now trigger the build
+  const resultTrigger = await triggerWorkflow(
+    userInfo.token,
+    org,
+    repo,
+    'deploy-main.yml'
+  );
+
+  if (!resultTrigger.ok) {
+    console.log('Failed to trigger deploy: ', resultTrigger.statusText);
+    return false;
+  }
+
+  return true;
 };

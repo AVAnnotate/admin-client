@@ -6,7 +6,7 @@
   height: 48px;
   width: 100%;
   background-color: var(--gray-200);
-  border-radius: 100px;
+  border-radius: 4px;
   display: flex;
   align-items: center;
   box-sizing: border-box;
@@ -26,17 +26,16 @@
   display: flex;
   align-items: center;
   justify-content: space-around;
-  font-weight: 400;
+  gap: 4px;
 }
 
 .player-control-panel .content .position-label .position {
-  width: 106px;
+  width: 70px;
   margin: 0;
 }
 
 .player-control-panel .content .position-label .duration {
-  width: 110px;
-  margin: 0 7px;
+  width: 72px;
   font-weight: 600;
 }
 

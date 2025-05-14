@@ -85,7 +85,7 @@ const EventSelect = (props: EventSelectProps) => {
         <div className='import-form-required' />
       </div>
       <div className='av-label'>
-        {t['Select which canvas or canvases you would like to add as events.']}
+        {t['Select which canvases to add as events.']}
       </div>
       <div className='import-form-event-list'>
         <div className='import-form-event-row'>

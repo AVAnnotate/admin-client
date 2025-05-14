@@ -10,6 +10,7 @@ import {
   SpreadsheetInputContextComponent,
 } from '@components/Formic/SpreadsheetInput/SpreadsheetInputContext.tsx';
 import { Button } from '@radix-ui/themes';
+import { FileEarmarkArrowUp } from 'react-bootstrap-icons';
 
 export interface ImportTagsDialogProps {
   i18n: Translations;
@@ -92,8 +93,11 @@ export const ImportTagsDialog = (props: ImportTagsDialogProps) => {
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger>
-        <Button className='primary'>{t['Import File']}</Button>
+      <Dialog.Trigger asChild>
+        <Button className='primary import-tags-dialog-button' type='button'>
+          <FileEarmarkArrowUp />
+          {t['Import']}
+        </Button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className='dialog-overlay' />

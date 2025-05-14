@@ -169,15 +169,15 @@ export const Element = ({
 
 export const Leaf = ({ attributes, children, leaf }: any) => {
   if (leaf.textSize === 'heading-one') {
-    children = <h1>{children}</h1>;
+    children = <div className='heading-one'>{children}</div>;
   } else if (leaf.textSize === 'heading-two') {
-    children = <h2>{children}</h2>;
+    children = <div className='heading-two'>{children}</div>;
   } else if (leaf.textSize === 'heading-three') {
-    children = <h3>{children}</h3>;
+    children = <div className='heading-three'>{children}</div>;
   } else if (leaf.textSize === 'heading-four') {
-    children = <h4>{children}</h4>;
+    children = <div className='heading-four'>{children}</div>;
   } else if (leaf.textSize === 'small') {
-    children = <small>{children}</small>;
+    children = <div className='small-text'>{children}</div>;
   }
   if (leaf.bold) {
     children = <b>{children}</b>;
@@ -257,6 +257,117 @@ export const emptyParagraph: SlateElement[] = [
     children: [{ text: '' }],
   },
 ];
+
+export const LeafPlain = ({ attributes, children, leaf }: any) => {
+  if (leaf.bold) {
+    children = <b>{children}</b>;
+  }
+
+  if (leaf.code) {
+    children = <code>{children}</code>;
+  }
+
+  if (leaf.italic) {
+    children = <i>{children}</i>;
+  }
+
+  if (leaf.underline) {
+    children = <u>{children}</u>;
+  }
+
+  if (leaf.strikethrough) {
+    children = <s>{children}</s>;
+  }
+
+  if (leaf.highlight) {
+    children = (
+      <span style={{ backgroundColor: leaf.highlight }}>{children}</span>
+    );
+  }
+
+  if (leaf.color) {
+    children = <span style={{ color: leaf.color }}>{children}</span>;
+  }
+
+  if (leaf.link) {
+    children = <a href={leaf.link}>{children}</a>;
+  }
+
+  return children;
+};
+
+export const ElementPlain = ({
+  attributes,
+  children,
+  element,
+  project,
+  i18n,
+}: any) => {
+  const { t } = i18n;
+
+  switch (element.type) {
+    case 'link':
+      return <a href={element.url}>{children}</a>;
+    case 'block-quote':
+      return <blockquote>{children}</blockquote>;
+    case 'bulleted-list':
+      return <ul>{children}</ul>;
+    case 'heading-one':
+      return <h1>{children}</h1>;
+    case 'heading-two':
+      return <h2>{children}</h2>;
+    case 'line-break':
+      return <br />;
+    case 'list-item':
+      return <li>{children}</li>;
+    case 'numbered-list':
+      return <ol>{children}</ol>;
+    case 'image':
+      return children.length > 0 ? (
+        <div>
+          <img src={element.url} alt='Embedded image' />
+          {children}
+        </div>
+      ) : (
+        <img src={element.url} alt='Embedded image' />
+      );
+    case 'paragraph':
+      return <p>{children}</p>;
+    default:
+      return <p>children</p>;
+  }
+};
+
+export const serializeToPlainHTML = (nodes: Node[]) => {
+  const i18n = getTranslationsFromUrl(window.location.href, 'pages');
+
+  return nodes.map((node, idx) => {
+    if (Text.isText(node)) {
+      return (
+        <LeafPlain leaf={node} key={node.text}>
+          {node.text}
+        </LeafPlain>
+      );
+    }
+
+    if (node.children) {
+      const children = node.children.map((node) => serialize([node]));
+      return (
+        <LeafPlain leaf={node} key={idx}>
+          <ElementPlain element={node} i18n={i18n}>
+            {children}
+          </ElementPlain>
+        </LeafPlain>
+      );
+    } else {
+      return (
+        <LeafPlain leaf={node} key={idx}>
+          <ElementPlain element={node} i18n={i18n} />
+        </LeafPlain>
+      );
+    }
+  });
+};
 
 export const serializeToPlainText = (nodes: Node[]) => {
   return nodes.map((n) => Node.string(n)).join('\n');

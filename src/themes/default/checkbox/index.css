@@ -1,0 +1,35 @@
+.checkbox-root {
+  background-color: white;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  max-width: 20px;
+  min-width: 20px;
+}
+
+.checkbox-root svg {
+  width: 18px;
+  height: 18px;
+  padding-top: 5px;
+}
+.checkbox-root:hover {
+  background-color: var(--gray-200);
+}
+.checkbox-root:focus {
+  box-shadow: none;
+}
+
+.checkbox-indicator {
+  color: black;
+}
+
+.checkbox-label {
+  color: black;
+  padding-left: 15px;
+  font-size: 15px;
+  line-height: 1;
+}

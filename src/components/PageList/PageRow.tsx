@@ -1,28 +1,54 @@
 import { MeatballMenu } from '@components/MeatballMenu/index.ts';
+import { makePageArray } from '@lib/pages/reorder.ts';
 import { Pencil2Icon } from '@radix-ui/react-icons';
-import { Box, Text } from '@radix-ui/themes';
+import { Box, Text, IconButton } from '@radix-ui/themes';
+import { Icon } from '@radix-ui/themes/dist/esm/components/callout.js';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import type { DraggedPage } from '@ty/ui.ts';
+import type { DraggedPage, MeatballMenuItem } from '@ty/ui.ts';
 import { useMemo } from 'react';
 import {
   ArrowReturnRight,
   BoxArrowUpRight,
-  GripVertical,
+  CaretRightFill,
+  CaretDownFill,
   Trash,
   FiletypeHtml,
+  AlignTop,
+  ListNested,
+  House,
+  HouseFill,
+  ArrowUp,
+  ArrowDown,
 } from 'react-bootstrap-icons';
+
+const truncate = (str: string) => {
+  if (str.length <= 36) {
+    return str;
+  }
+
+  return `${str.slice(0, 36)}...`;
+};
 
 interface Props {
   project: ProjectData;
+  order: string[];
   uuid: string;
   index: number;
-  pickedUp: DraggedPage | null;
-  setPickedUp: (arg: DraggedPage | null) => void;
   i18n: Translations;
-  onDrop: () => Promise<void>;
+  hasChildren: boolean;
+  expanded: boolean;
+  visible: boolean;
+  canGoUp: boolean;
+  canGoDown: boolean;
   onDisableAutoGeneration(): void;
   onReEnableAutoGeneration(): void;
+  onDesignateHome(): void;
+  onMakeTopLevel(): void;
+  onSetParent(pageId: string): void;
   onDelete(): void;
+  onSetExpanded(expanded: boolean): void;
+  onUp(): void;
+  onDown(): void;
 }
 
 export const PageRow: React.FC<Props> = (props) => {
@@ -33,38 +59,87 @@ export const PageRow: React.FC<Props> = (props) => {
 
   const { t } = props.i18n;
 
-  const meatballOptionsAutoGen = [
-    {
-      label: t['Disable Auto-Generation'],
-      icon: FiletypeHtml,
-      onClick: () => props.onDisableAutoGeneration(),
-    },
-    {
-      label: t['Open'],
-      icon: BoxArrowUpRight,
-      onClick: () => {
-        // See what kind of page this is
-        const type = props.project.pages[props.uuid].autogenerate.enabled
-          ? props.project.pages[props.uuid].autogenerate.type
-          : 'page';
-        let url;
-        if (type === 'home') {
-          url = `https://${props.project.project.github_org}.github.io/${props.project.project.slug}/`;
-        } else if (type === 'event') {
-          url = `https://${props.project.project.github_org}.github.io/${
-            props.project.project.slug
-          }/events/${props.project.pages[props.uuid].slug || props.uuid}`;
-        } else {
-          url = `https://${props.project.project.github_org}.github.io/${
-            props.project.project.slug
-          }/pages/${props.project.pages[props.uuid].slug || props.uuid}`;
-        }
-        return window.open(url, '_blank');
+  const meatballOptionsAutoGen = useMemo(() => {
+    const pageArray = makePageArray(props.project, props.order);
+
+    const options: MeatballMenuItem[] = [
+      {
+        label: t['Disable Auto-Generation'],
+        icon: FiletypeHtml,
+        onClick: () => props.onDisableAutoGeneration(),
       },
-    },
-  ];
+      {
+        label: t['Open'],
+        icon: BoxArrowUpRight,
+        onClick: () => {
+          // See what kind of page this is
+          const type = props.project.pages[props.uuid].autogenerate.enabled
+            ? props.project.pages[props.uuid].autogenerate.type
+            : 'page';
+          let url;
+          if (type === 'home') {
+            url = `https://${props.project.project.github_org}.github.io/${props.project.project.slug}/`;
+          } else if (type === 'event') {
+            url = `https://${props.project.project.github_org}.github.io/${
+              props.project.project.slug
+            }/events/${props.project.pages[props.uuid].slug || props.uuid}`;
+          } else {
+            url = `https://${props.project.project.github_org}.github.io/${
+              props.project.project.slug
+            }/pages/${props.project.pages[props.uuid].slug || props.uuid}`;
+          }
+          return window.open(url, '_blank');
+        },
+      },
+    ];
+
+    // Make a page top level
+    if (page.parent) {
+      options.push({
+        label: t['Make top-level page'],
+        icon: AlignTop,
+        // @ts-ignore
+        onClick: () => props.onMakeTopLevel(),
+      });
+    }
+
+    // Re-parent
+    const childPages: MeatballMenuItem[] = [];
+    for (const pageId in props.project.pages) {
+      if (pageId !== props.uuid) {
+        const page = props.project.pages[pageId];
+
+        // Cannot parent a page to one of its children
+        const entry = pageArray.find((a) => a.id === pageId);
+        if (entry) {
+          if (!entry.allChildren.includes(props.uuid)) {
+            childPages.push({
+              label: page.title,
+              icon: ListNested,
+              // @ts-ignore
+              onClick: () => props.onSetParent(pageId),
+            });
+          }
+        }
+      }
+    }
+    if (childPages.length > 0) {
+      // Set a parent
+      options.push({
+        hasSubmenus: true,
+        label: t['Make subpage of'],
+        icon: ListNested,
+        // @ts-ignore
+        onClick: () => {},
+        children: childPages,
+      });
+    }
+
+    return options;
+  }, [page]);
 
   const meatballOptions = useMemo(() => {
+    const pageArray = makePageArray(props.project, props.order);
     const options = [
       {
         label: t['Open'],
@@ -93,7 +168,9 @@ export const PageRow: React.FC<Props> = (props) => {
         label: t['Edit'],
         icon: Pencil2Icon,
         onClick: () =>
-          (window.location.href = `${window.location.href}/pages/${props.uuid}`),
+          (window.location.href = `${
+            window.location.origin + window.location.pathname
+          }/pages/${props.uuid}`),
       },
     ];
 
@@ -110,6 +187,60 @@ export const PageRow: React.FC<Props> = (props) => {
         icon: FiletypeHtml,
         // @ts-ignore
         onClick: () => props.onReEnableAutoGeneration(),
+      });
+    }
+
+    if (
+      props.project.pages[props.uuid] &&
+      props.project.pages[props.uuid].autogenerate.type !== 'home'
+    ) {
+      options.push({
+        label: t['Designate as Home Page'],
+        icon: House,
+        // @ts-ignore
+        onClick: () => props.onDesignateHome(),
+      });
+    }
+
+    // Re-parent
+    const childPages: MeatballMenuItem[] = [];
+    for (const pageId in props.project.pages) {
+      if (pageId !== props.uuid) {
+        const page = props.project.pages[pageId];
+
+        // Cannot parent a page to one of its children
+        const entry = pageArray.find((a) => a.id === pageId);
+        if (entry) {
+          if (!entry.allChildren.includes(props.uuid)) {
+            childPages.push({
+              label: page.title,
+              icon: ListNested,
+              // @ts-ignore
+              onClick: () => props.onSetParent(pageId),
+            });
+          }
+        }
+      }
+    }
+    if (childPages.length > 0) {
+      // Set a parent
+      options.push({
+        hasSubmenus: true,
+        label: t['Make subpage of'],
+        icon: ListNested,
+        // @ts-ignore
+        onClick: () => {},
+        children: childPages,
+      });
+    }
+
+    // Make a page top level
+    if (page.parent) {
+      options.push({
+        label: t['Make top-level page'],
+        icon: AlignTop,
+        // @ts-ignore
+        onClick: () => props.onMakeTopLevel(),
       });
     }
 
@@ -146,49 +277,97 @@ export const PageRow: React.FC<Props> = (props) => {
     }
   }, [page]);
 
+  const parentCount = useMemo(() => {
+    let count = 0;
+    let parent = page.parent;
+    while (parent) {
+      count++;
+      const parentPage = props.project.pages[parent];
+      parent = parentPage.parent;
+    }
+
+    return count;
+  }, [page]);
+
+  const arrowState = useMemo(() => {
+    let state = 'none';
+    if (props.hasChildren) {
+      if (props.expanded) {
+        state = 'down';
+      } else {
+        state = 'right';
+      }
+    }
+
+    return state;
+  }, [props.expanded, props.hasChildren]);
+
   return (
     <Box
-      className={`page-list-box ${
-        props.pickedUp?.hoverIndex === props.index
-          ? 'page-list-box-hovered'
-          : ''
-      }`}
-      draggable
+      className={`page-list-box ${props.visible ? '' : 'page-list-box-hidden'}`}
       key={props.uuid}
-      onDragStart={(_ev) => {
-        props.setPickedUp({
-          uuid: props.uuid,
-          originalIndex: props.index,
-          hoverIndex: props.index,
-        });
-      }}
-      onDragOver={(ev) => {
-        ev.preventDefault();
-        if (props.pickedUp) {
-          props.setPickedUp({
-            ...props.pickedUp,
-            hoverIndex: props.index,
-          });
-        }
-      }}
-      onDrop={async () => await props.onDrop()}
-      onDragEnd={() => props.setPickedUp(null)}
       height='56px'
       width='100%'
     >
-      <GripVertical />
       <Text className='page-title' weight='bold'>
-        {page.parent && <ArrowReturnRight />}
-        {page.title}
+        {arrowState === 'none' ? (
+          <div className='row-arrow-container' />
+        ) : arrowState === 'down' ? (
+          <div
+            className='row-arrow-container'
+            onClick={() => props.onSetExpanded(false)}
+          >
+            <CaretDownFill />
+          </div>
+        ) : (
+          <div
+            className='row-arrow-container'
+            onClick={() => props.onSetExpanded(true)}
+          >
+            <CaretRightFill />
+          </div>
+        )}
+        {page.autogenerate.type === 'home' ? (
+          <HouseFill />
+        ) : (
+          <div style={{ width: 16 }} />
+        )}
+        {page.parent && (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              paddingLeft: (parentCount - 1) * 16,
+            }}
+          >
+            <ArrowReturnRight />
+          </div>
+        )}
+        {truncate(page.title)}
       </Text>
       {page.autogenerate.enabled ? (
-        <div className='page-autogen-pill'>{`${t['Auto-Generated']}-${
-          t[page.autogenerate.type]
-        }`}</div>
+        <div className='page-autogen-pill'>{t['Auto-generated']}</div>
       ) : (
         <div />
       )}
       <span>{dateString}</span>
+      <div className='page-row-reorder'>
+        <IconButton
+          className='page-row-reorder-button'
+          disabled={!props.canGoUp}
+          onClick={props.onUp}
+        >
+          <ArrowUp color='white' />
+        </IconButton>
+        <IconButton
+          className='page-row-reorder-button'
+          disabled={!props.canGoDown}
+          onClick={props.onDown}
+        >
+          <ArrowDown color='white' />
+        </IconButton>
+      </div>
       <MeatballMenu
         buttons={
           page.autogenerate.enabled ? meatballOptionsAutoGen : meatballOptions

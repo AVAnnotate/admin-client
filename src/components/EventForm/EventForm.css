@@ -2,8 +2,9 @@
   margin-bottom: 100px;
 }
 
-.event-form .add-av-button {
-  margin-top: 20px;
+.event-form .field-caption {
+  padding-top: 6px;
+  padding-bottom: 12px;
 }
 
 .event-form .av-files-fields {
@@ -101,4 +102,40 @@
 
 .event-form .av-duration-override-button {
   height: 40px;
+}
+
+.event-form .title-row {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.event-form .av-type {
+  width: 100%;
+}
+
+.event-form .av-file-label {
+  width: 100%;
+}
+
+.event-form .av-file-type {
+  width: 100%;
+  background-color: var(--gray-300);
+}
+
+.event-form .av-file-url {
+  width: 100%;
+}
+
+.event-form .av-file-duration {
+  width: 100%;
+}
+
+.event-form .av-file-duration-override {
+  border-color: red;
+}
+
+.event-form .rights-statement {
+  padding-top: 10px;
 }

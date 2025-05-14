@@ -117,6 +117,7 @@ export const importIIIFManifest = async (
           : `Imported Event ${result.events.length + 1}`,
         updated_at: new Date().toISOString(),
         updated_by: userName,
+        rights_statement: mani.rights,
       },
     });
 

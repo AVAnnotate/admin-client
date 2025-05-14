@@ -21,6 +21,8 @@ import type { ToastContent } from '@components/Toast/ToastContent.ts';
 import { PlusIcon, DownloadIcon, TrashIcon } from '@radix-ui/react-icons';
 import { Button } from '@radix-ui/themes';
 import { exportTags } from '@lib/tags/index.ts';
+import { EmptyDashboard } from '@components/EmptyDashboard/EmptyDashboards.tsx';
+import { ImportTagsDialog } from '@apps/Tags/ImportTagsDialog/ImportTagsDialog.tsx';
 
 export interface TagsProps {
   i18n: Translations;
@@ -351,16 +353,6 @@ export const Tags = (props: TagsProps) => {
   return (
     <ToastProvider>
       {saving && <LoadingOverlay />}
-      <Breadcrumbs
-        items={[
-          { label: t['Projects'], link: `/${lang}/projects` },
-          {
-            label: props.project.project.title,
-            link: `/${lang}/projects/${props.projectSlug}`,
-          },
-          { label: t['Tags'], link: '' },
-        ]}
-      />
       <div className='tags-container'>
         <div className='tags-header-row'>
           <h1>{t['Tags']}</h1>
@@ -376,26 +368,35 @@ export const Tags = (props: TagsProps) => {
                   {t['Delete All Tags']}
                 </Button>
               )}
-            <Button className='primary' onClick={() => handleAddTagGroup()}>
-              <PlusIcon />
-              {t['Tag Group']}
-            </Button>
             <Button
-              className='outline'
+              className='outline tags-csv-button'
               onClick={() => handleDownloadTags()}
               type='button'
             >
               <DownloadIcon />
               {t['CSV']}
             </Button>
+            <Button
+              className='primary tags-create-tag-group-button'
+              onClick={() => handleAddTagGroup()}
+            >
+              <PlusIcon />
+              {t['Tag Group']}
+            </Button>
           </div>
         </div>
         {!tags || tags?.tagGroups.length === 0 ? (
-          <NoTags
-            i18n={props.i18n}
-            onAddTagGroup={handleAddTagGroup}
-            onImportTags={handleImportTags}
-          />
+          <EmptyDashboard description={t['No tags have been added']}>
+            <ImportTagsDialog i18n={props.i18n} onSave={handleImportTags} />
+            <button
+              type='button'
+              className='outline av-label-bold tags-empty-button'
+              onClick={handleAddTagGroup}
+            >
+              <PlusIcon />
+              {t['Add']}
+            </button>
+          </EmptyDashboard>
         ) : (
           <div className='tags-grid'>
             {tags.tagGroups.map((g) => (

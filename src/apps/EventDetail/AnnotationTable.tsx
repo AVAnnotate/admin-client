@@ -1,8 +1,9 @@
 import { MeatballMenu } from '@components/MeatballMenu/index.ts';
 import { formatTimestamp } from '@lib/events/index.ts';
 import { serialize } from '@lib/slate/index.tsx';
+import { DotsThree } from '@phosphor-icons/react/dist/icons/DotsThree';
 import { Pencil2Icon } from '@radix-ui/react-icons';
-import { Table } from '@radix-ui/themes';
+import { Button, Table } from '@radix-ui/themes';
 import type {
   AnnotationEntry,
   ProjectData,
@@ -10,7 +11,8 @@ import type {
   Translations,
 } from '@ty/Types.ts';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Trash } from 'react-bootstrap-icons';
+import { FileEarmarkArrowUp, Plus, Trash } from 'react-bootstrap-icons';
+import useExpandHeight from 'src/hooks/useExpandHeight.tsx';
 
 interface TagListProps {
   groups: {
@@ -102,19 +104,22 @@ const TagList: React.FC<TagListProps> = (props) => {
 interface AnnotationTableProps {
   i18n: Translations;
   displayAnnotations: AnnotationEntry[];
+  eventUuid: string;
   hideHeader?: boolean;
   project: ProjectData;
+  projectSlug: string;
   setDeleteAnnoUuid: (uuid: string) => void;
   setEditAnnoUuid: (uuid: string) => void;
   setAnnoPosition: (pos: number) => void;
+  setShowAnnoCreateModal: (arg: boolean) => void;
   tagPosition?: 'below' | 'column';
   tagRows?: number;
 }
 
-export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
+const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
   const [tagCellWidth, setTagCellWidth] = useState(0);
 
-  const { t } = props.i18n;
+  const { t, lang } = props.i18n;
 
   const tagPosition = props.tagPosition || 'column';
 
@@ -140,8 +145,37 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
     return () => resizeObserver.disconnect();
   }, []);
 
+  const emptyNotice = useMemo(
+    () => (
+      <Table.Cell colSpan={4} className='empty-annos-note'>
+        <p>{t['No annotations have been added.']}</p>
+        <div className='empty-annos-buttons'>
+          <Button
+            className='primary'
+            type='button'
+            onClick={() => props.setShowAnnoCreateModal(true)}
+          >
+            <FileEarmarkArrowUp /> {t['Add']}
+          </Button>
+          <a
+            href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`}
+          >
+            <Button className='outline' type='button'>
+              <Plus color='black' /> {t['Import']}
+            </Button>
+          </a>
+        </div>
+      </Table.Cell>
+    ),
+    []
+  );
+
+  const containerRef = useRef(null);
+
+  useExpandHeight(containerRef);
+
   return (
-    <div className='event-detail-table-container'>
+    <div className='event-detail-table-container' ref={containerRef}>
       <Table.Root>
         {!props.hideHeader && (
           <Table.Header>
@@ -167,13 +201,9 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
             </Table.Row>
           </Table.Header>
         )}
-        <Table.Body>
+        <Table.Body className='annotation-table-body'>
           {props.displayAnnotations.length === 0 && !props.hideHeader && (
-            <Table.Row>
-              <Table.Cell colSpan={4} className='empty-annos-note'>
-                <p>{t['No annotations have been added.']}</p>
-              </Table.Cell>
-            </Table.Row>
+            <Table.Row>{emptyNotice}</Table.Row>
           )}
           {props.displayAnnotations.map((an) => (
             <Table.Row className='annotation-table-row' key={an.uuid}>
@@ -230,6 +260,7 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
                         onClick: () => props.setDeleteAnnoUuid(an.uuid),
                       },
                     ]}
+                    icon={DotsThree}
                     row={t}
                   />
                 </div>
@@ -239,10 +270,10 @@ export const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
         </Table.Body>
       </Table.Root>
       {props.displayAnnotations.length === 0 && props.hideHeader && (
-        <div className='empty-table-replacement'>
-          <p>{t['No annotations have been added.']}</p>
-        </div>
+        <>{emptyNotice}</>
       )}
     </div>
   );
 };
+
+export default AnnotationTable;

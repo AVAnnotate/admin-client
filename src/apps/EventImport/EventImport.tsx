@@ -76,10 +76,10 @@ export const EventImport: React.FC<Props> = (props) => {
         items={[
           { label: t['Projects'], link: `/${lang}/projects` },
           {
-            label: props.project.project.title,
+            label: t['Data Manager'],
             link: `/${lang}/projects/${props.projectSlug}`,
           },
-          { label: t['Edit Event'], link: '' },
+          { label: t['Import Events'], link: '' },
         ]}
       />
       <div className='container'>
@@ -186,9 +186,9 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         value: 'description',
       },
       {
-        label: t['Event Item Type'],
+        label: t['AV Type'],
         required: true,
-        value: 'item_type',
+        value: 'audiovisual_file_type',
       },
       {
         label: t['AV File Label'],
@@ -196,7 +196,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
         value: 'audiovisual_file_label',
       },
       {
-        label: t['AV File URL'],
+        label: t['AV Reference'],
         required: true,
         value: 'audiovisual_file_url',
       },
@@ -291,7 +291,7 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
             </Dialog.Portal>
           </Dialog.Root>
         )}
-        <h1>{t['Import events file']}</h1>
+        <h1>{t['Import Events']}</h1>
         <p>{t['event_import_message']}</p>
         <SpreadsheetInput
           accept='.tsv, .csv, .xlsx, .xls, .txt'
@@ -299,16 +299,6 @@ export const FormContents: React.FC<FormContentsProps> = (props) => {
           label={t['Events file']}
           name='events'
           importAsOptions={importAsOptions}
-        />
-        <Separator.Root className='SeparatorRoot' decorative />
-        <ToggleInput
-          helperText={
-            t[
-              'Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.'
-            ]
-          }
-          label={t['Auto-generate web page for this event?']}
-          name='autogenerate_web_pages'
         />
         <BottomBar>
           <div className='bottom-bar-flex'>

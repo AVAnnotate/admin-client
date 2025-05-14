@@ -68,6 +68,7 @@ export type ProviderUser = {
 
 export type Publish = {
   publish_pages_app: boolean;
+  publish_static_site: boolean;
   publish_sha: string;
   publish_iso_date: string;
 };
@@ -80,10 +81,12 @@ export type CaptionSet = {
 export type AudiovisualFile = {
   label: string;
   is_offline: boolean;
+  file_type: 'Audio' | 'Video';
   file_url: string;
   duration: number;
   duration_overridden?: boolean;
   caption_set?: CaptionSet[];
+  set_sort?: string[];
 };
 
 // is_offline is stored as a string on the form
@@ -93,15 +96,21 @@ export type FormAudiovisualFile = Omit<AudiovisualFile, 'is_offline'> & {
 
 export type Event = {
   audiovisual_files: { [key: string]: AudiovisualFile };
+  av_file_order?: string[];
   auto_generate_web_page: boolean;
   description: Node[];
   citation?: string;
+  rights_statement?: string;
   created_at: string;
   created_by: string;
-  item_type: 'Audio' | 'Video';
+  item_type?: 'Audio' | 'Video';
   label: string;
   updated_at: string;
   updated_by: string;
+};
+
+export type EventWithUUID = Event & {
+  uuid: string;
 };
 
 export interface FormEvent
@@ -164,6 +173,7 @@ export type ProjectData = {
   annotations: { [key: string]: Annotation };
 
   events: { [key: string]: Event };
+  eventOrder?: string[];
 
   pages: { [key: string]: Page };
   pageOrder?: string[];

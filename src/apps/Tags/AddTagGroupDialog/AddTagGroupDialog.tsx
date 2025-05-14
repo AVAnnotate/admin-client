@@ -82,17 +82,13 @@ export const AddTagGroupDialog = (props: AddTagGroupDialogProps) => {
           <Dialog.Title className='dialog-title'>
             {props.name ? t['Edit Tag Group'] : t['Add Tag Group']}
           </Dialog.Title>
-          <div className='av-label-bold add-tag-group-label'>
-            {t['Tag Group Name']}
-          </div>
+          <div className='av-label-bold add-tag-group-label'>{t['Label']}</div>
           <input
             className='add-tag-group-name-input'
             onChange={(e) => setName(e.target.value)}
             value={name || ''}
           ></input>
-          <div className='av-label-bold add-tag-group-label'>
-            {t['Tag Color']}
-          </div>
+          <div className='av-label-bold add-tag-group-label'>{t['Color']}</div>
           <div className='add-tag-group-color-grid'>
             {TagColors.map((c) => {
               return (

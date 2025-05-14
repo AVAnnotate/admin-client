@@ -1,13 +1,29 @@
 .project-container {
-  margin: 60px auto;
-  max-width: 1200px;
+  width: 100%;
+}
+
+.project-container .project-back {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  background-color: var(--secondary);
+  align-items: center;
+  color: white;
+  padding-left: 32px;
+  padding-top: 15px;
+  gap: 5px;
+  cursor: pointer;
 }
 
 .project-container .project-top-bar {
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: center;
   width: 100%;
+  background-color: var(--secondary);
+  padding: 0 63px;
 }
 
 .project-container .project-top-bar .project-title {
@@ -15,6 +31,7 @@
   gap: 5px;
   display: flex;
   flex-direction: row;
+  color: white;
 }
 
 .project-container .project-top-bar .project-top-bar-buttons {
@@ -25,10 +42,13 @@
 
 .project-container .project-top-bar .project-top-bar-buttons .settings-button {
   padding: 5px;
-  border-radius: 50px;
+  width: 38px;
+  height: 38px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid var(--gray-400);
   background: none;
 }
 
@@ -36,7 +56,7 @@
   .project-top-bar
   .project-top-bar-buttons
   .settings-button:hover {
-  background: var(--gray-400);
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 .project-container
@@ -44,7 +64,7 @@
   .project-top-bar-buttons
   .settings-button
   svg {
-  color: var(--gray-900);
+  color: white;
   height: 24px;
   width: 24px;
 }
@@ -52,11 +72,39 @@
 .project-dropdown-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 4px;
 }
 
 .project-breadcrumb-container {
   position: sticky;
   top: 60px;
   z-index: 2;
+}
+
+.project-container .project-tabs {
+  background-color: var(--secondary);
+}
+
+.project-container .avatar-list {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 16px;
+}
+
+.project-container .avatar-list .avatar-container {
+  margin-left: -16px;
+}
+
+.avatar-tooltip-content {
+  background-color: white;
+  padding: 8px;
+  box-shadow: hsl(206 22% 7% / 35%) 0px 10px 38px -10px;
+  border-radius: 5px;
+  animation-duration: 400ms;
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+}
+.avatar-tooltip-content-arrow {
+  fill: white;
 }

@@ -1,6 +1,6 @@
 import * as Dialog from '@radix-ui/react-dialog';
 import type { Includes, SlateEventNodeData } from '../../types/slate.ts';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   ClipInterface,
   DurationInterface,
@@ -38,6 +38,7 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
     props.start || props.end ? 'clip' : 'full'
   );
   const [file, setFile] = useState(props.file || undefined);
+  const [type, setType] = useState<'Audio' | 'Video' | undefined>();
   const [includes, setIncludes] = useState<Includes[]>(
     props.includes || ['media', 'annotations', 'label', 'description']
   );
@@ -52,6 +53,16 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
     }
   }, [eventUuid]);
 
+  useEffect(() => {
+    if (file && eventUuid) {
+      const type =
+        props.project.events[eventUuid as string].audiovisual_files[file]
+          .file_type;
+
+      setType(type);
+    }
+  }, [file, eventUuid]);
+
   const { t } = props.i18n;
 
   return (
@@ -59,7 +70,7 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
       <Dialog.Overlay className='slate-dialog-overlay' />
       <Dialog.Content className='slate-dialog-content'>
         <Dialog.Title className='slate-dialog-title'>
-          {t['Embed Event']}
+          {t['Embed AV']}
         </Dialog.Title>
         <div className='slate-dialog-body'>
           {Object.keys(props.project.events!).length === 0 ? (
@@ -126,6 +137,7 @@ export const SingleEventModal: React.FC<SingleEventModalProps> = (props) => {
                   start,
                   end,
                   file,
+                  type,
                 })
               }
             >
