@@ -317,7 +317,11 @@ export const SetsTable: React.FC<Props> = (props) => {
           isVideo={
             props.project.events[props.eventId].audiovisual_files[
               editSet.source_id
-            ].file_type === 'Video'
+            ].file_type
+              ? props.project.events[props.eventId].audiovisual_files[
+                  editSet.source_id
+                ].file_type === 'Video'
+              : props.project.events[props.eventId].item_type === 'Video'
           }
           canEditAVFile={true}
           useForCaptions={hasCaptions()}
