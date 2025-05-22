@@ -61,8 +61,8 @@ const insertEvent = (
   const paragraph = { type: 'paragraph', children: [{ text: '' }] };
 
   const eventObj: any = {
-    type: 'event',
     ...event,
+    type: 'event',
     children: [{ text: '' }],
   };
 
@@ -74,8 +74,8 @@ const insertEventComparison = (
   data: SlateCompareEventData
 ) => {
   const eventObj: any = {
-    type: 'event-comparison',
     ...data,
+    type: 'event-comparison',
     children: [{ text: '' }],
   };
 
