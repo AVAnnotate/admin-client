@@ -73,11 +73,11 @@ const FormContents = (props: EditProjectFormProps) => {
           {props.projectData.project.creator ===
             props.userInfo.profile.gitHubName && (
             <>
-              <h2>{t['Users']}</h2>
+              <h2>{t['Collaborators']}</h2>
               <UserList
-                label={t['Users']}
+                label={t['Collaborators']}
                 name='additional_users'
-                addString={t['add']}
+                addString={t['Add Collaborator']}
                 nameString={t['User GitHub Name']}
                 i18n={props.i18n}
               />
