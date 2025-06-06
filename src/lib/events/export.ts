@@ -14,7 +14,9 @@ const serializeRichText = (nodes: Node[]) => {
   str = str.replace('<div>', '');
   str = str.replace('</div>', '');
   str = str.replace('<span>', '');
-  return str.replace('</span>', '');
+  str = str.replace('</span>', '');
+  str = str.replace('<p>', '');
+  return str.replace('</p>', '');
 };
 
 export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {
@@ -63,7 +65,7 @@ export const exportEvents = (projectName: string, events: Event[]) => {
         event.description ? serializeRichText(event.description) : '',
       ];
 
-      str += fields.map(formatField).join(',');
+      str += fields.map((f) => formatField(f)).join(',');
       str += '\n';
     });
   });
