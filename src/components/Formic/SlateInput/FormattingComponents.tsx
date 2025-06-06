@@ -250,6 +250,8 @@ export const ImageButton = (props: ImageDialogProps) => {
               role='button'
               onClick={() => {
                 submit();
+                setUrl(undefined);
+                setCaption(undefined);
                 props.onClose && props.onClose();
               }}
             >
