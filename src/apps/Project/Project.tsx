@@ -18,6 +18,7 @@ import * as Tooltip from '@radix-ui/react-tooltip';
 import { Avatar } from '@components/Avatar/Avatar.tsx';
 import { DataManager } from '@components/DataManager/DataManager.tsx';
 import { SiteBuilder } from '@components/SiteBuilder/SiteBuilder.tsx';
+import { BuildStatus } from '@components/BuildStatus/BuildStatus.tsx';
 
 interface Props {
   i18n: Translations;
@@ -80,6 +81,7 @@ export const Project: React.FC<Props> = (props) => {
         </div>
         <div className='project-top-bar'>
           <h2 className='project-title'>{props.project.project.title}</h2>
+          <BuildStatus projectSlug={props.projectSlug} i18n={props.i18n} />
           <div className='project-top-bar-buttons'>
             <div className='avatar-list'>
               <Tooltip.Provider delayDuration={0}>
