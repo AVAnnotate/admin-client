@@ -4,7 +4,7 @@ import { Theme } from '@radix-ui/themes';
 import { TopBar } from '@components/TopBar';
 import { getTranslations } from '@i18n';
 import type { MyProfile } from '@ty/Types.ts';
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -23,7 +23,7 @@ const { profile, title } = Astro.props;
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
     <meta name='generator' content={Astro.generator} />
     <title>{title}</title>
-    <ViewTransitions />
+    <ClientRouter />
   </head>
   <body>
     <TopBar
