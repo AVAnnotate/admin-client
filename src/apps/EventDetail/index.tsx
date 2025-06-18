@@ -47,7 +47,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const sets = useMemo(() => {
     const setsSort = props.event.audiovisual_files[tab.uuid].set_sort;
 
-    return setsSort
+    return setsSort && setsSort.length > 0
       ? setsSort
       : Object.keys(props.project.annotations).filter((uuid) => {
           const setObj = props.project.annotations[uuid];
