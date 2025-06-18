@@ -45,13 +45,17 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const [tab, setTab] = useState(tabs[0]);
 
   const sets = useMemo(() => {
-    return Object.keys(props.project.annotations).filter((uuid) => {
-      const setObj = props.project.annotations[uuid];
+    const setsSort = props.event.audiovisual_files[tab.uuid].set_sort;
 
-      return (
-        setObj.event_id === props.eventUuid && setObj.source_id === tab.uuid
-      );
-    });
+    return setsSort && setsSort.length > 0
+      ? setsSort
+      : Object.keys(props.project.annotations).filter((uuid) => {
+          const setObj = props.project.annotations[uuid];
+
+          return (
+            setObj.event_id === props.eventUuid && setObj.source_id === tab.uuid
+          );
+        });
   }, [tab, props.project.annotations]);
 
   const baseUrl = useMemo(

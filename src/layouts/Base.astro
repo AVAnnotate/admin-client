@@ -1,7 +1,7 @@
 ---
 import '@themes/default/index.css';
 import { Theme } from '@radix-ui/themes';
-import { ViewTransitions } from 'astro:transitions';
+import { ClientRouter } from 'astro:transitions';
 
 interface Props {
   title: string;
@@ -19,7 +19,7 @@ const { title } = Astro.props;
     <link rel='icon' type='image/svg+xml' href='/favicon.svg' />
     <meta name='generator' content={Astro.generator} />
     <title>{title}</title>
-    <ViewTransitions />
+    <ClientRouter />
   </head>
   <body>
     <Theme client:only='react'>

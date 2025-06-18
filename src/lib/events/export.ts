@@ -6,15 +6,29 @@ import type { Node } from 'slate';
 
 // add another quote to escape any quotes, and surround the value in quotes
 // (see https://stackoverflow.com/a/17808731)
-const formatField = (str: string) => `"${str.replaceAll('"', '""')}"`;
+const formatField = (str: string) =>
+  str ? `"${str.replaceAll('"', '""')}"` : '';
 
 const serializeRichText = (nodes: Node[]) => {
   let str = ReactDOMServer.renderToString(serializeToPlainHTML(nodes));
 
-  str = str.replace('<div>', '');
-  str = str.replace('</div>', '');
-  str = str.replace('<span>', '');
-  return str.replace('</span>', '');
+  function altReplace(str: string, tags: string[], replacement: string) {
+    let outStr = str;
+    tags.forEach((tag) => {
+      outStr = outStr.split(`<${tag}>`).join(replacement);
+    });
+
+    return outStr;
+  }
+
+  // Such a hack. May the programming gods forgive me...
+  let ret = altReplace(str, ['div', '/div', 'span', '/span', 'p'], '');
+  ret = altReplace(ret, ['/p'], '<br>');
+  if (ret.endsWith('<br>')) {
+    return ret.slice(0, ret.length - 4);
+  } else {
+    return ret;
+  }
 };
 
 export const exportAnnotations = (annos: AnnotationEntry[], event: Event) => {

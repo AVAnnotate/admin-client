@@ -35,5 +35,8 @@
   "Ascending": "Ascending",
   "Descending": "Descending",
   "Audiovisual Events": "Audiovisual Events",
-  "Repository": "Repository"
+  "Repository": "Repository",
+  "Collaborators": "Collaborators",
+  "Adding additional GitHub users will give them access to edit most aspects of a project.": "Adding additional GitHub users will give them access to edit most aspects of a project.",
+  "Add Collaborator": "Add Collaborator"
 }

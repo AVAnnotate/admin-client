@@ -302,35 +302,76 @@ export const PageList: React.FC<Props> = (props) => {
 
   const handleDesignateHome = async (uuid: string) => {
     const copy: ProjectData = JSON.parse(JSON.stringify(project));
+    let pageArray: OrderEntry[] = makePageArray(copy, pageOrder as string[]);
 
     let prevHome: Page | undefined;
+    let prevHomeId: string | undefined;
 
-    for (uuid in copy.pages) {
-      if (copy.pages[uuid].autogenerate.type === 'home') {
-        prevHome = copy.pages[uuid];
+    for (let id in copy.pages) {
+      if (copy.pages[id].autogenerate.type === 'home') {
+        prevHome = copy.pages[id];
+        prevHomeId = id;
       }
     }
     const page = copy.pages[uuid];
     setSaving(true);
 
-    page.autogenerate.type === 'home';
-    if (prevHome) {
-      prevHome.autogenerate.enabled = false;
-      prevHome.autogenerate.type = 'custom';
-    }
-    const res = await fetch(
-      `/api/projects/${props.projectSlug}/pages/${uuid}`,
-      {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ page: page }),
-      }
-    );
+    page.autogenerate.enabled = false;
+    page.autogenerate.type = 'home';
+    page.parent = undefined;
 
-    if (res.ok) {
-      setProject(copy);
+    // Now set page order. Home should be first
+    const idxCur = pageArray.findIndex((a) => a.id === uuid);
+    if (idxCur > -1) {
+      let cur = pageArray[idxCur];
+      if (cur.parent) {
+        let parent = pageArray.find((p) => p.id === cur.parent);
+        if (parent) {
+          const idx = parent.children.findIndex((i) => i === uuid);
+          if (idx > -1) {
+            parent.children.splice(idx, 1);
+          }
+          cur.parent = undefined;
+        }
+      }
+
+      pageArray.splice(idxCur, 1);
+      pageArray.unshift(cur);
+      if (prevHome && prevHomeId !== uuid) {
+        prevHome.autogenerate.enabled = false;
+        prevHome.autogenerate.type = 'custom';
+        const res = await fetch(
+          `/api/projects/${props.projectSlug}/pages/${prevHomeId}`,
+          {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ page: prevHome }),
+          }
+        );
+
+        if (!res.ok) {
+          setSaving(false);
+        }
+      }
+      const res = await fetch(
+        `/api/projects/${props.projectSlug}/pages/${uuid}`,
+        {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ page: page }),
+        }
+      );
+
+      if (res.ok) {
+        const order = getOrderFromPageArray(pageArray);
+        setPageOrder(order);
+        setProject(copy);
+        setSaving(false);
+      }
     }
 
     setSaving(false);
