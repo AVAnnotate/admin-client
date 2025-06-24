@@ -189,6 +189,12 @@ interface EventSelectProps {
 }
 
 export const EventSelect: React.FC<EventSelectProps> = (props) => {
+  const sortedEvents = Object.keys(props.project.events)
+    .map((uuid) => {
+      const event = props.project.events[uuid];
+      return { uuid, label: event.label };
+    })
+    .sort((a, b) => a.label.localeCompare(b.label));
   return (
     <label className='slate-event-select'>
       {props.label}
@@ -205,11 +211,15 @@ export const EventSelect: React.FC<EventSelectProps> = (props) => {
         <Select.Content className='select-content' position='popper'>
           <Select.Viewport className='select-viewport'>
             {/* @ts-ignore */}
-            {Object.keys(props.project.events).map((uuid) => (
-              <Select.Item className='select-item' key={uuid} value={uuid}>
+            {sortedEvents.map((ev) => (
+              <Select.Item
+                className='select-item'
+                key={ev.uuid}
+                value={ev.uuid}
+              >
                 <Select.ItemText>
                   {/* @ts-ignore */}
-                  {props.project.events[uuid].label}
+                  {ev.label}
                 </Select.ItemText>
                 <Select.ItemIndicator />
               </Select.Item>
