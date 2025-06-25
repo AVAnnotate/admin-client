@@ -83,6 +83,7 @@ export const LinkButton = (props: LinkDialogProps) => {
 
   const submit = () => {
     props.onSubmit(url);
+    setUrl('');
     setOpen(false);
   };
 
@@ -132,7 +133,10 @@ export const LinkButton = (props: LinkDialogProps) => {
           <Dialog.Close asChild>
             <Button
               className='unstyled'
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setUrl('');
+                setOpen(false);
+              }}
               role='button'
             >
               {t['cancel']}

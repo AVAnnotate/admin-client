@@ -38,18 +38,20 @@ export const PageList: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (pageOrder) {
-      let state: RowState = {};
+      let state: RowState = { ...rowState };
 
       const orderArray = makePageArray(project, pageOrder);
 
       orderArray.forEach((entry, idx) => {
-        state[entry.id] = {
-          uuid: entry.id,
-          expanded: true,
-          parent: entry.parent,
-          visible: true,
-          hasChildren: entry.children.length > 0,
-        };
+        if (!state[entry.id]) {
+          state[entry.id] = {
+            uuid: entry.id,
+            expanded: true,
+            parent: entry.parent,
+            visible: true,
+            hasChildren: entry.children.length > 0,
+          };
+        }
 
         // Now determine how we can move this item
         state[entry.id].canGoDown = false;

@@ -131,7 +131,7 @@ export const PageRow: React.FC<Props> = (props) => {
         icon: ListNested,
         // @ts-ignore
         onClick: () => {},
-        children: childPages,
+        children: childPages.sort((a, b) => a.label.localeCompare(b.label)),
       });
     }
 
