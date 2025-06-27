@@ -88,6 +88,7 @@ export const LinkButton = (props: LinkDialogProps) => {
     setOpen(false);
   };
 
+  // @ts-expect-error
   const isActive = Editor.marks(editor)?.link;
 
   return (
