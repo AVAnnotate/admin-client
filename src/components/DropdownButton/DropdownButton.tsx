@@ -23,7 +23,11 @@ export const DropdownButton: React.FC<DropdownButtonProps> = (props) => {
 
   return (
     <>
-      <Dropdown.Root modal={false} open={open}>
+      <Dropdown.Root
+        modal={false}
+        open={open}
+        onOpenChange={(isOpen) => (isOpen ? {} : setOpen(false))}
+      >
         <Dropdown.Trigger asChild>
           <Button
             className='dropdown-button primary'
