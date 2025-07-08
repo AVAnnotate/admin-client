@@ -53,14 +53,14 @@ export const AnnotationTableHeader: React.FC<Props> = (props) => {
                   className='dropdown-item'
                   onClick={() => props.setShowAnnoCreateModal(true)}
                 >
-                  <FileEarmarkArrowUp />
-                  {t['Add']}
+                  <Plus color='black' />
+                  {t['Create']}
                 </Dropdown.Item>
                 <Dropdown.Item className='dropdown-item'>
                   <a
                     href={`/${lang}/projects/${props.projectSlug}/events/${props.eventUuid}/import`}
                   >
-                    <Plus color='black' />
+                    <FileEarmarkArrowUp />
                     {t['Import']}
                   </a>
                 </Dropdown.Item>
