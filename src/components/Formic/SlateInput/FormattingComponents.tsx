@@ -7,6 +7,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import type { AVAEditor, ImageData, ImageSize } from '@ty/slate.ts';
 import type { Translations } from '@ty/Types.ts';
 import { ToolbarTooltip } from './ToolbarTooltip.tsx';
+import { Editor } from 'slate';
 
 export const HighlightColorButton = (props: SlateButtonProps) => {
   const editor = useSlate();
@@ -83,8 +84,12 @@ export const LinkButton = (props: LinkDialogProps) => {
 
   const submit = () => {
     props.onSubmit(url);
+    setUrl('');
     setOpen(false);
   };
+
+  // @ts-expect-error
+  const isActive = Editor.marks(editor)?.link;
 
   return (
     <Dialog.Root open={open}>
@@ -95,10 +100,16 @@ export const LinkButton = (props: LinkDialogProps) => {
         >
           <Button
             className={`link-button unstyled ${
-              highlightedText ? '' : 'disabled-link-button'
+              isActive ? 'activated-link-button' : ''
             }`}
-            disabled={!highlightedText}
-            onClick={() => setOpen(true)}
+            onMouseDown={(event) => {
+              event.preventDefault();
+              if (isActive) {
+                Editor.removeMark(editor, 'link');
+              } else {
+                setOpen(true);
+              }
+            }}
             type='button'
           >
             <props.icon />
@@ -132,7 +143,10 @@ export const LinkButton = (props: LinkDialogProps) => {
           <Dialog.Close asChild>
             <Button
               className='unstyled'
-              onClick={() => setOpen(false)}
+              onClick={() => {
+                setUrl('');
+                setOpen(false);
+              }}
               role='button'
             >
               {t['cancel']}

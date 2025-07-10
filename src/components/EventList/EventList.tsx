@@ -204,7 +204,7 @@ export const EventList: React.FC<Props> = (props) => {
               items={[
                 {
                   icon: <PlusIcon />,
-                  label: t['Add single event'],
+                  label: t['Create'],
                   onClick: () =>
                     (window.location.href = `/${props.i18n.lang}/projects/${props.projectSlug}/events/new`),
                 },

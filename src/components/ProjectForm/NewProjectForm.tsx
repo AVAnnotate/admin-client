@@ -48,7 +48,7 @@ const FormContents = (props: NewProjectFormProps) => {
     creator: '',
     authors: '',
     media_player: 'avannotate',
-    auto_populate_home_page: false,
+    auto_populate_home_page: true,
     additional_users: [],
     tags: {
       tagGroups: [],

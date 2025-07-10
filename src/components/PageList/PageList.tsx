@@ -38,18 +38,20 @@ export const PageList: React.FC<Props> = (props) => {
 
   useEffect(() => {
     if (pageOrder) {
-      let state: RowState = {};
+      let state: RowState = { ...rowState };
 
       const orderArray = makePageArray(project, pageOrder);
 
       orderArray.forEach((entry, idx) => {
-        state[entry.id] = {
-          uuid: entry.id,
-          expanded: true,
-          parent: entry.parent,
-          visible: true,
-          hasChildren: entry.children.length > 0,
-        };
+        if (!state[entry.id]) {
+          state[entry.id] = {
+            uuid: entry.id,
+            expanded: true,
+            parent: entry.parent,
+            visible: true,
+            hasChildren: entry.children.length > 0,
+          };
+        }
 
         // Now determine how we can move this item
         state[entry.id].canGoDown = false;
@@ -114,36 +116,47 @@ export const PageList: React.FC<Props> = (props) => {
     //If there is no content in the page, pre-populate with an embed of the related event, for convenience
     if (!page.content || !page.content.length) {
       const eventUuid = page.autogenerate.type_id;
-      if (eventUuid) {
-        page.content = [
-          {
-            type: 'paragraph',
-            children: [
+      if (eventUuid || page.autogenerate.type === 'home') {
+        page.autogenerate.type === 'home'
+          ? (page.content = [
               {
-                text: '',
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
               },
-            ],
-          },
-          {
-            //@ts-ignore
-            type: 'event',
-            uuid: eventUuid,
-            includes: ['media', 'annotations', 'description'],
-            children: [
+            ])
+          : (page.content = [
               {
-                text: '',
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
               },
-            ],
-          },
-          {
-            type: 'paragraph',
-            children: [
               {
-                text: '',
+                //@ts-ignore
+                type: 'event',
+                uuid: eventUuid,
+                includes: ['media', 'annotations', 'description'],
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
               },
-            ],
-          },
-        ];
+              {
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
+              },
+            ]);
       }
     }
     setSaving(true);

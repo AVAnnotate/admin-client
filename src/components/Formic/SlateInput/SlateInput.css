@@ -165,8 +165,8 @@
   border-radius: 4px;
 }
 
-.slate-form .disabled-link-button svg {
-  color: var(--gray-500);
+.slate-form .activated-link-button svg {
+  color: var(--primary);
 }
 
 .slate-form .disabled svg {
