@@ -116,36 +116,47 @@ export const PageList: React.FC<Props> = (props) => {
     //If there is no content in the page, pre-populate with an embed of the related event, for convenience
     if (!page.content || !page.content.length) {
       const eventUuid = page.autogenerate.type_id;
-      if (eventUuid) {
-        page.content = [
-          {
-            type: 'paragraph',
-            children: [
+      if (eventUuid || page.autogenerate.type === 'home') {
+        page.autogenerate.type === 'home'
+          ? (page.content = [
               {
-                text: '',
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
               },
-            ],
-          },
-          {
-            //@ts-ignore
-            type: 'event',
-            uuid: eventUuid,
-            includes: ['media', 'annotations', 'description'],
-            children: [
+            ])
+          : (page.content = [
               {
-                text: '',
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
               },
-            ],
-          },
-          {
-            type: 'paragraph',
-            children: [
               {
-                text: '',
+                //@ts-ignore
+                type: 'event',
+                uuid: eventUuid,
+                includes: ['media', 'annotations', 'description'],
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
               },
-            ],
-          },
-        ];
+              {
+                type: 'paragraph',
+                children: [
+                  {
+                    text: '',
+                  },
+                ],
+              },
+            ]);
       }
     }
     setSaving(true);
