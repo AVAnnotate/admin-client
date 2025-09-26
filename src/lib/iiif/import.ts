@@ -9,6 +9,8 @@ import type {
   Target,
   ContentResource,
   EmbeddedResource,
+  ChoiceBody,
+  ExternalWebResource,
 } from '@iiif/presentation-3';
 import type { AnnotationEntry, AnnotationPage, Event, Tag } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
@@ -16,6 +18,26 @@ import { deserialize } from '@lib/slate/deserialize.ts';
 import type { Node } from 'slate';
 // @ts-ignore
 import { JSDOM } from 'jsdom';
+
+const ACCEPTABLE_FORMATS = [
+  'audio/mp3',
+  'audio/mp4',
+  'audio/mpeg',
+  'audio/ogg',
+  'audio/vnd.wav',
+  'audio/flac',
+  'audio/aiff',
+  'audio/x-ms-wma',
+  'video/mp4',
+  'video/webm',
+  'video/ogg',
+  'video/x-flv',
+  'video/x-matroska',
+  'video/x-ms-wmv',
+  'video/x-ms-asf',
+  'video/x-msvideo',
+  'video/quicktime',
+];
 
 type AVFileMap = {
   [canvas: string]: {
@@ -56,7 +78,8 @@ export const importIIIFManifest = async (
   // For each canvas create an event
   for (let w = 0; w < canvases.length; w++) {
     const c = canvases[w];
-    const label = c.label && c.label.en ? c.label.en[0] : '';
+    console.log(`Label: ${JSON.stringify(c.label, null, 2)}`);
+    const label = c.label ? getLabel(c.label) : '';
     const annoPages = c.items?.filter((i) => i.type === 'AnnotationPage');
     const avFiles: { [key: string]: any } = {};
     const eventId = uuidv4();
@@ -68,24 +91,54 @@ export const importIIIFManifest = async (
         if (a && a.items) {
           a.items.forEach((i) => {
             if (i.type === 'Annotation') {
-              if (!Array.isArray(i.body)) {
-                const b: IIIFResource = i.body as IIIFResource;
-                avType = b.type;
-                avFiles[sourceId] = {
-                  label: `AV File ${avLabelCount++}`,
-                  file_url: b.id,
-                  duration: b.duration || 0,
-                };
-              } else {
-                const ba: IIIFResource[] = i.body as IIIFResource[];
-                ba.forEach((b) => {
-                  avType = b.type;
-                  avFiles[sourceId] = {
-                    label: `AV File ${avLabelCount++}`,
-                    file_url: b.id,
-                    duration: b.duration || 0,
-                  };
-                });
+              if (i.body) {
+                if (typeof i.body !== 'string') {
+                  if (!Array.isArray(i.body)) {
+                    if (i.body.type === 'Choice') {
+                      const b: ChoiceBody = i.body;
+
+                      // We are going to take the first one that has an acceptable format
+                      for (
+                        let i = 0;
+                        i < (b.items as ExternalWebResource[]).length;
+                        i++
+                      ) {
+                        const wr = b.items[i] as ExternalWebResource;
+                        if (ACCEPTABLE_FORMATS.includes(wr.format as string)) {
+                          avFiles[sourceId] = {
+                            // @ts-ignore
+                            label: wr.label
+                              ? // @ts-ignore
+                                getLabel(wr.label)
+                              : `AV File ${avLabelCount++}`,
+                            file_url: wr.id,
+                            // @ts-ignore
+                            duration: wr.duration || 0,
+                          };
+                          break;
+                        }
+                      }
+                    } else {
+                      const b: ContentResource = i.body as ContentResource;
+                      avFiles[sourceId] = {
+                        label: `AV File ${avLabelCount++}`,
+                        file_url: b.id,
+                        // @ts-ignore
+                        duration: b.duration || 0,
+                      };
+                    }
+                  } else {
+                    const ba: IIIFResource[] = i.body as IIIFResource[];
+                    ba.forEach((b) => {
+                      avType = b.type;
+                      avFiles[sourceId] = {
+                        label: `AV File ${avLabelCount++}`,
+                        file_url: b.id,
+                        duration: b.duration || 0,
+                      };
+                    });
+                  }
+                }
               }
             }
           });
@@ -112,12 +165,12 @@ export const importIIIFManifest = async (
         created_at: new Date().toISOString(),
         created_by: userName,
         item_type: avType === 'Video' ? 'Video' : 'Audio',
-        label: mani.label.en
-          ? mani.label.en[0]
+        label: mani.label
+          ? getLabel(mani.label)
           : `Imported Event ${result.events.length + 1}`,
         updated_at: new Date().toISOString(),
         updated_by: userName,
-        rights_statement: mani.rights,
+        rights_statement: mani.rights ? ensureHTTPS(mani.rights) : '',
       },
     });
 
@@ -204,6 +257,13 @@ export const importIIIFManifest = async (
   }
 
   return result;
+};
+
+const ensureHTTPS = (str: string) => {
+  return str.replace('http:', 'https:');
+};
+const removeTrailingSlash = (str: string) => {
+  return str.replace(/\/+$/, '');
 };
 
 const getLabel = (label: any) => {
