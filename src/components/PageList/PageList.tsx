@@ -1,4 +1,4 @@
-import React, { Children, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './PageList.css';
 import type { Page, ProjectData, Translations } from '@ty/Types.ts';
 import { Button } from '@radix-ui/themes';

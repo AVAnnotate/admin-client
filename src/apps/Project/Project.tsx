@@ -118,7 +118,10 @@ export const Project: React.FC<Props> = (props) => {
             </div>
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <Button className='settings-button'>
+                <Button
+                  className='settings-button'
+                  aria-label='Project Options'
+                >
                   <ThreeDots />
                 </Button>
               </DropdownMenu.Trigger>

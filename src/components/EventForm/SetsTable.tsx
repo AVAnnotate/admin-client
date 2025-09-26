@@ -132,7 +132,11 @@ export const SetsTable: React.FC<Props> = (props) => {
                 <div />
               )}
             </div>
-            <MeatballMenu buttons={meatballOptions(uuid)} row={anno} />
+            <MeatballMenu
+              buttons={meatballOptions(uuid)}
+              row={anno}
+              aria-label='annotation set options'
+            />
           </>
         ),
       };

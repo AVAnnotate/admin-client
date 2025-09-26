@@ -2,9 +2,8 @@ import { MeatballMenu } from '@components/MeatballMenu/index.ts';
 import { makePageArray } from '@lib/pages/reorder.ts';
 import { Pencil2Icon } from '@radix-ui/react-icons';
 import { Box, Text, IconButton } from '@radix-ui/themes';
-import { Icon } from '@radix-ui/themes/dist/esm/components/callout.js';
 import type { ProjectData, Translations } from '@ty/Types.ts';
-import type { DraggedPage, MeatballMenuItem } from '@ty/ui.ts';
+import type { MeatballMenuItem } from '@ty/ui.ts';
 import { useMemo } from 'react';
 import {
   ArrowReturnRight,
@@ -373,6 +372,7 @@ export const PageRow: React.FC<Props> = (props) => {
           page.autogenerate.enabled ? meatballOptionsAutoGen : meatballOptions
         }
         row={page}
+        aria-label='page options'
       />
     </Box>
   );

@@ -340,6 +340,7 @@ const FormContents: React.FC<Props> = (props) => {
                     )
                   }
                   value={avFile.label}
+                  aria-label='Event Label'
                 />
                 <Select.Root
                   onValueChange={(value) =>
@@ -367,6 +368,7 @@ const FormContents: React.FC<Props> = (props) => {
                   // @ts-ignore
                   disabled={avFile.is_offline === 'true' ? true : false}
                   value={avFile.file_url}
+                  aria-label='A V File U R L'
                 />
                 <TextField.Root
                   className={
@@ -381,7 +383,11 @@ const FormContents: React.FC<Props> = (props) => {
                     durationStrings[uuid] || secondsToString(avFile.duration)
                   }
                 />
-                <MeatballMenu buttons={meatballOptions(uuid)} row={avFile} />
+                <MeatballMenu
+                  buttons={meatballOptions(uuid)}
+                  row={avFile}
+                  aria-label='a v file options'
+                />
               </>
             ),
           };
@@ -408,7 +414,12 @@ const FormContents: React.FC<Props> = (props) => {
         />
       )}
       <div className='form-body'>
-        <TextInput label={t['Label']} name='label' required />
+        <TextInput
+          label={t['Label']}
+          name='label'
+          required
+          aria-label='Event Label'
+        />
         <Separator.Root className='SeparatorRoot' decorative />
         <div className='title-row'>
           <h2>{t['Audiovisual item(s)']}</h2>
@@ -505,11 +516,16 @@ const FormContents: React.FC<Props> = (props) => {
           i18n={i18n}
           initialValue={(values as FormEvent).description}
         />
-        <TextInput label={t['Citation (Optional)']} name='citation' />
+        <TextInput
+          label={t['Citation (Optional)']}
+          name='citation'
+          aria-label='citation optional'
+        />
         <SelectInput
           label={t['Rights Statement']}
           name='rights_statement'
           options={rightsOptions(props.i18n)}
+          aria-label='rights statement'
         />
         <div className='rights-statement'>
           <a href='https://rightsstatements.org/page/1.0/' target='_blank'>
