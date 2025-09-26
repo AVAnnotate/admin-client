@@ -55,5 +55,75 @@ export const rightsOptions = (i18n: Translations) => {
       label: t['Creative Commons 4.0 International'],
       value: 'https://creativecommons.org/licenses/by/4.0/',
     },
+    {
+      label: t['Creative Commons 4.0 International - NonCommercial'],
+      value: 'https://creativecommons.org/licenses/by-nc/4.0/',
+    },
+    {
+      label:
+        t['Creative Commons 4.0 International - NonCommercial - NoDerivatives'],
+      value: 'https://creativecommons.org/licenses/by-nc-nd/4.0/',
+    },
+    {
+      label:
+        t['Creative Commons 4.0 International - NonCommercial - ShareAlike'],
+      value: 'https://creativecommons.org/licenses/by-nc-sa/4.0/',
+    },
+    {
+      label: t['Creative Commons 4.0 International - NoDerivatives'],
+      value: 'https://creativecommons.org/licenses/by-nd/4.0/',
+    },
+    {
+      label: t['Creative Commons 4.0 International - ShareAlike'],
+      value: 'https://creativecommons.org/licenses/by-sa/4.0/',
+    },
+    {
+      label: t['Creative Commons 3.0 Unported'],
+      value: 'https://creativecommons.org/licenses/by/3.0/',
+    },
+    {
+      label: t['Creative Commons 3.0 Unported - NonCommercial'],
+      value: 'https://creativecommons.org/licenses/by-nc/3.0/',
+    },
+    {
+      label: t['Creative Commons 3.0 Unported - NonCommercial - NoDerivatives'],
+      value: 'https://creativecommons.org/licenses/by-nc-nd/3.0/',
+    },
+    {
+      label: t['Creative Commons 3.0 Unported - NonCommercial - ShareAlike'],
+      value: 'https://creativecommons.org/licenses/by-nc-sa/3.0/',
+    },
+    {
+      label: t['Creative Commons 3.0 Unported - NoDerivatives'],
+      value: 'https://creativecommons.org/licenses/by-nd/3.0/',
+    },
+    {
+      label: t['Creative Commons 3.0 Unported - ShareAlike'],
+      value: 'https://creativecommons.org/licenses/by-sa/3.0/',
+    },
+    {
+      label: t['Creative Commons 2.5 Generic'],
+      value: 'https://creativecommons.org/licenses/by/2.5/',
+    },
+    {
+      label: t['Creative Commons 2.5 Generic - NonCommercial'],
+      value: 'https://creativecommons.org/licenses/by-nc/2.5/',
+    },
+    {
+      label: t['Creative Commons 2.5 Generic - NonCommercial - NoDerivatives'],
+      value: 'https://creativecommons.org/licenses/by-nc-nd/2.5/',
+    },
+    {
+      label: t['Creative Commons 2.5 Generic - NonCommercial - ShareAlike'],
+      value: 'https://creativecommons.org/licenses/by-nc-sa/2.5/',
+    },
+    {
+      label: t['Creative Commons 2.5 Generic - NoDerivatives'],
+      value: 'https://creativecommons.org/licenses/by-nd/2.5/',
+    },
+    {
+      label: t['Creative Commons 2.5 Generic - ShareAlike'],
+      value: 'https://creativecommons.org/licenses/by-sa/2.5/',
+    },
   ];
 };
