@@ -111,6 +111,7 @@ export const LinkButton = (props: LinkDialogProps) => {
               }
             }}
             type='button'
+            aria-label='Insert link'
           >
             <props.icon />
           </Button>
@@ -202,6 +203,7 @@ export const ImageButton = (props: ImageDialogProps) => {
               className='image-button unstyled'
               onClick={() => setOpen(true)}
               type='button'
+              aria-label='insert image'
             >
               {props.icon && <props.icon />}
             </Button>

@@ -19,6 +19,7 @@ const SetManagementDropdown: React.FC<Props> = (props) => {
         <Button
           className='unstyled meatball-menu-icon annotation-tab-meatball-button'
           type='button'
+          aria-label='Manage Annotation Sets'
         >
           <DotsThree size={16} color='black' />
         </Button>

@@ -99,7 +99,11 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
             <h1 className='event-title'>{props.event.label}</h1>
             <Dropdown.Root modal={false}>
               <Dropdown.Trigger asChild>
-                <Button className='meatball-menu-button unstyled' type='button'>
+                <Button
+                  className='meatball-menu-button unstyled'
+                  type='button'
+                  aria-label='Event Options'
+                >
                   <DotsThree size={30} color='white' />
                 </Button>
               </Dropdown.Trigger>

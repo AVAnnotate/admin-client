@@ -6,22 +6,29 @@ import { ChevronRightIcon } from '@radix-ui/react-icons';
 
 import './MeatballMenu.css';
 import { useMemo } from 'react';
+import { IconButton } from '@radix-ui/themes';
 
 interface Props {
   buttons: MeatballMenuItem[];
   icon?: any;
   row: { [key: string]: any };
+  'aria-label'?: string;
 }
 
-export const MeatballMenu: React.FC<Props> = ({ buttons, icon, row }) => {
+export const MeatballMenu: React.FC<Props> = (props) => {
+  const { buttons, icon, row } = props;
   const IconComponent = useMemo(() => icon || DotsThreeVertical, [icon]);
 
   return (
     <Dropdown.Root modal={false}>
-      <Dropdown.Trigger asChild>
-        <div className='meatball-menu-icon'>
+      <Dropdown.Trigger asChild tabIndex={0}>
+        <IconButton
+          variant='ghost'
+          className='meatball-menu-button'
+          aria-label={props['aria-label']}
+        >
           <IconComponent size={16} />
-        </div>
+        </IconButton>
       </Dropdown.Trigger>
       <Dropdown.Portal>
         <Dropdown.Content className='dropdown-content meatball-dropdown-content'>

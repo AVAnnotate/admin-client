@@ -40,6 +40,7 @@ interface TextInputProps {
   bottomNote?: string;
   className?: string;
   placeholder?: string;
+  'aria-label'?: string;
 }
 
 export const TextInput = (props: TextInputProps) => {
@@ -66,6 +67,7 @@ export const TextInput = (props: TextInputProps) => {
           props.required ? validateRequiredField(props.name, val) : undefined
         }
         placeholder={props.placeholder}
+        aria-label={props['aria-label']}
       />
       {props.bottomNote && (
         <div className='av-label-italic formic-form-helper-text'>
@@ -303,6 +305,7 @@ export interface SelectInputProps {
   className?: string;
   width?: string;
   backgroundColor?: string;
+  'aria-label'?: string;
 }
 
 export const SelectInput = (props: SelectInputProps) => {
@@ -322,6 +325,7 @@ export const SelectInput = (props: SelectInputProps) => {
         name={props.name}
         className='formic-form-select'
         style={{ width: props.width, backgroundColor: props.backgroundColor }}
+        aria-label={props['aria-label'] || props.label}
       >
         {/* empty option to allow the user to leave the input blank */}
         {!props.required && <option />}

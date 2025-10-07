@@ -83,7 +83,11 @@ export const DragTable: React.FC<Props> = (props) => {
             width='100%'
             style={{ gridTemplateColumns: gridSettings }}
           >
-            <GripVertical width={38} />
+            <GripVertical
+              width={38}
+              aria-label='grip button to reorder a v files'
+              tabIndex={0}
+            />
             {row.component}
           </Box>
         );

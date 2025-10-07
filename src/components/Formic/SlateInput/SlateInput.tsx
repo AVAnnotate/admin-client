@@ -417,6 +417,7 @@ export const SlateInput: React.FC<Props> = (props) => {
         onClick={() => editor.undo()}
         type='button'
         disabled={editor.history.undos.length === 0}
+        aria-label='Undo last action'
       >
         <ArrowCounterclockwise />
       </Button>
@@ -431,6 +432,7 @@ export const SlateInput: React.FC<Props> = (props) => {
         onClick={() => editor.redo()}
         type='button'
         disabled={editor.history.redos.length === 0}
+        aria-label='redo last action'
       >
         <ArrowClockwise />
       </Button>
@@ -500,35 +502,55 @@ export const SlateInput: React.FC<Props> = (props) => {
                 currentFormat={currentFormat}
                 onSetFormat={handleTextFormatChange}
               />
-              <MarkButton format='bold' icon={FontBoldIcon} i18n={props.i18n} />
+              <MarkButton
+                format='bold'
+                icon={FontBoldIcon}
+                i18n={props.i18n}
+                aria-label='bold'
+              />
               <MarkButton
                 format='italic'
                 icon={FontItalicIcon}
                 i18n={props.i18n}
+                aria-label='italic'
               />
               <MarkButton
                 format='underline'
                 icon={UnderlineIcon}
                 i18n={props.i18n}
+                aria-label='underline'
               />
               <MarkButton
                 format='strikethrough'
                 icon={StrikethroughIcon}
                 i18n={props.i18n}
+                aria-label='strikethrough'
               />
-              <MarkButton format='code' icon={CodeIcon} i18n={props.i18n} />
+              <MarkButton
+                format='code'
+                icon={CodeIcon}
+                i18n={props.i18n}
+                aria-label='format as code'
+              />
               <BlockButton
                 format='block-quote'
                 icon={QuoteIcon}
                 i18n={props.i18n}
+                aria-label='block quote'
               />
               <div className='toolbar-separator' />
               <HighlightColorButton
                 format='highlight'
                 icon={PaintBucket}
                 i18n={props.i18n}
+                aria-label='highlight'
               />
-              <ColorButton format='color' icon={Type} i18n={props.i18n} />
+              <ColorButton
+                format='color'
+                icon={Type}
+                i18n={props.i18n}
+                aria-label='set text color'
+              />
               <div className='toolbar-separator' />
             </>
           )}
@@ -538,31 +560,46 @@ export const SlateInput: React.FC<Props> = (props) => {
                 format='numbered-list'
                 icon={ListOl}
                 i18n={props.i18n}
+                aria-label='numbered list'
               />
               <BlockButton
                 format='bulleted-list'
                 icon={ListUl}
                 i18n={props.i18n}
+                aria-label='bulleted list'
               />
               <BlockButton
                 format='table-of-contents'
                 icon={BookmarkIcon}
                 onInsert={insertTableOfContents}
                 i18n={props.i18n}
+                aria-label='insert table of contents'
               />
               <div className='toolbar-separator' />
-              <BlockButton format='left' icon={JustifyLeft} i18n={props.i18n} />
+              <BlockButton
+                format='left'
+                icon={JustifyLeft}
+                i18n={props.i18n}
+                aria-label='left justify text'
+              />
               <BlockButton
                 format='center'
                 icon={TextCenter}
                 i18n={props.i18n}
+                aria-label='center text'
               />
               <BlockButton
                 format='right'
                 icon={JustifyRight}
                 i18n={props.i18n}
+                aria-label='right justify text'
               />
-              <BlockButton format='justify' icon={Justify} i18n={props.i18n} />
+              <BlockButton
+                format='justify'
+                icon={Justify}
+                i18n={props.i18n}
+                aria-label='justify to fill line'
+              />
               <div className='toolbar-separator' />
             </>
           )}

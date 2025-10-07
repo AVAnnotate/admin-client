@@ -72,7 +72,12 @@ const FormContents: React.FC<Props> = (props) => {
             <FileEarmarkText size={32} />
           </div>
           <div>
-            <TextInput label={t['Title']} name='title' required />
+            <TextInput
+              label={t['Title']}
+              name='title'
+              required
+              aria-label='Edit Title'
+            />
           </div>
           <div>
             <SelectInput
@@ -80,6 +85,7 @@ const FormContents: React.FC<Props> = (props) => {
               name='parent'
               options={parentPageOptions}
               required
+              aria-label='set parent page'
             />
           </div>
         </div>

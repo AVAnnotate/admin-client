@@ -25,6 +25,7 @@ export const AnnotationSearchBox: React.FC<Props> = (props) => {
           );
         }}
         type='text'
+        aria-label='Search Annotations'
       />
       <MagnifyingGlassIcon />
     </div>
