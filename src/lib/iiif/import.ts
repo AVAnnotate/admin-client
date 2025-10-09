@@ -190,12 +190,11 @@ export const importIIIFManifest = async (
           } else {
             anno = a;
           }
-          if (anno) {
-            anno.items?.forEach((i) => {
-              const setTags: Tag[] = [];
-              if (i.type === 'Annotation') {
-                const { start, end } = getTime(i.target as Target, map);
-                let nodes: Node[] = [];
+          if (anno && anno.items) {
+            console.log(`There are ${anno.items.length} anno items`);
+            for (let k = 0; k < anno.items.length; k++) {
+              let item = anno.items[k];
+              if (item.type === 'Annotation') {
                 const tags: Tag[] = [...setTags];
                 const body:
                   | IIIFAnnotationBody
