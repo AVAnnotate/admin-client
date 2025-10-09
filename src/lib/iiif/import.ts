@@ -314,7 +314,6 @@ export const importIIIFManifest = async (
                         }
                       }
                     } else {
-                      console.log('Not choice!');
                       const b: ContentResource = i.body as ContentResource;
                       avFiles[sourceId] = {
                         label: `AV File ${avLabelCount++}`,
