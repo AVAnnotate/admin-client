@@ -260,6 +260,7 @@ export const importIIIFManifest = async (
   for (let w = 0; w < canvases.length; w++) {
     const c = canvases[w];
     const label = c.label ? getLabel(c.label) : '';
+    // @ts-ignore
     let annoPages: IIIFAnnotationPage[] = c.items?.filter(
       (i) => i.type === 'AnnotationPage'
     );
