@@ -11,8 +11,6 @@ import type {
   EmbeddedResource,
   ChoiceBody,
   ExternalWebResource,
-  ContentResourceString,
-  AnnotationBody,
 } from '@iiif/presentation-3';
 import type { AnnotationEntry, AnnotationPage, Event, Tag } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
@@ -20,7 +18,6 @@ import { deserialize } from '@lib/slate/deserialize.ts';
 import type { Node } from 'slate';
 // @ts-ignore
 import { JSDOM } from 'jsdom';
-import { vttToAnnotations } from '@lib/VTT/index.ts';
 
 const ACCEPTABLE_FORMATS = [
   'audio/mp3',
@@ -40,7 +37,6 @@ const ACCEPTABLE_FORMATS = [
   'video/x-ms-asf',
   'video/x-msvideo',
   'video/quicktime',
-  'application/x-mpegURL',
 ];
 
 type AVFileMap = {
@@ -55,181 +51,6 @@ export type ImportManifestResults = {
   events: { id: string; event: Event }[];
   annotations: { id: string; annotation: AnnotationPage }[];
   tags: string[];
-};
-
-type AnnoBodyTypes =
-  | undefined
-  | 'ExternalWebResource'
-  | 'ContentResourceString'
-  | 'TextualBody'
-  | 'ContentResourceArray';
-
-type AnnoBody =
-  | IIIFAnnotationBody
-  | IIIFAnnotationBody[]
-  | ContentResourceString
-  | ExternalWebResource
-  | string;
-
-const determineAnnotationBodyType = (body: AnnoBody): AnnoBodyTypes => {
-  if (!body) {
-    return undefined;
-  }
-
-  if (
-    typeof body !== 'string' &&
-    !Array.isArray(body) &&
-    body.type === 'Text' &&
-    body.id
-  ) {
-    return 'ExternalWebResource';
-  } else if (typeof body === 'string') {
-    return 'ContentResourceString';
-  } else if (!Array.isArray(body) && body.type === 'TextualBody') {
-    return 'TextualBody';
-  } else if (Array.isArray(body)) {
-    return 'ContentResourceArray';
-  }
-
-  return undefined;
-};
-
-const parseExternalWebResource = async (
-  body: ExternalWebResource,
-  eventId: any,
-  sourceId: any,
-  result: ImportManifestResults
-) => {
-  const fetchResp = await fetch(body.id as string);
-
-  if (fetchResp.ok) {
-    const data = await fetchResp.text();
-
-    let annotations: AnnotationEntry[] = [];
-    if (body.format === 'text/vtt') {
-      annotations = vttToAnnotations(data, undefined);
-    }
-
-    const setId = uuidv4();
-    result.annotations.push({
-      id: setId,
-      annotation: {
-        event_id: eventId,
-        source_id: sourceId,
-        // @ts-ignore
-        set: getLabel((body as ExternalWebResource).label),
-        annotations: annotations,
-      },
-    });
-  } else {
-    console.error(
-      'Fetching external web resource failed: ',
-      fetchResp.status,
-      fetchResp.statusText
-    );
-  }
-};
-
-const parseContentResourceString = (
-  body: AnnoBody,
-  start: number,
-  end: number,
-  tags: Tag[],
-  annotations: AnnotationEntry[]
-) => {
-  let nodes: Node[] = [];
-  const document = JSDOM.fragment(`${body as ContentResourceString as string}`);
-  nodes = deserialize(document);
-
-  annotations.push({
-    start_time: start,
-    end_time: end || start,
-    annotation: nodes,
-    tags: tags,
-    uuid: uuidv4(),
-  });
-};
-
-const parseTextualBody = (
-  body: AnnoBody,
-  start: number,
-  end: number,
-  tags: Tag[],
-  annotations: AnnotationEntry[]
-) => {
-  let nodes: Node[] = [];
-  const document = JSDOM.fragment(
-    `${(body as EmbeddedResource).value as string}`
-  );
-  nodes = deserialize(document);
-
-  annotations.push({
-    start_time: start,
-    end_time: end || start,
-    annotation: nodes,
-    tags: tags,
-    uuid: uuidv4(),
-  });
-};
-
-const parseContentResourceArray = (
-  body: AnnotationBody[],
-  start: number,
-  end: number,
-  tags: Tag[],
-  annotations: AnnotationEntry[],
-  result: ImportManifestResults
-) => {
-  let nodes: Node[] = [];
-  body.forEach((b) => {
-    if ((b as ContentResource).motivation === 'tagging') {
-      tags.push({
-        category: '_uncategorized_',
-        tag: (b as EmbeddedResource).value as string,
-      });
-      if (
-        result.tags.findIndex((t) => t === (b as EmbeddedResource).value) === -1
-      ) {
-        result.tags.push((b as EmbeddedResource).value as string);
-      }
-    } else {
-      const document = JSDOM.fragment(
-        `${(b as EmbeddedResource).value as string}`
-      );
-      const res = deserialize(document);
-      nodes = [...nodes, ...res];
-    }
-  });
-
-  annotations.push({
-    start_time: start,
-    end_time: end || start,
-    annotation: nodes,
-    tags: tags,
-    uuid: uuidv4(),
-  });
-};
-
-const isValidUrl = (url: string) => {
-  console.info(`Testing URL string ${url}`);
-  try {
-    new URL(url);
-    return true;
-  } catch (error) {
-    return false;
-  }
-};
-
-const fetchAnnoPage = async (url: string) => {
-  const fetchResp = await fetch(url);
-
-  if (fetchResp.ok) {
-    const data: IIIFAnnotationPage = await fetchResp.json();
-
-    return data;
-  }
-
-  return undefined;
 };
 
 export const importIIIFManifest = async (
@@ -251,36 +72,22 @@ export const importIIIFManifest = async (
   const canvases = items.filter((i) => i.type === 'Canvas');
   const map = getAVMap(canvases);
 
-  const maniLabel = mani.label ? getLabel(mani.label) : undefined;
-
   // Label count
   let avLabelCount: number = 1;
 
   // For each canvas create an event
   for (let w = 0; w < canvases.length; w++) {
     const c = canvases[w];
+    console.log(`Label: ${JSON.stringify(c.label, null, 2)}`);
     const label = c.label ? getLabel(c.label) : '';
-    let annoPages: IIIFAnnotationPage[] = c.items?.filter(
-      (i) => i.type === 'AnnotationPage'
-    );
+    const annoPages = c.items?.filter((i) => i.type === 'AnnotationPage');
     const avFiles: { [key: string]: any } = {};
     const eventId = uuidv4();
     const sourceId = uuidv4();
-
-    // Add any items in the annotations list to the anno pages
-    if (c.annotations) {
-      annoPages = [
-        ...annoPages,
-        ...c.annotations?.filter((i) => i.type === 'AnnotationPage'),
-      ];
-    }
+    let avType = 'Audio';
     if (annoPages) {
       for (let q = 0; q < annoPages.length; q++) {
-        let a: IIIFAnnotationPage | undefined = annoPages[q];
-        // console.info(`Anno Page: ${JSON.stringify(a, null, 2)}`);
-        if (!a.items && isValidUrl(a.id)) {
-          a = await fetchAnnoPage(a.id);
-        }
+        const a = annoPages[q];
         if (a && a.items) {
           a.items.forEach((i) => {
             if (i.type === 'Annotation') {
@@ -307,7 +114,6 @@ export const importIIIFManifest = async (
                             file_url: wr.id,
                             // @ts-ignore
                             duration: wr.duration || 0,
-                            file_type: wr.type === 'Sound' ? 'Audio' : 'Video',
                           };
                           break;
                         }
@@ -319,17 +125,16 @@ export const importIIIFManifest = async (
                         file_url: b.id,
                         // @ts-ignore
                         duration: b.duration || 0,
-                        file_type: b.type === 'Sound' ? 'Audio' : 'Video',
                       };
                     }
                   } else {
                     const ba: IIIFResource[] = i.body as IIIFResource[];
                     ba.forEach((b) => {
+                      avType = b.type;
                       avFiles[sourceId] = {
                         label: `AV File ${avLabelCount++}`,
                         file_url: b.id,
                         duration: b.duration || 0,
-                        file_type: b.type === 'Sound' ? 'Audio' : 'Video',
                       };
                     });
                   }
@@ -359,9 +164,10 @@ export const importIIIFManifest = async (
         citation: undefined,
         created_at: new Date().toISOString(),
         created_by: userName,
-        label: label
-          ? label
-          : maniLabel || `Imported Event ${result.events.length + 1}`,
+        item_type: avType === 'Video' ? 'Video' : 'Audio',
+        label: mani.label
+          ? getLabel(mani.label)
+          : `Imported Event ${result.events.length + 1}`,
         updated_at: new Date().toISOString(),
         updated_by: userName,
         rights_statement: mani.rights ? ensureHTTPS(mani.rights) : '',
@@ -369,13 +175,11 @@ export const importIIIFManifest = async (
     });
 
     if (c.annotations && c.annotations.length > 0) {
-      let isExternal = false;
       for (let x = 0; x < c.annotations.length; x++) {
         const a = c.annotations[x];
         if (a.type === 'AnnotationPage') {
           const annoFileId = uuidv4();
-          const setTags: Tag[] = [];
-          let annotations: AnnotationEntry[] = [];
+          const annotations: AnnotationEntry[] = [];
           const label = getLabel(a.label);
           let anno: IIIFAnnotationPage | undefined = undefined;
           if (a.id.endsWith('.json') && !a.items) {
@@ -386,64 +190,67 @@ export const importIIIFManifest = async (
           } else {
             anno = a;
           }
-          if (anno && anno.items) {
-            for (let k = 0; k < anno.items.length; k++) {
-              let item = anno.items[k];
-              if (item.type === 'Annotation' && item.body) {
-                const { start, end } = getTime(item.target as Target, map);
+          if (anno) {
+            anno.items?.forEach((i) => {
+              const setTags: Tag[] = [];
+              if (i.type === 'Annotation') {
+                const { start, end } = getTime(i.target as Target, map);
                 let nodes: Node[] = [];
                 const tags: Tag[] = [...setTags];
-                const body: AnnoBody = item.body;
-
-                switch (determineAnnotationBodyType(body)) {
-                  case undefined:
-                    continue;
-                  case 'ExternalWebResource':
-                    await parseExternalWebResource(
-                      body as ExternalWebResource,
-                      eventId,
-                      sourceId,
-                      result
-                    );
-                    isExternal = true;
-                    break;
-                  case 'ContentResourceString':
-                    parseContentResourceString(
-                      body,
-                      start,
-                      end,
-                      tags,
-                      annotations
-                    );
-                    break;
-                  case 'TextualBody':
-                    parseTextualBody(body, start, end, tags, annotations);
-                    break;
-                  case 'ContentResourceArray':
-                    parseContentResourceArray(
-                      body as AnnotationBody[],
-                      start,
-                      end,
-                      tags,
-                      annotations,
-                      result
-                    );
-                    break;
+                const body:
+                  | IIIFAnnotationBody
+                  | IIIFAnnotationBody[]
+                  | undefined = i.body;
+                if (!Array.isArray(body)) {
+                  const document = JSDOM.fragment(
+                    `${(body as EmbeddedResource).value as string}`
+                  );
+                  nodes = deserialize(document);
+                } else {
+                  nodes = [];
+                  body.forEach((b) => {
+                    if ((b as ContentResource).motivation === 'tagging') {
+                      tags.push({
+                        category: '_uncategorized_',
+                        tag: (b as EmbeddedResource).value as string,
+                      });
+                      if (
+                        result.tags.findIndex(
+                          (t) => t === (b as EmbeddedResource).value
+                        ) === -1
+                      ) {
+                        result.tags.push(
+                          (b as EmbeddedResource).value as string
+                        );
+                      }
+                    } else {
+                      const document = JSDOM.fragment(
+                        `${(b as EmbeddedResource).value as string}`
+                      );
+                      const res = deserialize(document);
+                      nodes = [...nodes, ...res];
+                    }
+                  });
                 }
+                annotations.push({
+                  start_time: start,
+                  end_time: end || start,
+                  annotation: nodes,
+                  tags: tags,
+                  uuid: uuidv4(),
+                });
               }
-            }
-            if (!isExternal) {
-              result.annotations.push({
-                id: annoFileId,
-                annotation: {
-                  event_id: eventId,
-                  source_id: sourceId,
-                  set: label,
-                  annotations: annotations,
-                },
-              });
-            }
+            });
           }
+          result.annotations.push({
+            id: annoFileId,
+            annotation: {
+              event_id: eventId,
+              source_id: sourceId,
+              set: label,
+              annotations: annotations,
+            },
+          });
         }
       }
     }
