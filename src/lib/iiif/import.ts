@@ -284,7 +284,7 @@ export const importIIIFManifest = async (
         }
         if (a && a.items) {
           a.items.forEach((i) => {
-            if (i.type === 'Annotation') {
+            if (i.type === 'Annotation' && i.motivation === 'painting') {
               if (i.body) {
                 if (typeof i.body !== 'string') {
                   if (!Array.isArray(i.body)) {
@@ -314,6 +314,7 @@ export const importIIIFManifest = async (
                         }
                       }
                     } else {
+                      console.log('Not choice!');
                       const b: ContentResource = i.body as ContentResource;
                       avFiles[sourceId] = {
                         label: `AV File ${avLabelCount++}`,
