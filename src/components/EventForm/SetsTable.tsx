@@ -155,7 +155,10 @@ export const SetsTable: React.FC<Props> = (props) => {
     speakerCategory: string | undefined
   ) => {
     if (editSet) {
-      if (props.project.events[props.eventId].item_type === 'Video') {
+      if (
+        props.project.events[props.eventId].audiovisual_files[avFile]
+          .file_type === 'Video'
+      ) {
         let file: AudiovisualFile = JSON.parse(
           JSON.stringify(
             props.project.events[props.eventId].audiovisual_files[avFile]
