@@ -23,6 +23,7 @@ import { DragTable } from '@components/DragTable/DragTable.tsx';
 import { ClockHistory } from 'react-bootstrap-icons';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { rightsOptions } from '@components/EventForm/rightsOptions.ts';
+import { navigate } from 'astro:transitions/client';
 
 interface Props {
   children?: React.ReactNode;
@@ -249,7 +250,7 @@ const FormContents: React.FC<Props> = (props) => {
         }
       ).then((res) => {
         setAddSetOpen(false);
-        window.location.reload();
+        navigate(window.location.href, { history: 'replace' });
       });
     }
   };

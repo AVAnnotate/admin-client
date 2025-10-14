@@ -4,6 +4,7 @@ import * as Tabs from '@radix-ui/react-tabs';
 import { Tags } from '@apps/Tags/Tags.tsx';
 import { useState } from 'react';
 import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.tsx';
+import { navigate } from 'astro:transitions/client';
 
 import './DataManager.css';
 
@@ -54,7 +55,9 @@ export const DataManager = (props: DataManagerProps) => {
           annotations={props.project.annotations}
           eventUuid={deleteUuid}
           i18n={props.i18n}
-          onAfterSave={() => window.location.reload()}
+          onAfterSave={() =>
+            navigate(window.location.href, { history: 'replace' })
+          }
           onCancel={() => setDeleteUuid(null)}
           projectSlug={props.projectSlug}
         />
