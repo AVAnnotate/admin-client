@@ -95,16 +95,21 @@ export const AnnotationImportForm: React.FC<Props> = (props) => {
     () =>
       Object.keys(props.project.annotations)
         .filter(
-          (uuid) => props.project.annotations[uuid].event_id === props.eventUuid
+          (uuid) =>
+            props.project.annotations[uuid].event_id === props.eventUuid &&
+            props.project.events[props.project?.annotations[uuid]?.event_id]
+              ?.audiovisual_files[props.project?.annotations[uuid]?.source_id] //filter out annotations from deleted files
         )
-        .map((uuid) => ({
-          label: `${
-            props.project.events[props.project.annotations[uuid].event_id]
-              .audiovisual_files[props.project.annotations[uuid].source_id]
-              .label
-          } - ${props.project.annotations[uuid].set}`,
-          value: uuid,
-        })),
+        .map((uuid) => {
+          return {
+            label: `${
+              props.project.events[props.project.annotations[uuid].event_id]
+                .audiovisual_files[props.project.annotations[uuid].source_id]
+                ?.label
+            } - ${props.project.annotations[uuid].set}`,
+            value: uuid,
+          };
+        }),
     []
   );
 
