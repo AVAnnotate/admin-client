@@ -108,6 +108,7 @@ interface AnnotationTableProps {
   hideHeader?: boolean;
   project: ProjectData;
   projectSlug: string;
+  search?: boolean;
   setDeleteAnnoUuid: (uuid: string) => void;
   setEditAnnoUuid: (uuid: string) => void;
   setAnnoPosition: (pos: number) => void;
@@ -145,10 +146,16 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
     return () => resizeObserver.disconnect();
   }, []);
 
+  const emptyNoticeText = useMemo(() => {
+    return props.search
+      ? t['No search results found.']
+      : t['No annotations have been added.'];
+  }, [props.search]);
+
   const emptyNotice = useMemo(
     () => (
       <Table.Cell colSpan={4} className='empty-annos-note'>
-        <p>{t['No annotations have been added.']}</p>
+        <p>{emptyNoticeText}</p>
         <div className='empty-annos-buttons'>
           <Button
             className='primary'
@@ -167,7 +174,7 @@ const AnnotationTable: React.FC<AnnotationTableProps> = (props) => {
         </div>
       </Table.Cell>
     ),
-    []
+    [emptyNoticeText]
   );
 
   const containerRef = useRef(null);
