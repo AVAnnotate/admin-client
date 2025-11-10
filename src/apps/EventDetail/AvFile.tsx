@@ -319,6 +319,7 @@ const AvFile: React.FC<Props> = (props) => {
           setShowAnnoCreateModal={setShowAnnoCreateModal}
           tagPosition={props.fileType === 'Video' ? 'below' : 'column'}
           hideHeader={props.fileType === 'Video'}
+          search={!!search}
         />
       </div>
       {props.fileType === 'Audio' && props.event.citation && (
