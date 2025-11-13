@@ -14,6 +14,7 @@ import React from 'react';
 import { DragTable } from '@components/DragTable/DragTable.tsx';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { Button } from '@radix-ui/themes';
+import { navigate } from 'astro:transitions/client';
 
 interface Props {
   i18n: Translations;
@@ -132,7 +133,11 @@ export const SetsTable: React.FC<Props> = (props) => {
                 <div />
               )}
             </div>
-            <MeatballMenu buttons={meatballOptions(uuid)} row={anno} />
+            <MeatballMenu
+              buttons={meatballOptions(uuid)}
+              row={anno}
+              aria-label='annotation set options'
+            />
           </>
         ),
       };
@@ -151,7 +156,10 @@ export const SetsTable: React.FC<Props> = (props) => {
     speakerCategory: string | undefined
   ) => {
     if (editSet) {
-      if (props.project.events[props.eventId].item_type === 'Video') {
+      if (
+        props.project.events[props.eventId].audiovisual_files[avFile]
+          .file_type === 'Video'
+      ) {
         let file: AudiovisualFile = JSON.parse(
           JSON.stringify(
             props.project.events[props.eventId].audiovisual_files[avFile]
@@ -301,7 +309,9 @@ export const SetsTable: React.FC<Props> = (props) => {
         <DeleteSetModal
           baseUrl={getBaseUrl(deleteSet)}
           i18n={props.i18n}
-          onAfterSave={() => window.location.reload()}
+          onAfterSave={() =>
+            navigate(window.location.href, { history: 'replace' })
+          }
           onCancel={() => setDeleteSet(null)}
           set={deleteSet}
         />

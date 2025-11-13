@@ -178,6 +178,7 @@ export const EventList: React.FC<Props> = (props) => {
 
             <div className='table-search'>
               <input
+                aria-label='Search Events'
                 className='table-search-box'
                 onChange={updateSearchQuery}
               />

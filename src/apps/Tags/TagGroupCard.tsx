@@ -151,18 +151,28 @@ export const TagGroupCard = (props: TagGroupCardProps) => {
             </h3>
             <MeatballMenu
               row={props}
-              buttons={[
-                {
-                  label: t['Edit'],
-                  icon: Pencil,
-                  onClick: handleUpdateGroup,
-                },
-                {
-                  label: t['Delete'],
-                  icon: Trash,
-                  onClick: handleDeleteGroup,
-                },
-              ]}
+              buttons={
+                group && group === '_uncategorized_'
+                  ? [
+                      {
+                        label: t['Edit'],
+                        icon: Pencil,
+                        onClick: handleUpdateGroup,
+                      },
+                    ]
+                  : [
+                      {
+                        label: t['Edit'],
+                        icon: Pencil,
+                        onClick: handleUpdateGroup,
+                      },
+                      {
+                        label: t['Delete'],
+                        icon: Trash,
+                        onClick: handleDeleteGroup,
+                      },
+                    ]
+              }
             />
           </div>
           {list.slice(0, expanded ? 9999999 : 4).map((t) => (

@@ -24,6 +24,7 @@ export const SearchAction = (props: SearchActionProps) => {
         value={value}
         onChange={(e) => setValue(e.target.value)}
         size='3'
+        aria-label={props.i18n.t['Search']}
       >
         <TextField.Slot side='right'>
           <MagnifyingGlassIcon height='16' width='16' />

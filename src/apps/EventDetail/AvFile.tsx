@@ -20,6 +20,7 @@ import AnnotationTable from './AnnotationTable.tsx';
 import { formatTimestamp } from '@lib/events/index.ts';
 import { SetSelect } from './SetSelect.tsx';
 import SetManagementDropdown from './SetManagementDropdown.tsx';
+import { navigate } from 'astro:transitions/client';
 
 interface Props {
   avFile: AudiovisualFile;
@@ -101,7 +102,7 @@ const onSubmitCreateSet = async (
   });
 
   if (res.ok) {
-    window.location.reload();
+    navigate(window.location.href, { history: 'replace' });
   }
 };
 
@@ -319,6 +320,7 @@ const AvFile: React.FC<Props> = (props) => {
           setShowAnnoCreateModal={setShowAnnoCreateModal}
           tagPosition={props.fileType === 'Video' ? 'below' : 'column'}
           hideHeader={props.fileType === 'Video'}
+          search={!!search}
         />
       </div>
       {props.fileType === 'Audio' && props.event.citation && (

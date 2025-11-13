@@ -138,23 +138,30 @@ export const DELETE: APIRoute = async ({
 
     const body: apiDeleteTagGroup = await request.json();
 
-    // add the group
-    const ret: ProjectData | undefined = await deleteTagGroup(
-      repoUrl,
-      info as UserInfo,
-      body.tagGroup
-    );
-
-    if (ret) {
-      return new Response(
-        JSON.stringify({
-          project: ret,
-        })
+    if (body.tagGroup.category !== '_uncategorized_') {
+      // delete the group
+      const ret: ProjectData | undefined = await deleteTagGroup(
+        repoUrl,
+        info as UserInfo,
+        body.tagGroup
       );
+
+      if (ret) {
+        return new Response(
+          JSON.stringify({
+            project: ret,
+          })
+        );
+      } else {
+        return new Response(null, {
+          status: 500,
+          statusText: 'Failed to delete Tag Group: ' + body.tagGroup.category,
+        });
+      }
     } else {
       return new Response(null, {
-        status: 500,
-        statusText: 'Failed to delete Tag Group: ' + body.tagGroup.category,
+        status: 400,
+        statusText: 'Cannot delete the Uncategorized group: ',
       });
     }
   }

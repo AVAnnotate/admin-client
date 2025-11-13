@@ -9,6 +9,7 @@
     "module": "NodeNext",
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "noErrorTruncation": true,
     "paths": {
       "@apps/*": ["src/apps/*"],
       "@branding/*": ["src/branding/*"],
