@@ -14,6 +14,7 @@ import React from 'react';
 import { DragTable } from '@components/DragTable/DragTable.tsx';
 import { MeatballMenu } from '@components/MeatballMenu/MeatballMenu.tsx';
 import { Button } from '@radix-ui/themes';
+import { navigate } from 'astro:transitions/client';
 
 interface Props {
   i18n: Translations;
@@ -308,7 +309,9 @@ export const SetsTable: React.FC<Props> = (props) => {
         <DeleteSetModal
           baseUrl={getBaseUrl(deleteSet)}
           i18n={props.i18n}
-          onAfterSave={() => window.location.reload()}
+          onAfterSave={() =>
+            navigate(window.location.href, { history: 'replace' })
+          }
           onCancel={() => setDeleteSet(null)}
           set={deleteSet}
         />

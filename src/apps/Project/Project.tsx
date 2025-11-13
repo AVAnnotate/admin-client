@@ -19,6 +19,7 @@ import { Avatar } from '@components/Avatar/Avatar.tsx';
 import { DataManager } from '@components/DataManager/DataManager.tsx';
 import { SiteBuilder } from '@components/SiteBuilder/SiteBuilder.tsx';
 import { BuildStatus } from '@components/BuildStatus/BuildStatus.tsx';
+import { navigate } from 'astro:transitions/client';
 
 interface Props {
   i18n: Translations;
@@ -64,7 +65,9 @@ export const Project: React.FC<Props> = (props) => {
           annotations={props.project.annotations}
           eventUuid={deleteUuid}
           i18n={props.i18n}
-          onAfterSave={() => window.location.reload()}
+          onAfterSave={() =>
+            navigate(window.location.href, { history: 'replace' })
+          }
           onCancel={() => setDeleteUuid(null)}
           projectSlug={props.projectSlug}
         />

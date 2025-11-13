@@ -10,6 +10,7 @@ import {
   getOrderFromPageArray,
   type OrderEntry,
 } from '@lib/pages/reorder.ts';
+import { navigate } from 'astro:transitions/client';
 
 type RowState = {
   [key: string]: {
@@ -400,7 +401,7 @@ export const PageList: React.FC<Props> = (props) => {
     );
 
     if (res.ok) {
-      window.location.reload();
+      navigate(window.location.href, { history: 'replace' });
     }
     setSaving(false);
   };
