@@ -131,7 +131,10 @@ const FormContents: React.FC<Props> = (props) => {
   useEffect(() => {
     if (props.event) {
       if (props.event.av_file_order && props.event.av_file_order.length > 0) {
-        setOrder(props.event.av_file_order);
+        const unordered = Object.keys(props.event.audiovisual_files)?.filter(
+          (f) => !props.event?.av_file_order?.includes(f)
+        );
+        setOrder([...props.event.av_file_order, ...unordered]);
       } else {
         setOrder(Object.keys(props.event.audiovisual_files));
         setFieldValue(
@@ -387,6 +390,9 @@ const FormContents: React.FC<Props> = (props) => {
             onClick={() => {
               const id = uuidv4();
               setFieldValue(`audiovisual_files.${id}`, initialAvFile);
+              const newOrder = [...order, id];
+              setOrder(newOrder);
+              setFieldValue('av_file_order', newOrder);
               setOrder([...order, id]);
             }}
             type='button'
