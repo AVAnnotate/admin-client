@@ -25,7 +25,6 @@ export const autoGenerateEventPage = async (
     slug: slug,
     updated_at: new Date().toISOString(),
     updated_by: info!.profile.gitHubName || '',
-    parent: homePageId,
     autogenerate: {
       enabled: ev.auto_generate_web_page,
       type: 'event',
