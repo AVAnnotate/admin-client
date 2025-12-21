@@ -81,7 +81,7 @@ export const SetFormModal: React.FC<Props> = (props) => {
               </label>
               {useForCaptions && (
                 <label>
-                  {t['Tag Category for Speaker (optional)']}
+                  {t['Tag Category for .VTT voice tag (optional)']}
                   <AvFilePicker
                     options={props.speakerCategoryOptions || []}
                     value={speakerCategory || ''}
