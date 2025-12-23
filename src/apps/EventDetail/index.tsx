@@ -27,7 +27,8 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
   const [showEventDeleteModal, setShowEventDeleteModal] = useState(false);
 
   const tabs = useMemo(() => {
-    const uuids = Object.keys(props.event.audiovisual_files);
+    const uuids =
+      props.event.av_file_order || Object.keys(props.event.audiovisual_files);
     const isSingleAvFile = uuids.length === 1;
 
     return uuids.map((uuid, index) => {
