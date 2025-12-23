@@ -217,13 +217,20 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const repositoryURL = getRepositoryUrl(projectName);
 
-  const { readDir, readFile, commitAndPush, deleteFile, writeFile, context } =
-    await gitRepo({
-      fs: initFs(),
-      repositoryURL,
-      branch: 'main',
-      userInfo: info as UserInfo,
-    });
+  const {
+    readDir,
+    readFile,
+    commitAndPush,
+    deleteFile,
+    writeFile,
+    context,
+    exists,
+  } = await gitRepo({
+    fs: initFs(),
+    repositoryURL,
+    branch: 'main',
+    userInfo: info as UserInfo,
+  });
 
   const filepath = `/data/events/${eventUuid}.json`;
 
@@ -297,7 +304,11 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   for (let key of Object.keys(event.audiovisual_files)) {
     const avFile = event.audiovisual_files[key];
     if (avFile.caption_set && avFile.caption_set.length > 0) {
-      deleteFile(`/data/vtt/${avFile.caption_set}.vtt`);
+      for (const set of avFile.caption_set) {
+        if (exists(`/data/vtt/${set.annotation_page_id}.vtt`)) {
+          await deleteFile(`/data/vtt/${set.annotation_page_id}.vtt`);
+        }
+      }
     }
   }
 
