@@ -1,12 +1,14 @@
 import type { Annotation, Translations } from '@ty/Types.ts';
 import { useMemo } from 'react';
 import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
+import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import './DeleteEventModal.css';
 
 interface Props {
   annotations: { [key: string]: Annotation };
   eventUuid: string;
   i18n: Translations;
+  eventIsParent?: Boolean;
   projectSlug: string;
   onAfterSave: () => void;
   onCancel: () => void;
@@ -14,6 +16,39 @@ interface Props {
 
 export const DeleteEventModal: React.FC<Props> = (props) => {
   const { t } = props.i18n;
+
+  if (props.eventIsParent) {
+    return (
+      <>
+        <AlertDialog.Root open>
+          <AlertDialog.Content>
+            <div className='content-container'>
+              <div className='text-container'>
+                <AlertDialog.Title>{`${t['Delete']} ${t['Event']}`}</AlertDialog.Title>
+                <AlertDialog.Description className='alert-description'>
+                  {t['Event cannot be deleted.']}
+                </AlertDialog.Description>
+                <p>
+                  {
+                    t[
+                      'This event is associated with a page that has subpages. Remove any subpages and try again.'
+                    ]
+                  }
+                </p>
+                <Flex gap='3' mt='4' justify='end' className='bottom-bar'>
+                  <AlertDialog.Cancel onClick={props.onCancel}>
+                    <Button className='unstyled delete-modal-button cancel-button'>
+                      {t['cancel']}
+                    </Button>
+                  </AlertDialog.Cancel>
+                </Flex>
+              </div>
+            </div>
+          </AlertDialog.Content>
+        </AlertDialog.Root>
+      </>
+    );
+  }
 
   // get a count of the number of annotations that will be deleted
   // alongside this event.

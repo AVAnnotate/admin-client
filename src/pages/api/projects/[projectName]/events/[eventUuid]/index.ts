@@ -236,6 +236,61 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
 
   const annotationFiles = readDir('/data/annotations');
 
+  // Delete any associated auto-generated event files
+  const pageFiles = readDir('/data/pages', '.json');
+
+  //we need to know which pages are parents of other pages
+  const parentList: string[] = [];
+
+  // Keep a list or deleted files to remove from order.json
+  const deleteList: string[] = [];
+  const matchingPageFiles = pageFiles.filter((filepath) => {
+    const contents = readFile(`/data/pages/${filepath}`);
+    const parsed = JSON.parse(contents as string);
+
+    if (parsed?.parent && !parentList.includes(parsed?.parent)) {
+      parentList.push(parsed.parent);
+    }
+
+    if (
+      parsed &&
+      parsed.autogenerate &&
+      parsed.autogenerate.enabled &&
+      parsed.autogenerate.type === 'event' &&
+      parsed.autogenerate.type_id === eventUuid
+    ) {
+      deleteList.push((filepath as string).replace('.json', ''));
+      return true;
+    }
+  });
+
+  if (deleteList.find((page) => parentList.includes(page))) {
+    //in this case the event can't be deleted because it would orphan pages. Return an error.
+    return new Response(null, {
+      status: 500,
+      statusText:
+        'Cannot delete event because its associated event page has subpages.',
+    });
+  }
+
+  matchingPageFiles.forEach(async (filepath) => {
+    await deleteFile(`/data/pages/${filepath}`);
+  });
+
+  if (deleteList.length > 0) {
+    const orderFile = readFile('/data/pages/order.json');
+
+    const order = JSON.parse(orderFile as string);
+
+    const newOrder: string[] = order.filter(
+      (o: string) => !deleteList.includes(o)
+    );
+
+    await writeFile(
+      '/data/pages/order.json',
+      JSON.stringify(newOrder, null, 2)
+    );
+  }
   // we need to delete corresponding annotation files too
   const matchingAnnoFiles = annotationFiles.filter((filepath) => {
     const contents = readFile(`/data/annotations/${filepath}`);
@@ -257,46 +312,6 @@ export const DELETE: APIRoute = async ({ cookies, params, redirect }) => {
   matchingAnnoFiles.forEach(async (filepath) => {
     await deleteFile(`/data/annotations/${filepath}`);
   });
-
-  // Delete any associated auto-generated event files
-  const pageFiles = readDir('/data/pages', '.json');
-
-  // Keep a list or deleted files to remove from order.json
-  const deleteList: string[] = [];
-  const matchingPageFiles = pageFiles.filter((filepath) => {
-    const contents = readFile(`/data/pages/${filepath}`);
-    const parsed = JSON.parse(contents as string);
-
-    if (
-      parsed &&
-      parsed.autogenerate &&
-      parsed.autogenerate.enabled &&
-      parsed.autogenerate.type === 'event' &&
-      parsed.autogenerate.type_id === eventUuid
-    ) {
-      deleteList.push((filepath as string).replace('.json', ''));
-      return true;
-    }
-  });
-
-  matchingPageFiles.forEach(async (filepath) => {
-    await deleteFile(`/data/pages/${filepath}`);
-  });
-
-  if (deleteList.length > 0) {
-    const orderFile = readFile('/data/pages/order.json');
-
-    const order = JSON.parse(orderFile as string);
-
-    const newOrder: string[] = order.filter(
-      (o: string) => !deleteList.includes(o)
-    );
-
-    await writeFile(
-      '/data/pages/order.json',
-      JSON.stringify(newOrder, null, 2)
-    );
-  }
 
   const eventFile = readFile(filepath);
   const event = JSON.parse(eventFile as string);

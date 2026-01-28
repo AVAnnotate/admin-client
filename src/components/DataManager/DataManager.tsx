@@ -7,6 +7,7 @@ import { DeleteEventModal } from '@components/DeleteEventModal/DeleteEventModal.
 import { navigate } from 'astro:transitions/client';
 
 import './DataManager.css';
+import { eventIsParent } from '@lib/pages/index.ts';
 
 interface DataManagerProps {
   i18n: Translations;
@@ -55,6 +56,7 @@ export const DataManager = (props: DataManagerProps) => {
           annotations={props.project.annotations}
           eventUuid={deleteUuid}
           i18n={props.i18n}
+          eventIsParent={eventIsParent(deleteUuid, props.project.pages)}
           onAfterSave={() =>
             navigate(window.location.href, { history: 'replace' })
           }
