@@ -60,6 +60,8 @@
   "Event Description": "Event Description",
   "Offline": "Offline",
   "File": "File",
+  "Event cannot be deleted.": "Event cannot be deleted.",
+  "This event is associated with a page that has subpages. Remove any subpages and try again.": "This event is associated with a page that has subpages. Remove any subpages and try again.",
   "Upload a .tsv, .csv, .xlsx, or tab-delimited .txt file. Multiple annotation sets are uploaded separately.": "Upload a .tsv, .csv, .xlsx, or tab-delimited .txt file. Multiple annotation sets are uploaded separately.",
   "File Available Offline": "File Available Offline",
   "Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.": "Selecting this will create a webpage for your event. You can edit or delete this page at any point in the Pages tab.",

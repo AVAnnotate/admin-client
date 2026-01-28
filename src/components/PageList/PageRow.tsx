@@ -243,14 +243,11 @@ export const PageRow: React.FC<Props> = (props) => {
       });
     }
 
-    // only allow deletion in two cases:
-    // 1. the page has no children
-    // 2. the page is a child
+    // only allow deletion if the page has no children.
     //
     // if the user wants to delete a page with children,
     // they need to delete all the children first
     if (
-      page.parent ||
       Object.keys(props.project.pages!).filter(
         (key) => props.project.pages![key].parent === props.uuid
       ).length === 0

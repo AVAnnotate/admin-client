@@ -188,6 +188,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           annotations={props.project.annotations}
           eventUuid={props.eventUuid}
           i18n={props.i18n}
+          pages={props.project.pages}
           onAfterSave={() =>
             (window.location.pathname = `/${lang}/projects/${props.projectSlug}`)
           }
