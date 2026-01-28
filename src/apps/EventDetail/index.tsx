@@ -12,7 +12,6 @@ import { DotsThree } from '@phosphor-icons/react/dist/icons/DotsThree';
 import { PencilSquare, Trash } from 'react-bootstrap-icons';
 import { Button } from '@radix-ui/themes';
 import useExpandHeight from 'src/hooks/useExpandHeight.tsx';
-import { eventIsParent } from '@lib/pages/index.ts';
 
 interface EventDetailProps {
   event: Event;
@@ -189,7 +188,7 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
           annotations={props.project.annotations}
           eventUuid={props.eventUuid}
           i18n={props.i18n}
-          eventIsParent={eventIsParent(props.eventUuid, props.project.pages)}
+          pages={props.project.pages}
           onAfterSave={() =>
             (window.location.pathname = `/${lang}/projects/${props.projectSlug}`)
           }

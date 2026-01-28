@@ -20,7 +20,6 @@ import { DataManager } from '@components/DataManager/DataManager.tsx';
 import { SiteBuilder } from '@components/SiteBuilder/SiteBuilder.tsx';
 import { BuildStatus } from '@components/BuildStatus/BuildStatus.tsx';
 import { navigate } from 'astro:transitions/client';
-import { eventIsParent } from '@lib/pages/index.ts';
 
 interface Props {
   i18n: Translations;
@@ -66,7 +65,7 @@ export const Project: React.FC<Props> = (props) => {
           annotations={props.project.annotations}
           eventUuid={deleteUuid}
           i18n={props.i18n}
-          eventIsParent={eventIsParent(deleteUuid, props.project.pages)}
+          pages={props.project.pages}
           onAfterSave={() =>
             navigate(window.location.href, { history: 'replace' })
           }

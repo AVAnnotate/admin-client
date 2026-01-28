@@ -1,5 +1,5 @@
-import type { Annotation, Translations } from '@ty/Types.ts';
-import { useMemo } from 'react';
+import type { Annotation, Page, Translations } from '@ty/Types.ts';
+import { useCallback, useMemo } from 'react';
 import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
 import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import './DeleteEventModal.css';
@@ -8,7 +8,7 @@ interface Props {
   annotations: { [key: string]: Annotation };
   eventUuid: string;
   i18n: Translations;
-  eventIsParent?: Boolean;
+  pages: { [key: string]: Page };
   projectSlug: string;
   onAfterSave: () => void;
   onCancel: () => void;
@@ -17,11 +17,39 @@ interface Props {
 export const DeleteEventModal: React.FC<Props> = (props) => {
   const { t } = props.i18n;
 
-  if (props.eventIsParent) {
+  const eventIsParent = useCallback(
+    (uuid: string, pages: { [key: string]: Page }) => {
+      //the passed uuid is an event, so we need to see if there's an associated page
+      const eventPages = Object.keys(pages)?.filter((key) => {
+        const page = pages[key];
+        return (
+          page &&
+          page.autogenerate &&
+          page.autogenerate.enabled &&
+          page.autogenerate.type === 'event' &&
+          page.autogenerate.type_id === uuid
+        );
+      });
+      if (!eventPages?.length) {
+        return false;
+      }
+      return !!Object.values(pages)?.find(
+        (page) => page?.parent && eventPages.includes(page.parent)
+      );
+    },
+    []
+  );
+
+  const isParent = useMemo(
+    () => eventIsParent(props.eventUuid, props.pages),
+    [eventIsParent, props.eventUuid, props.pages]
+  );
+
+  if (isParent) {
     return (
       <>
         <AlertDialog.Root open>
-          <AlertDialog.Content>
+          <AlertDialog.Content className='delete-modal'>
             <div className='content-container'>
               <div className='text-container'>
                 <AlertDialog.Title>{`${t['Delete']} ${t['Event']}`}</AlertDialog.Title>
