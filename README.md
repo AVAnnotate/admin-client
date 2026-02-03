@@ -1,4 +1,16 @@
-# Astro Starter Kit: Basics
+# AVAnnotate Admin Client
+
+This repository contains the code for the admin backend that powers AVAnnotate sites. It is made with the Astro framework, with a backend powered entirely by GitHub. It also uses React for client-side components.
+
+## Local Development
+
+If you have access to the project on Netlify, install the Netlify CLI with `npm install -g netlify-cli`, then run `netlify link` in the project root to link your local repo to the desired Netlify project (for most local development this should probably be the staging instance). Once that link is done you can start a local server with `netlify dev`. In this case you don't need to worry about maintaining a local `.env` file for environment variables, since Netlify will inject them.
+
+You can also run a local environment without linking to Netlify by running `npm run dev`. In this case you'll need a local `.env` file; copy the contents of `.env.example` and fill in the client ID and secret for the GitHub application you're using for authentication. (Values for these secrets can be copied from the Netlify projects, under Project Configuration -> Environment Variables.)
+
+Note that running the site locally still requires authentication via GitHub, and changes made to projects will be applied, so be sure to create testing projects for playing around with any new and untested features.
+
+# Astro Basics
 
 ```sh
 npm create astro@latest -- --template basics
