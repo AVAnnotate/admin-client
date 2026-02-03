@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import './PageList.css';
 import type { Page, ProjectData, Translations } from '@ty/Types.ts';
 import { Button } from '@radix-ui/themes';
@@ -11,6 +11,7 @@ import {
   type OrderEntry,
 } from '@lib/pages/reorder.ts';
 import { navigate } from 'astro:transitions/client';
+import { ProjectContext } from '@apps/Project/ProjectContext.ts';
 
 type RowState = {
   [key: string]: {
@@ -25,17 +26,20 @@ type RowState = {
 };
 interface Props {
   i18n: Translations;
-  project: ProjectData;
   projectSlug: string;
 }
 
 export const PageList: React.FC<Props> = (props) => {
   const [saving, setSaving] = useState(false);
-  const [pageOrder, setPageOrder] = useState(props.project.pageOrder);
-  const [project, setProject] = useState(props.project);
   const [rowState, setRowState] = useState<RowState>({});
+  const { project, setProject } = useContext(ProjectContext);
+  const [pageOrder, setPageOrder] = useState(project?.pageOrder);
 
   const { t } = props.i18n;
+
+  if (!project) {
+    return null;
+  }
 
   useEffect(() => {
     if (pageOrder) {
@@ -89,8 +93,8 @@ export const PageList: React.FC<Props> = (props) => {
   }, [project, pageOrder]);
 
   const isChanged = useMemo(
-    () => pageOrder !== props.project.pageOrder,
-    [props.project.pageOrder, pageOrder]
+    () => pageOrder !== project.pageOrder,
+    [project.pageOrder, pageOrder]
   );
 
   const onSubmit = async () => {

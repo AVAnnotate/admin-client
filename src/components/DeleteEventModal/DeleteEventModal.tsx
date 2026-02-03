@@ -1,14 +1,13 @@
 import type { Annotation, Page, Translations } from '@ty/Types.ts';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useContext, useEffect, useMemo } from 'react';
 import { DeleteModal } from '@components/DeleteModal/DeleteModal.tsx';
 import { AlertDialog, Button, Flex } from '@radix-ui/themes';
 import './DeleteEventModal.css';
+import { ProjectContext } from '@apps/Project/ProjectContext.ts';
 
 interface Props {
-  annotations: { [key: string]: Annotation };
   eventUuid: string;
   i18n: Translations;
-  pages: { [key: string]: Page };
   projectSlug: string;
   onAfterSave: () => void;
   onCancel: () => void;
@@ -17,8 +16,16 @@ interface Props {
 export const DeleteEventModal: React.FC<Props> = (props) => {
   const { t } = props.i18n;
 
+  const { project } = useContext(ProjectContext);
+
+  const pages = useMemo(() => project?.pages, [project]);
+  const annotations = useMemo(() => project?.annotations, [project]);
+
   const eventIsParent = useCallback(
-    (uuid: string, pages: { [key: string]: Page }) => {
+    (uuid: string, pages?: { [key: string]: Page }) => {
+      if (!pages) {
+        return false;
+      }
       //the passed uuid is an event, so we need to see if there's an associated page
       const eventPages = Object.keys(pages)?.filter((key) => {
         const page = pages[key];
@@ -41,8 +48,8 @@ export const DeleteEventModal: React.FC<Props> = (props) => {
   );
 
   const isParent = useMemo(
-    () => eventIsParent(props.eventUuid, props.pages),
-    [eventIsParent, props.eventUuid, props.pages]
+    () => eventIsParent(props.eventUuid, pages),
+    [eventIsParent, props.eventUuid, pages]
   );
 
   if (isParent) {
@@ -81,12 +88,15 @@ export const DeleteEventModal: React.FC<Props> = (props) => {
   // get a count of the number of annotations that will be deleted
   // alongside this event.
   const warningText = useMemo(() => {
-    const annoFileUuids = Object.keys(props.annotations).filter(
-      (uuid) => props.annotations[uuid].event_id === props.eventUuid
-    );
+    const annoFileUuids = annotations
+      ? Object.keys(annotations).filter(
+          (uuid) => annotations[uuid].event_id === props.eventUuid
+        )
+      : [];
 
     const count = annoFileUuids.reduce(
-      (acc, uuid) => acc + props.annotations[uuid].annotations.length,
+      (acc, uuid) =>
+        annotations ? acc + annotations[uuid].annotations.length : 0,
       0
     );
 
@@ -101,7 +111,7 @@ export const DeleteEventModal: React.FC<Props> = (props) => {
         </p>
       );
     }
-  }, [props.annotations, props.eventUuid]);
+  }, [annotations, props.eventUuid]);
 
   const deletePath = useMemo(
     () => `/api/projects/${props.projectSlug}/events/${props.eventUuid}`,

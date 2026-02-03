@@ -20,6 +20,7 @@ import { DataManager } from '@components/DataManager/DataManager.tsx';
 import { SiteBuilder } from '@components/SiteBuilder/SiteBuilder.tsx';
 import { BuildStatus } from '@components/BuildStatus/BuildStatus.tsx';
 import { navigate } from 'astro:transitions/client';
+import { ProjectContext } from './ProjectContext.ts';
 
 interface Props {
   i18n: Translations;
@@ -34,6 +35,7 @@ interface EventWithUuid extends Event {
 export const Project: React.FC<Props> = (props) => {
   const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
   const [activeTab, setActiveTab] = useState<string | undefined>();
+  const [project, setProject] = useState<ProjectData | null>(props.project);
 
   const { lang, t } = props.i18n;
 
@@ -59,13 +61,11 @@ export const Project: React.FC<Props> = (props) => {
   };
 
   return (
-    <>
+    <ProjectContext.Provider value={{ project, setProject }}>
       {deleteUuid && (
         <DeleteEventModal
-          annotations={props.project.annotations}
           eventUuid={deleteUuid}
           i18n={props.i18n}
-          pages={props.project.pages}
           onAfterSave={() =>
             navigate(window.location.href, { history: 'replace' })
           }
@@ -198,6 +198,6 @@ export const Project: React.FC<Props> = (props) => {
           />
         </div>
       </div>
-    </>
+    </ProjectContext.Provider>
   );
 };
