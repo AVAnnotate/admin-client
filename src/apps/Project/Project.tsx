@@ -35,7 +35,7 @@ interface EventWithUuid extends Event {
 export const Project: React.FC<Props> = (props) => {
   const [deleteUuid, setDeleteUuid] = useState<null | string>(null);
   const [activeTab, setActiveTab] = useState<string | undefined>();
-  const [project, setProject] = useState<ProjectData | null>(props.project);
+  const [project, setProject] = useState<ProjectData>(props.project);
 
   const { lang, t } = props.i18n;
 
