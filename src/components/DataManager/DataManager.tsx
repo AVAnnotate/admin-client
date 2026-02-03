@@ -52,10 +52,8 @@ export const DataManager = (props: DataManagerProps) => {
       </Tabs.Root>
       {deleteUuid && (
         <DeleteEventModal
-          annotations={props.project.annotations}
           eventUuid={deleteUuid}
           i18n={props.i18n}
-          pages={props.project.pages}
           onAfterSave={() =>
             navigate(window.location.href, { history: 'replace' })
           }
