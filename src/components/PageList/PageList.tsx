@@ -37,10 +37,6 @@ export const PageList: React.FC<Props> = (props) => {
 
   const { t } = props.i18n;
 
-  if (!project) {
-    return null;
-  }
-
   useEffect(() => {
     if (pageOrder) {
       let state: RowState = { ...rowState };

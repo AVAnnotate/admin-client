@@ -2,11 +2,14 @@ import { createContext, type Dispatch, type SetStateAction } from 'react';
 import type { ProjectData } from '@ty/Types.ts';
 
 interface ProjectContentInterface {
-  project: ProjectData | null;
-  setProject: Dispatch<SetStateAction<ProjectData | null>>;
+  project: ProjectData;
+  setProject: Dispatch<SetStateAction<ProjectData>>;
 }
 
-export const ProjectContext = createContext<ProjectContentInterface>({
+const initialState = {
   project: null,
   setProject: () => {},
-});
+} as unknown as ProjectContentInterface;
+
+export const ProjectContext =
+  createContext<ProjectContentInterface>(initialState);
