@@ -185,7 +185,6 @@ export const EventDetail: React.FC<EventDetailProps> = (props) => {
       </div>
       {showEventDeleteModal && (
         <DeleteEventModal
-          annotations={props.project.annotations}
           eventUuid={props.eventUuid}
           i18n={props.i18n}
           onAfterSave={() =>

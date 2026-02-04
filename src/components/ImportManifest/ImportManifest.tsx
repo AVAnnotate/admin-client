@@ -42,7 +42,9 @@ export const ImportManifest = (props: ImportManifestProps) => {
       if (!resp.ok) {
         setToast({
           title: t['Problem!'],
-          description: t['Manifest Analysis failed'],
+          description: resp.statusText
+            ? `${t['Manifest Analysis failed']} ${t['with status']}: ${resp.statusText}`
+            : t['Manifest Analysis failed'],
           type: 'error',
         });
 

@@ -37,6 +37,11 @@ export const POST: APIRoute = async ({
       );
 
       return new Response(JSON.stringify(results), { status: 200 });
+    } else if (dataResp.status === 403) {
+      return new Response(null, {
+        status: 403,
+        statusText: 'Resource forbidden',
+      });
     }
   }
 

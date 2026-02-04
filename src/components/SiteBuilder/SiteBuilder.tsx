@@ -124,11 +124,7 @@ export const SiteBuilder = (props: SiteBuilderProps) => {
           </Button>
         </EmptyDashboard>
       ) : (
-        <PageList
-          project={props.project}
-          i18n={props.i18n}
-          projectSlug={props.projectSlug}
-        />
+        <PageList i18n={props.i18n} projectSlug={props.projectSlug} />
       )}
       <AutoGenerateModal
         project={props.project}
