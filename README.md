@@ -4,7 +4,7 @@ This repository contains the code for the admin backend that powers AVAnnotate s
 
 ## Local Development
 
-If you have access to the project on Netlify, install the Netlify CLI with `npm install -g netlify-cli`, then run `netlify link` in the project root to link your local repo to the desired Netlify project (for most local development this should probably be the staging instance). Once that link is done you can start a local server with `netlify dev`. In this case you don't need to worry about maintaining a local `.env` file for environment variables, since Netlify will inject them.
+If you have access to the project on Netlify, install the Netlify CLI with `npm install -g netlify-cli`, then run `netlify link` in the project root to link your local repo to the desired Netlify project (for most local development this should probably be the staging instance). Once that link is done you can start a local server with `netlify dev`. In this case you don't need to worry about maintaining a local `.env` file for environment variables, since Netlify will inject them. 
 
 You can also run a local environment without linking to Netlify by running `npm run dev`. In this case you'll need a local `.env` file; copy the contents of `.env.example` and fill in the client ID and secret for the GitHub application you're using for authentication. (Values for these secrets can be copied from the Netlify projects, under Project Configuration -> Environment Variables.)
 
