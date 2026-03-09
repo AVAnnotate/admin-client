@@ -10,6 +10,25 @@ You can also run a local environment without linking to Netlify by running `npm 
 
 Note that running the site locally still requires authentication via GitHub, and changes made to projects will be applied, so be sure to create testing projects for playing around with any new and untested features.
 
+### UTexas GitHub Enterprise Managed User (EMU) login
+
+A second "Sign in with UTexas EID" button can be shown on the sign-in page to let UTexas users authenticate via the [GitHub Enterprise Managed Users SSO](https://docs.github.com/en/enterprise-cloud@latest/admin/managing-iam/configuring-authentication-for-enterprise-managed-users/configuring-saml-single-sign-on-for-enterprise-managed-users) for the `utexas-internal` enterprise (<https://github.com/enterprises/utexas-internal>).
+
+To enable this button you need a separate OAuth App registered inside the UTexas enterprise and two additional environment variables:
+
+| Variable | Description |
+| --- | --- |
+| `PUBLIC_UTEXAS_GITHUB_CLIENT_ID` | Client ID of the OAuth App created inside the UTexas enterprise |
+| `UTEXAS_GITHUB_CLIENT_SECRET` | Client secret for that OAuth App (server-side only) |
+
+**Creating the OAuth App:**
+1. Navigate to <https://github.com/enterprises/utexas-internal> (requires enterprise admin access).
+2. Go to *Settings → OAuth Apps → New OAuth App*.
+3. Set **Authorization callback URL** to `{PUBLIC_REDIRECT_URL}/git-enterprise` (e.g. `https://avannotate.netlify.app/git-enterprise`).
+4. Copy the **Client ID** into `PUBLIC_UTEXAS_GITHUB_CLIENT_ID` and generate/copy a **Client secret** into `UTEXAS_GITHUB_CLIENT_SECRET`.
+
+When `PUBLIC_UTEXAS_GITHUB_CLIENT_ID` is blank (the default), the UTexas EID button is hidden, so the sign-in page works exactly as before for non-UTexas deployments.
+
 # Astro Basics
 
 ```sh
