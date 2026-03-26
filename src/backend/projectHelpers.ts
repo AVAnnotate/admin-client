@@ -12,6 +12,7 @@ import {
   updateWorkflowContent,
   triggerWorkflow,
 } from '@lib/GitHub/index.ts';
+import deployWorkflow from '../workflows/deploy-main.yml?raw';
 import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
   UserInfo,
@@ -38,8 +39,6 @@ export const parseURL = (url: string) => {
     repo,
   };
 };
-
-const TEMPLATE_BRANCH = import.meta.env.OVERRIDE_TEMPLATE_BRANCH || 'main';
 
 export const getOrgs = async (
   userInfo: UserInfo
@@ -506,27 +505,7 @@ export const publishSite = async (
 ) => {
   // First make sure the workflow is current
 
-  // Get the SHA of the template repo
-  const resultBase = await getWorkflowInfo(
-    userInfo.token,
-    'avannotate',
-    'project-template',
-    'deploy-main.yml',
-    TEMPLATE_BRANCH
-  );
-
-  if (!resultBase.ok) {
-    console.log(
-      'Failed to get template repo workflow info: ',
-      resultBase.statusText
-    );
-    return false;
-  }
-
-  const base = await resultBase.json();
-  const baseSHA = base.sha;
-
-  // Get the SHA of the current project workflow
+  // Get the SHA of the project workflow
   const resultCurrent = await getWorkflowInfo(
     userInfo.token,
     org,
@@ -545,33 +524,32 @@ export const publishSite = async (
   const current = await resultCurrent.json();
   const repoSHA = current.sha;
 
-  if (baseSHA !== repoSHA) {
-    // Fetch the newest
-    const resultGet = await getWorkflowContent(
-      userInfo.token,
-      'avannotate',
-      'project-template',
-      'deploy-main.yml',
-      TEMPLATE_BRANCH
+  // Fetch the current workflow content from the project repo
+  const resultCurrentContent = await getWorkflowContent(
+    userInfo.token,
+    org,
+    repo,
+    'deploy-main.yml'
+  );
+
+  if (!resultCurrentContent.ok) {
+    console.log(
+      'Failed to get target repo workflow content: ',
+      resultCurrentContent.statusText
     );
+    return false;
+  }
 
-    if (!resultGet.ok) {
-      console.log(
-        'Failed to get template repo workflow content: ',
-        resultGet.statusText
-      );
-      return;
-    }
+  const currentContent = await resultCurrentContent.text();
 
-    const workflow = await resultGet.text();
-
-    // Update the current workflow
+  // Update the workflow if the local template differs from the project's current workflow
+  if (currentContent !== deployWorkflow) {
     const resultPut = await updateWorkflowContent(
       userInfo.token,
       org,
       repo,
       'deploy-main.yml',
-      workflow,
+      deployWorkflow,
       repoSHA
     );
 
