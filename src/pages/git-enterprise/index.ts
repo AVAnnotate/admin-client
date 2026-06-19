@@ -32,13 +32,21 @@ export const GET: APIRoute = async ({ request }) => {
         );
         return new Response(undefined, { status: 401 });
       }
-      return new Response(undefined, {
-        status: 302,
-        headers: {
-          'Set-Cookie': `access-token=${access_token}; HttpOnly; SameSite=Lax; Path=/`,
-          Location: `${new URL(request.url).origin}/en/projects`,
-        },
+      // Set both the access token and an auth-provider marker so the server
+      // can identify this session as a UTexas EMU login and use the correct
+      // template repo when creating projects.
+      const headers = new Headers({
+        Location: `${new URL(request.url).origin}/en/projects`,
       });
+      headers.append(
+        'Set-Cookie',
+        `access-token=${access_token}; HttpOnly; SameSite=Lax; Path=/`
+      );
+      headers.append(
+        'Set-Cookie',
+        `auth-provider=utexas; HttpOnly; SameSite=Lax; Path=/`
+      );
+      return new Response(undefined, { status: 302, headers });
     })
     .catch((error) => {
       console.error('UTexas OAuth token exchange failed:', error);

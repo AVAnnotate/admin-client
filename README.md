@@ -29,6 +29,23 @@ To enable this button you need a separate OAuth App registered inside the UTexas
 
 When `PUBLIC_UTEXAS_GITHUB_CLIENT_ID` is blank (the default), the UTexas EID button is hidden, so the sign-in page works exactly as before for non-UTexas deployments.
 
+#### Creating projects as a UTexas EMU user
+
+GitHub Enterprise Managed Users are isolated to their enterprise and cannot access GitHub repositories outside it — including the AVAnnotate project template (`AVAnnotate/project-template`). Without extra setup, UTexas users will see a "repo create failed" error when they try to create a new project.
+
+To fix this, fork the template into the UTexas enterprise and tell AVAnnotate where to find it:
+
+1. **Fork the template** — inside the UTexas enterprise, fork or import [`AVAnnotate/project-template`](https://github.com/AVAnnotate/project-template) into a UTexas enterprise org (e.g. `utexas-avannotate/project-template`).
+2. **Mark it as a template** — in the forked repo's *Settings → General*, check **"Template repository"**.
+3. **Set the two new environment variables**:
+
+| Variable | Description |
+| --- | --- |
+| `UTEXAS_GIT_REPO_ORG` | GitHub org (inside the enterprise) that owns the forked template, e.g. `utexas-avannotate` |
+| `UTEXAS_GIT_REPO_PROJECT_TEMPLATE` | Repo name of the fork; leave blank to use `project-template` |
+
+With these variables set, UTexas users' project creation calls will use the enterprise copy of the template instead of the one outside the enterprise.
+
 # Astro Basics
 
 ```sh

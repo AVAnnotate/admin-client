@@ -70,14 +70,29 @@ export const POST: APIRoute = async ({
         }
       );
     }
+    // For UTexas EMU users the standard AVAnnotate template is outside their
+    // enterprise and cannot be accessed with their token.  If a UTexas-specific
+    // template org is configured and this session was started via the EMU login
+    // path, use that org's copy of the template instead.
+    const isUtexasSession = cookies.get('auth-provider')?.value === 'utexas';
+    const utexasTemplateOrg = import.meta.env.UTEXAS_GIT_REPO_ORG;
+    const utexasTemplateRepo =
+      import.meta.env.UTEXAS_GIT_REPO_PROJECT_TEMPLATE || body.templateRepo;
+
+    const templateOwner =
+      isUtexasSession && utexasTemplateOrg ? utexasTemplateOrg : undefined;
+    const templateRepo =
+      isUtexasSession && utexasTemplateOrg ? utexasTemplateRepo : body.templateRepo;
+
     // Create the new repo from template
     const resp: Response = await createRepositoryFromTemplate(
-      body.templateRepo,
+      templateRepo,
       body.gitHubOrg,
       token?.value as string,
       projectName as string,
       body.title,
-      body.visibility
+      body.visibility,
+      templateOwner
     );
 
     if (!resp.ok) {

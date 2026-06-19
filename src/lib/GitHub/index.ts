@@ -153,8 +153,10 @@ export const createRepositoryFromTemplate = async (
   token: string,
   newRepoName: string,
   description: string,
-  visibility?: 'private' | 'public' // Defaults to private
+  visibility?: 'private' | 'public', // Defaults to private
+  templateOwner?: string // Defaults to GIT_REPO_ORG
 ): Promise<Response> => {
+  const owner = templateOwner || import.meta.env.GIT_REPO_ORG;
   const body = {
     owner: org,
     name: newRepoName,
@@ -163,9 +165,7 @@ export const createRepositoryFromTemplate = async (
   };
 
   return await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${templateRepo}/generate`,
+    `https://api.github.com/repos/${owner}/${templateRepo}/generate`,
     {
       method: 'POST',
       headers: {
