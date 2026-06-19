@@ -21,9 +21,9 @@ To enable this button you need a separate OAuth App registered inside the UTexas
 | `PUBLIC_UTEXAS_GITHUB_CLIENT_ID` | Client ID of the OAuth App created inside the UTexas enterprise |
 | `UTEXAS_GITHUB_CLIENT_SECRET` | Client secret for that OAuth App (server-side only) |
 
-**Creating the OAuth App:**
+**Creating the OAuth App:** 
 1. Navigate to <https://github.com/enterprises/utexas-internal> (requires enterprise admin access).
-2. Go to *Settings → OAuth Apps → New OAuth App*.
+2. Go to *Settings → OAuth Apps → New OAuth App*.  (this is actually under the developer section at the very bottom of your org's settings on the left.)
 3. Set **Authorization callback URL** to `{PUBLIC_REDIRECT_URL}/git-enterprise` (e.g. `https://avannotate.netlify.app/git-enterprise`).
 4. Copy the **Client ID** into `PUBLIC_UTEXAS_GITHUB_CLIENT_ID` and generate/copy a **Client secret** into `UTEXAS_GITHUB_CLIENT_SECRET`.
 
