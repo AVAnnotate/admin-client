@@ -36,7 +36,7 @@ export const GET: APIRoute = async ({ request }) => {
         status: 302,
         headers: {
           'Set-Cookie': `access-token=${access_token}; HttpOnly; SameSite=Lax; Path=/`,
-          Location: `${import.meta.env.PUBLIC_REDIRECT_URL}/en/projects`,
+          Location: `${new URL(request.url).origin}/en/projects`,
         },
       });
     })

@@ -64,7 +64,7 @@ export const SignInGitHub = (props: SignInGitHubProps) => {
           id='sign-in-utexas'
           className='sign-in-anchor sign-in-anchor-utexas'
           href={`https://github.com/login/oauth/authorize?client_id=${utexasClientId}&redirect_uri=${
-            import.meta.env.PUBLIC_REDIRECT_URL
+            window.location.origin
           }/git-enterprise&scope=repo%20workflow`}
         >
           <div className='sign-in-button-container'>
