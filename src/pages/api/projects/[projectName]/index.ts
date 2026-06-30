@@ -24,6 +24,41 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 
+const logGitHubErrorResponse = async (
+  stage: string,
+  response: Response,
+  context?: Record<string, unknown>
+) => {
+  const requestId =
+    response.headers.get('x-github-request-id') ||
+    response.headers.get('x-request-id') ||
+    'unknown';
+  const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+  const scope = response.headers.get('x-oauth-scopes');
+  const acceptedScope = response.headers.get('x-accepted-oauth-scopes');
+
+  let responseBody: unknown = null;
+  const rawBody = await response.text();
+  if (rawBody) {
+    try {
+      responseBody = JSON.parse(rawBody);
+    } catch {
+      responseBody = rawBody;
+    }
+  }
+
+  console.error(`[GitHub ${stage}] request failed`, {
+    status: response.status,
+    statusText: response.statusText,
+    requestId,
+    rateLimitRemaining,
+    scope,
+    acceptedScope,
+    responseBody,
+    ...context,
+  });
+};
+
 // Note: this POST route is the only /api/projects route that expects the
 // `projectName` param to be the bare name instead of the slug version that
 // combines org and name. All other /api/projects API routes expect the full slug.
@@ -81,13 +116,17 @@ export const POST: APIRoute = async ({
     );
 
     if (!resp.ok) {
-      console.error('Failed to create project repo: ', resp.statusText);
-      console.error('Body: ', body);
+      await logGitHubErrorResponse('repo-create-from-template', resp, {
+        gitHubOrg: body.gitHubOrg,
+        templateRepo: body.templateRepo,
+        projectName,
+        visibility: body.visibility,
+      });
       return new Response(
         JSON.stringify({
           avaError: '_repo_create_failed_',
         }),
-        { status: 500, statusText: resp.statusText }
+        { status: resp.status || 500, statusText: resp.statusText }
       );
     }
 
@@ -102,14 +141,16 @@ export const POST: APIRoute = async ({
       );
 
       if (!respPages.ok) {
-        console.error('Status: ', respPages.status);
-        console.error('Failed to enable GitHub pages: ', respPages.statusText);
+        await logGitHubErrorResponse('pages-enable', respPages, {
+          gitHubOrg: body.gitHubOrg,
+          projectName,
+        });
         return new Response(
           JSON.stringify({
             avaError: '_failed_pages_enable_',
           }),
           {
-            status: 500,
+            status: respPages.status || 500,
             statusText: respPages.statusText,
           }
         );
@@ -127,14 +168,16 @@ export const POST: APIRoute = async ({
     );
 
     if (!respTopics.ok) {
-      console.error('Status: ', respTopics.status);
-      console.error('Failed to add topic: ', respTopics.statusText);
+      await logGitHubErrorResponse('topics-replace', respTopics, {
+        gitHubOrg: body.gitHubOrg,
+        projectName,
+      });
       return new Response(
         JSON.stringify({
           avaError: '_failed_adding_topic_',
         }),
         {
-          status: 500,
+          status: respTopics.status || 500,
           statusText: respTopics.statusText,
         }
       );
