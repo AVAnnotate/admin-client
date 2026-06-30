@@ -1,3 +1,17 @@
+import {
+  getEnterpriseGitHubOrgs,
+  getTemplateOwnerForDestinationOrg,
+  isEnterpriseGitHubOrg,
+} from './config.ts';
+import type { RepoVisibility } from './config.ts';
+
+export {
+  getEnterpriseGitHubOrgs,
+  getTemplateOwnerForDestinationOrg,
+  isEnterpriseGitHubOrg,
+};
+export type { RepoVisibility } from './config.ts';
+
 export const paginate = async (url: string, token: string) => {
   let results: any[] = [];
 
@@ -153,7 +167,7 @@ export const createRepositoryFromTemplate = async (
   token: string,
   newRepoName: string,
   description: string,
-  visibility?: 'private' | 'public' // Defaults to private
+  visibility?: RepoVisibility // Defaults to private
 ): Promise<Response> => {
   const body = {
     owner: org,
@@ -161,21 +175,21 @@ export const createRepositoryFromTemplate = async (
     description: description,
     private: visibility !== 'public',
   };
+  const templateOwner = getTemplateOwnerForDestinationOrg(org);
+  const url = `https://api.github.com/repos/${templateOwner}/${templateRepo}/generate`;
 
-  return await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${templateRepo}/generate`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      body: JSON.stringify(body),
-    }
-  );
+  console.info('GitHub template generation URL:', url);
+  console.info('GitHub template generation payload:', body);
+
+  return await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/vnd.github+json',
+      Authorization: `Bearer ${token}`,
+      'X-GitHub-Api-Version': '2022-11-28',
+    },
+    body: JSON.stringify(body),
+  });
 };
 
 export const addRepositoryHomepage = async (
@@ -372,8 +386,13 @@ export const changeRepoVisibility = async (
   token: string,
   org: string,
   slug: string,
-  isPrivate: boolean
+  visibility: boolean | RepoVisibility
 ): Promise<Response> => {
+  const body =
+    typeof visibility === 'boolean'
+      ? { private: visibility }
+      : { visibility: visibility };
+
   return await fetch(`https://api.github.com/repos/${org}/${slug}`, {
     method: 'PATCH',
     headers: {
@@ -381,9 +400,7 @@ export const changeRepoVisibility = async (
       Authorization: `Bearer ${token}`,
       'X-GitHub-Api-Version': '2022-11-28',
     },
-    body: JSON.stringify({
-      private: isPrivate,
-    }),
+    body: JSON.stringify(body),
   });
 };
 

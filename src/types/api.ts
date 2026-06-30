@@ -32,7 +32,7 @@ export type apiAnnotationSetPost = {
 export type apiProjectsProjectNamePost = {
   templateRepo: string;
   description: string;
-  visibility: 'private' | 'public';
+  is_private: boolean;
   generate_pages_site: boolean;
   title: string;
   slug: string;
