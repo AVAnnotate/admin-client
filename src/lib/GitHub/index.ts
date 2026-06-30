@@ -163,19 +163,31 @@ export const createRepositoryFromTemplate = async (
     description: description,
     private: visibility !== 'public',
   };
+  const url = `https://api.github.com/repos/${
+    import.meta.env.GIT_REPO_ORG
+  }/${templateRepo}/generate`;
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  const requestOptions = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+  };
 
-  return await fetch(
-    `https://api.github.com/repos/${owner}/${templateRepo}/generate`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      body: JSON.stringify(body),
-    }
-  );
+  console.info('Creating repository from template', {
+    url,
+    method: requestOptions.method,
+    body,
+    headers: {
+      ...headers,
+      Authorization: 'Bearer [redacted]',
+    },
+  });
+
+  return await fetch(url, requestOptions);
 };
 
 export const addRepositoryHomepage = async (
