@@ -25,6 +25,18 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 
+const logGitHubFailure = async (stage: string, response: Response) => {
+  const requestId = response.headers.get('x-github-request-id');
+  const responseBody = await response.clone().text();
+
+  console.error(`GitHub ${stage} failed`, {
+    status: response.status,
+    statusText: response.statusText,
+    requestId,
+    responseBody,
+  });
+};
+
 const logGitHubErrorResponse = async (
   stage: string,
   response: Response,
