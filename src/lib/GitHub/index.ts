@@ -167,7 +167,7 @@ export const createRepositoryFromTemplate = async (
   token: string,
   newRepoName: string,
   description: string,
-  visibility?: 'private' | 'public', // Defaults to private
+  visibility?: 'private' | 'public' | 'internal', // Defaults to private
   templateOwner?: string // Defaults to GIT_REPO_ORG
 ): Promise<Response> => {
   const owner = templateOwner || import.meta.env.GIT_REPO_ORG;
@@ -175,7 +175,7 @@ export const createRepositoryFromTemplate = async (
     owner: org,
     name: newRepoName,
     description: description,
-    private: visibility !== 'public',
+    private: visibility === 'private',
   };
   const url = `https://api.github.com/repos/${
     import.meta.env.GIT_REPO_ORG
