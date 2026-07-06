@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({
       token?.value as string,
       projectName as string,
       body.title,
-      body.visibility,
+      repoVisibility
       templateOwner
     );
 
@@ -142,7 +142,7 @@ export const POST: APIRoute = async ({
         gitHubOrg: body.gitHubOrg,
         templateRepo: body.templateRepo,
         projectName,
-        visibility: body.visibility,
+        visibility: repoVisibility,
       });
       return new Response(
         JSON.stringify({
