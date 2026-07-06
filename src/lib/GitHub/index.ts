@@ -167,29 +167,41 @@ export const createRepositoryFromTemplate = async (
   token: string,
   newRepoName: string,
   description: string,
-  visibility?: RepoVisibility // Defaults to private
+  visibility?: 'private' | 'public', // Defaults to private
+  templateOwner?: string // Defaults to GIT_REPO_ORG
 ): Promise<Response> => {
+  const owner = templateOwner || import.meta.env.GIT_REPO_ORG;
   const body = {
     owner: org,
     name: newRepoName,
     description: description,
     private: visibility !== 'public',
   };
-  const templateOwner = getTemplateOwnerForDestinationOrg(org);
-  const url = `https://api.github.com/repos/${templateOwner}/${templateRepo}/generate`;
-
-  console.info('GitHub template generation URL:', url);
-  console.info('GitHub template generation payload:', body);
-
-  return await fetch(url, {
+  const url = `https://api.github.com/repos/${
+    import.meta.env.GIT_REPO_ORG
+  }/${templateRepo}/generate`;
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  const requestOptions = {
     method: 'POST',
-    headers: {
-      Accept: 'application/vnd.github+json',
-      Authorization: `Bearer ${token}`,
-      'X-GitHub-Api-Version': '2022-11-28',
-    },
+    headers,
     body: JSON.stringify(body),
+  };
+
+  console.info('Creating repository from template', {
+    url,
+    method: requestOptions.method,
+    body,
+    headers: {
+      ...headers,
+      Authorization: 'Bearer [redacted]',
+    },
   });
+
+  return await fetch(url, requestOptions);
 };
 
 export const addRepositoryHomepage = async (

@@ -25,16 +25,38 @@ import {
 import { v4 as uuidv4 } from 'uuid';
 import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 
+const logGitHubErrorResponse = async (
+  stage: string,
+  response: Response,
+  context?: Record<string, unknown>
+) => {
+  const requestId =
+    response.headers.get('x-github-request-id') ||
+    response.headers.get('x-request-id') ||
+    'unknown';
+  const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+  const scope = response.headers.get('x-oauth-scopes');
+  const acceptedScope = response.headers.get('x-accepted-oauth-scopes');
 
-const logGitHubFailure = async (stage: string, response: Response) => {
-  const requestId = response.headers.get('x-github-request-id');
-  const responseBody = await response.clone().text();
+  let responseBody: unknown = null;
+  const rawBody = await response.text();
+  if (rawBody) {
+    try {
+      responseBody = JSON.parse(rawBody);
+    } catch {
+      responseBody = rawBody;
+    }
+  }
 
-  console.error(`GitHub ${stage} failed`, {
+  console.error(`[GitHub ${stage}] request failed`, {
     status: response.status,
     statusText: response.statusText,
     requestId,
+    rateLimitRemaining,
+    scope,
+    acceptedScope,
     responseBody,
+    ...context,
   });
 };
 
@@ -90,25 +112,43 @@ export const POST: APIRoute = async ({
         }
       );
     }
+    // For UTexas EMU users the standard AVAnnotate template is outside their
+    // enterprise and cannot be accessed with their token.  If a UTexas-specific
+    // template org is configured and this session was started via the EMU login
+    // path, use that org's copy of the template instead.
+    const isUtexasSession = cookies.get('auth-provider')?.value === 'utexas';
+    const utexasTemplateOrg = import.meta.env.UTEXAS_GIT_REPO_ORG;
+    const utexasTemplateRepo =
+      import.meta.env.UTEXAS_GIT_REPO_PROJECT_TEMPLATE || body.templateRepo;
+
+    const templateOwner =
+      isUtexasSession && utexasTemplateOrg ? utexasTemplateOrg : undefined;
+    const templateRepo =
+      isUtexasSession && utexasTemplateOrg ? utexasTemplateRepo : body.templateRepo;
+
     // Create the new repo from template
     const resp: Response = await createRepositoryFromTemplate(
-      body.templateRepo,
+      templateRepo,
       body.gitHubOrg,
       token?.value as string,
       projectName as string,
       body.title,
-      repoVisibility
+      body.visibility,
+      templateOwner
     );
 
     if (!resp.ok) {
-      await logGitHubFailure('repo-template-generate', resp);
-      console.error('Failed to create project repo: ', resp.statusText);
-      console.error('Body: ', body);
+      await logGitHubErrorResponse('repo-create-from-template', resp, {
+        gitHubOrg: body.gitHubOrg,
+        templateRepo: body.templateRepo,
+        projectName,
+        visibility: body.visibility,
+      });
       return new Response(
         JSON.stringify({
           avaError: '_repo_create_failed_',
         }),
-        { status: 500, statusText: resp.statusText }
+        { status: resp.status || 500, statusText: resp.statusText }
       );
     }
 
@@ -145,15 +185,16 @@ export const POST: APIRoute = async ({
       );
 
       if (!respPages.ok) {
-        await logGitHubFailure('pages-enable', respPages);
-        console.error('Status: ', respPages.status);
-        console.error('Failed to enable GitHub pages: ', respPages.statusText);
+        await logGitHubErrorResponse('pages-enable', respPages, {
+          gitHubOrg: body.gitHubOrg,
+          projectName,
+        });
         return new Response(
           JSON.stringify({
             avaError: '_failed_pages_enable_',
           }),
           {
-            status: 500,
+            status: respPages.status || 500,
             statusText: respPages.statusText,
           }
         );
@@ -171,14 +212,16 @@ export const POST: APIRoute = async ({
     );
 
     if (!respTopics.ok) {
-      console.error('Status: ', respTopics.status);
-      console.error('Failed to add topic: ', respTopics.statusText);
+      await logGitHubErrorResponse('topics-replace', respTopics, {
+        gitHubOrg: body.gitHubOrg,
+        projectName,
+      });
       return new Response(
         JSON.stringify({
           avaError: '_failed_adding_topic_',
         }),
         {
-          status: 500,
+          status: respTopics.status || 500,
           statusText: respTopics.statusText,
         }
       );
