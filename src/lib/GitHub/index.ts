@@ -1,3 +1,17 @@
+import {
+  getEnterpriseGitHubOrgs,
+  getTemplateOwnerForDestinationOrg,
+  isEnterpriseGitHubOrg,
+} from './config.ts';
+import type { RepoVisibility } from './config.ts';
+
+export {
+  getEnterpriseGitHubOrgs,
+  getTemplateOwnerForDestinationOrg,
+  isEnterpriseGitHubOrg,
+};
+export type { RepoVisibility } from './config.ts';
+
 export const paginate = async (url: string, token: string) => {
   let results: any[] = [];
 
@@ -384,8 +398,13 @@ export const changeRepoVisibility = async (
   token: string,
   org: string,
   slug: string,
-  isPrivate: boolean
+  visibility: boolean | RepoVisibility
 ): Promise<Response> => {
+  const body =
+    typeof visibility === 'boolean'
+      ? { private: visibility }
+      : { visibility: visibility };
+
   return await fetch(`https://api.github.com/repos/${org}/${slug}`, {
     method: 'PATCH',
     headers: {
@@ -393,9 +412,7 @@ export const changeRepoVisibility = async (
       Authorization: `Bearer ${token}`,
       'X-GitHub-Api-Version': '2022-11-28',
     },
-    body: JSON.stringify({
-      private: isPrivate,
-    }),
+    body: JSON.stringify(body),
   });
 };
 

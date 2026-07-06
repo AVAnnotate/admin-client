@@ -7,6 +7,7 @@ import {
   changeRepoVisibility,
   disablePages,
   removeRepositoryHomepage,
+  isEnterpriseGitHubOrg,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -86,6 +87,12 @@ export const POST: APIRoute = async ({
 
     const body: apiProjectsProjectNamePost = await request.json();
 
+    const repoVisibility = body.is_private
+      ? 'private'
+      : isEnterpriseGitHubOrg(body.gitHubOrg)
+        ? 'internal'
+        : 'public';
+
     // First see if we can create this repo
     const check: Response = await getRepo(
       token?.value as string,
@@ -146,6 +153,28 @@ export const POST: APIRoute = async ({
     }
 
     const repo: FullRepository = await resp.json();
+
+    if (repoVisibility === 'internal') {
+      const visibilityResp = await changeRepoVisibility(
+        token?.value as string,
+        body.gitHubOrg,
+        projectName as string,
+        'internal'
+      );
+
+      if (!visibilityResp.ok) {
+        await logGitHubFailure('repo-visibility-internal', visibilityResp);
+        return new Response(
+          JSON.stringify({
+            avaError: '_repo_create_failed_',
+          }),
+          {
+            status: 500,
+            statusText: visibilityResp.statusText,
+          }
+        );
+      }
+    }
 
     if (body.generate_pages_site) {
       // Enable pages
@@ -245,7 +274,8 @@ export const POST: APIRoute = async ({
       users: collabs,
       project: {
         github_org: body.gitHubOrg,
-        is_private: body.visibility === 'private',
+        // Internal GitHub repos are represented as non-private in project metadata.
+        is_private: body.is_private,
         title: body.title,
         description: body.description,
         language: body.language,
@@ -483,6 +513,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       );
 
       if (!respPages.ok) {
+        await logGitHubFailure('pages-enable', respPages);
         console.error('Status: ', respPages.status);
         console.error('Failed to enable GitHub pages: ', respPages.statusText);
         return new Response(
