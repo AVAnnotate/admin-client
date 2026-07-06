@@ -133,7 +133,7 @@ export const POST: APIRoute = async ({
       token?.value as string,
       projectName as string,
       body.title,
-      repoVisibility
+      repoVisibility,
       templateOwner
     );
 
