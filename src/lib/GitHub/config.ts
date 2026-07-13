@@ -15,6 +15,15 @@ export const getEnterpriseGitHubOrgs = (): string[] => {
 export const isEnterpriseGitHubOrg = (org: string): boolean =>
   getEnterpriseGitHubOrgs().includes(org.trim().toLowerCase());
 
+export const shouldIncludeSlugInBase = (
+  org: string,
+  authProvider?: string
+): boolean =>
+  !(
+    (authProvider ?? '').trim().toLowerCase() === 'utexas' ||
+    isEnterpriseGitHubOrg(org)
+  );
+
 export const getTemplateOwnerForDestinationOrg = (org: string): string => {
   if (isEnterpriseGitHubOrg(org) && import.meta.env.GIT_REPO_ORG_ENTERPRISE) {
     return import.meta.env.GIT_REPO_ORG_ENTERPRISE;

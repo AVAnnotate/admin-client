@@ -8,6 +8,7 @@ import {
   disablePages,
   removeRepositoryHomepage,
   isEnterpriseGitHubOrg,
+  shouldIncludeSlugInBase,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -280,8 +281,13 @@ export const POST: APIRoute = async ({
     const project = {
       publish: {
         publish_pages_app: body.generate_pages_site,
+        publish_static_site: false,
         publish_sha: '',
         publish_iso_date: '',
+        include_slug_in_base: shouldIncludeSlugInBase(
+          body.gitHubOrg,
+          cookies.get('auth-provider')?.value
+        ),
       },
       users: collabs,
       project: {
@@ -578,6 +584,13 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   // override existing properties with new ones from the request
   const newConfig: ProjectData = {
     ...projectConfig,
+    publish: {
+      ...projectConfig.publish,
+      include_slug_in_base: shouldIncludeSlugInBase(
+        projectConfig.project.github_org,
+        cookies.get('auth-provider')?.value
+      ),
+    },
     project: {
       ...projectConfig.project,
       ...body,

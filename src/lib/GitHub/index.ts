@@ -2,6 +2,7 @@ import {
   getEnterpriseGitHubOrgs,
   getTemplateOwnerForDestinationOrg,
   isEnterpriseGitHubOrg,
+  shouldIncludeSlugInBase,
 } from './config.ts';
 import type { RepoVisibility } from './config.ts';
 
@@ -9,6 +10,7 @@ export {
   getEnterpriseGitHubOrgs,
   getTemplateOwnerForDestinationOrg,
   isEnterpriseGitHubOrg,
+  shouldIncludeSlugInBase,
 };
 export type { RepoVisibility } from './config.ts';
 

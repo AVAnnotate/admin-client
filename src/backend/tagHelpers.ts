@@ -12,6 +12,7 @@ import {
   getDirData,
   buildProjectData,
 } from '@backend/projectHelpers.ts';
+import { shouldIncludeSlugInBase } from '@lib/GitHub/index.ts';
 import { updateProjectLastUpdated } from '@lib/pages/index.ts';
 
 export const createTagGroup = async (
@@ -34,6 +35,9 @@ export const createTagGroup = async (
 
   const project: ProjectData = JSON.parse(proj as string);
 
+  project.publish.include_slug_in_base = shouldIncludeSlugInBase(
+    project.project.github_org
+  );
   project.project.tags?.tagGroups.push(group);
   project.project.updated_at = new Date().toISOString();
 
@@ -138,6 +142,9 @@ export const updateTagGroup = async (
     }
   }
 
+  project.publish.include_slug_in_base = shouldIncludeSlugInBase(
+    project.project.github_org
+  );
   project.project.updated_at = new Date().toISOString();
 
   const result = await writeFile('/data/project.json', JSON.stringify(project));
@@ -488,6 +495,9 @@ export const deleteAll = async (htmlUrl: string, userInfo: UserInfo) => {
 
   const project: ProjectData = JSON.parse(proj as string);
 
+  project.publish.include_slug_in_base = shouldIncludeSlugInBase(
+    project.project.github_org
+  );
   project.project.tags = { tagGroups: [], tags: [] };
 
   await writeFile('/data/project.json', JSON.stringify(project));
