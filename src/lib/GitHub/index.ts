@@ -177,11 +177,9 @@ export const createRepositoryFromTemplate = async (
     owner: org,
     name: newRepoName,
     description: description,
-    private: visibility === 'private',
+    private: visibility === 'private' || visibility === 'internal',
   };
-  const url = `https://api.github.com/repos/${
-    import.meta.env.GIT_REPO_ORG
-  }/${templateRepo}/generate`;
+  const url = `https://api.github.com/repos/${owner}/${templateRepo}/generate`;
   const headers = {
     Accept: 'application/vnd.github+json',
     Authorization: `Bearer ${token}`,
