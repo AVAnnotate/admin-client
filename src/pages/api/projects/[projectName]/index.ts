@@ -190,8 +190,8 @@ export const POST: APIRoute = async ({
       }
     }
 
-    if (body.generate_pages_site) {
-      // Enable pages
+    if (isUtexasSession || body.generate_pages_site) {
+      // Enable pages; for EMU (UTexas) sessions this is always required.
       const respPages: Response = await enablePages(
         body.gitHubOrg,
         projectName as string,

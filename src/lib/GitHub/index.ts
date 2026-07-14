@@ -253,10 +253,6 @@ export const enablePages = async (
   token: string
 ): Promise<Response> => {
   const body = {
-    source: {
-      branch: 'main',
-      path: '/',
-    },
     build_type: 'workflow',
   };
   return await fetch(`https://api.github.com/repos/${org}/${repo}/pages`, {
