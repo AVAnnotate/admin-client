@@ -11,7 +11,6 @@ import {
   getWorkflowContent,
   updateWorkflowContent,
   triggerWorkflow,
-  shouldIncludeSlugInBase,
 } from '@lib/GitHub/index.ts';
 import { gitRepo, type GitRepoContext } from './gitRepo.ts';
 import type {
@@ -596,9 +595,6 @@ export const publishSite = async (
 
   project.publish.publish_pages_app = !!options.publish_pages;
   project.publish.publish_static_site = !!options.publish_static;
-  project.publish.include_slug_in_base = shouldIncludeSlugInBase(
-    project.project.github_org
-  );
 
   const res = await writeFile('/data/project.json', JSON.stringify(project));
 

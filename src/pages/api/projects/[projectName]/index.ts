@@ -586,10 +586,6 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
     ...projectConfig,
     publish: {
       ...projectConfig.publish,
-      include_slug_in_base: shouldIncludeSlugInBase(
-        projectConfig.project.github_org,
-        cookies.get('auth-provider')?.value
-      ),
     },
     project: {
       ...projectConfig.project,

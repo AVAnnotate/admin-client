@@ -4,7 +4,6 @@ import type { APIRoute } from 'astro';
 import { importIIIFManifest } from '@lib/iiif/import.ts';
 import { gitRepo } from '@backend/gitRepo.ts';
 import { getRepositoryUrl } from '@backend/projectHelpers.ts';
-import { shouldIncludeSlugInBase } from '@lib/GitHub/index.ts';
 import { initFs } from '@lib/memfs/index.ts';
 import type { UserInfo, Event, ProjectData } from '@ty/Types.ts';
 import { emptyParagraph } from '@lib/slate/index.tsx';
@@ -159,9 +158,6 @@ export const POST: APIRoute = async ({
         });
 
         project.project.updated_at = new Date().toISOString();
-        project.publish.include_slug_in_base = shouldIncludeSlugInBase(
-          project.project.github_org
-        );
 
         await writeFile('/data/project.json', JSON.stringify(project, null, 2));
       }
