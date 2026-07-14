@@ -100,9 +100,11 @@ export const POST: APIRoute = async ({
 
     const body: apiProjectsProjectNamePost = await request.json();
 
+    const isUtexasSession = cookies.get('auth-provider')?.value === 'utexas';
+
     const repoVisibility = body.is_private
       ? 'private'
-      : isEnterpriseGitHubOrg(body.gitHubOrg)
+      : isEnterpriseGitHubOrg(body.gitHubOrg) || isUtexasSession
         ? 'internal'
         : 'public';
 
@@ -129,7 +131,6 @@ export const POST: APIRoute = async ({
     // enterprise and cannot be accessed with their token.  If a UTexas-specific
     // template org is configured and this session was started via the EMU login
     // path, use that org's copy of the template instead.
-    const isUtexasSession = cookies.get('auth-provider')?.value === 'utexas';
     const utexasTemplateOrg = import.meta.env.UTEXAS_GIT_REPO_ORG;
     const utexasTemplateRepo =
       import.meta.env.UTEXAS_GIT_REPO_PROJECT_TEMPLATE || body.templateRepo;
