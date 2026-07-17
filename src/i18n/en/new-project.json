@@ -37,5 +37,6 @@
   "Use Private Repository": "Private Repository",
   "_private_repository_helper_text_": "Private repositories do not generate GitHub Pages sites.",
   "Generate GitHub Pages Site": "Generate GitHub Pages Site",
-  "_generate_pages_site_helper_text_": "Generate a GitHub Pages site.  If unchecked a static site which you can deploy will be created and checked into your project repository."
+  "_generate_pages_site_helper_text_": "Generate a GitHub Pages site.  If unchecked a static site which you can deploy will be created and checked into your project repository.",
+  "_no_orgs_warning_": "Your account is a GitHub Enterprise Managed User account. You must be a member of a GitHub organization to create a project. Please contact your organization administrator to be added to an organization."
 }
