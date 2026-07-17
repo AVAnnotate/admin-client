@@ -168,9 +168,6 @@ export const POST: APIRoute = async ({
 
     const repo: FullRepository = await resp.json();
 
-    // Two-step visibility change for GitHub EMU organizations: the template
-    // generation API does not support `visibility: 'internal'`, so the repo
-    // is first created as private (above) and then patched to internal here.
     if (repoVisibility === 'internal') {
       const visibilityResp = await changeRepoVisibility(
         token?.value as string,
@@ -467,21 +464,11 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   // Has repo visibility changed?
   if (projectConfig.project.is_private !== body.is_private) {
-    // For GitHub EMU organizations, repos can only be private or internal (not
-    // public).  Sending `private: false` to the API would attempt a public
-    // visibility change which would fail for EMU orgs.  Use `'internal'`
-    // instead so the PATCH sets visibility explicitly.
-    const isEnterprise =
-      isEnterpriseGitHubOrg(slugContents.org) ||
-      cookies.get('auth-provider')?.value === 'utexas';
-    const targetVisibility: boolean | 'internal' =
-      !body.is_private && isEnterprise ? 'internal' : body.is_private;
-
     const visResponse = await changeRepoVisibility(
       info?.token as string,
       slugContents.org,
       slugContents.repo,
-      targetVisibility
+      body.is_private
     );
 
     if (!visResponse.ok) {
