@@ -171,8 +171,12 @@ export const POST: APIRoute = async ({
     // Two-step visibility change for GitHub EMU organizations: the template
     // generation API does not support `visibility: 'internal'`, so the repo
     // is first created as private (above) and then patched to internal here.
+    // A short delay is required because GitHub initializes the repository
+    // asynchronously after returning 201, and the PATCH can fail if issued
+    // immediately.
     if (repoVisibility === 'internal') {
-      const visibilityResp = await changeRepoVisibility(
+      await delay(2000);
+      let visibilityResp = await changeRepoVisibility(
         token?.value as string,
         body.gitHubOrg,
         projectName as string,
@@ -180,10 +184,22 @@ export const POST: APIRoute = async ({
       );
 
       if (!visibilityResp.ok) {
-        await logGitHubFailure('repo-visibility-internal', visibilityResp);
+        // One retry after an additional short delay to handle transient failures.
+        await logGitHubFailure('repo-visibility-internal-attempt-1', visibilityResp);
+        await delay(3000);
+        visibilityResp = await changeRepoVisibility(
+          token?.value as string,
+          body.gitHubOrg,
+          projectName as string,
+          'internal'
+        );
+      }
+
+      if (!visibilityResp.ok) {
+        await logGitHubFailure('repo-visibility-internal-attempt-2', visibilityResp);
         return new Response(
           JSON.stringify({
-            avaError: '_repo_create_failed_',
+            avaError: '_repo_visibility_change_failed_',
           }),
           {
             status: 500,
