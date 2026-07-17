@@ -195,8 +195,9 @@ export const getProject = async (
     projectChanged = true;
   }
 
-  if (project.project.is_private !== repo.private) {
-    project.project.is_private = repo.private;
+  const repoIsPrivate = repo.visibility === 'private';
+  if (project.project.is_private !== repoIsPrivate) {
+    project.project.is_private = repoIsPrivate;
     projectChanged = true;
   }
 
