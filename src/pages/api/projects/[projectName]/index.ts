@@ -7,6 +7,8 @@ import {
   changeRepoVisibility,
   disablePages,
   removeRepositoryHomepage,
+  isEnterpriseGitHubOrg,
+  shouldIncludeSlugInBase,
 } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
@@ -23,6 +25,53 @@ import {
 } from '@backend/projectHelpers.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { updateProjectLastUpdated } from '@lib/pages/index.ts';
+
+const logGitHubFailure = async (stage: string, response: Response) => {
+  const requestId = response.headers.get('x-github-request-id');
+  const responseBody = await response.clone().text();
+
+  console.error(`GitHub ${stage} failed`, {
+    status: response.status,
+    statusText: response.statusText,
+    requestId,
+    responseBody,
+  });
+};
+
+const logGitHubErrorResponse = async (
+  stage: string,
+  response: Response,
+  context?: Record<string, unknown>
+) => {
+  const requestId =
+    response.headers.get('x-github-request-id') ||
+    response.headers.get('x-request-id') ||
+    'unknown';
+  const rateLimitRemaining = response.headers.get('x-ratelimit-remaining');
+  const scope = response.headers.get('x-oauth-scopes');
+  const acceptedScope = response.headers.get('x-accepted-oauth-scopes');
+
+  let responseBody: unknown = null;
+  const rawBody = await response.text();
+  if (rawBody) {
+    try {
+      responseBody = JSON.parse(rawBody);
+    } catch {
+      responseBody = rawBody;
+    }
+  }
+
+  console.error(`[GitHub ${stage}] request failed`, {
+    status: response.status,
+    statusText: response.statusText,
+    requestId,
+    rateLimitRemaining,
+    scope,
+    acceptedScope,
+    responseBody,
+    ...context,
+  });
+};
 
 // Note: this POST route is the only /api/projects route that expects the
 // `projectName` param to be the bare name instead of the slug version that
@@ -51,6 +100,14 @@ export const POST: APIRoute = async ({
 
     const body: apiProjectsProjectNamePost = await request.json();
 
+    const isUtexasSession = cookies.get('auth-provider')?.value === 'utexas';
+
+    const repoVisibility = body.is_private
+      ? 'private'
+      : isEnterpriseGitHubOrg(body.gitHubOrg) || isUtexasSession
+        ? 'internal'
+        : 'public';
+
     // First see if we can create this repo
     const check: Response = await getRepo(
       token?.value as string,
@@ -70,31 +127,90 @@ export const POST: APIRoute = async ({
         }
       );
     }
+    // For UTexas EMU users the standard AVAnnotate template is outside their
+    // enterprise and cannot be accessed with their token.  If a UTexas-specific
+    // template org is configured and this session was started via the EMU login
+    // path, use that org's copy of the template instead.
+    const utexasTemplateOrg = import.meta.env.UTEXAS_GIT_REPO_ORG;
+    const utexasTemplateRepo =
+      import.meta.env.UTEXAS_GIT_REPO_PROJECT_TEMPLATE || body.templateRepo;
+
+    const templateOwner =
+      isUtexasSession && utexasTemplateOrg ? utexasTemplateOrg : undefined;
+    const templateRepo =
+      isUtexasSession && utexasTemplateOrg ? utexasTemplateRepo : body.templateRepo;
+
     // Create the new repo from template
     const resp: Response = await createRepositoryFromTemplate(
-      body.templateRepo,
+      templateRepo,
       body.gitHubOrg,
       token?.value as string,
       projectName as string,
       body.title,
-      body.visibility
+      repoVisibility,
+      templateOwner
     );
 
     if (!resp.ok) {
-      console.error('Failed to create project repo: ', resp.statusText);
-      console.error('Body: ', body);
+      await logGitHubErrorResponse('repo-create-from-template', resp, {
+        gitHubOrg: body.gitHubOrg,
+        templateRepo: body.templateRepo,
+        projectName,
+        visibility: repoVisibility,
+      });
       return new Response(
         JSON.stringify({
           avaError: '_repo_create_failed_',
         }),
-        { status: 500, statusText: resp.statusText }
+        { status: resp.status || 500, statusText: resp.statusText }
       );
     }
 
     const repo: FullRepository = await resp.json();
 
-    if (body.generate_pages_site) {
-      // Enable pages
+    // Two-step visibility change for GitHub EMU organizations: the template
+    // generation API does not support `visibility: 'internal'`, so the repo
+    // is first created as private (above) and then patched to internal here.
+    // A short delay is required because GitHub initializes the repository
+    // asynchronously after returning 201, and the PATCH can fail if issued
+    // immediately.
+    if (repoVisibility === 'internal') {
+      await delay(2000);
+      let visibilityResp = await changeRepoVisibility(
+        token?.value as string,
+        body.gitHubOrg,
+        projectName as string,
+        'internal'
+      );
+
+      if (!visibilityResp.ok) {
+        // One retry after an additional short delay to handle transient failures.
+        await logGitHubFailure('repo-visibility-internal-attempt-1', visibilityResp);
+        await delay(3000);
+        visibilityResp = await changeRepoVisibility(
+          token?.value as string,
+          body.gitHubOrg,
+          projectName as string,
+          'internal'
+        );
+      }
+
+      if (!visibilityResp.ok) {
+        await logGitHubFailure('repo-visibility-internal-attempt-2', visibilityResp);
+        return new Response(
+          JSON.stringify({
+            avaError: '_repo_visibility_change_failed_',
+          }),
+          {
+            status: 500,
+            statusText: visibilityResp.statusText,
+          }
+        );
+      }
+    }
+
+    if (isUtexasSession || body.generate_pages_site) {
+      // Enable pages; for EMU (UTexas) sessions this is always required.
       const respPages: Response = await enablePages(
         body.gitHubOrg,
         projectName as string,
@@ -102,14 +218,16 @@ export const POST: APIRoute = async ({
       );
 
       if (!respPages.ok) {
-        console.error('Status: ', respPages.status);
-        console.error('Failed to enable GitHub pages: ', respPages.statusText);
+        await logGitHubErrorResponse('pages-enable', respPages, {
+          gitHubOrg: body.gitHubOrg,
+          projectName,
+        });
         return new Response(
           JSON.stringify({
             avaError: '_failed_pages_enable_',
           }),
           {
-            status: 500,
+            status: respPages.status || 500,
             statusText: respPages.statusText,
           }
         );
@@ -127,14 +245,16 @@ export const POST: APIRoute = async ({
     );
 
     if (!respTopics.ok) {
-      console.error('Status: ', respTopics.status);
-      console.error('Failed to add topic: ', respTopics.statusText);
+      await logGitHubErrorResponse('topics-replace', respTopics, {
+        gitHubOrg: body.gitHubOrg,
+        projectName,
+      });
       return new Response(
         JSON.stringify({
           avaError: '_failed_adding_topic_',
         }),
         {
-          status: 500,
+          status: respTopics.status || 500,
           statusText: respTopics.statusText,
         }
       );
@@ -181,13 +301,19 @@ export const POST: APIRoute = async ({
     const project = {
       publish: {
         publish_pages_app: body.generate_pages_site,
+        publish_static_site: false,
         publish_sha: '',
         publish_iso_date: '',
+        include_slug_in_base: shouldIncludeSlugInBase(
+          body.gitHubOrg,
+          cookies.get('auth-provider')?.value
+        ),
       },
       users: collabs,
       project: {
         github_org: body.gitHubOrg,
-        is_private: body.visibility === 'private',
+        // Internal GitHub repos are represented as non-private in project metadata.
+        is_private: body.is_private,
         title: body.title,
         description: body.description,
         language: body.language,
@@ -357,11 +483,21 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
 
   // Has repo visibility changed?
   if (projectConfig.project.is_private !== body.is_private) {
+    // For GitHub EMU organizations, repos can only be private or internal (not
+    // public).  Sending `private: false` to the API would attempt a public
+    // visibility change which would fail for EMU orgs.  Use `'internal'`
+    // instead so the PATCH sets visibility explicitly.
+    const isEnterprise =
+      isEnterpriseGitHubOrg(slugContents.org) ||
+      cookies.get('auth-provider')?.value === 'utexas';
+    const targetVisibility: boolean | 'internal' =
+      !body.is_private && isEnterprise ? 'internal' : body.is_private;
+
     const visResponse = await changeRepoVisibility(
       info?.token as string,
       slugContents.org,
       slugContents.repo,
-      body.is_private
+      targetVisibility
     );
 
     if (!visResponse.ok) {
@@ -425,6 +561,7 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
       );
 
       if (!respPages.ok) {
+        await logGitHubFailure('pages-enable', respPages);
         console.error('Status: ', respPages.status);
         console.error('Failed to enable GitHub pages: ', respPages.statusText);
         return new Response(
@@ -477,6 +614,9 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   // override existing properties with new ones from the request
   const newConfig: ProjectData = {
     ...projectConfig,
+    publish: {
+      ...projectConfig.publish,
+    },
     project: {
       ...projectConfig.project,
       ...body,

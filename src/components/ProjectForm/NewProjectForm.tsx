@@ -38,7 +38,7 @@ const FormContents = (props: NewProjectFormProps) => {
   const { headerMap } = useContext(SpreadsheetInputContext);
 
   const emptyProject: Project = {
-    github_org: props.orgs[0].orgName,
+    github_org: props.orgs[0]?.orgName ?? '',
     is_private: false,
     generate_pages_site: true,
     title: '',
@@ -106,15 +106,25 @@ const FormContents = (props: NewProjectFormProps) => {
             return (
               <Form>
                 <h2>{t['General']}</h2>
-                <SelectInput
-                  label={t['GitHub Organization']}
-                  name='github_org'
-                  options={props.orgs.map((o) => ({
-                    value: o.orgName,
-                    label: o.orgName,
-                  }))}
-                  required
-                />
+                {props.orgs.length === 0 ? (
+                  <div className='project-form-no-orgs-warning'>
+                    {
+                      t[
+                        '_no_orgs_warning_'
+                      ]
+                    }
+                  </div>
+                ) : (
+                  <SelectInput
+                    label={t['GitHub Organization']}
+                    name='github_org'
+                    options={props.orgs.map((o) => ({
+                      value: o.orgName,
+                      label: o.orgName,
+                    }))}
+                    required
+                  />
+                )}
 
                 <ToggleInput
                   label={t['Use Private Repository']}
@@ -193,7 +203,7 @@ const FormContents = (props: NewProjectFormProps) => {
                     <Button
                       className='primary'
                       type='submit'
-                      disabled={!isValid}
+                      disabled={!isValid || props.orgs.length === 0}
                     >
                       {t['Create Project']}
                     </Button>

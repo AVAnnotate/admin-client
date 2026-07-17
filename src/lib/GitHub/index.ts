@@ -1,3 +1,19 @@
+import {
+  getEnterpriseGitHubOrgs,
+  getTemplateOwnerForDestinationOrg,
+  isEnterpriseGitHubOrg,
+  shouldIncludeSlugInBase,
+} from './config.ts';
+import type { RepoVisibility } from './config.ts';
+
+export {
+  getEnterpriseGitHubOrgs,
+  getTemplateOwnerForDestinationOrg,
+  isEnterpriseGitHubOrg,
+  shouldIncludeSlugInBase,
+};
+export type { RepoVisibility } from './config.ts';
+
 export const paginate = async (url: string, token: string) => {
   let results: any[] = [];
 
@@ -153,29 +169,39 @@ export const createRepositoryFromTemplate = async (
   token: string,
   newRepoName: string,
   description: string,
-  visibility?: 'private' | 'public' // Defaults to private
+  visibility?: 'private' | 'public' | 'internal', // Defaults to private
+  templateOwner?: string // Defaults to GIT_REPO_ORG
 ): Promise<Response> => {
+  const owner = templateOwner || import.meta.env.GIT_REPO_ORG;
   const body = {
     owner: org,
     name: newRepoName,
     description: description,
-    private: visibility !== 'public',
+    private: visibility === 'private' || visibility === 'internal',
+  };
+  const url = `https://api.github.com/repos/${owner}/${templateRepo}/generate`;
+  const headers = {
+    Accept: 'application/vnd.github+json',
+    Authorization: `Bearer ${token}`,
+    'X-GitHub-Api-Version': '2022-11-28',
+  };
+  const requestOptions = {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
   };
 
-  return await fetch(
-    `https://api.github.com/repos/${
-      import.meta.env.GIT_REPO_ORG
-    }/${templateRepo}/generate`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/vnd.github+json',
-        Authorization: `Bearer ${token}`,
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-      body: JSON.stringify(body),
-    }
-  );
+  console.info('Creating repository from template', {
+    url,
+    method: requestOptions.method,
+    body,
+    headers: {
+      ...headers,
+      Authorization: 'Bearer [redacted]',
+    },
+  });
+
+  return await fetch(url, requestOptions);
 };
 
 export const addRepositoryHomepage = async (
@@ -225,10 +251,6 @@ export const enablePages = async (
   token: string
 ): Promise<Response> => {
   const body = {
-    source: {
-      branch: 'main',
-      path: '/',
-    },
     build_type: 'workflow',
   };
   return await fetch(`https://api.github.com/repos/${org}/${repo}/pages`, {
@@ -372,8 +394,13 @@ export const changeRepoVisibility = async (
   token: string,
   org: string,
   slug: string,
-  isPrivate: boolean
+  visibility: boolean | RepoVisibility
 ): Promise<Response> => {
+  const body =
+    typeof visibility === 'boolean'
+      ? { private: visibility }
+      : { visibility: visibility };
+
   return await fetch(`https://api.github.com/repos/${org}/${slug}`, {
     method: 'PATCH',
     headers: {
@@ -381,9 +408,7 @@ export const changeRepoVisibility = async (
       Authorization: `Bearer ${token}`,
       'X-GitHub-Api-Version': '2022-11-28',
     },
-    body: JSON.stringify({
-      private: isPrivate,
-    }),
+    body: JSON.stringify(body),
   });
 };
 

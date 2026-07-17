@@ -3,6 +3,7 @@
   "Something went wrong.": "Something went wrong.",
   "_repo_exists_": "The repository name already exists in the GitHub Organization.",
   "_repo_create_failed_": "The repository was not successfully created",
+  "_repo_visibility_change_failed_": "Repository was created but could not be set to internal visibility. Please delete the repository from GitHub and try again.",
   "_failed_pages_enable_": "Failed to enable GitHub Pages for this repository",
   "_failed_adding_topic_": "Failed to add the AVAnnotate-Project topis to repository",
   "_failed_adding_collaborators_": "Failed to add the additional collaborators to the project.",
