@@ -10,6 +10,7 @@ import {
   isEnterpriseGitHubOrg,
   shouldIncludeSlugInBase,
 } from '@lib/GitHub/index.ts';
+import type { RepoVisibility } from '@lib/GitHub/index.ts';
 import type { APIRoute } from 'astro';
 import type { apiProjectPut, apiProjectsProjectNamePost } from '@ty/api.ts';
 import type { FullRepository } from '@ty/github.ts';
@@ -485,13 +486,17 @@ export const PUT: APIRoute = async ({ cookies, params, request, redirect }) => {
   if (projectConfig.project.is_private !== body.is_private) {
     // For GitHub EMU organizations, repos can only be private or internal (not
     // public).  Sending `private: false` to the API would attempt a public
-    // visibility change which would fail for EMU orgs.  Use `'internal'`
-    // instead so the PATCH sets visibility explicitly.
+    // visibility change which would fail for EMU orgs.  Use explicit
+    // visibility strings so the PATCH sets visibility correctly for all
+    // transitions (including internal → private).
     const isEnterprise =
       isEnterpriseGitHubOrg(slugContents.org) ||
       cookies.get('auth-provider')?.value === 'utexas';
-    const targetVisibility: boolean | 'internal' =
-      !body.is_private && isEnterprise ? 'internal' : body.is_private;
+    const targetVisibility: boolean | RepoVisibility = isEnterprise
+      ? body.is_private
+        ? 'private'
+        : 'internal'
+      : body.is_private;
 
     const visResponse = await changeRepoVisibility(
       info?.token as string,
