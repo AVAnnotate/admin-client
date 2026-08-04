@@ -42,15 +42,23 @@ export const parseURL = (url: string) => {
 const TEMPLATE_BRANCH = import.meta.env.OVERRIDE_TEMPLATE_BRANCH || 'main';
 
 export const getOrgs = async (
-  userInfo: UserInfo
+  userInfo: UserInfo,
+  authProvider?: string
 ): Promise<GitHubOrganization[]> => {
   const orgs = await getUserOrgs(userInfo.token);
 
-  orgs.unshift({
-    login: userInfo.profile.gitHubName,
-    url: `https://https://github.com/${userInfo.profile.gitHubName}`,
-    description: '',
-  });
+  // Enterprise Managed Users (EMU) cannot create repositories in their personal
+  // account — only in organisations. Skip prepending the personal account when
+  // the session was initiated via an enterprise OAuth app (e.g. utexas).
+  const isEnterpriseUser = !!authProvider && authProvider !== '';
+
+  if (!isEnterpriseUser) {
+    orgs.unshift({
+      login: userInfo.profile.gitHubName,
+      url: `https://github.com/${userInfo.profile.gitHubName}`,
+      description: '',
+    });
+  }
 
   return orgs.map((o) => ({
     orgName: o.login,
@@ -187,8 +195,9 @@ export const getProject = async (
     projectChanged = true;
   }
 
-  if (project.project.is_private !== repo.private) {
-    project.project.is_private = repo.private;
+  const repoIsPrivate = repo.visibility === 'private';
+  if (project.project.is_private !== repoIsPrivate) {
+    project.project.is_private = repoIsPrivate;
     projectChanged = true;
   }
 

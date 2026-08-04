@@ -71,6 +71,7 @@ export type Publish = {
   publish_static_site: boolean;
   publish_sha: string;
   publish_iso_date: string;
+  include_slug_in_base?: boolean;
 };
 
 export type CaptionSet = {

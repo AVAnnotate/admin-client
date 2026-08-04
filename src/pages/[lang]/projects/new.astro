@@ -19,7 +19,8 @@ if (!info) {
   return Astro.redirect(`/${lang}/sign-in`);
 }
 
-const orgs = await getOrgs(info);
+const authProvider = Astro.cookies.get('auth-provider')?.value ?? '';
+const orgs = await getOrgs(info, authProvider);
 ---
 
 <Layout title='Projects' profile={info.profile}>

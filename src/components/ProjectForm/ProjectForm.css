@@ -28,3 +28,12 @@
 .project-form-actions-container > button {
   min-width: 200px;
 }
+
+.project-form-no-orgs-warning {
+  padding: 12px 16px;
+  border: 1px solid var(--amber-7, #f5a623);
+  border-radius: 6px;
+  background-color: var(--amber-2, #fff8eb);
+  color: var(--amber-11, #7e4a0d);
+  margin-bottom: 16px;
+}
