@@ -16,6 +16,9 @@ export type { RepoVisibility } from './config.ts';
 
 export const paginate = async (url: string, token: string) => {
   let results: any[] = [];
+  const endpoint = new URL(url).pathname;
+
+  console.info(`[GitHub API] GET ${endpoint}`);
 
   const response = await fetch(url, {
     method: 'GET',
@@ -26,7 +29,18 @@ export const paginate = async (url: string, token: string) => {
     },
   });
 
+  console.info(
+    `[GitHub API] GET ${endpoint} responded; status=${response.status}; requestId=${
+      response.headers.get('x-github-request-id') ?? 'unavailable'
+    }`
+  );
+
   if (!response.ok) {
+    console.error(
+      `[GitHub API] GET ${endpoint} failed; status=${response.status}; rateLimitRemaining=${
+        response.headers.get('x-ratelimit-remaining') ?? 'unavailable'
+      }`
+    );
     return results;
   }
 
@@ -36,6 +50,7 @@ export const paginate = async (url: string, token: string) => {
 
   const link = response.headers.get('link');
   if (!link) {
+    console.info(`[GitHub API] GET ${endpoint} complete; results=${results.length}`);
     return results;
   }
 
@@ -62,6 +77,7 @@ export const paginate = async (url: string, token: string) => {
   let linkMap = parseLink(link);
 
   while (linkMap['next']) {
+    console.info(`[GitHub API] GET ${endpoint} requesting next page`);
     const response = await fetch(linkMap['next'], {
       method: 'GET',
       headers: {
@@ -70,6 +86,15 @@ export const paginate = async (url: string, token: string) => {
         'X-GitHub-Api-Version': '2022-11-28',
       },
     });
+
+    if (!response.ok) {
+      console.error(
+        `[GitHub API] GET ${endpoint} next page failed; status=${response.status}; requestId=${
+          response.headers.get('x-github-request-id') ?? 'unavailable'
+        }`
+      );
+      break;
+    }
 
     const data = await response.json();
 
@@ -86,6 +111,7 @@ export const paginate = async (url: string, token: string) => {
     linkMap = parseLink(link);
   }
 
+  console.info(`[GitHub API] GET ${endpoint} complete; results=${results.length}`);
   return results;
 };
 
