@@ -48,9 +48,9 @@ export const SignInGitHub = (props: SignInGitHubProps) => {
         className='sign-in-anchor'
         href={`https://github.com/login/oauth/authorize?client_id=${
           import.meta.env.PUBLIC_GITHUB_CLIENT_ID
-        }&redirect_uri=${
-          import.meta.env.PUBLIC_REDIRECT_URL
-        }/git&scope=repo%20workflow`}
+        }&redirect_uri=${encodeURIComponent(
+          `${window.location.origin}/git`
+        )}&scope=repo%20workflow`}
       >
         <div className='sign-in-button-container'>
           <GitHubLogo />
