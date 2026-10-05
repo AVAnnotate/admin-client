@@ -48,3 +48,30 @@
 .sign-in-button-text {
   padding-left: 4px;
 }
+
+.reauthorize-link {
+  font-size: 0.9rem;
+  text-decoration: underline;
+}
+
+.new-user-section {
+  border-top: 1px solid #d1d5db;
+  margin-top: 4px;
+  padding-top: 24px;
+  width: 420px;
+  max-width: 100%;
+  text-align: center;
+}
+
+.new-user-links {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 12px;
+}
+
+.new-user-links a {
+  font-weight: 600;
+  text-decoration: underline;
+  color: #015f86;
+}
