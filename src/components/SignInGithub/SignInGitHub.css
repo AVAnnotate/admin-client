@@ -48,3 +48,11 @@
 .sign-in-button-text {
   padding-left: 4px;
 }
+
+.sign-in-links {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  color: #015f86;
+  font-weight: bold;
+}

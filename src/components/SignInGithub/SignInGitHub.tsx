@@ -89,6 +89,22 @@ export const SignInGitHub = (props: SignInGitHubProps) => {
           </div>
         </div>
       </a>
+      <div className='sign-in-links'>
+        <a
+          href='https://avannotate.github.io/documentation/pages/quickstart/'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {props.i18n.t['Quick Start Guide']}
+        </a>
+        <a
+          href='https://av-annotate.org/example-projects/'
+          target='_blank'
+          rel='noopener noreferrer'
+        >
+          {props.i18n.t['Examples']}
+        </a>
+      </div>
     </div>
   );
 };
