@@ -77,18 +77,32 @@ export const SignInGitHub = (props: SignInGitHubProps) => {
       )}
       <a
         id='sign-in-reauthorize'
-        className='authorize-anchor'
+        className='reauthorize-link'
         href={`https://github.com/settings/connections/applications/${
           import.meta.env.PUBLIC_GITHUB_CLIENT_ID
         }`}
       >
-        <div className='sign-in-button-container'>
-          <GitHubLogo />
-          <div className='sign-in-button-text'>
-            {props.i18n.t['Reauthorize App and Organizations']}
-          </div>
-        </div>
+        {props.i18n.t['Reauthorize App and Organizations']}
       </a>
+      <div className='new-user-section'>
+        <p>{props.i18n.t['New to AVAnnotate?']}</p>
+        <div className='new-user-links'>
+          <a
+            href='https://avannotate.github.io/documentation/pages/quickstart/'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {props.i18n.t['Read the Quick Start']} →
+          </a>
+          <a
+            href='https://av-annotate.org/example-projects/'
+            target='_blank'
+            rel='noopener noreferrer'
+          >
+            {props.i18n.t['See example projects']} →
+          </a>
+        </div>
+      </div>
     </div>
   );
 };
