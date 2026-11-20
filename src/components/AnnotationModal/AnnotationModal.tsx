@@ -8,6 +8,7 @@ import './AnnotationModal.css';
 import { TagSelect } from './TagSelect.tsx';
 import { useState } from 'react';
 import { LoadingOverlay } from '@components/LoadingOverlay/LoadingOverlay.tsx';
+import { normalizeAnnotation } from '@lib/slate/annotation.ts';
 
 interface Props {
   annotation?: AnnotationEntry;
@@ -21,7 +22,12 @@ interface Props {
 export const AnnotationModal: React.FC<Props> = (props) => (
   <Formik
     initialValues={
-      props.annotation || (generateDefaultAnnotation() as AnnotationEntry)
+      props.annotation
+        ? {
+            ...props.annotation,
+            annotation: normalizeAnnotation(props.annotation.annotation),
+          }
+        : (generateDefaultAnnotation() as AnnotationEntry)
     }
     onSubmit={props.onSubmit}
   >

@@ -17,6 +17,7 @@ import type {
 import type { AnnotationEntry, AnnotationPage, Event, Tag } from '@ty/Types.ts';
 import { v4 as uuidv4 } from 'uuid';
 import { deserialize } from '@lib/slate/deserialize.ts';
+import { normalizeAnnotation } from '@lib/slate/annotation.ts';
 import type { Node } from 'slate';
 // @ts-ignore
 import { JSDOM } from 'jsdom';
@@ -144,7 +145,7 @@ const parseContentResourceString = (
   annotations.push({
     start_time: start,
     end_time: end || start,
-    annotation: nodes,
+    annotation: normalizeAnnotation(nodes),
     tags: tags,
     uuid: uuidv4(),
   });
@@ -166,7 +167,7 @@ const parseTextualBody = (
   annotations.push({
     start_time: start,
     end_time: end || start,
-    annotation: nodes,
+    annotation: normalizeAnnotation(nodes),
     tags: tags,
     uuid: uuidv4(),
   });
@@ -204,7 +205,7 @@ const parseContentResourceArray = (
   annotations.push({
     start_time: start,
     end_time: end || start,
-    annotation: nodes,
+    annotation: normalizeAnnotation(nodes),
     tags: tags,
     uuid: uuidv4(),
   });
